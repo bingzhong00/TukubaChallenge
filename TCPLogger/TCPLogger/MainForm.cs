@@ -41,7 +41,7 @@ namespace TCPLogger
         }
 
         /// <summary>
-        /// 接続ボタン
+        /// BServer 接続ボタン
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -61,21 +61,36 @@ namespace TCPLogger
             toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connecting...";
 
             check = objTCPSC.Start();
-            if (check)
+            if (check || true )
             {
+                // 接続ＯＫ
                 button_sendCMD.Enabled = true;
                 saveLogFname = tb_LogFile.Text;
 
                 toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connected";
+
+                textBox_port.BackColor = Color.Lime;
+                textBox_ChangeIPAdress.BackColor = Color.Lime;
+
                 textBox_sendCMD.Focus();
                 timer1.Enabled = true;
             }
             else
             {
+                // 接続ＮＧ
                 toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connect Fail!";
+
+                textBox_port.BackColor = SystemColors.Window;
+                textBox_ChangeIPAdress.BackColor = SystemColors.Window;
             }
         }
 
+
+        /// <summary>
+        /// Telnet 接続ボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_ConnectINFO_Click(object sender, EventArgs e)
         {
             bool check;
