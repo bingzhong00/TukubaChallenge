@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActiveDetour", "ActiveDetour\ActiveDetour.csproj", "{080820FA-93E5-4858-A2AC-FC658C8ABCE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCIP_library", "SCIP_library\SCIP_library.csproj", "{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{080820FA-93E5-4858-A2AC-FC658C8ABCE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{080820FA-93E5-4858-A2AC-FC658C8ABCE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{080820FA-93E5-4858-A2AC-FC658C8ABCE6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{080820FA-93E5-4858-A2AC-FC658C8ABCE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{080820FA-93E5-4858-A2AC-FC658C8ABCE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{080820FA-93E5-4858-A2AC-FC658C8ABCE6}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Debug|x64.ActiveCfg = Debug|x64
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Debug|x64.Build.0 = Debug|x64
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Release|x64.ActiveCfg = Release|x64
+		{C6A48DB4-E53F-4615-AEBF-6B2100B6F9FF}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
