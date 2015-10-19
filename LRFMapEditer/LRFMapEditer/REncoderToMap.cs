@@ -84,10 +84,10 @@ namespace CersioIO
         /// <param name="xyWL">左車輪のX,Y座標</param>
         /// <param name="reWR">右車輪のREncoderの値 絶対値</param>
         /// <param name="reWL">左車輪のREncoderの値 絶対値</param>
-        public static void CalcWheelPlotXY(out PointD[] xyWR, out PointD[] xyWL, double[] reWR, double[] reWL)
+        public static void CalcWheelPlotXY(out PointD[] xyWR, out PointD[] xyWL, double[] OreWR, double[] OreWL, int lspLv, double lsp )
         {
-            xyWR = new PointD[reWR.Length];
-            xyWL = new PointD[reWR.Length];
+            xyWR = new PointD[OreWR.Length];
+            xyWL = new PointD[OreWR.Length];
 
             // 初期位置は上向き
             // 動力のある左の車輪が0,0基準
@@ -97,6 +97,47 @@ namespace CersioIO
             xyWR[0].X = 500; xyWR[0].Y = 0;
             xyWL[0].X = 0; xyWL[0].Y = 0;
 
+
+            double[] reWR = new double[OreWR.Length];
+            double[] reWL = new double[OreWR.Length];
+
+            // Copy Work
+            {
+                for (int i = 0; i < reWR.Length; i++)
+                {
+                    reWR[i] = OreWR[i];
+                    reWL[i] = OreWL[i];
+                }
+            }
+
+            // Limited Slip Pulse
+            {
+                int lv = lspLv;    // Lv10 , lsp 0.52
+
+                for (int i = lv; i < reWR.Length; i++)
+                {
+                    if ((reWR[i] - reWR[i - lv]) / (reWL[i] - reWL[i - lv]) < lsp)
+                    {
+                        double def = (reWR[i] - reWR[i - lv]);
+                        double odef = ((reWL[i] - reWL[i - lv]) - def) / (double)lv;
+                        /*
+                        for (int n = 1; n < lv; n++)
+                        {
+                            reWL[i - lv + n] = reWL[i - lv] + (def / (double)lv);
+                        }
+                        */
+
+                        for (int n = (i - lv); n < reWR.Length; n++)
+                        {
+                            reWL[n] -= odef;
+                        }
+                    }
+                }
+            }
+
+
+
+            // MakeLine
             for (int i = 1; i < reWR.Length; i++)
             {
                 double mov;
@@ -107,16 +148,16 @@ namespace CersioIO
                 xyWL[i] = new PointD();
 
                 // 右車輪
-                mov = WheelRotateToLengthR(reWR[i] - reWR[i-1]);
+                mov = WheelRotateToLengthR(reWR[i] - reWR[i - 1]);
 
-                xyWR[i].X = xyWR[i-1].X + (mov * -Math.Cos(ang));
-                xyWR[i].Y = xyWR[i-1].Y + (mov * Math.Sin(ang));
+                xyWR[i].X = xyWR[i - 1].X + (mov * -Math.Cos(ang));
+                xyWR[i].Y = xyWR[i - 1].Y + (mov * Math.Sin(ang));
 
                 // 左車輪
                 mov = WheelRotateToLength(reWL[i] - reWL[i - 1]);
 
-                xyWL[i].X = xyWL[i-1].X + (mov * -Math.Cos(ang));
-                xyWL[i].Y = xyWL[i-1].Y + (mov * Math.Sin(ang));
+                xyWL[i].X = xyWL[i - 1].X + (mov * -Math.Cos(ang));
+                xyWL[i].Y = xyWL[i - 1].Y + (mov * Math.Sin(ang));
             }
 
             //x11 = x1 * Math.cos(alpha) - y1 * Math.sin(alpha);

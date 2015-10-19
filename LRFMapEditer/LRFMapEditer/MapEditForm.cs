@@ -164,31 +164,30 @@ namespace LRFMapEditer
 
             Graphics g = Graphics.FromImage(LayerMap);
             g.FillRectangle(Brushes.Black, 0, 0, LayerMap.Width, LayerMap.Height);
+
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             foreach (var layer in MapLyaer)
             {
-                if (layer == noDrawLayer) continue;
+                if (layer == noDrawLayer) break;
 
                 if (layer.useFlg)
                 {
                     DrawLayerToWorld(g, layer, false, false);
                 }
-                else
-                {
-                    // 使わないのは高速描画
-                    DrawLayerToWorld(g, layer, false, true);
-                }
             }
             g.Dispose();
+
+            LayerMap.MakeTransparent(Color.White);
 
             //return LayerMap;
         }
 
         // 前回のエディットレイヤー描画位置
+        /*
         private double OldEdtWX;
         private double OldEdtWY;
         private double OldEdtAng;
-
+        */
         /// <summary>
         /// ワールドマップ更新
         /// </summary>
@@ -197,7 +196,7 @@ namespace LRFMapEditer
         private void UpdateWorldMap( bool allLayerUpdate = true, bool fastDraw = false )
         {
             // 各レイヤーの座標更新
-            UpdateLayerData(allLayerUpdate);
+            UpdateLayerData();
 
             // 画面更新
             Graphics g = Graphics.FromImage(pb_VMap.Image);
@@ -206,6 +205,15 @@ namespace LRFMapEditer
                 // 高速描画（枠だけ）
                 g.FillRectangle(Brushes.Black, 0, 0, pb_VMap.Width, pb_VMap.Height);
 
+                if (null != MapLyaer)
+                {
+                    foreach (var layer in MapLyaer)
+                    {
+                        DrawLayerToWorld(g, layer, false, true);
+                    }
+                }
+
+                // ガイドライン描画
                 DrawGuideLine(g);
 
                 // ＲＥ描画
@@ -214,12 +222,10 @@ namespace LRFMapEditer
                     DrawREconderData(g, reWheelR, reWheelL);
                 }
 
-                if (null != MapLyaer)
+                // エディットレイヤー描画
+                if (null != EditLayer)
                 {
-                    foreach (var layer in MapLyaer)
-                    {
-                        DrawLayerToWorld(g, layer, false, true);
-                    }
+                    DrawLayerToWorld(g, EditLayer, true, false);
                 }
             }
             else
@@ -233,13 +239,32 @@ namespace LRFMapEditer
 
                 //g.FillRectangle(Brushes.Black, 0, 0, WorldMap.Width, WorldMap.Height);
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.DrawImage(LayerMap, 0, 0, LayerMap.Width, LayerMap.Height);
 
                 if (null == MapLyaer)
                 {
                     // LRFがなければ、背景を消しておく
                     g.FillRectangle(Brushes.Black, 0, 0, pb_VMap.Width, pb_VMap.Height);
                 }
+                else
+                {
+                    //g.FillRectangle(Brushes.Black, 0, 0, pb_VMap.Width, pb_VMap.Height);
+
+                    // バックレイヤー描画
+                    g.DrawImage(LayerMap, 0, 0, LayerMap.Width, LayerMap.Height);
+
+                    bool bDraw = false;
+                    // エディットレイヤーから先は、常に変化するので高速描画
+                    foreach (var layer in MapLyaer)
+                    {
+                        if (EditLayer == layer) bDraw = true;
+                        if (!bDraw) continue;
+
+                        DrawLayerToWorld(g, layer, false, true);
+                    }
+                }
+
+                // ガイドライン描画
+                DrawGuideLine(g);
 
                 // ＲＥ描画
                 if (cb_REDisp.Checked && null != reWheelR && reWheelR.Length > 0)
@@ -247,24 +272,16 @@ namespace LRFMapEditer
                     DrawREconderData(g, reWheelR, reWheelL);
                 }
 
-                DrawGuideLine(g);
-
                 // エディットレイヤー描画
                 if (null != EditLayer)
                 {
-                    if (EditLayer.useFlg)
-                    {
-                        DrawLayerToWorld(g, EditLayer, true, false);
-                    }
-                    else
-                    {
-                        // 使わないのは高速描画
-                        DrawLayerToWorld(g, EditLayer, true, true);
-                    }
+                    DrawLayerToWorld(g, EditLayer, true, false);
 
+                    /*
                     OldEdtWX = EditLayer.GetLocalX();
                     OldEdtWY = EditLayer.GetLocalY();
                     OldEdtAng = EditLayer.GetLocalAng();
+                     */
                 }
             }
             g.Dispose();
@@ -420,7 +437,7 @@ namespace LRFMapEditer
 
         // 時差更新　必要フラグ
         private bool UpdateTRG = false;
-        private bool UpdateEditLayerOnlyFLG = false;
+        private bool UpdateAllLayerFLG = false;
 
         private void pb_VMap_MouseDown(object sender, MouseEventArgs e)
         {
@@ -622,6 +639,7 @@ namespace LRFMapEditer
                         (pb_EditLayer.Height - EditLayer.MapBmp.Height) / 2);
 
             g.Dispose();
+            pb_EditLayer.Invalidate();
         }
 
 
@@ -629,8 +647,17 @@ namespace LRFMapEditer
         // メニュー
         private void ts_LoadLogData_Click(object sender, EventArgs e)
         {
+            // LRF入力ダイアログ
             NewMapLoadForm newDlg = new NewMapLoadForm(this);
-            newDlg.ShowDialog();
+
+            if (newDlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+
+            // 取り込んだレイヤー情報
+            lb_NumLayer.Text = MapLyaer.Count.ToString();
+            sb_VMapLayer.Maximum = MapLyaer.Count;
+            num_Layer.Maximum = MapLyaer.Count;
+
+            SelectEditLayer(0);
         }
 
         /// <summary>
@@ -670,6 +697,9 @@ namespace LRFMapEditer
             }
 
             nowMapFilename = fDlg.FileName;
+            lb_NumLayer.Text = MapLyaer.Count.ToString();
+            sb_VMapLayer.Maximum = MapLyaer.Count;
+            num_Layer.Maximum = MapLyaer.Count;
 
             UpdateWorldMap();
         }
@@ -866,6 +896,7 @@ namespace LRFMapEditer
 
                 UpdateEditMap();
 
+                UpdateAllLayerFLG = true;
                 UpdateTRG = true;
             }
         }
@@ -888,13 +919,13 @@ namespace LRFMapEditer
                     {
                         // 高速描画
                         UpdateWorldMap(true, true);
+                        UpdateAllLayerFLG = true;
                     }
                     else
                     {
-                        if (UpdateEditLayerOnlyFLG) UpdateWorldMap(false, false);   // エディットレイヤのみ更新
-                        else UpdateWorldMap(true, false);   // 全レイヤー更新
+                        UpdateWorldMap(UpdateAllLayerFLG, false);   // エディットレイヤのみ更新
+                        UpdateAllLayerFLG = false;
                     }
-                    UpdateEditLayerOnlyFLG = false;
                     UpdateTRG = false;
                 }
             }
@@ -1150,8 +1181,8 @@ namespace LRFMapEditer
 
                     // 変換&演算
                     {
-                        double[] reDataR = new double[reData.Length / 4];
-                        double[] reDataL = new double[reData.Length / 4];
+                        reDataR = new double[reData.Length / 4];
+                        reDataL = new double[reData.Length / 4];
 
                         for (int i = 0; i < reData.Length/4; i++)
                         {
@@ -1159,7 +1190,8 @@ namespace LRFMapEditer
                             reDataR[i] = reData[i * 4 + 2];
                         }
 
-                        REncoderToMap.CalcWheelPlotXY(out reWheelR, out reWheelL, reDataR, reDataL );
+                        REncoderToMap.CalcWheelPlotXY(out reWheelR, out reWheelL, reDataR, reDataL, (int)num_LSPlv.Value, ((double)trackBar_LSP.Value * 0.01));
+                        UpdateTRG = true;
                     }
                 }
                 tb_RELogFile.Text = fDlg.FileName;
@@ -1783,7 +1815,8 @@ namespace LRFMapEditer
                 // チェックポイント書き込み
                 foreach (var cp in CheckPoints)
                 {
-                    string listItm = cp.wdPosX.ToString() + "," + cp.wdPosY.ToString();
+                    //string listItm = cp.wdPosX.ToString() + "," + cp.wdPosY.ToString();
+                    string listItm = "new Vector3("+cp.wdPosX.ToString() + "," + cp.wdPosY.ToString()+",0),";
                     sw.Write(listItm + System.Environment.NewLine);
                 }
 
@@ -1813,6 +1846,25 @@ namespace LRFMapEditer
             // DotProduct NorthVec
             double asVal = 0.0 * vecX + -1.0 * vecY;
             return ((Math.Asin(asVal) * 180.0 / Math.PI) - 90.0) * ((vecX<0.0)?-1.0:1.0);
+        }
+
+        // -----------------------------------------------------------------------
+        // RE
+        double[] reDataR;
+        double[] reDataL;
+        private void trackBar_LSP_ValueChanged(object sender, EventArgs e)
+        {
+            Lbl_LSP.Text = ((double)trackBar_LSP.Value * 0.01).ToString("0.00");
+            num_LSPlv_ValueChanged(sender, e);
+        }
+
+        private void num_LSPlv_ValueChanged(object sender, EventArgs e)
+        {
+            if (null != reDataR && null != reDataL)
+            {
+                REncoderToMap.CalcWheelPlotXY(out reWheelR, out reWheelL, reDataR, reDataL, (int)num_LSPlv.Value, ((double)trackBar_LSP.Value * 0.01));
+            }
+            UpdateTRG = true;
         }
 
     }

@@ -84,64 +84,85 @@ namespace LRFMapEditer
         /// <summary>
         /// 全レイヤー生成
         /// </summary>
-        private void AllNewLayer()
+        private bool AllNewLayer()
         {
             if (null == UrgLogReader)
             {
                 MessageBox.Show("LRFデータがロードされていません", "Error");
-                return;
+                return false;
+            }
+            if (skipLrfIDX <= 0 || (int)(maxLRFIdx / skipLrfIDX) <= 0)
+            {
+                MessageBox.Show("SkipFrameが不正な値です。1以上、全フレーム以下にしてください。", "Error");
+                return false;
             }
 
-            parentForm.MapLyaer = new List<LayerData>();
-            UrgLogReader.SetSkipNum(skipLrfIDX);
-            LayerData lastLayer = null;
+            progressBar_LoadLayer.Value = 0;
+            progressBar_LoadLayer.Maximum = (int)(maxLRFIdx / skipLrfIDX);
 
-            double[] readLRFdata = UrgLogReader.getScanData(0);
-            while (null != readLRFdata && readLRFdata.Length > 0)
+            Application.DoEvents();
+
             {
-                // レイヤー作成
-                LayerData newLayer = new LayerData(readLRFdata);
-                newLayer.SetLocalPosAng( 0.0, 0.0, 0.0, -defDistanceLayer);
-                newLayer.MakeMapBmp( MapEditForm.LRF_Range,
-                                     MapEditForm.LRF_ScaleOfPixel,LRF_PixelSize,
-                                     parentForm.colLayerPixel, parentForm.colLayerBase);
+                parentForm.MapLyaer = new List<LayerData>();
+                UrgLogReader.SetSkipNum(skipLrfIDX);
+                LayerData lastLayer = null;
 
-                // できた画像がほぼ同じなら、カットして、データ削減
-                if (cb_StopLayerCut.Checked && null != lastLayer)
+                double[] readLRFdata = UrgLogReader.getScanData(0);
+                while (null != readLRFdata && readLRFdata.Length > 0)
                 {
-                    // 90%以下なら静止中と判断
-                    if (LayerMatching(newLayer, lastLayer) < 90)
+                    // レイヤー作成
+                    LayerData newLayer = new LayerData(readLRFdata);
+                    newLayer.SetLocalPosAng(0.0, 0.0, 0.0, -defDistanceLayer);
+                    newLayer.MakeMapBmp(MapEditForm.LRF_Range,
+                                         MapEditForm.LRF_ScaleOfPixel, LRF_PixelSize,
+                                         parentForm.colLayerPixel, parentForm.colLayerBase);
+
+                    // できた画像がほぼ同じなら、カットして、データ削減
+                    if (cb_StopLayerCut.Checked && null != lastLayer)
+                    {
+                        // 90%以下なら静止中と判断
+                        if (LayerMatching(newLayer, lastLayer) < 90)
+                        {
+                            parentForm.MapLyaer.Add(newLayer);
+                            lastLayer = newLayer;
+                        }
+                    }
+                    else
                     {
                         parentForm.MapLyaer.Add(newLayer);
                         lastLayer = newLayer;
                     }
+
+                    // プログレスバー進行
+                    if (progressBar_LoadLayer.Value < progressBar_LoadLayer.Maximum)
+                    {
+                        progressBar_LoadLayer.Value++;
+                    }
+                    Application.DoEvents();
+
+                    readLRFdata = UrgLogReader.getScanData();
                 }
-                else
+
+                // センタリング
+                if (parentForm.MapLyaer.Count > 0)
                 {
-                    parentForm.MapLyaer.Add(newLayer);
-                    lastLayer = newLayer;
+                    LayerData firstLayer = parentForm.MapLyaer[0];
+
+                    firstLayer.SetLocalPosAng(-firstLayer.MapBmp.Width / 2,
+                                               -firstLayer.MapBmp.Height / 2,
+                                               0.0,
+                                               0.0);
+
+                    parentForm.UpdateLayerData();
                 }
-
-                readLRFdata = UrgLogReader.getScanData();
             }
-
-            // センタリング
-            if (parentForm.MapLyaer.Count > 0)
-            {
-                LayerData firstLayer = parentForm.MapLyaer[0];
-
-                firstLayer.SetLocalPosAng( -firstLayer.MapBmp.Width / 2,
-                                           -firstLayer.MapBmp.Height / 2,
-                                           0.0,
-                                           0.0 );
-
-                parentForm.UpdateLayerData();
-            }
+            progressBar_LoadLayer.Value = 0;
+            return true;
         }
 
 
         /// <summary>
-        /// 
+        /// LRF Logファイル読み込み
         /// </summary>
         /// <param name="fname"></param>
         private void LoadLRFLogFile(string fname)
@@ -163,13 +184,22 @@ namespace LRFMapEditer
                 MessageBox.Show(exp.Message, "Load Fail " + fname);
             }
 
+            Application.DoEvents();
+
+            // ファイル名、データ量反映
             parentForm.LRF_LogFileName = fname;
+            parentForm.tb_LogFileName.Text = fname;
             tb_LogFileName.Text = fname;
             lbl_NumFrame.Text = maxLRFIdx.ToString();
 
             sb_LRFTime.Minimum = 0;
             sb_LRFTime.Maximum = (int)maxLRFIdx;
             num_LRFTime.Maximum = maxLRFIdx;
+
+            if (skipLrfIDX > 0)
+            {
+                Lbl_NumLayer.Text = "Layer数:" + (maxLRFIdx / skipLrfIDX).ToString();
+            }
 
             UpdateLRFPicBox(0);
         }
@@ -210,10 +240,14 @@ namespace LRFMapEditer
         // 取り込み
         private void btn_Invert_Click(object sender, EventArgs e)
         {
-            AllNewLayer();
+            if (!AllNewLayer()) return;
+
+            // 読み込み完了
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
 
+        // スキップフレーム変更
         private void tb_SkipFrame_TextChanged(object sender, EventArgs e)
         {
             long.TryParse(tb_SkipFrame.Text, out skipLrfIDX);
@@ -221,6 +255,11 @@ namespace LRFMapEditer
             if (null != UrgLogReader)
             {
                 UrgLogReader.SetSkipNum(skipLrfIDX);
+
+                if (skipLrfIDX > 0)
+                {
+                    Lbl_NumLayer.Text = "Layer数:" + (maxLRFIdx / skipLrfIDX).ToString();
+                }
             }
         }
 

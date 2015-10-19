@@ -94,6 +94,10 @@
             this.rbtn_AddPoint = new System.Windows.Forms.RadioButton();
             this.listbox_CheckPoint = new System.Windows.Forms.ListBox();
             this.pb_CPMap = new System.Windows.Forms.PictureBox();
+            this.num_LSPlv = new System.Windows.Forms.NumericUpDown();
+            this.label16 = new System.Windows.Forms.Label();
+            this.trackBar_LSP = new System.Windows.Forms.TrackBar();
+            this.Lbl_LSP = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pb_EditLayer)).BeginInit();
             this.MenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_PositionX)).BeginInit();
@@ -111,13 +115,15 @@
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_CPMap)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_LSPlv)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_LSP)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip
             // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 763);
+            this.statusStrip.Location = new System.Drawing.Point(0, 766);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1384, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1385, 22);
             this.statusStrip.TabIndex = 0;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -139,7 +145,7 @@
             this.toolStripSplitButton1});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Size = new System.Drawing.Size(1384, 25);
+            this.MenuStrip.Size = new System.Drawing.Size(1385, 25);
             this.MenuStrip.TabIndex = 6;
             this.MenuStrip.Text = "ts_Menu";
             // 
@@ -236,7 +242,6 @@
             // sb_VMapLayer
             // 
             this.sb_VMapLayer.Location = new System.Drawing.Point(238, 618);
-            this.sb_VMapLayer.Maximum = 500;
             this.sb_VMapLayer.Name = "sb_VMapLayer";
             this.sb_VMapLayer.Size = new System.Drawing.Size(1134, 24);
             this.sb_VMapLayer.TabIndex = 7;
@@ -433,7 +438,7 @@
             // lbl_ViewPosition
             // 
             this.lbl_ViewPosition.AutoSize = true;
-            this.lbl_ViewPosition.Location = new System.Drawing.Point(466, 36);
+            this.lbl_ViewPosition.Location = new System.Drawing.Point(842, 33);
             this.lbl_ViewPosition.Name = "lbl_ViewPosition";
             this.lbl_ViewPosition.Size = new System.Drawing.Size(96, 12);
             this.lbl_ViewPosition.TabIndex = 29;
@@ -442,11 +447,11 @@
             // tber_ViewScale
             // 
             this.tber_ViewScale.LargeChange = 10;
-            this.tber_ViewScale.Location = new System.Drawing.Point(676, 28);
+            this.tber_ViewScale.Location = new System.Drawing.Point(1067, 28);
             this.tber_ViewScale.Maximum = 300;
             this.tber_ViewScale.Minimum = 10;
             this.tber_ViewScale.Name = "tber_ViewScale";
-            this.tber_ViewScale.Size = new System.Drawing.Size(692, 45);
+            this.tber_ViewScale.Size = new System.Drawing.Size(301, 45);
             this.tber_ViewScale.SmallChange = 5;
             this.tber_ViewScale.TabIndex = 30;
             this.tber_ViewScale.TickFrequency = 5;
@@ -457,7 +462,7 @@
             // lbl_ViewScale
             // 
             this.lbl_ViewScale.AutoSize = true;
-            this.lbl_ViewScale.Location = new System.Drawing.Point(586, 36);
+            this.lbl_ViewScale.Location = new System.Drawing.Point(963, 33);
             this.lbl_ViewScale.Name = "lbl_ViewScale";
             this.lbl_ViewScale.Size = new System.Drawing.Size(84, 12);
             this.lbl_ViewScale.TabIndex = 31;
@@ -553,7 +558,7 @@
             // cb_REDisp
             // 
             this.cb_REDisp.AutoSize = true;
-            this.cb_REDisp.Location = new System.Drawing.Point(468, 63);
+            this.cb_REDisp.Location = new System.Drawing.Point(469, 33);
             this.cb_REDisp.Name = "cb_REDisp";
             this.cb_REDisp.Size = new System.Drawing.Size(98, 16);
             this.cb_REDisp.TabIndex = 37;
@@ -580,14 +585,19 @@
             // 
             // num_RERotate
             // 
-            this.num_RERotate.Location = new System.Drawing.Point(572, 62);
+            this.num_RERotate.Location = new System.Drawing.Point(573, 32);
             this.num_RERotate.Maximum = new decimal(new int[] {
             359,
             0,
             0,
             0});
+            this.num_RERotate.Minimum = new decimal(new int[] {
+            359,
+            0,
+            0,
+            -2147483648});
             this.num_RERotate.Name = "num_RERotate";
-            this.num_RERotate.Size = new System.Drawing.Size(56, 19);
+            this.num_RERotate.Size = new System.Drawing.Size(63, 19);
             this.num_RERotate.TabIndex = 40;
             this.num_RERotate.ValueChanged += new System.EventHandler(this.num_RERotate_ValueChanged);
             // 
@@ -798,12 +808,64 @@
             this.pb_CPMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pb_CPMap_MouseMove);
             this.pb_CPMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pb_CPMap_MouseUp);
             // 
+            // num_LSPlv
+            // 
+            this.num_LSPlv.Location = new System.Drawing.Point(498, 59);
+            this.num_LSPlv.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.num_LSPlv.Name = "num_LSPlv";
+            this.num_LSPlv.Size = new System.Drawing.Size(61, 19);
+            this.num_LSPlv.TabIndex = 42;
+            this.num_LSPlv.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.num_LSPlv.ValueChanged += new System.EventHandler(this.num_LSPlv_ValueChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(467, 62);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(25, 12);
+            this.label16.TabIndex = 43;
+            this.label16.Text = "LSP";
+            // 
+            // trackBar_LSP
+            // 
+            this.trackBar_LSP.Location = new System.Drawing.Point(611, 56);
+            this.trackBar_LSP.Maximum = 99;
+            this.trackBar_LSP.Minimum = 1;
+            this.trackBar_LSP.Name = "trackBar_LSP";
+            this.trackBar_LSP.Size = new System.Drawing.Size(201, 45);
+            this.trackBar_LSP.TabIndex = 44;
+            this.trackBar_LSP.TickFrequency = 10;
+            this.trackBar_LSP.Value = 50;
+            this.trackBar_LSP.ValueChanged += new System.EventHandler(this.trackBar_LSP_ValueChanged);
+            // 
+            // Lbl_LSP
+            // 
+            this.Lbl_LSP.AutoSize = true;
+            this.Lbl_LSP.Location = new System.Drawing.Point(580, 62);
+            this.Lbl_LSP.Name = "Lbl_LSP";
+            this.Lbl_LSP.Size = new System.Drawing.Size(25, 12);
+            this.Lbl_LSP.TabIndex = 45;
+            this.Lbl_LSP.Text = "0.50";
+            // 
             // MapEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1284, 782);
+            this.ClientSize = new System.Drawing.Size(1385, 788);
+            this.Controls.Add(this.Lbl_LSP);
+            this.Controls.Add(this.trackBar_LSP);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.num_LSPlv);
             this.Controls.Add(this.tabCtrl);
             this.Controls.Add(this.num_RERotate);
             this.Controls.Add(this.btn_RELoad);
@@ -818,7 +880,7 @@
             this.Controls.Add(this.MenuStrip);
             this.Controls.Add(this.statusStrip);
             this.Name = "MapEditForm";
-            this.Text = "LRF MapEditer Ver0.80";
+            this.Text = "LRF MapEditer Ver0.81";
             this.Load += new System.EventHandler(this.MapEditForm_Load);
             this.Shown += new System.EventHandler(this.MapEditForm_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MapEditForm_KeyDown);
@@ -844,6 +906,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_CPMap)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_LSPlv)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_LSP)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -880,7 +944,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox tb_LogFileName;
         private System.Windows.Forms.Label lbl_ViewPosition;
         private System.Windows.Forms.TrackBar tber_ViewScale;
         private System.Windows.Forms.Label lbl_ViewScale;
@@ -915,6 +978,11 @@
         private System.Windows.Forms.ToolStripMenuItem exportCheckPointToolStripMenuItem;
         private System.Windows.Forms.Label lbl_StartDir;
         private System.Windows.Forms.Button btn_DisSelect;
+        private System.Windows.Forms.NumericUpDown num_LSPlv;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TrackBar trackBar_LSP;
+        private System.Windows.Forms.Label Lbl_LSP;
+        public System.Windows.Forms.TextBox tb_LogFileName;
     }
 }
 

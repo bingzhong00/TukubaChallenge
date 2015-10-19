@@ -41,6 +41,8 @@
             this.lbl_NumFrame = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.cb_StopLayerCut = new System.Windows.Forms.CheckBox();
+            this.Lbl_NumLayer = new System.Windows.Forms.Label();
+            this.progressBar_LoadLayer = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.num_LRFTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_LRFLog)).BeginInit();
             this.SuspendLayout();
@@ -163,16 +165,35 @@
             this.cb_StopLayerCut.AutoSize = true;
             this.cb_StopLayerCut.Location = new System.Drawing.Point(395, 300);
             this.cb_StopLayerCut.Name = "cb_StopLayerCut";
-            this.cb_StopLayerCut.Size = new System.Drawing.Size(90, 16);
+            this.cb_StopLayerCut.Size = new System.Drawing.Size(144, 16);
             this.cb_StopLayerCut.TabIndex = 34;
-            this.cb_StopLayerCut.Text = "静止なら破棄";
+            this.cb_StopLayerCut.Text = "静止なら破棄(重い処理)";
             this.cb_StopLayerCut.UseVisualStyleBackColor = true;
+            // 
+            // Lbl_NumLayer
+            // 
+            this.Lbl_NumLayer.AutoSize = true;
+            this.Lbl_NumLayer.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.Lbl_NumLayer.Location = new System.Drawing.Point(391, 94);
+            this.Lbl_NumLayer.Name = "Lbl_NumLayer";
+            this.Lbl_NumLayer.Size = new System.Drawing.Size(46, 16);
+            this.Lbl_NumLayer.TabIndex = 35;
+            this.Lbl_NumLayer.Text = "label2";
+            // 
+            // progressBar_LoadLayer
+            // 
+            this.progressBar_LoadLayer.Location = new System.Drawing.Point(375, 404);
+            this.progressBar_LoadLayer.Name = "progressBar_LoadLayer";
+            this.progressBar_LoadLayer.Size = new System.Drawing.Size(174, 23);
+            this.progressBar_LoadLayer.TabIndex = 36;
             // 
             // NewMapLoadForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 473);
+            this.Controls.Add(this.progressBar_LoadLayer);
+            this.Controls.Add(this.Lbl_NumLayer);
             this.Controls.Add(this.cb_StopLayerCut);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lbl_NumFrame);
@@ -217,5 +238,7 @@
         private System.Windows.Forms.Label lbl_NumFrame;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cb_StopLayerCut;
+        private System.Windows.Forms.Label Lbl_NumLayer;
+        private System.Windows.Forms.ProgressBar progressBar_LoadLayer;
     }
 }
