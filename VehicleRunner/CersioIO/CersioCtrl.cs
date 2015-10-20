@@ -32,6 +32,11 @@ namespace CersioIO
         static public double accValue;
         static private int AccelSlowDownCnt;
 
+        // 最近　送信したハンドル、アクセル
+        public double nowSendHandleValue;
+        public double nowSendAccValue;
+
+
         // ハンドル、アクセル上限値
         private const double HandleRate = 1.0;  //<========== 調整
         private const double AccRate = 1.0;
@@ -53,10 +58,15 @@ namespace CersioIO
         public string hwSendStr;
 
         // 緊急ブレーキ距離
-        public const double EmgBrakgeRange = 1100.0;
+        public const double EmgBrakeRange = 800.0;   // 80cm  [mm]
+        public const double EmgSlowRange = 1500.0;   // 1.5m [mm]    // 徐行
 
         public int checkpntIdx;
 
+
+        private long UpdateCnt = 0;
+
+        // --------------------------------------------------------------------------------------------------
         public void Start()
         {
             RTS.ResetSeq();
@@ -100,7 +110,11 @@ namespace CersioIO
             EmgBrk = false;
             if (null != lrfData && lrfData.Length > 0)
             {
-                EmgBrk = CheckEBS(lrfData);
+                int BrakeLv = CheckEBS(lrfData);
+
+                // 注意Lvに応じた対処
+                if (BrakeLv > 3) AccelSlowDownCnt = 20;
+                if (BrakeLv >= 9) EmgBrk = true;        // 緊急停止
             }
 
             if ((EmgBrk && useEBS) || goalFlg)
@@ -155,6 +169,10 @@ namespace CersioIO
                 accValue += (accTgt - accValue) * 0.15;
 
 
+                // 送信値を保存
+                nowSendHandleValue = handleValue;
+                nowSendAccValue = accValue;
+
 #if EMULATOR_MODE
                 // デジタルボタン操作に変換
                 if (handleValue > 0.05) LeftBtn = true;
@@ -205,6 +223,7 @@ namespace CersioIO
                 }
             }
 
+            UpdateCnt++;
             return RTS.getGoalFlg();
         }
 
@@ -216,6 +235,9 @@ namespace CersioIO
             if (TCP_IsConnected())
             {
                 TCP_ReciveCommand();
+
+                // ロータリーエンコーダ値(回転累計)
+                TCP_SendCommand("A1" + "\n");
 
                 // コンパス取得
                 TCP_SendCommand("A2" + "\n");
@@ -234,21 +256,57 @@ namespace CersioIO
         // セルシオにパッド情報をおくる
 
 
-        // ※EBS 自動ブレーキ
-        // LRFの値を取得して、前方に何かあれば範囲とともに記録、次のときも存在しつつければ注意値を加算していく。
-        // 一定上の注意値になったら、ブレーキを指示
-        public bool CheckEBS( double[] lrfData)
+
+        // 緊急ブレーキ
+        long EBS_hzUCNT = 0;
+        int EBS_CautionLv = 0;
+
+        /// <summary>
+        /// 緊急ブレーキ判定
+        /// </summary>
+        /// <param name="lrfData"></param>
+        /// <returns>ブレーキLv 0..問題なし 9...非常停止</returns>
+        public int CheckEBS( double[] lrfData)
         {
-            int rangeAngHalf = 270/2;
+            int rangeAngHalf = 270 / 2; // 中央(角度)
             int stAng = -15;
             int edAng = 15;
 
-            for (int i = (stAng+rangeAngHalf); i < (edAng+rangeAngHalf); i++)
+            bool bCauntion = false;
+
+            // 時間経過で注意Lv引き下げ
+            if ((UpdateCnt - EBS_hzUCNT) > 10)
+            {
+                EBS_hzUCNT = UpdateCnt;
+                if (EBS_CautionLv > 0) EBS_CautionLv--;
+            }
+
+            // ハンドル値によって、角度をずらす
+            // ※要：テスト
+            {
+                // ハンドル切れ角３０度　0.5は角度を控えめに
+                int diffDir = (int)((nowSendHandleValue * 30.0) * 0.5);
+
+                stAng += diffDir;
+                edAng += diffDir;
+            }
+
+            // LRFの値を調べる
+            for (int i = (stAng + rangeAngHalf); i < (edAng + rangeAngHalf); i++)
             {
                 // 以下ならとまる
-                if (lrfData[i] < (EmgBrakgeRange*URG_LRF.getScale())) return true;
+                if (lrfData[i] < (EmgBrakeRange * URG_LRF.getScale())) return 9;
+                if (lrfData[i] < (EmgSlowRange * URG_LRF.getScale())) bCauntion = true;
             }
-            return false;
+
+            // 注意Lv引き上げ
+            if (bCauntion)
+            {
+                EBS_CautionLv++;
+                EBS_hzUCNT = UpdateCnt;
+            }
+
+            return EBS_CautionLv;
         }
 
         // =====================================================================================
@@ -306,7 +364,7 @@ namespace CersioIO
         }
 
 
-        private int SpeedMH = -1;   // 速度　mm/Sec
+        public static int SpeedMH = -1;   // 速度　mm/Sec
         double oldResiveMS;         // 速度計測用 受信時間差分
         int oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
 
@@ -340,20 +398,21 @@ namespace CersioIO
                             if (rsvCmd[i].Substring(0, 3) == "A1,")
                             {
                                 double ResiveMS;
-                                //int wheelR;
-                                string[] splStr = (rsvCmd[i].Replace('[', ',').Replace(']', ',').Replace(' ', ',')).Split(',');
+                                int wheelR;
+                                //string[] splStr = (rsvCmd[i].Replace('[', ',').Replace(']', ',').Replace(' ', ',')).Split(',');
+                                string[] splStr = rsvCmd[i].Split(',');
 
                                 // 0 A1
                                 double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
-                                //int.TryParse(splStr[2], out wheelR);        // Right Wheel
+                                int.TryParse(splStr[2], out wheelR);        // Right Wheel
 
                                 // 絶対値用計算
-                                //SpeedMH = (int)(((double)(wheelR - oldWheelR)/260.0 * Math.PI*140.0)*10000.0/(ResiveMS - oldResiveMS));
+                                SpeedMH = (int)(((double)(wheelR - oldWheelR)/260.0 * Math.PI*140.0)*10000.0/(ResiveMS - oldResiveMS));
                                 // mm/sec
                                 //SpeedMH = (int)(((double)wheelR / 260.0 * Math.PI * 140.0) * 10000.0 / 200.0);
 
-                                //oldResiveMS = ResiveMS;
-                                //oldWheelR = wheelR;
+                                oldResiveMS = ResiveMS;
+                                oldWheelR = wheelR;
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A2,")
                             {

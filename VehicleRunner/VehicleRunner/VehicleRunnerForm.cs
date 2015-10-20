@@ -70,7 +70,23 @@ namespace VehicleRunner
         {
             InitializeComponent();
 
-            saveLogFname = GetTimeStampFileName();
+
+            saveLogFname = GetTimeStampFileName("./Log/LocSampLog", ".log");
+
+            // ログファイルディレクトリ確認
+            {
+                string logDir = Path.GetDirectoryName(saveLogFname);
+                if (!File.Exists(logDir))
+                {
+                    try
+                    {
+                        System.IO.Directory.CreateDirectory(logDir);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
 
             // セルシオコントローラ初期化
             CersioCt = new CersioCtrl();
@@ -78,7 +94,7 @@ namespace VehicleRunner
 
             // 自己位置推定初期化
             LocSys = new LocPreSumpSystem();
-            LocSys.InitWorld("./OoSimizuKouen1100x1800.bmp", 100.0 * 1100.0, 100.0 * 1800.0);
+            LocSys.InitWorld("./OoSimizuKouen1100x1800.png", 100.0 * 1100.0, 100.0 * 1800.0);
             LocSys.SetStartPostion(788, 1428);
 
             // LRF 入力スケール調整反映
@@ -134,7 +150,10 @@ namespace VehicleRunner
                 string saveImageLogFname = Path.ChangeExtension(saveLogFname, "png");
 
                 Bitmap bmp = LocSys.MakeMakerLogBmp(false);
-                bmp.Save(saveImageLogFname, System.Drawing.Imaging.ImageFormat.Png);
+                if (null != bmp)
+                {
+                    bmp.Save(saveImageLogFname, System.Drawing.Imaging.ImageFormat.Png);
+                }
             }
 #endif
         }
@@ -145,9 +164,9 @@ namespace VehicleRunner
         /// タイムスタンプファイル作成
         /// </summary>
         /// <returns></returns>
-        public string GetTimeStampFileName()
+        public string GetTimeStampFileName(string strPrev, string strExt )
         {
-            return "LocSampLog" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
+            return strPrev + DateTime.Now.ToString("yyyyMMdd_HHmmss") + strExt;
         }
 
 
@@ -503,6 +522,9 @@ namespace VehicleRunner
                 // ハンドル、アクセル値　表示
                 tb_AccelVal.Text = CersioCtrl.accValue.ToString();
                 tb_HandleVal.Text = CersioCtrl.handleValue.ToString();
+
+                // REからのスピード
+                tb_RESpeed.Text = CersioCtrl.SpeedMH.ToString();
 
                 // セルシオ自動運転　Form内エミュレート
                 /*

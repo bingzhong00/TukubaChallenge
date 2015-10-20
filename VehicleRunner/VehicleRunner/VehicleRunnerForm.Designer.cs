@@ -57,6 +57,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tb_HandleVal = new System.Windows.Forms.TextBox();
             this.lbl_EmurateMode = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tb_RESpeed = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.gb_LRF.SuspendLayout();
@@ -379,11 +381,31 @@
             this.lbl_EmurateMode.TabIndex = 32;
             this.lbl_EmurateMode.Text = "エミュレーションMode";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label7.Location = new System.Drawing.Point(582, 655);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(58, 24);
+            this.label7.TabIndex = 33;
+            this.label7.Text = "SPD";
+            // 
+            // tb_RESpeed
+            // 
+            this.tb_RESpeed.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tb_RESpeed.Location = new System.Drawing.Point(645, 653);
+            this.tb_RESpeed.Name = "tb_RESpeed";
+            this.tb_RESpeed.Size = new System.Drawing.Size(73, 31);
+            this.tb_RESpeed.TabIndex = 34;
+            // 
             // LocPresumpForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 675);
+            this.ClientSize = new System.Drawing.Size(884, 688);
+            this.Controls.Add(this.tb_RESpeed);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.lbl_EmurateMode);
             this.Controls.Add(this.tb_HandleVal);
             this.Controls.Add(this.label6);
@@ -455,6 +477,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_HandleVal;
         private System.Windows.Forms.Label lbl_EmurateMode;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox tb_RESpeed;
     }
 }
 

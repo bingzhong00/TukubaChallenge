@@ -748,7 +748,7 @@ namespace LRFMapEditer
         {
             SaveFileDialog fDlg = new SaveFileDialog();
 
-            fDlg.Filter = "Image Files (*.bmp)|*.bmp";
+            fDlg.Filter = "Image Files (*.png)|*.png|Image Files (*.bmp)|*.bmp|All Files(*.*)|*.*";
 
             var Result = fDlg.ShowDialog();
             if (Result != System.Windows.Forms.DialogResult.OK) return;
@@ -903,7 +903,7 @@ namespace LRFMapEditer
 
         private void num_Angle_ValueChanged(object sender, EventArgs e)
         {
-            EditLayer.wAng = (double)num_Angle.Value;
+            EditLayer.lcAng = (double)num_Angle.Value;
             UpdateTRG = true;
         }
 
@@ -1067,7 +1067,15 @@ namespace LRFMapEditer
                 }
                 g.Dispose();
 
-                SaveMapBmp.Save(fname, System.Drawing.Imaging.ImageFormat.Bmp);
+                // 画像ファイル書き出し
+                if (Path.GetExtension(fname).ToLower() == ".bmp")
+                {
+                    SaveMapBmp.Save(fname, System.Drawing.Imaging.ImageFormat.Bmp);
+                }
+                else if (Path.GetExtension(fname).ToLower() == ".png")
+                {
+                    SaveMapBmp.Save(fname, System.Drawing.Imaging.ImageFormat.Png);
+                }
 
 
                 // レイヤーカラーを戻す

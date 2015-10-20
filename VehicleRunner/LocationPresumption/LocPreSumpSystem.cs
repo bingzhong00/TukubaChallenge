@@ -519,6 +519,8 @@ namespace LocationPresumption
         /// <returns></returns>
         public Bitmap MakeMakerLogBmp(bool bPointOn )
         {
+            if (R1Log.Count <= 0) return null;  // データなし
+
             Bitmap logBmp = new Bitmap(worldMap.mapBmp);
             Graphics g = Graphics.FromImage(logBmp);
 
