@@ -16,6 +16,8 @@ namespace LocSampLogViewer
     {
         public LocSumpLogReader LogReader = new LocSumpLogReader();
         public LocSumpLogData[] LogData;
+        public LocSumpLogData[] TcpLogData;
+
         LocSumpLogData nowLsData = new LocSumpLogData();
         LocSumpLogData drawLsData = new LocSumpLogData();
 
@@ -41,6 +43,11 @@ namespace LocSampLogViewer
             UpdateSubWindow();
         }
 
+        /// <summary>
+        /// VehicleRunnder ログファイル選択ボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Btn_LoadLogDlg_Click(object sender, EventArgs e)
         {
             OpenFileDialog fDlg = new OpenFileDialog();
@@ -71,6 +78,10 @@ namespace LocSampLogViewer
             ShowLogData(0);
         }
 
+        /// <summary>
+        /// ログデータ表示
+        /// </summary>
+        /// <param name="index"></param>
         private void ShowLogData(int index)
         {
             if( null == LogData ) return;
@@ -300,6 +311,7 @@ namespace LocSampLogViewer
             {
                 // REPlot
                 DrawREconderData(g,2);
+
                 {
                     DrawMaker(g, Brushes.Purple,
                               drawLsData.REPlotX * LRF_ScaleOfPixel,
@@ -308,6 +320,13 @@ namespace LocSampLogViewer
                               12);
                 }
             }
+
+            if( null != TcpLogData )
+            {
+                DrawGPSData(g, TcpLogData);
+            }
+
+
             g.Dispose();
 
             PicBox_Map.Invalidate();
@@ -352,7 +371,9 @@ namespace LocSampLogViewer
                 int en = LogData.Length - n;
                 if (en > drawNum) en = drawNum;
 
-                Point[] drawLinePos = new Point[en];
+                Point[] drawLinePos = new Point[en+1];
+
+                drawLinePos[0] = new Point(px, py);
 
                 for (int iR = 0; iR < en; iR++)
                 {
@@ -377,7 +398,7 @@ namespace LocSampLogViewer
                         }
                     }
 
-                    drawLinePos[iR] = new Point(px, py);
+                    drawLinePos[iR+1] = new Point(px, py);
                 }
 
                 // 色変え
@@ -388,6 +409,63 @@ namespace LocSampLogViewer
                 else
                 {
                     g.DrawLines(Pens.BlueViolet, drawLinePos);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// GPS軌跡描画
+        /// </summary>
+        /// <param name="g"></param>
+        private void DrawGPSData(Graphics g, LocSumpLogData[] lcData )
+        {
+            int drawNum = 10;  // 色変えの単位
+
+            int px = 0;
+            int py = 0;
+
+            double fstX, fstY;
+            bool bFst = true;
+            fstX = fstY = 0.0;
+
+            for (int i = 0; i < lcData.Length / drawNum; i++)
+            {
+                int n = i * drawNum;
+                int en = lcData.Length - n;
+                if (en > drawNum) en = drawNum;
+
+                Point[] drawLinePos = new Point[en+1];
+
+                // 前回のポイントから途切れないように。
+                drawLinePos[0] = new Point(px, py);
+
+                for (int iR = 0; iR < en; iR++)
+                {
+                    if (lcData[iR + n].bGPS)
+                    {
+                        if (bFst)
+                        {
+                            bFst = false;
+                            fstX = lcData[iR + n].GPSLandX;
+                            fstY = lcData[iR + n].GPSLandY;
+                        }
+
+                        px = (int)((lcData[iR + n].GPSLandX - fstX) * LRF_ScaleOfPixel);
+                        py = (int)((lcData[iR + n].GPSLandY - fstY) * LRF_ScaleOfPixel);
+                    }
+
+                    drawLinePos[iR+1] = new Point(px, py);
+                }
+
+                // 色変え
+                if (i % 2 == 0)
+                {
+                    g.DrawLines(Pens.Green, drawLinePos);
+                }
+                else
+                {
+                    g.DrawLines(Pens.Lime, drawLinePos);
                 }
             }
         }
@@ -412,12 +490,19 @@ namespace LocSampLogViewer
             }
         }
 
+
         long playMS = 0;
         int playIdx = 0;
+        /// <summary>
+        /// タイマー更新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmr_Update_Tick(object sender, EventArgs e)
         {
             if (Btn_Play.Checked)
             {
+                // 再生時間分ログデータのインデックスを進める
                 playMS += tmr_Update.Interval;
                 while (playIdx < LogData.Length-1 && LogData[playIdx].ms < playMS)
                 {
@@ -523,6 +608,70 @@ namespace LocSampLogViewer
                 viewMoveFlg = false;
             }
 
+        }
+
+        private void Btn_LoadTCPLogDlg_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fDlg = new OpenFileDialog();
+
+            fDlg.Filter = "TCPLogger (*.log)|*.log";
+
+            var Result = fDlg.ShowDialog();
+            if (Result != System.Windows.Forms.DialogResult.OK) return;
+
+            Tb_TCPLogFileName.Text = fDlg.FileName;
+
+            TCP_LogReader tcpLogReader = new TCP_LogReader();
+            tcpLogReader.OpenFile(fDlg.FileName);
+            TcpLogData = tcpLogReader.getScanData();
+            tcpLogReader.CloseFile();
+
+            if (null == TcpLogData)
+            {
+                MessageBox.Show("対応しない形式のログデータです");
+                return;
+            }
+            if (TcpLogData.Length == 0)
+            {
+                MessageBox.Show("読み込み失敗");
+                return;
+            }
+
+            ScrlBar_Time.Maximum = TcpLogData.Length;
+            ScrlBar_Time.Value = 0;
+            ShowLogData(0);
+        }
+
+        private void Btn_GPSDlg_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fDlg = new OpenFileDialog();
+
+            fDlg.Filter = "GPS Log (*.log)|*.log";
+
+            var Result = fDlg.ShowDialog();
+            if (Result != System.Windows.Forms.DialogResult.OK) return;
+
+            Tb_GPSFileName.Text = fDlg.FileName;
+
+            GPS_LogReader gpsReader = new GPS_LogReader();
+            gpsReader.OpenFile(fDlg.FileName);
+            TcpLogData = gpsReader.getScanData();
+            gpsReader.CloseFile();
+
+            if (null == TcpLogData)
+            {
+                MessageBox.Show("対応しない形式のログデータです");
+                return;
+            }
+            if (TcpLogData.Length == 0)
+            {
+                MessageBox.Show("読み込み失敗");
+                return;
+            }
+
+            ScrlBar_Time.Maximum = TcpLogData.Length;
+            ScrlBar_Time.Value = 0;
+            ShowLogData(0);
         }
 
     }

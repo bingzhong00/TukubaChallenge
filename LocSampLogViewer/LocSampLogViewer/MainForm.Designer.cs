@@ -42,57 +42,63 @@
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.Tb_MapName = new System.Windows.Forms.TextBox();
+            this.Btn_Play = new System.Windows.Forms.CheckBox();
             this.Btn_Rec = new System.Windows.Forms.Button();
+            this.Tb_MapName = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.Lbl_Compus = new System.Windows.Forms.Label();
-            this.Lbl_REPlotX = new System.Windows.Forms.Label();
+            this.Lbl_E1_Dir = new System.Windows.Forms.Label();
+            this.Lbl_E1_Y = new System.Windows.Forms.Label();
+            this.Lbl_E1_X = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.Lbl_R1_Dir = new System.Windows.Forms.Label();
+            this.Lbl_R1_Y = new System.Windows.Forms.Label();
+            this.Lbl_REPlotDir = new System.Windows.Forms.Label();
+            this.Lbl_REPlotY = new System.Windows.Forms.Label();
+            this.Lbl_GPS_Y = new System.Windows.Forms.Label();
+            this.Lbl_GPS_X = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.Lbl_RE = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.Lbl_R1_X = new System.Windows.Forms.Label();
+            this.Lbl_REPlotX = new System.Windows.Forms.Label();
+            this.Lbl_Compus = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.Lbl_MapSize = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.Lbl_MapScale = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.ConnectTabControl = new System.Windows.Forms.TabControl();
-            this.tabPage_Remote = new System.Windows.Forms.TabPage();
             this.tabPage_LogFile = new System.Windows.Forms.TabPage();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.Btn_LoadLogDlg = new System.Windows.Forms.Button();
-            this.Tb_LogFileName = new System.Windows.Forms.TextBox();
+            this.Btn_LoadTCPLogDlg = new System.Windows.Forms.Button();
+            this.Tb_TCPLogFileName = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.Tb_LogFileName = new System.Windows.Forms.TextBox();
+            this.Btn_LoadLogDlg = new System.Windows.Forms.Button();
+            this.tabPage_Remote = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.ScrlBar_Time = new System.Windows.Forms.HScrollBar();
-            this.label10 = new System.Windows.Forms.Label();
-            this.Lbl_RE = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.Lbl_GPS_X = new System.Windows.Forms.Label();
-            this.Lbl_GPS_Y = new System.Windows.Forms.Label();
-            this.Lbl_REPlotY = new System.Windows.Forms.Label();
-            this.Lbl_REPlotDir = new System.Windows.Forms.Label();
-            this.Lbl_R1_Y = new System.Windows.Forms.Label();
-            this.Lbl_R1_Dir = new System.Windows.Forms.Label();
             this.tmr_Update = new System.Windows.Forms.Timer(this.components);
-            this.Btn_Play = new System.Windows.Forms.CheckBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.Lbl_E1_X = new System.Windows.Forms.Label();
-            this.Lbl_E1_Y = new System.Windows.Forms.Label();
-            this.Lbl_E1_Dir = new System.Windows.Forms.Label();
             this.ScrlBar_ViewScale = new System.Windows.Forms.HScrollBar();
             this.Lbl_ViewPosScale = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.Tb_GPSFileName = new System.Windows.Forms.TextBox();
+            this.Btn_GPSDlg = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Map)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Sub)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.ConnectTabControl.SuspendLayout();
-            this.tabPage_Remote.SuspendLayout();
             this.tabPage_LogFile.SuspendLayout();
+            this.tabPage_Remote.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -227,12 +233,16 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "LogPlayer";
             // 
-            // Tb_MapName
+            // Btn_Play
             // 
-            this.Tb_MapName.Location = new System.Drawing.Point(6, 22);
-            this.Tb_MapName.Name = "Tb_MapName";
-            this.Tb_MapName.Size = new System.Drawing.Size(232, 19);
-            this.Tb_MapName.TabIndex = 21;
+            this.Btn_Play.Appearance = System.Windows.Forms.Appearance.Button;
+            this.Btn_Play.Location = new System.Drawing.Point(75, 18);
+            this.Btn_Play.Name = "Btn_Play";
+            this.Btn_Play.Size = new System.Drawing.Size(51, 27);
+            this.Btn_Play.TabIndex = 23;
+            this.Btn_Play.Text = ">";
+            this.Btn_Play.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Btn_Play.UseVisualStyleBackColor = true;
             // 
             // Btn_Rec
             // 
@@ -244,6 +254,13 @@
             this.Btn_Rec.TabIndex = 22;
             this.Btn_Rec.Text = "●";
             this.Btn_Rec.UseVisualStyleBackColor = true;
+            // 
+            // Tb_MapName
+            // 
+            this.Tb_MapName.Location = new System.Drawing.Point(6, 22);
+            this.Tb_MapName.Name = "Tb_MapName";
+            this.Tb_MapName.Size = new System.Drawing.Size(232, 19);
+            this.Tb_MapName.TabIndex = 21;
             // 
             // groupBox3
             // 
@@ -274,22 +291,120 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "受信情報";
             // 
-            // label11
+            // Lbl_E1_Dir
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(15, 48);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(65, 12);
-            this.label11.TabIndex = 14;
-            this.label11.Text = "コンパス(A2):";
+            this.Lbl_E1_Dir.Location = new System.Drawing.Point(195, 139);
+            this.Lbl_E1_Dir.Name = "Lbl_E1_Dir";
+            this.Lbl_E1_Dir.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_E1_Dir.TabIndex = 30;
+            this.Lbl_E1_Dir.Text = "ND";
             // 
-            // Lbl_Compus
+            // Lbl_E1_Y
             // 
-            this.Lbl_Compus.Location = new System.Drawing.Point(89, 48);
-            this.Lbl_Compus.Name = "Lbl_Compus";
-            this.Lbl_Compus.Size = new System.Drawing.Size(66, 12);
-            this.Lbl_Compus.TabIndex = 15;
-            this.Lbl_Compus.Text = "ND";
+            this.Lbl_E1_Y.Location = new System.Drawing.Point(138, 139);
+            this.Lbl_E1_Y.Name = "Lbl_E1_Y";
+            this.Lbl_E1_Y.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_E1_Y.TabIndex = 29;
+            this.Lbl_E1_Y.Text = "ND";
+            // 
+            // Lbl_E1_X
+            // 
+            this.Lbl_E1_X.Location = new System.Drawing.Point(89, 139);
+            this.Lbl_E1_X.Name = "Lbl_E1_X";
+            this.Lbl_E1_X.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_E1_X.TabIndex = 28;
+            this.Lbl_E1_X.Text = "ND";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(13, 139);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(67, 12);
+            this.label13.TabIndex = 27;
+            this.label13.Text = "E1 (REPlot):";
+            // 
+            // Lbl_R1_Dir
+            // 
+            this.Lbl_R1_Dir.Location = new System.Drawing.Point(195, 118);
+            this.Lbl_R1_Dir.Name = "Lbl_R1_Dir";
+            this.Lbl_R1_Dir.Size = new System.Drawing.Size(43, 10);
+            this.Lbl_R1_Dir.TabIndex = 26;
+            this.Lbl_R1_Dir.Text = "ND";
+            // 
+            // Lbl_R1_Y
+            // 
+            this.Lbl_R1_Y.Location = new System.Drawing.Point(138, 118);
+            this.Lbl_R1_Y.Name = "Lbl_R1_Y";
+            this.Lbl_R1_Y.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_R1_Y.TabIndex = 25;
+            this.Lbl_R1_Y.Text = "ND";
+            // 
+            // Lbl_REPlotDir
+            // 
+            this.Lbl_REPlotDir.Location = new System.Drawing.Point(195, 96);
+            this.Lbl_REPlotDir.Name = "Lbl_REPlotDir";
+            this.Lbl_REPlotDir.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_REPlotDir.TabIndex = 24;
+            this.Lbl_REPlotDir.Text = "ND";
+            // 
+            // Lbl_REPlotY
+            // 
+            this.Lbl_REPlotY.Location = new System.Drawing.Point(138, 96);
+            this.Lbl_REPlotY.Name = "Lbl_REPlotY";
+            this.Lbl_REPlotY.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_REPlotY.TabIndex = 23;
+            this.Lbl_REPlotY.Text = "ND";
+            // 
+            // Lbl_GPS_Y
+            // 
+            this.Lbl_GPS_Y.Location = new System.Drawing.Point(138, 72);
+            this.Lbl_GPS_Y.Name = "Lbl_GPS_Y";
+            this.Lbl_GPS_Y.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_GPS_Y.TabIndex = 22;
+            this.Lbl_GPS_Y.Text = "ND";
+            // 
+            // Lbl_GPS_X
+            // 
+            this.Lbl_GPS_X.Location = new System.Drawing.Point(89, 72);
+            this.Lbl_GPS_X.Name = "Lbl_GPS_X";
+            this.Lbl_GPS_X.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_GPS_X.TabIndex = 21;
+            this.Lbl_GPS_X.Text = "ND";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(29, 72);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(51, 12);
+            this.label12.TabIndex = 20;
+            this.label12.Text = "GPS(A3):";
+            // 
+            // Lbl_RE
+            // 
+            this.Lbl_RE.Location = new System.Drawing.Point(89, 24);
+            this.Lbl_RE.Name = "Lbl_RE";
+            this.Lbl_RE.Size = new System.Drawing.Size(66, 12);
+            this.Lbl_RE.TabIndex = 19;
+            this.Lbl_RE.Text = "ND";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(32, 24);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(48, 12);
+            this.label10.TabIndex = 18;
+            this.label10.Text = "R.E.(A1):";
+            // 
+            // Lbl_R1_X
+            // 
+            this.Lbl_R1_X.Location = new System.Drawing.Point(89, 118);
+            this.Lbl_R1_X.Name = "Lbl_R1_X";
+            this.Lbl_R1_X.Size = new System.Drawing.Size(43, 12);
+            this.Lbl_R1_X.TabIndex = 17;
+            this.Lbl_R1_X.Text = "ND";
             // 
             // Lbl_REPlotX
             // 
@@ -299,13 +414,22 @@
             this.Lbl_REPlotX.TabIndex = 16;
             this.Lbl_REPlotX.Text = "ND";
             // 
-            // Lbl_R1_X
+            // Lbl_Compus
             // 
-            this.Lbl_R1_X.Location = new System.Drawing.Point(89, 118);
-            this.Lbl_R1_X.Name = "Lbl_R1_X";
-            this.Lbl_R1_X.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_R1_X.TabIndex = 17;
-            this.Lbl_R1_X.Text = "ND";
+            this.Lbl_Compus.Location = new System.Drawing.Point(89, 48);
+            this.Lbl_Compus.Name = "Lbl_Compus";
+            this.Lbl_Compus.Size = new System.Drawing.Size(66, 12);
+            this.Lbl_Compus.TabIndex = 15;
+            this.Lbl_Compus.Text = "ND";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(15, 48);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(65, 12);
+            this.label11.TabIndex = 14;
+            this.label11.Text = "コンパス(A2):";
             // 
             // label15
             // 
@@ -363,6 +487,77 @@
             this.ConnectTabControl.Size = new System.Drawing.Size(520, 117);
             this.ConnectTabControl.TabIndex = 28;
             // 
+            // tabPage_LogFile
+            // 
+            this.tabPage_LogFile.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_LogFile.Controls.Add(this.Btn_GPSDlg);
+            this.tabPage_LogFile.Controls.Add(this.Tb_GPSFileName);
+            this.tabPage_LogFile.Controls.Add(this.label16);
+            this.tabPage_LogFile.Controls.Add(this.Btn_LoadTCPLogDlg);
+            this.tabPage_LogFile.Controls.Add(this.Tb_TCPLogFileName);
+            this.tabPage_LogFile.Controls.Add(this.label14);
+            this.tabPage_LogFile.Controls.Add(this.label9);
+            this.tabPage_LogFile.Controls.Add(this.Tb_LogFileName);
+            this.tabPage_LogFile.Controls.Add(this.Btn_LoadLogDlg);
+            this.tabPage_LogFile.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_LogFile.Name = "tabPage_LogFile";
+            this.tabPage_LogFile.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_LogFile.Size = new System.Drawing.Size(512, 91);
+            this.tabPage_LogFile.TabIndex = 1;
+            this.tabPage_LogFile.Text = "LogFile";
+            // 
+            // Btn_LoadTCPLogDlg
+            // 
+            this.Btn_LoadTCPLogDlg.Location = new System.Drawing.Point(463, 8);
+            this.Btn_LoadTCPLogDlg.Name = "Btn_LoadTCPLogDlg";
+            this.Btn_LoadTCPLogDlg.Size = new System.Drawing.Size(43, 22);
+            this.Btn_LoadTCPLogDlg.TabIndex = 5;
+            this.Btn_LoadTCPLogDlg.Text = "...";
+            this.Btn_LoadTCPLogDlg.UseVisualStyleBackColor = true;
+            this.Btn_LoadTCPLogDlg.Click += new System.EventHandler(this.Btn_LoadTCPLogDlg_Click);
+            // 
+            // Tb_TCPLogFileName
+            // 
+            this.Tb_TCPLogFileName.Location = new System.Drawing.Point(91, 10);
+            this.Tb_TCPLogFileName.Name = "Tb_TCPLogFileName";
+            this.Tb_TCPLogFileName.Size = new System.Drawing.Size(366, 19);
+            this.Tb_TCPLogFileName.TabIndex = 4;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(8, 13);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(61, 12);
+            this.label14.TabIndex = 3;
+            this.label14.Text = "TCPLogger";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(5, 39);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(79, 12);
+            this.label9.TabIndex = 2;
+            this.label9.Text = "VehicleRunner";
+            // 
+            // Tb_LogFileName
+            // 
+            this.Tb_LogFileName.Location = new System.Drawing.Point(91, 36);
+            this.Tb_LogFileName.Name = "Tb_LogFileName";
+            this.Tb_LogFileName.Size = new System.Drawing.Size(366, 19);
+            this.Tb_LogFileName.TabIndex = 1;
+            // 
+            // Btn_LoadLogDlg
+            // 
+            this.Btn_LoadLogDlg.Location = new System.Drawing.Point(463, 34);
+            this.Btn_LoadLogDlg.Name = "Btn_LoadLogDlg";
+            this.Btn_LoadLogDlg.Size = new System.Drawing.Size(43, 22);
+            this.Btn_LoadLogDlg.TabIndex = 0;
+            this.Btn_LoadLogDlg.Text = "...";
+            this.Btn_LoadLogDlg.UseVisualStyleBackColor = true;
+            this.Btn_LoadLogDlg.Click += new System.EventHandler(this.Btn_LoadLogDlg_Click);
+            // 
             // tabPage_Remote
             // 
             this.tabPage_Remote.BackColor = System.Drawing.Color.LightCyan;
@@ -379,18 +574,58 @@
             this.tabPage_Remote.TabIndex = 0;
             this.tabPage_Remote.Text = "RemoteView";
             // 
-            // tabPage_LogFile
+            // label8
             // 
-            this.tabPage_LogFile.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage_LogFile.Controls.Add(this.label9);
-            this.tabPage_LogFile.Controls.Add(this.Tb_LogFileName);
-            this.tabPage_LogFile.Controls.Add(this.Btn_LoadLogDlg);
-            this.tabPage_LogFile.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_LogFile.Name = "tabPage_LogFile";
-            this.tabPage_LogFile.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_LogFile.Size = new System.Drawing.Size(512, 91);
-            this.tabPage_LogFile.TabIndex = 1;
-            this.tabPage_LogFile.Text = "LogFile";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(352, 13);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(61, 12);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "NoConnect";
+            // 
+            // button5
+            // 
+            this.button5.Enabled = false;
+            this.button5.Location = new System.Drawing.Point(427, 9);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 28);
+            this.button5.TabIndex = 4;
+            this.button5.Text = "Connect";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(285, 10);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.PasswordChar = '*';
+            this.textBox1.Size = new System.Drawing.Size(61, 19);
+            this.textBox1.TabIndex = 3;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(72, 9);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(158, 20);
+            this.comboBox1.TabIndex = 2;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(249, 13);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(30, 12);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "Pass";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 13);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(60, 12);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "PID(Name)";
             // 
             // groupBox4
             // 
@@ -408,85 +643,6 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Map Info";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 13);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(60, 12);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "PID(Name)";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(249, 13);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(30, 12);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "Pass";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(72, 9);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(158, 20);
-            this.comboBox1.TabIndex = 2;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(285, 10);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.PasswordChar = '*';
-            this.textBox1.Size = new System.Drawing.Size(61, 19);
-            this.textBox1.TabIndex = 3;
-            // 
-            // button5
-            // 
-            this.button5.Enabled = false;
-            this.button5.Location = new System.Drawing.Point(427, 9);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 28);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "Connect";
-            this.button5.UseVisualStyleBackColor = true;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(352, 13);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(61, 12);
-            this.label8.TabIndex = 5;
-            this.label8.Text = "NoConnect";
-            // 
-            // Btn_LoadLogDlg
-            // 
-            this.Btn_LoadLogDlg.Location = new System.Drawing.Point(447, 13);
-            this.Btn_LoadLogDlg.Name = "Btn_LoadLogDlg";
-            this.Btn_LoadLogDlg.Size = new System.Drawing.Size(43, 22);
-            this.Btn_LoadLogDlg.TabIndex = 0;
-            this.Btn_LoadLogDlg.Text = "...";
-            this.Btn_LoadLogDlg.UseVisualStyleBackColor = true;
-            this.Btn_LoadLogDlg.Click += new System.EventHandler(this.Btn_LoadLogDlg_Click);
-            // 
-            // Tb_LogFileName
-            // 
-            this.Tb_LogFileName.Location = new System.Drawing.Point(60, 15);
-            this.Tb_LogFileName.Name = "Tb_LogFileName";
-            this.Tb_LogFileName.Size = new System.Drawing.Size(381, 19);
-            this.Tb_LogFileName.TabIndex = 1;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 18);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(42, 12);
-            this.label9.TabIndex = 2;
-            this.label9.Text = "LogFile";
-            // 
             // ScrlBar_Time
             // 
             this.ScrlBar_Time.Location = new System.Drawing.Point(7, 535);
@@ -496,127 +652,9 @@
             this.ScrlBar_Time.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrlBar_Time_Scroll);
             this.ScrlBar_Time.ValueChanged += new System.EventHandler(this.ScrlBar_Time_ValueChanged);
             // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(32, 24);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(48, 12);
-            this.label10.TabIndex = 18;
-            this.label10.Text = "R.E.(A1):";
-            // 
-            // Lbl_RE
-            // 
-            this.Lbl_RE.Location = new System.Drawing.Point(89, 24);
-            this.Lbl_RE.Name = "Lbl_RE";
-            this.Lbl_RE.Size = new System.Drawing.Size(66, 12);
-            this.Lbl_RE.TabIndex = 19;
-            this.Lbl_RE.Text = "ND";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(29, 72);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(51, 12);
-            this.label12.TabIndex = 20;
-            this.label12.Text = "GPS(A3):";
-            // 
-            // Lbl_GPS_X
-            // 
-            this.Lbl_GPS_X.Location = new System.Drawing.Point(89, 72);
-            this.Lbl_GPS_X.Name = "Lbl_GPS_X";
-            this.Lbl_GPS_X.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_GPS_X.TabIndex = 21;
-            this.Lbl_GPS_X.Text = "ND";
-            // 
-            // Lbl_GPS_Y
-            // 
-            this.Lbl_GPS_Y.Location = new System.Drawing.Point(138, 72);
-            this.Lbl_GPS_Y.Name = "Lbl_GPS_Y";
-            this.Lbl_GPS_Y.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_GPS_Y.TabIndex = 22;
-            this.Lbl_GPS_Y.Text = "ND";
-            // 
-            // Lbl_REPlotY
-            // 
-            this.Lbl_REPlotY.Location = new System.Drawing.Point(138, 96);
-            this.Lbl_REPlotY.Name = "Lbl_REPlotY";
-            this.Lbl_REPlotY.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_REPlotY.TabIndex = 23;
-            this.Lbl_REPlotY.Text = "ND";
-            // 
-            // Lbl_REPlotDir
-            // 
-            this.Lbl_REPlotDir.Location = new System.Drawing.Point(195, 96);
-            this.Lbl_REPlotDir.Name = "Lbl_REPlotDir";
-            this.Lbl_REPlotDir.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_REPlotDir.TabIndex = 24;
-            this.Lbl_REPlotDir.Text = "ND";
-            // 
-            // Lbl_R1_Y
-            // 
-            this.Lbl_R1_Y.Location = new System.Drawing.Point(138, 118);
-            this.Lbl_R1_Y.Name = "Lbl_R1_Y";
-            this.Lbl_R1_Y.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_R1_Y.TabIndex = 25;
-            this.Lbl_R1_Y.Text = "ND";
-            // 
-            // Lbl_R1_Dir
-            // 
-            this.Lbl_R1_Dir.Location = new System.Drawing.Point(195, 118);
-            this.Lbl_R1_Dir.Name = "Lbl_R1_Dir";
-            this.Lbl_R1_Dir.Size = new System.Drawing.Size(43, 10);
-            this.Lbl_R1_Dir.TabIndex = 26;
-            this.Lbl_R1_Dir.Text = "ND";
-            // 
             // tmr_Update
             // 
             this.tmr_Update.Tick += new System.EventHandler(this.tmr_Update_Tick);
-            // 
-            // Btn_Play
-            // 
-            this.Btn_Play.Appearance = System.Windows.Forms.Appearance.Button;
-            this.Btn_Play.Location = new System.Drawing.Point(75, 18);
-            this.Btn_Play.Name = "Btn_Play";
-            this.Btn_Play.Size = new System.Drawing.Size(51, 27);
-            this.Btn_Play.TabIndex = 23;
-            this.Btn_Play.Text = ">";
-            this.Btn_Play.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.Btn_Play.UseVisualStyleBackColor = true;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(13, 139);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(67, 12);
-            this.label13.TabIndex = 27;
-            this.label13.Text = "E1 (REPlot):";
-            // 
-            // Lbl_E1_X
-            // 
-            this.Lbl_E1_X.Location = new System.Drawing.Point(89, 139);
-            this.Lbl_E1_X.Name = "Lbl_E1_X";
-            this.Lbl_E1_X.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_E1_X.TabIndex = 28;
-            this.Lbl_E1_X.Text = "ND";
-            // 
-            // Lbl_E1_Y
-            // 
-            this.Lbl_E1_Y.Location = new System.Drawing.Point(138, 139);
-            this.Lbl_E1_Y.Name = "Lbl_E1_Y";
-            this.Lbl_E1_Y.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_E1_Y.TabIndex = 29;
-            this.Lbl_E1_Y.Text = "ND";
-            // 
-            // Lbl_E1_Dir
-            // 
-            this.Lbl_E1_Dir.Location = new System.Drawing.Point(195, 139);
-            this.Lbl_E1_Dir.Name = "Lbl_E1_Dir";
-            this.Lbl_E1_Dir.Size = new System.Drawing.Size(43, 12);
-            this.Lbl_E1_Dir.TabIndex = 30;
-            this.Lbl_E1_Dir.Text = "ND";
             // 
             // ScrlBar_ViewScale
             // 
@@ -638,6 +676,32 @@
             this.Lbl_ViewPosScale.TabIndex = 32;
             this.Lbl_ViewPosScale.Text = "View:";
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(8, 65);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(61, 12);
+            this.label16.TabIndex = 6;
+            this.label16.Text = "GPSLogger";
+            // 
+            // Tb_GPSFileName
+            // 
+            this.Tb_GPSFileName.Location = new System.Drawing.Point(91, 62);
+            this.Tb_GPSFileName.Name = "Tb_GPSFileName";
+            this.Tb_GPSFileName.Size = new System.Drawing.Size(366, 19);
+            this.Tb_GPSFileName.TabIndex = 7;
+            // 
+            // Btn_GPSDlg
+            // 
+            this.Btn_GPSDlg.Location = new System.Drawing.Point(463, 60);
+            this.Btn_GPSDlg.Name = "Btn_GPSDlg";
+            this.Btn_GPSDlg.Size = new System.Drawing.Size(43, 22);
+            this.Btn_GPSDlg.TabIndex = 8;
+            this.Btn_GPSDlg.Text = "...";
+            this.Btn_GPSDlg.UseVisualStyleBackColor = true;
+            this.Btn_GPSDlg.Click += new System.EventHandler(this.Btn_GPSDlg_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -656,7 +720,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.PicBox_Map);
             this.Name = "MainForm";
-            this.Text = "LocSamp Viewer Ver0.10";
+            this.Text = "LogViewer Ver0.20";
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Map)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Sub)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -665,10 +729,10 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ConnectTabControl.ResumeLayout(false);
-            this.tabPage_Remote.ResumeLayout(false);
-            this.tabPage_Remote.PerformLayout();
             this.tabPage_LogFile.ResumeLayout(false);
             this.tabPage_LogFile.PerformLayout();
+            this.tabPage_Remote.ResumeLayout(false);
+            this.tabPage_Remote.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
@@ -734,6 +798,12 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.HScrollBar ScrlBar_ViewScale;
         private System.Windows.Forms.Label Lbl_ViewPosScale;
+        private System.Windows.Forms.Button Btn_LoadTCPLogDlg;
+        private System.Windows.Forms.TextBox Tb_TCPLogFileName;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button Btn_GPSDlg;
+        private System.Windows.Forms.TextBox Tb_GPSFileName;
+        private System.Windows.Forms.Label label16;
     }
 }
 

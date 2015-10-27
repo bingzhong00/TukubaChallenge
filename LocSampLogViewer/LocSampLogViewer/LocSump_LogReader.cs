@@ -18,6 +18,10 @@ namespace LocSampLogViewer
         public int sendLED;            // 送信：LEDパターン
 
         // ResiveData
+        public bool bRE;
+        public long REL;     // RE
+        public long RER;
+
         public bool bREPlot;
         public double REPlotX;     // RE座標
         public double REPlotY;
@@ -294,8 +298,14 @@ namespace LocSampLogViewer
                                             break;
                                         case "A3": // GPS
                                             // dataWord[1] ms
-                                            lsData.GPSLandX = double.Parse(dataWord[3]);
-                                            lsData.GPSLandY = double.Parse(dataWord[4]);
+                                            {
+                                                string[] dataGPS = dataWord[2].Split('.');
+                                                lsData.GPSLandX = double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1]) / 60.0);
+                                            }
+                                            {
+                                                string[] dataGPS = dataWord[3].Split('.');
+                                                lsData.GPSLandY = double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1]) / 60.0);
+                                            }
                                             lsData.bGPS = true;
                                             break;
                                         case "A4": // RE PlotX,Y
