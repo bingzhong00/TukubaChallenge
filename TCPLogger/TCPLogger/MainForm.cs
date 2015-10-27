@@ -212,6 +212,10 @@ namespace TCPLogger
                     {
                         TCP_SendCommand("A3" + "\n");
                     }
+                    if (cb_AutoREPlot.Checked)
+                    {
+                        TCP_SendCommand("A4" + "\n");
+                    }
                 }
 
             }
