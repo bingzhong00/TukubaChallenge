@@ -52,6 +52,12 @@
       <DependentUpon>MapEditForm.cs</DependentUpon>
     </Compile>
     <Compile Include="LayerData.cs" />
+    <Compile Include="MapEditForm_CheckPoint.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapEditForm_MapEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="NewMapLoadForm.cs">
       <SubType>Form</SubType>
     </Compile>

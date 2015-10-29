@@ -105,32 +105,60 @@ namespace LRFMapEditer
             {
                 parentForm.MapLyaer = new List<LayerData>();
                 UrgLogReader.SetSkipNum(skipLrfIDX);
-                LayerData lastLayer = null;
+                //LayerData lastLayer = null;
+
+                double oldAvgLrfDist = 0.0;
+                int contCnt = 0;
 
                 double[] readLRFdata = UrgLogReader.getScanData(0);
                 while (null != readLRFdata && readLRFdata.Length > 0)
                 {
-                    // レイヤー作成
-                    LayerData newLayer = new LayerData(readLRFdata);
-                    newLayer.SetLocalPosAng(0.0, 0.0, 0.0, -defDistanceLayer);
-                    newLayer.MakeMapBmp(MapEditForm.LRF_Range,
-                                         MapEditForm.LRF_ScaleOfPixel, LRF_PixelSize,
-                                         parentForm.colLayerPixel, parentForm.colLayerBase);
+                    // 静止状態をチェック
+                    double avgLrfDist = CheckLRFAvg(readLRFdata);
 
-                    // できた画像がほぼ同じなら、カットして、データ削減
-                    if (cb_StopLayerCut.Checked && null != lastLayer)
+                    // 前回と同じか？
+                    // 10%以内の誤差
+                    if ( Math.Abs(oldAvgLrfDist - avgLrfDist) < avgLrfDist * 0.10)
                     {
-                        // 90%以下なら静止中と判断
-                        if (LayerMatching(newLayer, lastLayer) < 90)
-                        {
-                            parentForm.MapLyaer.Add(newLayer);
-                            lastLayer = newLayer;
-                        }
+                        contCnt++;
                     }
                     else
                     {
-                        parentForm.MapLyaer.Add(newLayer);
-                        lastLayer = newLayer;
+                        contCnt = 0;
+                        oldAvgLrfDist = avgLrfDist;
+                    }
+
+                    //if (contCnt < 3)
+                    {
+
+                        // レイヤー作成
+                        LayerData newLayer = new LayerData(readLRFdata);
+                        newLayer.SetLocalPosAng(0.0, 0.0, 0.0, -defDistanceLayer);
+                        newLayer.MakeMapBmp(MapEditForm.LRF_Range,
+                                             MapEditForm.LRF_ScaleOfPixel, LRF_PixelSize,
+                                             parentForm.colLayerPixel, parentForm.colLayerBase);
+
+                        /*
+                        // できた画像がほぼ同じなら、カットして、データ削減
+                        if (cb_StopLayerCut.Checked && null != lastLayer)
+                        {
+                            // 90%以下なら静止中と判断
+                            if (LayerMatching(newLayer, lastLayer) < 90)
+                            {
+                                parentForm.MapLyaer.Add(newLayer);
+                                lastLayer = newLayer;
+                            }
+                        }
+                        else
+                         * */
+                        {
+                            if (contCnt < 3)
+                            {
+                                newLayer.useFlg = true;
+                            }
+                                parentForm.MapLyaer.Add(newLayer);
+                            //lastLayer = newLayer;
+                        }
                     }
 
                     // プログレスバー進行
@@ -140,6 +168,7 @@ namespace LRFMapEditer
                     }
                     Application.DoEvents();
 
+                    // 次のデータ読み込み
                     readLRFdata = UrgLogReader.getScanData();
                 }
 
@@ -188,7 +217,7 @@ namespace LRFMapEditer
 
             // ファイル名、データ量反映
             parentForm.LRF_LogFileName = fname;
-            parentForm.tb_LogFileName.Text = fname;
+            parentForm.tb_MapFileName.Text = fname;
             tb_LogFileName.Text = fname;
             lbl_NumFrame.Text = maxLRFIdx.ToString();
 
@@ -274,15 +303,19 @@ namespace LRFMapEditer
             int matchCnt = 0;
             int matchNum = 0;
 
+            byte baseColR = parentForm.GetMapColorBase(0);
+            byte baseColG = parentForm.GetMapColorBase(1);
+            byte baseColB = parentForm.GetMapColorBase(2);
+
             for(int x=0; x<aLayer.MapBmp.Width; x++ )
             {
                 for(int y=0; y<aLayer.MapBmp.Height; y++ )
                 {
                     Color pixCol = aLayer.MapBmp.GetPixel(x, y);
 
-                    if (pixCol.R != parentForm.colLayerBase.R ||
-                        pixCol.G != parentForm.colLayerBase.G ||
-                        pixCol.B != parentForm.colLayerBase.B )
+                    if (pixCol.R != baseColR ||
+                        pixCol.G != baseColG ||
+                        pixCol.B != baseColB)
                     {
                         matchNum++;
                         if (pixCol == bLayer.MapBmp.GetPixel(x, y))
@@ -297,6 +330,26 @@ namespace LRFMapEditer
 
             // 合致度を確認
             return (matchCnt * 100 / matchNum);
+        }
+
+        /// <summary>
+        /// LRF（距離）データの平均値をかえす
+        /// </summary>
+        /// <param name="LRFdata"></param>
+        /// <returns></returns>
+        private double CheckLRFAvg( double[] LRFdata )
+        {
+            int num = LRFdata.Length;
+            double allVal = 0.0;
+
+            if (num <= 0) return 0.0;
+
+            for (int i = 0; i < num; i++)
+            {
+                allVal += LRFdata[i];
+            }
+
+            return allVal / (double)num;
         }
 
     }

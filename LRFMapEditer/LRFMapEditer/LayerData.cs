@@ -211,13 +211,43 @@ namespace LRFMapEditer
         /// <param name="wldParentAng"></param>
         public void CalcWorldPos(double wldParentX, double wldParentY, double wldParentAng)
         {
-            double wRad = (wldParentAng-0) * Math.PI / 180.0;
+            double wRad = wldParentAng * Math.PI / 180.0;
+            double cs = Math.Cos(wRad);
+            double sn = Math.Sin(wRad);
+            /*
             wX = wldParentX + lcX + (lcPivotLength * -Math.Sin(wRad));
             wY = wldParentY + lcY + (lcPivotLength * Math.Cos(wRad));
+             * */
+            wX = wldParentX + (lcX * cs - (lcY + lcPivotLength) * sn);
+            wY = wldParentY + (lcX * sn + (lcY + lcPivotLength) * cs);
 
             wAng = wldParentAng + lcAng;
         }
 
+
+        /// <summary>
+        /// ローカル座標修正
+        /// </summary>
+        /// <param name="wldParentX"></param>
+        /// <param name="wldParentY"></param>
+        /// <param name="wldParentAng"></param>
+        public void CalcFixWorldPos(double wldParentX, double wldParentY, double wldParentAng)
+        {
+            double wRad = -wldParentAng * Math.PI / 180.0;
+            double cs = Math.Cos(wRad);
+            double sn = Math.Sin(wRad);
+            /*
+            wX = wldParentX + lcX + (lcPivotLength * -Math.Sin(wRad));
+            wY = wldParentY + lcY + (lcPivotLength * Math.Cos(wRad));
+             * */
+            double fixX = (lcX * cs - lcY* sn);
+            double fixY = (lcX * sn + lcY* cs);
+
+            lcX = fixX;
+            lcY = fixY;
+
+            wAng = wldParentAng + lcAng;
+        }
 
         /// <summary>
         /// レイヤーデータ保存 書き込み
