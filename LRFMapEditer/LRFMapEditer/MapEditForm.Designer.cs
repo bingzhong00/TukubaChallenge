@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditForm));
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.pb_EditLayer = new System.Windows.Forms.PictureBox();
             this.MenuStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -104,7 +103,8 @@
             this.rbtn_AddPoint = new System.Windows.Forms.RadioButton();
             this.listbox_CheckPoint = new System.Windows.Forms.ListBox();
             this.pb_CPMap = new System.Windows.Forms.PictureBox();
-            this.WaitProressBar = new System.Windows.Forms.ProgressBar();
+            this.WaitProressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.pb_EditLayer)).BeginInit();
             this.MenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_PositionX)).BeginInit();
@@ -130,14 +130,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pb_CPMap)).BeginInit();
             this.SuspendLayout();
             // 
-            // statusStrip
-            // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 736);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1207, 22);
-            this.statusStrip.TabIndex = 0;
-            this.statusStrip.Text = "statusStrip1";
-            // 
             // pb_EditLayer
             // 
             this.pb_EditLayer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -153,10 +145,12 @@
             this.MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
             this.toolStripSeparator1,
-            this.toolStripDropDownButton_Edit});
+            this.toolStripDropDownButton_Edit,
+            this.toolStripSeparator2,
+            this.WaitProressBar});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Size = new System.Drawing.Size(1207, 25);
+            this.MenuStrip.Size = new System.Drawing.Size(1221, 25);
             this.MenuStrip.TabIndex = 6;
             this.MenuStrip.Text = "ts_Menu";
             // 
@@ -250,9 +244,9 @@
             this.sb_VMapLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sb_VMapLayer.LargeChange = 1;
-            this.sb_VMapLayer.Location = new System.Drawing.Point(238, 618);
+            this.sb_VMapLayer.Location = new System.Drawing.Point(242, 614);
             this.sb_VMapLayer.Name = "sb_VMapLayer";
-            this.sb_VMapLayer.Size = new System.Drawing.Size(943, 24);
+            this.sb_VMapLayer.Size = new System.Drawing.Size(931, 24);
             this.sb_VMapLayer.TabIndex = 7;
             this.sb_VMapLayer.ValueChanged += new System.EventHandler(this.sb_VMapLayer_ValueChanged);
             // 
@@ -261,7 +255,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(161, 615);
+            this.label1.Location = new System.Drawing.Point(165, 611);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(22, 24);
             this.label1.TabIndex = 9;
@@ -272,7 +266,7 @@
             this.lb_NumLayer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lb_NumLayer.AutoSize = true;
             this.lb_NumLayer.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lb_NumLayer.Location = new System.Drawing.Point(189, 615);
+            this.lb_NumLayer.Location = new System.Drawing.Point(193, 611);
             this.lb_NumLayer.Name = "lb_NumLayer";
             this.lb_NumLayer.Size = new System.Drawing.Size(46, 24);
             this.lb_NumLayer.TabIndex = 10;
@@ -313,7 +307,7 @@
             this.Label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Label5.AutoSize = true;
             this.Label5.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.Label5.Location = new System.Drawing.Point(6, 615);
+            this.Label5.Location = new System.Drawing.Point(10, 611);
             this.Label5.Name = "Label5";
             this.Label5.Size = new System.Drawing.Size(65, 24);
             this.Label5.TabIndex = 15;
@@ -411,7 +405,7 @@
             // 
             this.num_Layer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.num_Layer.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.num_Layer.Location = new System.Drawing.Point(77, 613);
+            this.num_Layer.Location = new System.Drawing.Point(81, 609);
             this.num_Layer.Maximum = new decimal(new int[] {
             500,
             0,
@@ -425,6 +419,7 @@
             // 
             // tb_SkipFrame
             // 
+            this.tb_SkipFrame.BackColor = System.Drawing.Color.Aqua;
             this.tb_SkipFrame.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tb_SkipFrame.Location = new System.Drawing.Point(147, 19);
             this.tb_SkipFrame.Name = "tb_SkipFrame";
@@ -451,7 +446,7 @@
             // lbl_ViewPosition
             // 
             this.lbl_ViewPosition.AutoSize = true;
-            this.lbl_ViewPosition.Location = new System.Drawing.Point(659, 36);
+            this.lbl_ViewPosition.Location = new System.Drawing.Point(654, 36);
             this.lbl_ViewPosition.Name = "lbl_ViewPosition";
             this.lbl_ViewPosition.Size = new System.Drawing.Size(96, 12);
             this.lbl_ViewPosition.TabIndex = 29;
@@ -460,7 +455,7 @@
             // tber_ViewScale
             // 
             this.tber_ViewScale.LargeChange = 10;
-            this.tber_ViewScale.Location = new System.Drawing.Point(884, 28);
+            this.tber_ViewScale.Location = new System.Drawing.Point(879, 28);
             this.tber_ViewScale.Maximum = 300;
             this.tber_ViewScale.Minimum = 10;
             this.tber_ViewScale.Name = "tber_ViewScale";
@@ -475,7 +470,7 @@
             // lbl_ViewScale
             // 
             this.lbl_ViewScale.AutoSize = true;
-            this.lbl_ViewScale.Location = new System.Drawing.Point(780, 36);
+            this.lbl_ViewScale.Location = new System.Drawing.Point(775, 36);
             this.lbl_ViewScale.Name = "lbl_ViewScale";
             this.lbl_ViewScale.Size = new System.Drawing.Size(84, 12);
             this.lbl_ViewScale.TabIndex = 31;
@@ -502,7 +497,7 @@
             // 
             this.pb_VMap.BackColor = System.Drawing.SystemColors.ControlDark;
             this.pb_VMap.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pb_VMap.Location = new System.Drawing.Point(381, 8);
+            this.pb_VMap.Location = new System.Drawing.Point(372, 6);
             this.pb_VMap.Name = "pb_VMap";
             this.pb_VMap.Size = new System.Drawing.Size(800, 600);
             this.pb_VMap.TabIndex = 5;
@@ -546,20 +541,20 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label11.Location = new System.Drawing.Point(3, 13);
+            this.label11.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label11.Location = new System.Drawing.Point(3, 7);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(100, 16);
+            this.label11.Size = new System.Drawing.Size(74, 12);
             this.label11.TabIndex = 36;
-            this.label11.Text = "R.EncoderLog";
+            this.label11.Text = "TelnetLogFile";
             // 
             // cb_REDisp
             // 
             this.cb_REDisp.AutoSize = true;
-            this.cb_REDisp.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_REDisp.Location = new System.Drawing.Point(6, 76);
+            this.cb_REDisp.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_REDisp.Location = new System.Drawing.Point(6, 60);
             this.cb_REDisp.Name = "cb_REDisp";
-            this.cb_REDisp.Size = new System.Drawing.Size(123, 20);
+            this.cb_REDisp.Size = new System.Drawing.Size(98, 16);
             this.cb_REDisp.TabIndex = 37;
             this.cb_REDisp.Text = "R.EncoderDisp";
             this.cb_REDisp.UseVisualStyleBackColor = true;
@@ -568,14 +563,14 @@
             // tb_RELogFile
             // 
             this.tb_RELogFile.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_RELogFile.Location = new System.Drawing.Point(6, 42);
+            this.tb_RELogFile.Location = new System.Drawing.Point(5, 22);
             this.tb_RELogFile.Name = "tb_RELogFile";
-            this.tb_RELogFile.Size = new System.Drawing.Size(328, 23);
+            this.tb_RELogFile.Size = new System.Drawing.Size(286, 23);
             this.tb_RELogFile.TabIndex = 38;
             // 
             // btn_RELoad
             // 
-            this.btn_RELoad.Location = new System.Drawing.Point(297, 10);
+            this.btn_RELoad.Location = new System.Drawing.Point(297, 22);
             this.btn_RELoad.Name = "btn_RELoad";
             this.btn_RELoad.Size = new System.Drawing.Size(37, 23);
             this.btn_RELoad.TabIndex = 39;
@@ -585,8 +580,8 @@
             // 
             // num_RERotate
             // 
-            this.num_RERotate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.num_RERotate.Location = new System.Drawing.Point(271, 76);
+            this.num_RERotate.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.num_RERotate.Location = new System.Drawing.Point(183, 59);
             this.num_RERotate.Maximum = new decimal(new int[] {
             359,
             0,
@@ -598,12 +593,13 @@
             0,
             -2147483648});
             this.num_RERotate.Name = "num_RERotate";
-            this.num_RERotate.Size = new System.Drawing.Size(63, 23);
+            this.num_RERotate.Size = new System.Drawing.Size(63, 19);
             this.num_RERotate.TabIndex = 40;
             this.num_RERotate.ValueChanged += new System.EventHandler(this.num_RERotate_ValueChanged);
             // 
             // tabCtrlEditPage
             // 
+            this.tabCtrlEditPage.Alignment = System.Windows.Forms.TabAlignment.Left;
             this.tabCtrlEditPage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -611,9 +607,10 @@
             this.tabCtrlEditPage.Controls.Add(this.tabPage_CheckPoint);
             this.tabCtrlEditPage.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tabCtrlEditPage.Location = new System.Drawing.Point(1, 58);
+            this.tabCtrlEditPage.Multiline = true;
             this.tabCtrlEditPage.Name = "tabCtrlEditPage";
             this.tabCtrlEditPage.SelectedIndex = 0;
-            this.tabCtrlEditPage.Size = new System.Drawing.Size(1205, 676);
+            this.tabCtrlEditPage.Size = new System.Drawing.Size(1215, 653);
             this.tabCtrlEditPage.TabIndex = 41;
             this.tabCtrlEditPage.SelectedIndexChanged += new System.EventHandler(this.tabCtrl_SelectedIndexChanged);
             // 
@@ -628,10 +625,10 @@
             this.tabPage_MapEdit.Controls.Add(this.num_Layer);
             this.tabPage_MapEdit.Controls.Add(this.pb_EditLayer);
             this.tabPage_MapEdit.Controls.Add(this.pb_VMap);
-            this.tabPage_MapEdit.Location = new System.Drawing.Point(4, 26);
+            this.tabPage_MapEdit.Location = new System.Drawing.Point(26, 4);
             this.tabPage_MapEdit.Name = "tabPage_MapEdit";
             this.tabPage_MapEdit.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_MapEdit.Size = new System.Drawing.Size(1197, 646);
+            this.tabPage_MapEdit.Size = new System.Drawing.Size(1185, 645);
             this.tabPage_MapEdit.TabIndex = 0;
             this.tabPage_MapEdit.Text = "MapEdit";
             // 
@@ -640,10 +637,10 @@
             this.tabControl.Controls.Add(this.TabLayerEdit);
             this.tabControl.Controls.Add(this.TabEditManual);
             this.tabControl.Controls.Add(this.TabRotaryEncoder);
-            this.tabControl.Location = new System.Drawing.Point(6, 362);
+            this.tabControl.Location = new System.Drawing.Point(6, 368);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(358, 246);
+            this.tabControl.Size = new System.Drawing.Size(358, 235);
             this.tabControl.TabIndex = 36;
             // 
             // TabLayerEdit
@@ -660,7 +657,7 @@
             this.TabLayerEdit.Location = new System.Drawing.Point(4, 26);
             this.TabLayerEdit.Name = "TabLayerEdit";
             this.TabLayerEdit.Padding = new System.Windows.Forms.Padding(3);
-            this.TabLayerEdit.Size = new System.Drawing.Size(350, 216);
+            this.TabLayerEdit.Size = new System.Drawing.Size(350, 187);
             this.TabLayerEdit.TabIndex = 0;
             this.TabLayerEdit.Text = "Layer";
             // 
@@ -675,7 +672,7 @@
             this.TabEditManual.Location = new System.Drawing.Point(4, 26);
             this.TabEditManual.Name = "TabEditManual";
             this.TabEditManual.Padding = new System.Windows.Forms.Padding(3);
-            this.TabEditManual.Size = new System.Drawing.Size(350, 216);
+            this.TabEditManual.Size = new System.Drawing.Size(350, 187);
             this.TabEditManual.TabIndex = 1;
             this.TabEditManual.Text = "EditManual";
             this.TabEditManual.UseVisualStyleBackColor = true;
@@ -692,7 +689,7 @@
             this.TabRotaryEncoder.Controls.Add(this.num_RERotate);
             this.TabRotaryEncoder.Location = new System.Drawing.Point(4, 26);
             this.TabRotaryEncoder.Name = "TabRotaryEncoder";
-            this.TabRotaryEncoder.Size = new System.Drawing.Size(350, 216);
+            this.TabRotaryEncoder.Size = new System.Drawing.Size(350, 205);
             this.TabRotaryEncoder.TabIndex = 2;
             this.TabRotaryEncoder.Text = "REncoder";
             // 
@@ -704,20 +701,20 @@
             this.groupBox5.Controls.Add(this.num_LSPlv);
             this.groupBox5.Controls.Add(this.Lbl_LSP);
             this.groupBox5.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.groupBox5.Location = new System.Drawing.Point(6, 105);
+            this.groupBox5.Location = new System.Drawing.Point(6, 95);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(328, 114);
+            this.groupBox5.Size = new System.Drawing.Size(328, 74);
             this.groupBox5.TabIndex = 46;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "LSP";
             // 
             // trackBar_LSP
             // 
-            this.trackBar_LSP.Location = new System.Drawing.Point(133, 62);
+            this.trackBar_LSP.Location = new System.Drawing.Point(149, 18);
             this.trackBar_LSP.Maximum = 99;
             this.trackBar_LSP.Minimum = 1;
             this.trackBar_LSP.Name = "trackBar_LSP";
-            this.trackBar_LSP.Size = new System.Drawing.Size(189, 45);
+            this.trackBar_LSP.Size = new System.Drawing.Size(167, 45);
             this.trackBar_LSP.TabIndex = 44;
             this.trackBar_LSP.TickFrequency = 10;
             this.trackBar_LSP.Value = 50;
@@ -726,7 +723,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(8, 62);
+            this.label18.Location = new System.Drawing.Point(9, 47);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(22, 12);
             this.label18.TabIndex = 47;
@@ -735,7 +732,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(8, 31);
+            this.label16.Location = new System.Drawing.Point(9, 21);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(32, 12);
             this.label16.TabIndex = 46;
@@ -743,14 +740,14 @@
             // 
             // num_LSPlv
             // 
-            this.num_LSPlv.Location = new System.Drawing.Point(62, 29);
+            this.num_LSPlv.Location = new System.Drawing.Point(61, 19);
             this.num_LSPlv.Minimum = new decimal(new int[] {
             2,
             0,
             0,
             0});
             this.num_LSPlv.Name = "num_LSPlv";
-            this.num_LSPlv.Size = new System.Drawing.Size(61, 19);
+            this.num_LSPlv.Size = new System.Drawing.Size(36, 19);
             this.num_LSPlv.TabIndex = 42;
             this.num_LSPlv.Value = new decimal(new int[] {
             10,
@@ -762,7 +759,7 @@
             // Lbl_LSP
             // 
             this.Lbl_LSP.AutoSize = true;
-            this.Lbl_LSP.Location = new System.Drawing.Point(72, 62);
+            this.Lbl_LSP.Location = new System.Drawing.Point(59, 47);
             this.Lbl_LSP.Name = "Lbl_LSP";
             this.Lbl_LSP.Size = new System.Drawing.Size(25, 12);
             this.Lbl_LSP.TabIndex = 45;
@@ -771,10 +768,10 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label17.Location = new System.Drawing.Point(198, 81);
+            this.label17.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label17.Location = new System.Drawing.Point(144, 61);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(40, 16);
+            this.label17.Size = new System.Drawing.Size(29, 12);
             this.label17.TabIndex = 41;
             this.label17.Text = "角度";
             // 
@@ -783,10 +780,10 @@
             this.tabPage_CheckPoint.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage_CheckPoint.Controls.Add(this.groupBox3);
             this.tabPage_CheckPoint.Controls.Add(this.pb_CPMap);
-            this.tabPage_CheckPoint.Location = new System.Drawing.Point(4, 26);
+            this.tabPage_CheckPoint.Location = new System.Drawing.Point(26, 4);
             this.tabPage_CheckPoint.Name = "tabPage_CheckPoint";
             this.tabPage_CheckPoint.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_CheckPoint.Size = new System.Drawing.Size(1197, 646);
+            this.tabPage_CheckPoint.Size = new System.Drawing.Size(1154, 645);
             this.tabPage_CheckPoint.TabIndex = 1;
             this.tabPage_CheckPoint.Text = "CheckPoint";
             // 
@@ -961,18 +958,20 @@
             // 
             // WaitProressBar
             // 
-            this.WaitProressBar.Location = new System.Drawing.Point(550, 33);
             this.WaitProressBar.Name = "WaitProressBar";
-            this.WaitProressBar.Size = new System.Drawing.Size(100, 19);
-            this.WaitProressBar.TabIndex = 42;
+            this.WaitProressBar.Size = new System.Drawing.Size(100, 22);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // MapEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1207, 758);
-            this.Controls.Add(this.WaitProressBar);
+            this.ClientSize = new System.Drawing.Size(1221, 713);
             this.Controls.Add(this.tabCtrlEditPage);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.tb_MapFileName);
@@ -980,9 +979,8 @@
             this.Controls.Add(this.tber_ViewScale);
             this.Controls.Add(this.lbl_ViewPosition);
             this.Controls.Add(this.MenuStrip);
-            this.Controls.Add(this.statusStrip);
             this.Name = "MapEditForm";
-            this.Text = "LRF MapEditer Ver0.85";
+            this.Text = "LRF MapEditer Ver0.86";
             this.Load += new System.EventHandler(this.MapEditForm_Load);
             this.Shown += new System.EventHandler(this.MapEditForm_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MapEditForm_KeyDown);
@@ -1024,7 +1022,6 @@
 
         #endregion
 
-        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.PictureBox pb_EditLayer;
         private System.Windows.Forms.ToolStrip MenuStrip;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
@@ -1096,9 +1093,10 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button Btn_MapRootImport;
-        private System.Windows.Forms.ProgressBar WaitProressBar;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton_Edit;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripProgressBar WaitProressBar;
     }
 }
 

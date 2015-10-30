@@ -71,6 +71,7 @@
     <Compile Include="URGLogRead.cs" />
     <EmbeddedResource Include="MapEditForm.resx">
       <DependentUpon>MapEditForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NewMapLoadForm.resx">
       <DependentUpon>NewMapLoadForm.cs</DependentUpon>
