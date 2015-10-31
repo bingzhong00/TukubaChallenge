@@ -10,6 +10,16 @@ namespace CersioIO
 {
     public class RootingData
     {
+        // マップ情報
+        // ファイルは、bmpかpng　24BitColorであること。
+        static public string MapFileName = "./OoSimizuKouen1100x1800Mod.png";
+        static public double RealWidth  = 100.0 * 1100.0;   // 実際のマップの横幅 [mm]
+        static public double RealHeight = 100.0 * 1800.0;   // 実際のマップの縦幅 [mm]　真北を縦とする
+
+        // スタート位置、向き(-360～360度 / 北 0, +東, -西, 南180)
+        static public Vector3 startPosition = new Vector3(788, 1428, 0);
+        static public double startDir = 0;
+
 #if true
         static public Vector3[] checkPoint = { new Vector3(788,1428, 0), // スタート位置
                     new Vector3(788,1300,0),

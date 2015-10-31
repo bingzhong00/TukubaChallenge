@@ -35,7 +35,7 @@ namespace CersioIO
         /// <param name="vecA"></param>
         /// <param name="vecB"></param>
         /// <returns></returns>
-        public double VecToRad( Vector3 vecA, Vector3 vecB )
+        public static double VecToRad( Vector3 vecA, Vector3 vecB )
         {
             vecA.Normalize();
             vecB.Normalize();
@@ -45,6 +45,20 @@ namespace CersioIO
             if (resVec.z > 0) dir = -dir;
 
             return dir;
+        }
+
+        /// <summary>
+        /// 座標から角度を求める (y-1が上(0.0度))
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static double CalcPositionToAngle(double x, double y)
+        {
+            Vector3 tgtVec = new Vector3(x, y, 0);
+            Vector3 nothVec = new Vector3(0, -1, 0);
+
+            return (VecToRad(tgtVec, nothVec)) * 180.0 / Axiom.Math.Utility.PI;
         }
 
 
@@ -176,14 +190,23 @@ namespace CersioIO
         /// <returns></returns>
         public double getHandleValue()
         {
+            return CalcHandleValue( tgtDir, nowDir );
+        }
+ 
+        /// <summary>
+        /// ハンドリング計算  ラジアン→ハンドル値(-1.0 ～ +1.0)
+        /// </summary>
+        /// <param name="targetHandleRad">行きたい角度（ラジアン）</param>
+        /// <param name="nowHandleRad">現在の向き（ラジアン）</param>
+        /// <returns></returns>
+        public static double CalcHandleValue(double targetHandleRad, double nowHandleRad )
+        {
             // 最大ハンドル切れ角
             const double maxStearingAng = 30.0;
 
-            if (goalFlg) return 0;
-
             // ラジアンから角度へ変換
-            double tgtAng = tgtDir * 180.0 / Axiom.Math.Utility.PI;
-            double nowAng = nowDir * 180.0 / Axiom.Math.Utility.PI;
+            double tgtAng = targetHandleRad * 180.0 / Axiom.Math.Utility.PI;
+            double nowAng = nowHandleRad * 180.0 / Axiom.Math.Utility.PI;
             double stearingAng = 0;
 
             tgtAng = ((tgtAng + 180) % 360) - 180;
@@ -205,14 +228,31 @@ namespace CersioIO
             return (stearingAng * (1.0 / maxStearingAng));
         }
 
+        /// <summary>
+        /// ハンドリング計算  角度→ハンドル値(-1.0 ～ +1.0)
+        /// </summary>
+        /// <param name="targetHandleAng">向きたい角度</param>
+        /// <param name="nowHandleAng">現在の向き(角度)</param>
+        /// <returns></returns>
+        public static double CalcHandleValueFromAng(double targetHandleAng, double nowHandleAng)
+        {
+            return CalcHandleValue( targetHandleAng * Axiom.Math.Utility.PI / 180.0,
+                                    nowHandleAng    * Axiom.Math.Utility.PI / 180.0 );
+        }
+
+        /// <summary>
+        /// アクセル値計算
+        /// </summary>
+        /// <returns></returns>
         public double getAccelValue()
         {
-            const double maxSpeed = 0.8;
+            const double maxSpeed = 1.0;
 
             if (goalFlg) return 0;
 
-            if (tgtDist > 1.0) return maxSpeed;
-            return maxSpeed * 0.5;
+            // ターゲット付近は速度を落とす
+            if (tgtDist < 3.0) return maxSpeed*0.8;
+            return maxSpeed;
         }
     }
 }

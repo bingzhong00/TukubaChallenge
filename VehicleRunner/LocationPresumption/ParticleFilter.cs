@@ -35,9 +35,16 @@ namespace LocationPresumption
 {
     public class ParticleFilter
     {
-        Random Rand = new Random();
+        static Random Rand = new Random();
+
         int ResamplingNumber;
+
         MarkPoint[] ResamplingSet;
+
+        /// <summary>
+        /// 散らばる範囲
+        /// </summary>
+        double PtclDefRange;
         double PtclRange;
 
         /// <summary>
@@ -48,7 +55,16 @@ namespace LocationPresumption
         {
             ResamplingNumber = resamplingNumber;
             ResamplingSet = new MarkPoint[ResamplingNumber];
-            PtclRange = ParticleRange;
+            PtclDefRange = PtclRange = ParticleRange;
+        }
+
+        /// <summary>
+        /// レンジ変更
+        /// </summary>
+        /// <param name="rangePer">0.0～1.0(100%)～</param>
+        public void SetRagePercent(double rangePer)
+        {
+            PtclRange = PtclDefRange * rangePer;
         }
 
         /// <summary>
@@ -60,7 +76,8 @@ namespace LocationPresumption
         private double Likefood(double[] real, double[] particle)
         {
             double sum = 0;
-            for (int i = 0; i < real.Length; ++i) {
+            for (int i = 0; i < real.Length; ++i)
+            {
                 sum += Math.Abs(real[i] - particle[i]);
                 //sum += (real[i] - particle[i]) * (real[i] - particle[i]);
                 //sum += Math.Cos(real[i] 
@@ -74,7 +91,7 @@ namespace LocationPresumption
         /// パーティクル生成
         /// </summary>
         /// <param name="v">基点</param>
-        /// <param name="sigma">散らばりのフレ幅[m]</param>
+        /// <param name="sigma">散らばりのフレ幅[pixel]</param>
         /// <param name="sigmaAng">散らばりのフレ幅[角度]</param>
         /// <param name="p">格納先</param>
         private void MakeParticle(MarkPoint v, double sigma, double sigmaAng, MarkPoint p)
@@ -106,9 +123,10 @@ namespace LocationPresumption
         }
 
         /// <summary>
-        /// 自己位置推定計算部分？
+        /// 自己位置推定計算
         /// </summary>
         /// <param name="LRF_Data">ＬＲＦ実取得データ</param>
+        /// <param name="MRF">MAPデータ</param>
         /// <param name="V1">想定ロボット位置(計算基点)</param>
         /// <param name="Particles">パーティクル作業バッファ</param>
         public void Localize(double[] LRF_Data, MapRangeFinder MRF, MarkPoint V1, List<Particle> Particles)
@@ -118,13 +136,16 @@ namespace LocationPresumption
             {
                 // 散らばらせる
                 // 角度10度
-                MakeParticle(V1, PtclRange, 10.0, Particles[i].R);
+                MakeParticle(V1, PtclRange, 10.0, Particles[i].Location);
 
                 // 散らばり％ = w ?
                 // マップデータとLRFのデータを比べる
-                Particles[i].W = Likefood(LRF_Data, MRF.Sense(Particles[i].R));
+                Particles[i].W = Likefood(LRF_Data, MRF.Sense(Particles[i].Location));
                 sum += Particles[i].W;
             }
+
+            // W順に並べ替え
+            Particles.Sort((a, b) => (int)((a.W - b.W)*1000.0));
 
             // パーティクルから 整合性の高いデータを取り出す？(リサンプリング)
             for (int n = 0; n < ResamplingNumber; ++n)
@@ -133,10 +154,12 @@ namespace LocationPresumption
                 // W値高いものからとったほうが精度が上がるのでは？？
                 double selectVal = Rand.NextDouble() * sum;
                 double subsum = 0;
-                for (int i = 0; i < Particles.Count; ++i) {
+                for (int i = 0; i < Particles.Count; ++i)
+                {
                     subsum += Particles[i].W;
-                    if (selectVal < subsum) {
-                        ResamplingSet[n] = Particles[i].R;
+                    if (selectVal < subsum)
+                    {
+                        ResamplingSet[n] = Particles[i].Location;
                         break;
                     }
                 }

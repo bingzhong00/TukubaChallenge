@@ -34,10 +34,12 @@ namespace LocationPresumption
 {
     public class Particle
     {
-        public MarkPoint R;
+        public MarkPoint Location;
         public double W;
-        public Particle(MarkPoint r, double w) {
-            R = r;
+
+        public Particle(MarkPoint r, double w)
+        {
+            Location = r;
             W = w;
         }
     }

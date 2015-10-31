@@ -1,6 +1,6 @@
 ﻿namespace VehicleRunner
 {
-    partial class LocPresumpForm {
+    partial class VehicleRunnerForm {
         /// <summary>
         /// 必要なデザイナー変数です。
         /// </summary>
@@ -40,7 +40,6 @@
             this.cb_EleConpus = new System.Windows.Forms.CheckBox();
             this.tb_LRFIpAddr = new System.Windows.Forms.TextBox();
             this.tb_LRFPort = new System.Windows.Forms.TextBox();
-            this.gb_LRF = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_EmgBrake = new System.Windows.Forms.CheckBox();
             this.cb_UsbSirial = new System.Windows.Forms.ComboBox();
@@ -59,10 +58,20 @@
             this.lbl_EmurateMode = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.tb_RESpeed = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabPage_Runner = new System.Windows.Forms.TabPage();
+            this.lbl_MattingScore = new System.Windows.Forms.Label();
+            this.tabPage_Emurate = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
-            this.gb_LRF.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.tabPage_Runner.SuspendLayout();
+            this.tabPage_Emurate.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -74,27 +83,27 @@
             this.picbox_AreaMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picbox_AreaMap.TabIndex = 0;
             this.picbox_AreaMap.TabStop = false;
-            this.picbox_AreaMap.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
-            this.picbox_AreaMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
-            this.picbox_AreaMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
-            this.picbox_AreaMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
+            this.picbox_AreaMap.Click += new System.EventHandler(this.picbox_AreaMap_Click);
+            this.picbox_AreaMap.Paint += new System.Windows.Forms.PaintEventHandler(this.picbox_AreaMap_Paint);
             // 
             // picbox_LRF
             // 
             this.picbox_LRF.BackColor = System.Drawing.Color.White;
-            this.picbox_LRF.Location = new System.Drawing.Point(8, 13);
+            this.picbox_LRF.Location = new System.Drawing.Point(626, 27);
             this.picbox_LRF.Name = "picbox_LRF";
             this.picbox_LRF.Size = new System.Drawing.Size(240, 240);
             this.picbox_LRF.TabIndex = 1;
             this.picbox_LRF.TabStop = false;
-            this.picbox_LRF.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            this.picbox_LRF.Click += new System.EventHandler(this.picbox_LRF_Click);
+            this.picbox_LRF.Paint += new System.Windows.Forms.PaintEventHandler(this.picbox_LRF_Paint);
             // 
             // cb_LRFConnect
             // 
             this.cb_LRFConnect.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_LRFConnect.Location = new System.Drawing.Point(11, 293);
+            this.cb_LRFConnect.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_LRFConnect.Location = new System.Drawing.Point(6, 57);
             this.cb_LRFConnect.Name = "cb_LRFConnect";
-            this.cb_LRFConnect.Size = new System.Drawing.Size(109, 37);
+            this.cb_LRFConnect.Size = new System.Drawing.Size(135, 49);
             this.cb_LRFConnect.TabIndex = 3;
             this.cb_LRFConnect.Text = "LRF Connect";
             this.cb_LRFConnect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -104,9 +113,10 @@
             // lb_LRFResult
             // 
             this.lb_LRFResult.AutoSize = true;
-            this.lb_LRFResult.Location = new System.Drawing.Point(137, 305);
+            this.lb_LRFResult.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lb_LRFResult.Location = new System.Drawing.Point(148, 73);
             this.lb_LRFResult.Name = "lb_LRFResult";
-            this.lb_LRFResult.Size = new System.Drawing.Size(38, 12);
+            this.lb_LRFResult.Size = new System.Drawing.Size(56, 16);
             this.lb_LRFResult.TabIndex = 4;
             this.lb_LRFResult.Text = "Result";
             // 
@@ -114,9 +124,10 @@
             // 
             this.cb_TimerUpdate.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_TimerUpdate.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cb_TimerUpdate.Location = new System.Drawing.Point(620, 525);
+            this.cb_TimerUpdate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_TimerUpdate.Location = new System.Drawing.Point(626, 552);
             this.cb_TimerUpdate.Name = "cb_TimerUpdate";
-            this.cb_TimerUpdate.Size = new System.Drawing.Size(127, 44);
+            this.cb_TimerUpdate.Size = new System.Drawing.Size(127, 53);
             this.cb_TimerUpdate.TabIndex = 5;
             this.cb_TimerUpdate.Text = "START";
             this.cb_TimerUpdate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -138,7 +149,7 @@
             // 
             // btm_LRFScale
             // 
-            this.btm_LRFScale.Location = new System.Drawing.Point(197, 342);
+            this.btm_LRFScale.Location = new System.Drawing.Point(180, 8);
             this.btm_LRFScale.Name = "btm_LRFScale";
             this.btm_LRFScale.Size = new System.Drawing.Size(49, 27);
             this.btm_LRFScale.TabIndex = 8;
@@ -149,7 +160,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(168, 350);
+            this.label1.Location = new System.Drawing.Point(139, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(23, 12);
             this.label1.TabIndex = 9;
@@ -157,7 +168,7 @@
             // 
             // tb_LRFScale
             // 
-            this.tb_LRFScale.Location = new System.Drawing.Point(99, 346);
+            this.tb_LRFScale.Location = new System.Drawing.Point(70, 12);
             this.tb_LRFScale.Name = "tb_LRFScale";
             this.tb_LRFScale.Size = new System.Drawing.Size(63, 19);
             this.tb_LRFScale.TabIndex = 10;
@@ -168,7 +179,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(27, 349);
+            this.label2.Location = new System.Drawing.Point(6, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 12);
             this.label2.TabIndex = 11;
@@ -178,9 +189,9 @@
             // 
             this.btn_PositionReset.Location = new System.Drawing.Point(132, 50);
             this.btn_PositionReset.Name = "btn_PositionReset";
-            this.btn_PositionReset.Size = new System.Drawing.Size(106, 29);
+            this.btn_PositionReset.Size = new System.Drawing.Size(80, 29);
             this.btn_PositionReset.TabIndex = 12;
-            this.btn_PositionReset.Text = "推定位置リセット";
+            this.btn_PositionReset.Text = "位置リセット";
             this.btn_PositionReset.UseVisualStyleBackColor = true;
             this.btn_PositionReset.Click += new System.EventHandler(this.btn_PositionReset_Click);
             // 
@@ -210,37 +221,21 @@
             // 
             // tb_LRFIpAddr
             // 
-            this.tb_LRFIpAddr.Location = new System.Drawing.Point(11, 264);
+            this.tb_LRFIpAddr.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tb_LRFIpAddr.Location = new System.Drawing.Point(6, 23);
             this.tb_LRFIpAddr.Name = "tb_LRFIpAddr";
-            this.tb_LRFIpAddr.Size = new System.Drawing.Size(118, 19);
+            this.tb_LRFIpAddr.Size = new System.Drawing.Size(135, 23);
             this.tb_LRFIpAddr.TabIndex = 15;
             this.tb_LRFIpAddr.Text = "192.168.1.10";
             // 
             // tb_LRFPort
             // 
-            this.tb_LRFPort.Location = new System.Drawing.Point(139, 264);
+            this.tb_LRFPort.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tb_LRFPort.Location = new System.Drawing.Point(151, 23);
             this.tb_LRFPort.Name = "tb_LRFPort";
-            this.tb_LRFPort.Size = new System.Drawing.Size(63, 19);
+            this.tb_LRFPort.Size = new System.Drawing.Size(63, 23);
             this.tb_LRFPort.TabIndex = 16;
             this.tb_LRFPort.Text = "10940";
-            // 
-            // gb_LRF
-            // 
-            this.gb_LRF.Controls.Add(this.tb_LRFPort);
-            this.gb_LRF.Controls.Add(this.tb_LRFIpAddr);
-            this.gb_LRF.Controls.Add(this.label2);
-            this.gb_LRF.Controls.Add(this.tb_LRFScale);
-            this.gb_LRF.Controls.Add(this.label1);
-            this.gb_LRF.Controls.Add(this.btm_LRFScale);
-            this.gb_LRF.Controls.Add(this.lb_LRFResult);
-            this.gb_LRF.Controls.Add(this.cb_LRFConnect);
-            this.gb_LRF.Controls.Add(this.picbox_LRF);
-            this.gb_LRF.Location = new System.Drawing.Point(618, 12);
-            this.gb_LRF.Name = "gb_LRF";
-            this.gb_LRF.Size = new System.Drawing.Size(257, 380);
-            this.gb_LRF.TabIndex = 17;
-            this.gb_LRF.TabStop = false;
-            this.gb_LRF.Text = "LRF入力";
             // 
             // groupBox1
             // 
@@ -248,9 +243,9 @@
             this.groupBox1.Controls.Add(this.cb_RotEnc);
             this.groupBox1.Controls.Add(this.btn_PositionReset);
             this.groupBox1.Controls.Add(this.cb_LocationPresumption);
-            this.groupBox1.Location = new System.Drawing.Point(620, 425);
+            this.groupBox1.Location = new System.Drawing.Point(11, 39);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(244, 94);
+            this.groupBox1.Size = new System.Drawing.Size(218, 94);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "自己位置推定";
@@ -260,9 +255,10 @@
             this.cb_EmgBrake.AutoSize = true;
             this.cb_EmgBrake.Checked = true;
             this.cb_EmgBrake.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_EmgBrake.Location = new System.Drawing.Point(780, 410);
+            this.cb_EmgBrake.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_EmgBrake.Location = new System.Drawing.Point(770, 585);
             this.cb_EmgBrake.Name = "cb_EmgBrake";
-            this.cb_EmgBrake.Size = new System.Drawing.Size(72, 16);
+            this.cb_EmgBrake.Size = new System.Drawing.Size(95, 20);
             this.cb_EmgBrake.TabIndex = 19;
             this.cb_EmgBrake.Text = "緊急停止";
             this.cb_EmgBrake.UseVisualStyleBackColor = true;
@@ -271,22 +267,22 @@
             // cb_UsbSirial
             // 
             this.cb_UsbSirial.FormattingEnabled = true;
-            this.cb_UsbSirial.Location = new System.Drawing.Point(620, 575);
+            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 23);
             this.cb_UsbSirial.Name = "cb_UsbSirial";
-            this.cb_UsbSirial.Size = new System.Drawing.Size(102, 20);
+            this.cb_UsbSirial.Size = new System.Drawing.Size(97, 20);
             this.cb_UsbSirial.TabIndex = 21;
             // 
             // tb_SirialResive
             // 
-            this.tb_SirialResive.Location = new System.Drawing.Point(735, 576);
+            this.tb_SirialResive.Location = new System.Drawing.Point(11, 49);
             this.tb_SirialResive.Name = "tb_SirialResive";
-            this.tb_SirialResive.Size = new System.Drawing.Size(131, 19);
+            this.tb_SirialResive.Size = new System.Drawing.Size(99, 19);
             this.tb_SirialResive.TabIndex = 22;
             // 
             // cb_SirialConnect
             // 
             this.cb_SirialConnect.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_SirialConnect.Location = new System.Drawing.Point(778, 543);
+            this.cb_SirialConnect.Location = new System.Drawing.Point(128, 45);
             this.cb_SirialConnect.Name = "cb_SirialConnect";
             this.cb_SirialConnect.Size = new System.Drawing.Size(86, 26);
             this.cb_SirialConnect.TabIndex = 23;
@@ -296,20 +292,25 @@
             // 
             // tm_UpdateHw
             // 
-            this.tm_UpdateHw.Interval = 60;
+            this.tm_UpdateHw.Interval = 50;
             this.tm_UpdateHw.Tick += new System.EventHandler(this.tm_UpdateHw_Tick);
             // 
             // tb_ResiveData
             // 
-            this.tb_ResiveData.Location = new System.Drawing.Point(45, 650);
+            this.tb_ResiveData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_ResiveData.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tb_ResiveData.Location = new System.Drawing.Point(55, 655);
             this.tb_ResiveData.Name = "tb_ResiveData";
-            this.tb_ResiveData.Size = new System.Drawing.Size(522, 19);
+            this.tb_ResiveData.ReadOnly = true;
+            this.tb_ResiveData.Size = new System.Drawing.Size(512, 23);
             this.tb_ResiveData.TabIndex = 24;
+            this.tb_ResiveData.TabStop = false;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 653);
+            this.label3.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label3.Location = new System.Drawing.Point(10, 661);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(29, 12);
             this.label3.TabIndex = 25;
@@ -318,7 +319,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 625);
+            this.label4.Location = new System.Drawing.Point(10, 631);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(78, 12);
             this.label4.TabIndex = 26;
@@ -326,10 +327,14 @@
             // 
             // tb_SendData
             // 
+            this.tb_SendData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_SendData.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tb_SendData.Location = new System.Drawing.Point(94, 625);
             this.tb_SendData.Name = "tb_SendData";
-            this.tb_SendData.Size = new System.Drawing.Size(473, 19);
+            this.tb_SendData.ReadOnly = true;
+            this.tb_SendData.Size = new System.Drawing.Size(473, 23);
             this.tb_SendData.TabIndex = 27;
+            this.tb_SendData.TabStop = false;
             // 
             // tm_LocUpdate
             // 
@@ -347,11 +352,14 @@
             // 
             // tb_AccelVal
             // 
+            this.tb_AccelVal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_AccelVal.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tb_AccelVal.Location = new System.Drawing.Point(799, 620);
             this.tb_AccelVal.Name = "tb_AccelVal";
+            this.tb_AccelVal.ReadOnly = true;
             this.tb_AccelVal.Size = new System.Drawing.Size(73, 31);
             this.tb_AccelVal.TabIndex = 29;
+            this.tb_AccelVal.TabStop = false;
             // 
             // label6
             // 
@@ -365,17 +373,20 @@
             // 
             // tb_HandleVal
             // 
+            this.tb_HandleVal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_HandleVal.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tb_HandleVal.Location = new System.Drawing.Point(645, 620);
             this.tb_HandleVal.Name = "tb_HandleVal";
+            this.tb_HandleVal.ReadOnly = true;
             this.tb_HandleVal.Size = new System.Drawing.Size(73, 31);
             this.tb_HandleVal.TabIndex = 31;
+            this.tb_HandleVal.TabStop = false;
             // 
             // lbl_EmurateMode
             // 
             this.lbl_EmurateMode.AutoSize = true;
             this.lbl_EmurateMode.BackColor = System.Drawing.Color.Red;
-            this.lbl_EmurateMode.Location = new System.Drawing.Point(624, 395);
+            this.lbl_EmurateMode.Location = new System.Drawing.Point(768, 552);
             this.lbl_EmurateMode.Name = "lbl_EmurateMode";
             this.lbl_EmurateMode.Size = new System.Drawing.Size(100, 12);
             this.lbl_EmurateMode.TabIndex = 32;
@@ -393,17 +404,106 @@
             // 
             // tb_RESpeed
             // 
+            this.tb_RESpeed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_RESpeed.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tb_RESpeed.Location = new System.Drawing.Point(645, 653);
             this.tb_RESpeed.Name = "tb_RESpeed";
+            this.tb_RESpeed.ReadOnly = true;
             this.tb_RESpeed.Size = new System.Drawing.Size(73, 31);
             this.tb_RESpeed.TabIndex = 34;
+            this.tb_RESpeed.TabStop = false;
             // 
-            // LocPresumpForm
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(724, 666);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(47, 12);
+            this.label8.TabIndex = 35;
+            this.label8.Text = "mm/sec";
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.tabPage_Runner);
+            this.tabControl.Controls.Add(this.tabPage_Emurate);
+            this.tabControl.Location = new System.Drawing.Point(626, 273);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(246, 264);
+            this.tabControl.TabIndex = 36;
+            // 
+            // tabPage_Runner
+            // 
+            this.tabPage_Runner.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_Runner.Controls.Add(this.lbl_MattingScore);
+            this.tabPage_Runner.Controls.Add(this.lb_LRFResult);
+            this.tabPage_Runner.Controls.Add(this.tb_LRFPort);
+            this.tabPage_Runner.Controls.Add(this.cb_LRFConnect);
+            this.tabPage_Runner.Controls.Add(this.tb_LRFIpAddr);
+            this.tabPage_Runner.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Runner.Name = "tabPage_Runner";
+            this.tabPage_Runner.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Runner.Size = new System.Drawing.Size(238, 238);
+            this.tabPage_Runner.TabIndex = 0;
+            this.tabPage_Runner.Text = "Runner";
+            // 
+            // lbl_MattingScore
+            // 
+            this.lbl_MattingScore.AutoSize = true;
+            this.lbl_MattingScore.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_MattingScore.Location = new System.Drawing.Point(13, 191);
+            this.lbl_MattingScore.Name = "lbl_MattingScore";
+            this.lbl_MattingScore.Size = new System.Drawing.Size(111, 16);
+            this.lbl_MattingScore.TabIndex = 17;
+            this.lbl_MattingScore.Text = "MatchingScore:";
+            // 
+            // tabPage_Emurate
+            // 
+            this.tabPage_Emurate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.tabPage_Emurate.Controls.Add(this.groupBox2);
+            this.tabPage_Emurate.Controls.Add(this.label2);
+            this.tabPage_Emurate.Controls.Add(this.tb_LRFScale);
+            this.tabPage_Emurate.Controls.Add(this.btm_LRFScale);
+            this.tabPage_Emurate.Controls.Add(this.label1);
+            this.tabPage_Emurate.Controls.Add(this.groupBox1);
+            this.tabPage_Emurate.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Emurate.Name = "tabPage_Emurate";
+            this.tabPage_Emurate.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Emurate.Size = new System.Drawing.Size(238, 238);
+            this.tabPage_Emurate.TabIndex = 1;
+            this.tabPage_Emurate.Text = "Emurate";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cb_SirialConnect);
+            this.groupBox2.Controls.Add(this.cb_UsbSirial);
+            this.groupBox2.Controls.Add(this.tb_SirialResive);
+            this.groupBox2.Location = new System.Drawing.Point(8, 139);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(220, 85);
+            this.groupBox2.TabIndex = 24;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "SH2 USBConnect";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label9.Location = new System.Drawing.Point(623, 8);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(36, 16);
+            this.label9.TabIndex = 37;
+            this.label9.Text = "LRF";
+            // 
+            // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 688);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.picbox_LRF);
+            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.tb_RESpeed);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.lbl_EmurateMode);
@@ -415,17 +515,12 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tb_ResiveData);
-            this.Controls.Add(this.cb_SirialConnect);
-            this.Controls.Add(this.tb_SirialResive);
-            this.Controls.Add(this.cb_UsbSirial);
             this.Controls.Add(this.cb_EmgBrake);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.gb_LRF);
             this.Controls.Add(this.cb_TimerUpdate);
             this.Controls.Add(this.picbox_AreaMap);
             this.KeyPreview = true;
-            this.Name = "LocPresumpForm";
-            this.Text = "VehicleRunner Ver0.60";
+            this.Name = "VehicleRunnerForm";
+            this.Text = "VehicleRunner Ver0.75";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -434,10 +529,15 @@
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.Form1_PreviewKeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).EndInit();
-            this.gb_LRF.ResumeLayout(false);
-            this.gb_LRF.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.tabPage_Runner.ResumeLayout(false);
+            this.tabPage_Runner.PerformLayout();
+            this.tabPage_Emurate.ResumeLayout(false);
+            this.tabPage_Emurate.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -460,7 +560,6 @@
         private System.Windows.Forms.CheckBox cb_EleConpus;
         private System.Windows.Forms.TextBox tb_LRFIpAddr;
         private System.Windows.Forms.TextBox tb_LRFPort;
-        private System.Windows.Forms.GroupBox gb_LRF;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cb_EmgBrake;
         private System.Windows.Forms.ComboBox cb_UsbSirial;
@@ -479,6 +578,13 @@
         private System.Windows.Forms.Label lbl_EmurateMode;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox tb_RESpeed;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabPage_Runner;
+        private System.Windows.Forms.TabPage tabPage_Emurate;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lbl_MattingScore;
     }
 }
 

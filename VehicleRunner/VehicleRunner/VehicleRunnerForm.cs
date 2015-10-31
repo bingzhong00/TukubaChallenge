@@ -29,6 +29,8 @@
 #define LOGWRITE_MODE   // ログファイル出力
 #define LOGIMAGE_MODE   // イメージログ出力
 
+//#define EMULATOR_MODE   // エミュレートモード
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,8 +39,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-//using System.Threading;
+
 using System.IO;
+using System.Drawing.Drawing2D;
 
 using LocationPresumption;
 using CersioIO;
@@ -47,7 +50,7 @@ using Axiom.Math;
 
 namespace VehicleRunner
 {
-    public partial class LocPresumpForm : Form
+    public partial class VehicleRunnerForm : Form
     {
         public static string saveLogFname;
 
@@ -55,18 +58,23 @@ namespace VehicleRunner
         CersioCtrl CersioCt;
 
         // エミュレーションモード
-        bool bEmurateMode = false;
+#if EMULATOR_MODE
+        public static bool IsEmurateMode = true;
+#else
+        public static bool IsEmurateMode = false;
+#endif
 
         Random Rand = new Random();
         bool LocalizeFlag;
 
         double LRFViewScale = 1.0;
 
+        private int selPicboxLRFmode = 0;
 
         /// <summary>
         /// 
         /// </summary>
-        public LocPresumpForm()
+        public VehicleRunnerForm()
         {
             InitializeComponent();
 
@@ -90,12 +98,17 @@ namespace VehicleRunner
 
             // セルシオコントローラ初期化
             CersioCt = new CersioCtrl();
-            CersioCt.Start();
+            CersioCt.Start( IsEmurateMode );
 
             // 自己位置推定初期化
             LocSys = new LocPreSumpSystem();
-            LocSys.InitWorld("./OoSimizuKouen1100x1800.png", 100.0 * 1100.0, 100.0 * 1800.0);
-            LocSys.SetStartPostion(788, 1428);
+
+            // マップ情報設定
+            //  マップファイル名、実サイズの横[mm], 実サイズ縦[mm] (北向き基準)
+            LocSys.InitWorld( RootingData.MapFileName, RootingData.RealWidth, RootingData.RealHeight);
+            LocSys.SetStartPostion( (int)RootingData.startPosition.x,
+                                    (int)RootingData.startPosition.y,
+                                    RootingData.startDir );
 
             // LRF 入力スケール調整反映
             //btm_LRFScale_Click(null, null);
@@ -105,7 +118,7 @@ namespace VehicleRunner
             cb_LocationPresumption.Checked = LocalizeFlag = false;
 
             // エミュレーションモード表示
-            lbl_EmurateMode.Visible = bEmurateMode;
+            lbl_EmurateMode.Visible = IsEmurateMode;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -127,6 +140,19 @@ namespace VehicleRunner
             // ハードウェア更新タイマ起動
             tm_UpdateHw.Enabled = true;
 
+            // BoxPC接続状態確認
+            if (CersioCt.TCP_IsConnected())
+            {
+                tb_SendData.BackColor = Color.Lime;
+                tb_ResiveData.BackColor = Color.Lime;
+            }
+            else
+            {
+                tb_SendData.BackColor = SystemColors.Window;
+                tb_ResiveData.BackColor = SystemColors.Window;
+            }
+
+
             // 画面更新
             PictureUpdate();
         }
@@ -147,11 +173,26 @@ namespace VehicleRunner
             // 軌跡ログ出力
             if (!string.IsNullOrEmpty(saveLogFname))
             {
-                string saveImageLogFname = Path.ChangeExtension(saveLogFname, "png");
+                MarkPoint tgtMaker = null;
 
-                Bitmap bmp = LocSys.MakeMakerLogBmp(false);
+                // 次の目的地取得
+                if (null != CersioCt)
+                {
+                    int tgtPosX = 0;
+                    int tgtPosY = 0;
+                    double dir = 0;
+
+                    CersioCt.BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
+                    CersioCt.BrainCtrl.RTS.getNowTargetDir(ref dir);
+
+                    tgtMaker = new MarkPoint(LocSys.worldMap.GetAreaX(tgtPosX), LocSys.worldMap.GetAreaY(tgtPosY), dir);
+                }
+
+                Bitmap bmp = LocSys.MakeMakerLogBmp(false, tgtMaker);
                 if (null != bmp)
                 {
+                    // 画像ファイル保存
+                    string saveImageLogFname = Path.ChangeExtension(saveLogFname, "png");
                     bmp.Save(saveImageLogFname, System.Drawing.Imaging.ImageFormat.Png);
                 }
             }
@@ -172,27 +213,42 @@ namespace VehicleRunner
 
 
         // Draw -------------------------------------------------------------------------------------------
-        Font drawFont = new Font("MS UI Gothic", 16);
+        Font drawFont = new Font("MS UI Gothic", 16, FontStyle.Bold);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        private void picbox_AreaMap_Paint(object sender, PaintEventArgs e)
         {
             // 書き換えＢＭＰ（追加障害物）描画
             Graphics g = e.Graphics;
 
-            g.FillRectangle(Brushes.Black, 0, 0, picbox_AreaMap.Width, picbox_AreaMap.Height);
+            //g.FillRectangle(Brushes.Black, 0, 0, picbox_AreaMap.Width, picbox_AreaMap.Height);
 
             g.DrawImage(LocSys.AreaOverlayBmp, 0,0);
-            g.DrawString("Pos X:" + (int)LocSys.R1.X +"(" + (int)LocSys.worldMap.GetWorldX(LocSys.R1.X)+")" +
-                         ",Y:" + (int)LocSys.R1.Y +"(" + (int)LocSys.worldMap.GetWorldY(LocSys.R1.Y) + ")" +
-                         ",角度:" + (int)LocSys.R1.Theta +
-                         " Run:" + updateCnt.ToString(),
-                         drawFont, Brushes.Black, 0, 0);
 
+            DrawString(g,  0, drawFont.Height*0,
+                       "R1 X:" + ((int)LocSys.worldMap.GetWorldX(LocSys.R1.X)).ToString("D4") +
+                       ",Y:" + ((int)LocSys.worldMap.GetWorldY(LocSys.R1.Y)).ToString("D4") +
+                       ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
+                       Brushes.Red, Brushes.Black );
+
+            DrawString(g, 0, drawFont.Height * 1,
+                       "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwRERad * 180.0 / Math.PI)).ToString("D3") +
+                       ",ReX:" + ((int)(CersioCt.hwREX)).ToString("D4") + ",Y:" + ((int)(CersioCt.hwREY)).ToString("D4"),
+                       Brushes.Blue, Brushes.White);
+
+            DrawString(g, 0, drawFont.Height * 2,
+                       "Goal:" + (CersioCt.goalFlg ? "TRUE" : "FALSE") + "/ Run:" + updateHwCnt.ToString("D8"),
+                       Brushes.Blue, Brushes.White);
+
+            DrawString(g, 0, drawFont.Height * 3,
+                       "LocProc:" + LocSys.swCNT_Update.ElapsedMilliseconds + "ms /Draw:" + LocSys.swCNT_Draw.ElapsedMilliseconds ,
+                       Brushes.Blue, Brushes.White);
+                           
+            
 
             // ターゲット描画
             if (null != CersioCt)
@@ -202,8 +258,8 @@ namespace VehicleRunner
                 tgtPosX = tgtPosY = 0;
                 float olScale = (float)LocSys.AreaOverlayBmp.Width / (float)LocSys.AreaBmp.Width;
 
-                CersioCt.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
-                CersioCt.RTS.getNowTargetDir(ref dir);
+                CersioCt.BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
+                CersioCt.BrainCtrl.RTS.getNowTargetDir(ref dir);
 
                 DrawMaker(g, olScale, new MarkPoint( LocSys.worldMap.GetAreaX(tgtPosX), LocSys.worldMap.GetAreaY(tgtPosY), dir), Brushes.GreenYellow, 8);
             }
@@ -220,24 +276,6 @@ namespace VehicleRunner
         /// <param name="robot"></param>
         /// <param name="brush"></param>
         /// <param name="size"></param>
-        /*
-        private void DrawMaker(Graphics g, MarkPoint robot, Brush brush, int size)
-        {
-            float olScale = (float)LocSys.AreaOverlayBmp.Width / (float)LocSys.AreaBmp.Width;
-            //int BitMapH = AreaBmp.Height;
-
-            var P1 = new PointF(
-                (float)(robot.X + size * Math.Cos(robot.Theta * Math.PI / 180.0)),
-                (float)(robot.Y + size * Math.Sin(robot.Theta * Math.PI / 180.0)));
-            var P2 = new PointF(
-                (float)(robot.X + size * Math.Cos((robot.Theta - 150) * Math.PI / 180.0)),
-                (float)(robot.Y + size * Math.Sin((robot.Theta - 150) * Math.PI / 180.0)));
-            var P3 = new PointF(
-                (float)(robot.X + size * Math.Cos((robot.Theta + 150) * Math.PI / 180.0)),
-                (float)(robot.Y + size * Math.Sin((robot.Theta + 150) * Math.PI / 180.0)));
-
-            g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
-        }*/
         private void DrawMaker(Graphics g, float fScale, MarkPoint robot, Brush brush, int size)
         {
             double mkX = robot.X * fScale;
@@ -257,80 +295,223 @@ namespace VehicleRunner
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
         }
 
+        private void DrawString(Graphics g, int x, int y, string str, Brush brush, Brush bkBrush )
+        {
+            g.DrawString(str, drawFont, bkBrush, x + 1, y);
+            g.DrawString(str, drawFont, bkBrush, x - 1, y);
+            g.DrawString(str, drawFont, bkBrush, x, y - 1);
+            g.DrawString(str, drawFont, bkBrush, x, y + 1);
+            g.DrawString(str, drawFont, brush, x, y);
+        }
+
+        /// <summary>
+        /// 表示切り替え
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void picbox_AreaMap_Click(object sender, EventArgs e)
+        {
+            // ※エリア、ワールドマップ切り替え
+        }
+
+
+        // ---------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// LRFウィンドウデータ描画
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pictureBox2_Paint(object sender, PaintEventArgs e)
+        private void picbox_LRF_Paint(object sender, PaintEventArgs e)
         {
+            Graphics g = e.Graphics;
+
+            //g.ResetTransform();
+            //g.TranslateTransform(-ctrX, -ctrY, MatrixOrder.Append);
+            //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
+            //g.ScaleTransform(scale, scale, MatrixOrder.Prepend);
+
             // LRF取得データを描画
             {
-                double rScale = (1.0 / LocSys.RealToMapSclae);
-                double rPI = Math.PI / 180.0;
-
                 int ctrX = picbox_LRF.Width / 2;
-                int ctrY = picbox_LRF.Height*5/8;
-                int pixelSize = 3;
-                double picScale = picbox_LRF.Width * (LRFViewScale/1000.0f);
+                int ctrY = picbox_LRF.Height * 5 / 8;
+
+                float scale = 1.0f;
+
+                // 背景色
+                switch (selPicboxLRFmode)
+                {
+                    case 0:
+                        picbox_LRF.BackColor = Color.White;
+                        scale = 1.0f;
+                        break;
+                    case 1:
+                        picbox_LRF.BackColor = Color.Black;
+
+                        scale = 5.0f;
+
+                        // EBSに反応があればズーム
+                        scale += ((float)CersioCt.BrainCtrl.EBS_CautionLv * 3.0f / (float)Brain.EBS_CautionLvMax);
+
+                        // EHS
+                        if (CersioCt.BrainCtrl.EHS_Result != Brain.EHS_MODE.None) scale = 10.0f;
+                        break;
+                }
 
                 // ガイド描画
-                for (int i = 1; i <= 30/5; i++)
+                // 30mを5m区切りで描画
+                for (int i = 1; i <= 30 / 5; i++)
                 {
-                    int cirSize = (int)((i * 5000) / LocSys.RealToMapSclae);
+                    int cirSize = (int)(((i * 5000) / LocSys.RealToMapSclae) * scale);
 
-                    e.Graphics.DrawPie( Pens.LightGray,
+                    g.DrawPie(Pens.LightGray,
                                         (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                         cirSize, cirSize,
-                                        -135-90, 270);
+                                        -135 - 90, 270);
                 }
 
-                if (LocSys.LRF_Data != null)
+                switch (selPicboxLRFmode)
                 {
-                    // LRFの値を描画
-                    // +4間引く
-                    for (int i = 0; i < LocSys.LRF_Data.Length; i++)
-                    {
-                        //double val = LocSys.LRF_Data[LocSys.LRF_Data.Length - 1 - i] * rScale;
-                        double val = LocSys.LRF_Data[i] * picScale * rScale;
-                        double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
+                    case 0:
+                        // LRF描画
+                        if (LocSys.LRF_Data != null)
+                        {
+                            double rScale = (1.0 / LocSys.RealToMapSclae);
+                            double rPI = Math.PI / 180.0;
+                            int pixelSize = 3;
+                            double picScale = picbox_LRF.Width * (LRFViewScale / 1000.0f);
 
-                        float x = (float)(ctrX + val * Math.Cos(rad));
-                        float y = (float)(ctrY + val * Math.Sin(rad));
-                        e.Graphics.FillRectangle(Brushes.Black, x, y, pixelSize, pixelSize);
-                    }
+                            // LRFの値を描画
+                            for (int i = 0; i < LocSys.LRF_Data.Length; i++)
+                            {
+                                double val = LocSys.LRF_Data[i] * picScale * rScale;
+                                double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
+
+                                float x = (float)(ctrX + val * scale * Math.Cos(rad));
+                                float y = (float)(ctrY + val * scale * Math.Sin(rad));
+                                g.FillRectangle(Brushes.Black, x, y, pixelSize, pixelSize);
+                            }
+                        }
+                        break;
+
+                    case 1:
+                        // EBS範囲描画
+                        {
+                            int stAng = Brain.EBS_stAng;
+                            int edAng = Brain.EBS_edAng;
+
+                            int cirSize;
+
+                            if (CersioCt.BrainCtrl.EBS_CautionLv >= Brain.EBS_StopLv)
+                            {
+                                // ブレーキレンジ内
+                                Brush colBrs = Brushes.Red;
+                                cirSize = (int)((Brain.EBS_BrakeRange / LocSys.RealToMapSclae) * scale);
+                                g.FillPie(colBrs, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                                  cirSize, cirSize,
+                                                  stAng - 90, (edAng - stAng));
+                            }
+                            else if (CersioCt.BrainCtrl.EBS_CautionLv >= Brain.EBS_SlowDownLv)
+                            {
+                                // スローダウンレンジ内
+                                Brush colBrs = Brushes.Orange;
+                                cirSize = (int)((Brain.EBS_SlowRange / LocSys.RealToMapSclae) * scale);
+                                g.FillPie(colBrs, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                                  cirSize, cirSize,
+                                                  stAng - 90, (edAng - stAng));
+                            }
+
+
+                            {
+                                Pen colPen = Pens.Yellow;
+
+                                // スローダウン　レンジ枠
+                                cirSize = (int)((Brain.EBS_SlowRange / LocSys.RealToMapSclae) * scale);
+                                g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                                  cirSize, cirSize,
+                                                  stAng - 90, (edAng - stAng));
+
+                                // ブレーキ　レンジ枠
+                                cirSize = (int)((Brain.EBS_BrakeRange / LocSys.RealToMapSclae) * scale);
+                                g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                                  cirSize, cirSize,
+                                                  stAng - 90, (edAng - stAng));
+                            }
+                        }
+
+                        // EHS範囲描画
+                        {
+                            int stAng;
+                            int edAng;
+
+                            int cirSize = (int)((Brain.EHS_MaxRange / LocSys.RealToMapSclae) * scale);
+
+                            Pen colPen = Pens.LightGreen;
+
+                            // 左側
+                            stAng = Brain.EHS_stLAng;
+                            edAng = Brain.EHS_edLAng;
+                            if (CersioCt.BrainCtrl.EHS_Result == Brain.EHS_MODE.LeftWallHit || CersioCt.BrainCtrl.EHS_Result == Brain.EHS_MODE.CenterPass)
+                            {
+                                g.FillPie( Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                                  cirSize, cirSize,
+                                                  stAng - 90, (edAng - stAng));
+                            }
+                            g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                              cirSize, cirSize,
+                                              stAng - 90, (edAng - stAng));
+
+
+                            // 右側
+                            stAng = Brain.EHS_stRAng;
+                            edAng = Brain.EHS_edRAng;
+                            if (CersioCt.BrainCtrl.EHS_Result == Brain.EHS_MODE.RightWallHit || CersioCt.BrainCtrl.EHS_Result == Brain.EHS_MODE.CenterPass)
+                            {
+                                g.FillPie(Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                                  cirSize, cirSize,
+                                                  stAng - 90, (edAng - stAng));
+                            }
+                            g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
+                                              cirSize, cirSize,
+                                              stAng - 90, (edAng - stAng));
+                        }
+
+                        // ノイズリダクションLRF描画
+                        if (CersioCt.BrainCtrl.lrfUntiNoise != null)
+                        {
+                            double rScale = (1.0 / LocSys.RealToMapSclae);
+                            double rPI = Math.PI / 180.0;
+                            int pixelSize = 3;
+                            double picScale = picbox_LRF.Width * (LRFViewScale / 1000.0f);
+
+                            double[] lrfdata = CersioCt.BrainCtrl.lrfUntiNoise;
+
+                            // LRFの値を描画
+                            for (int i = 0; i < lrfdata.Length; i++)
+                            {
+                                double val = lrfdata[i] * picScale * rScale;
+                                double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
+
+                                float x = (float)(ctrX + val * scale * Math.Cos(rad));
+                                float y = (float)(ctrY + val * scale * Math.Sin(rad));
+                                g.FillRectangle(Brushes.Cyan, x, y, pixelSize, pixelSize);
+                            }
+                        }
+                        break;
                 }
             }
-
-            // エマージェンシーブレーキ 動作カラー表示
-            if (CersioCtrl.EmgBrk)  cb_EmgBrake.BackColor = Color.Red;
-            else                    cb_EmgBrake.BackColor = SystemColors.Control;
         }
 
-
         /// <summary>
-        /// マウス入力、　障害物設置
+        /// 表示切り替え
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
-            //PaintFlag = true;
-        }
-
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
-            /*
-            if (PaintFlag) {
-                lock (MapAccess) {
-                    MapAccess.BeginAccess();
-                    MapAccess[e.X, e.Y] = Color.Black;
-                    MapAccess.EndAccess();
-                }
-            }
-             * */
-        }
-
-        private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
-            //PaintFlag = false;
+        private void picbox_LRF_Click(object sender, EventArgs e)
+        {
+            // モード切り替え
+            selPicboxLRFmode = (++selPicboxLRFmode) % 2;
+            picbox_LRF.Invalidate();
         }
 
         /// <summary>
@@ -349,13 +530,9 @@ namespace VehicleRunner
                 case Keys.Up:
                     // 前進
                     CalcMoveRobot(mvScale);
-                    //LRFupdate();
-                    //OneShotIssue();
                     break;
                 case Keys.Down:
                     CalcMoveRobot(-mvScale);
-                    //LRFupdate();
-                    //OneShotIssue();
                     break;
                 case Keys.Right:
                     R1.Theta = (R1.Theta - 5 + 360) % 360;
@@ -364,9 +541,6 @@ namespace VehicleRunner
                     {
                         V1.Theta = (V1.Theta - 5 + 360) % 360;
                     }
-
-                    //LRFupdate();
-                    //OneShotIssue();
                     break;
                 case Keys.Left:
                     R1.Theta = (R1.Theta + 5 + 360) % 360;
@@ -375,18 +549,11 @@ namespace VehicleRunner
                     {
                         V1.Theta = (V1.Theta + 5 + 360) % 360;
                     }
-
-                    //LRFupdate();
-                    //OneShotIssue();
                     break;
 
                 case Keys.U:
-                    //LRFupdate();
-                    //OneShotIssue();
                     break;
             }
-            //this.pictureBox1.Refresh();
-            //this.pictureBox2.Refresh();
         }
 
         private void CalcMoveRobot(double movVal)
@@ -410,15 +577,6 @@ namespace VehicleRunner
             }
         }
 
-        // LRF 実データ取得
-        /* 現時点不要
-        private void LocPresumpUpdate()
-        {
-            // 自己位置推定　計算実行
-            LocSys.FilterLocalizeUpdate(LocalizeFlag);
-        }
-        */
-
         private void Form1_KeyPress(object sender, KeyPressEventArgs e) {
 
         }
@@ -438,6 +596,12 @@ namespace VehicleRunner
                     if (int.TryParse(tb_LRFPort.Text, out intLrfPot))
                     {
                         LocSys.InitURG(tb_LRFIpAddr.Text, intLrfPot);
+
+                        if (LocSys.IsLRFConnect())
+                        {
+                            tb_LRFIpAddr.BackColor = Color.Lime;
+                            tb_LRFPort.BackColor = Color.Lime;
+                        }
                     }
                 }
 
@@ -447,6 +611,9 @@ namespace VehicleRunner
             else
             {
                 LocSys.CloseURG();
+
+                tb_LRFIpAddr.BackColor = SystemColors.Window;
+                tb_LRFPort.BackColor = SystemColors.Window;
             }
         }
 
@@ -470,20 +637,8 @@ namespace VehicleRunner
         // 自動更新ボタン
         private void cb_TimerUpdate_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_TimerUpdate.Checked)
-            {
-                // Run
-                tm_LocUpdate.Enabled = true;
-                //OneShotIssue();
-                //OneShotUpdateFlg = false;   // １回更新のフラグOFF で　更新しつづける
-            }
-            else
-            {
-                // Stop
-                tm_LocUpdate.Enabled = false;
-
-                //OneShotUpdateFlg = true;    // １回更新のフラグON で　次の更新で完了させる
-            }
+            if (cb_TimerUpdate.Checked) tm_LocUpdate.Enabled = true;
+            else                        tm_LocUpdate.Enabled = false;
         }
 
 
@@ -500,73 +655,68 @@ namespace VehicleRunner
         }
 
         // Form内のクラスを更新
-        static int updateCallCnt = 0;
+        static int updateMainCnt = 0;
+
+        /// <summary>
+        /// メイン処理　更新
+        /// </summary>
         private void TickFormUpdate()
         {
-            MarkPoint R1 = LocSys.R1;                   // リアルロボット
+            // 通常時
 
+            // 自己位置推定　計算実行
+            LocSys.FilterLocalizeUpdate(LocalizeFlag, IsEmurateMode);
+
+            // セルシオ コントロール
+            CersioCt.Update( LocSys, cb_EmgBrake.Checked);
+
+            // ハンドル、アクセル値　表示
+            tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
+            tb_HandleVal.Text = CersioCtrl.nowSendHandleValue.ToString("f2");
+
+            // REからのスピード取得
+            tb_RESpeed.Text = CersioCtrl.SpeedMH.ToString("f1");
+
+            // LRF　マッチングスコア
+            lbl_MattingScore.Text = "MatchingScore:" + CersioCt.BrainCtrl.MatchingScore.ToString();
+
+            // セルシオ自動運転　Form内エミュレート
+            /*
+            if (serialPort1.IsOpen)
             {
-                // 通常時
-                // OneShotでなければ、データ取得、自己位置推定計算も実行
-                //LRFupdate();
+                SendSirialData(CersioCtrl.handleValue, CersioCtrl.accValue);
+            }
+                * */
 
-                // 自己位置推定　計算実行
-                LocSys.FilterLocalizeUpdate(LocalizeFlag, bEmurateMode);
-
-                bool goalFlg = false;
-
-                goalFlg = CersioCt.Update((int)LocSys.worldMap.GetWorldX(R1.X),
-                                          (int)LocSys.worldMap.GetWorldY(R1.Y),
-                                          (int)(R1.Theta), LocSys.LRF_Data, cb_EmgBrake.Checked);
-
-                // ハンドル、アクセル値　表示
-                tb_AccelVal.Text = CersioCtrl.accValue.ToString();
-                tb_HandleVal.Text = CersioCtrl.handleValue.ToString();
-
-                // REからのスピード
-                tb_RESpeed.Text = CersioCtrl.SpeedMH.ToString();
-
-                // セルシオ自動運転　Form内エミュレート
-                /*
-                if (serialPort1.IsOpen)
+            if( IsEmurateMode )
+            {
+                // カーソルを操作
                 {
-                    SendSirialData(CersioCtrl.handleValue, CersioCtrl.accValue);
-                }
-                else
-                 * */
-                {
-                    // カーソルを操作
+                    if (CersioCtrl.LeftBtn)
                     {
-                        if (CersioCtrl.LeftBtn)
-                        {
-                            this.Form1_KeyDown(this, new KeyEventArgs(Keys.Left));
-                        }
-                        else if (CersioCtrl.RightBtn)
-                        {
-                            this.Form1_KeyDown(this, new KeyEventArgs(Keys.Right));
-                        }
+                        this.Form1_KeyDown(this, new KeyEventArgs(Keys.Left));
                     }
-
-                    if (updateCallCnt % 2 == 0)
+                    else if (CersioCtrl.RightBtn)
                     {
-                        if (CersioCtrl.FwdBtn)
-                        {
-                            this.Form1_KeyDown(this, new KeyEventArgs(Keys.Up));
-                        }
+                        this.Form1_KeyDown(this, new KeyEventArgs(Keys.Right));
                     }
                 }
 
-                // ゴールしたら終わる
-                if (goalFlg)
+                if (updateMainCnt % 2 == 0)
                 {
-                    //OneShotUpdateFlg = true;
-                    CersioCt.goalFlg = true;
+                    if (CersioCtrl.FwdBtn)
+                    {
+                        this.Form1_KeyDown(this, new KeyEventArgs(Keys.Up));
+                    }
                 }
-                updateCallCnt++;
             }
 
+            // エマージェンシーブレーキ 動作カラー表示
+            if (Brain.EmgBrk) cb_EmgBrake.BackColor = Color.Red;
+            else cb_EmgBrake.BackColor = SystemColors.Control;
 
-            //PictureUpdate();
+            updateMainCnt++;
+
         }
 
         /// <summary>
@@ -605,11 +755,12 @@ namespace VehicleRunner
 
         }
 
+        // ハードウェア用 周期の短いカウンタ
+        private int updateHwCnt = 0;
 
-        private int updateCnt = 0;
         /// <summary>
         /// ハードウェア系の更新
-        /// (間隔短め)
+        /// (間隔短め 50MS)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -640,15 +791,15 @@ namespace VehicleRunner
             CersioCt.GetHWStatus();
 
             // ロータリーエンコーダ値,コンパス値 更新
-            LocSys.RotaryEncoder_Update(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwRERad);
-            LocSys.Compus_Update(CersioCt.hwCompass);
+            LocSys.SetRotaryEncoderData(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwRERad);
+            LocSys.SetCompassData(CersioCt.hwCompass);
 
             // 送受信文字更新
             tb_ResiveData.Text = CersioCt.hwResiveStr;
             tb_SendData.Text = CersioCt.hwSendStr;
 
-            updateCnt++;
-            if (0 == updateCnt % 10)
+            updateHwCnt++;
+            if (0 == updateHwCnt % 10)
             {
                 PictureUpdate();
             }
@@ -680,7 +831,7 @@ namespace VehicleRunner
                 {
                     sw.Write("hwSendStr:" + CersioCt.hwSendStr + System.Environment.NewLine);
                     sw.Write("hwResiveStr:" + CersioCt.hwResiveStr + System.Environment.NewLine);
-                    sw.Write("handle:" + CersioCtrl.handleValue + " / acc:" + CersioCtrl.accValue + System.Environment.NewLine);
+                    sw.Write("handle:" + CersioCtrl.nowSendHandleValue + " / acc:" + CersioCtrl.nowSendAccValue + System.Environment.NewLine);
                     //sw.Write("checkPoint:" + CersioCt.RTS.GetNowCheckPointIdx() + "/" + CersioCt.RTS.GetNumCheckPoint() + System.Environment.NewLine);
                 }
                 else
@@ -709,6 +860,8 @@ namespace VehicleRunner
                              "/Y " + LocSys.worldMap.GetWorldY(LocSys.C1.Y).ToString("f3") +
                              "/ Dir " + LocSys.C1.Theta.ToString("f2") +
                              System.Environment.NewLine);
+
+                    sw.Write("MatchingScore:" + CersioCt.BrainCtrl.MatchingScore.ToString() + System.Environment.NewLine);
                 }
                 // 改行
                 sw.Write(System.Environment.NewLine);
@@ -734,8 +887,6 @@ namespace VehicleRunner
                 LRFViewScale = tval;
             }
         }
-
-
 
 
     }

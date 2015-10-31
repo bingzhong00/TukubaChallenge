@@ -76,10 +76,27 @@ namespace LocationPresumption
             LRFdata = sencerData;
         }
 
+        /// <summary>
+        /// マーカーと同じか比較
+        /// </summary>
+        /// <param name="B"></param>
+        /// <returns></returns>
         public bool IsEqual(MarkPoint B)
         {
             if (X == B.X && Y == B.Y && Theta == B.Theta) return true;
             return false;
+        }
+
+        public void Set(double x, double y, double theta)
+        {
+            X = x;
+            Y = y;
+            Theta = theta;
+        }
+
+        public void Set(MarkPoint B)
+        {
+            Set(B.X, B.Y, B.Theta);
         }
 
         /// <summary>

@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Brain.cs" />
     <Compile Include="CersioCtrl.cs" />
     <Compile Include="DriveIOport.cs" />
     <Compile Include="REncoderInput.cs" />
@@ -70,6 +71,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LocationPresumption\LocationPresumption.csproj">
+      <Project>{996e51a3-8549-460d-9c91-14402266a0fd}</Project>
+      <Name>LocationPresumption</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SCIP_library\SCIP_library.csproj">
       <Project>{c6a48db4-e53f-4615-aebf-6b2100b6f9ff}</Project>
       <Name>SCIP_library</Name>

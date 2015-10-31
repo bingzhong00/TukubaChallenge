@@ -84,10 +84,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CersioIO\CersioIO.csproj">
-      <Project>{4cc8a788-6973-4a57-b47a-7a629f77b6cb}</Project>
-      <Name>CersioIO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SCIP_library\SCIP_library.csproj">
       <Project>{c6a48db4-e53f-4615-aebf-6b2100b6f9ff}</Project>
       <Name>SCIP_library</Name>
