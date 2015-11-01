@@ -24,7 +24,12 @@ namespace LocSampLogViewer
         Bitmap WorldMapBmp;       // マップ
         Bitmap SubWindowBmp;        // サブ
 
+        Bitmap MapImage;
+
         public static double LRF_ScaleOfPixel = 1.0 / 100.0; // 10cm = 1Pixel [mm]からピクセルサイズへの変換
+
+        float MapImageViewX;
+        float MapImageViewY;
 
         public MainForm()
         {
@@ -41,6 +46,11 @@ namespace LocSampLogViewer
 
             tmr_Update.Enabled = true;
             UpdateSubWindow();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Lbl_MapScale.Text = "1/" + ((double)(1.0 / LRF_ScaleOfPixel)).ToString("f2");
         }
 
         /// <summary>
@@ -100,26 +110,51 @@ namespace LocSampLogViewer
             // Send Handle,ACC
             if (lsData.bSend)
             {
-                Lbl_Handle.Enabled = true;
-                Lbl_ACC.Enabled = true;
+                if (lsData.bSendACC)
+                {
+                    Lbl_Handle.Enabled = true;
+                    Lbl_ACC.Enabled = true;
+                }
+                if (lsData.bSendLED)
+                {
+                    Lbl_LED.Enabled = true;
+                }
 
                 Lbl_Handle.Text = lsData.sendHandle.ToString("f3");
                 Lbl_ACC.Text = lsData.sendACC.ToString("f3");
+                Lbl_LED.Text = lsData.sendLED.ToString();
 
                 drawLsData.sendHandle = lsData.sendHandle;
                 drawLsData.sendACC = lsData.sendACC;
+
+                tb_SendUnknown.Text = lsData.sendUnkownStr;
             }
             else
             {
                 Lbl_Handle.Enabled = false;
                 Lbl_ACC.Enabled = false;
+                Lbl_LED.Enabled = false;
                 //Lbl_Handle.Text = "ND";
                 //Lbl_ACC.Text = "ND";
             }
 
-            Lbl_RE.Text = "ND";
+            // A1 RE
+            if (lsData.bRE)
+            {
+                Lbl_RE.Enabled = true;
+                Lbl_RE.Text = lsData.REL.ToString() + "," + lsData.RER.ToString();
 
-            // Compus
+                drawLsData.REL = lsData.REL;
+                drawLsData.RER = lsData.RER;
+            }
+            else
+            {
+                Lbl_RE.Enabled = false;
+                //Lbl_RE.Text = "ND";
+            }
+
+
+            // A2 Compus
             if (lsData.bCompus)
             {
                 Lbl_Compus.Enabled = true;
@@ -133,7 +168,7 @@ namespace LocSampLogViewer
                 //Lbl_Compus.Text = "ND";
             }
 
-            // GPS
+            // A3 GPS
             if (lsData.bGPS)
             {
                 Lbl_GPS_X.Enabled = true;
@@ -151,7 +186,7 @@ namespace LocSampLogViewer
                 //Lbl_GPS_X.Text = "ND";
             }
 
-            // REPlot
+            // A4 REPlot
             if (lsData.bREPlot)
             {
                 Lbl_REPlotX.Enabled = true;
@@ -173,7 +208,7 @@ namespace LocSampLogViewer
                 //Lbl_REPlotX.Text = "ND";
             }
 
-
+            // LocSump
             // R1
             if (lsData.bR1)
             {
@@ -217,6 +252,8 @@ namespace LocSampLogViewer
                 Lbl_E1_Dir.Enabled = false;
                 //Lbl_R1_X.Text = "ND";
             }
+
+            tb_ResiveUnknown.Text = lsData.resiveUnkownStr + lsData.locsumpUnkownStr;
 
             UpdateSubWindow();
         }
@@ -299,14 +336,21 @@ namespace LocSampLogViewer
             Graphics g = Graphics.FromImage(WorldMapBmp);
             g.FillRectangle(Brushes.Black, 0, 0, WorldMapBmp.Width, WorldMapBmp.Height);
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            
+
             g.ResetTransform();
             // View
             g.ScaleTransform(ViewScale, ViewScale, MatrixOrder.Append);
             g.TranslateTransform(ViewTransX, ViewTransY, MatrixOrder.Append);
 
+            // MapImage Draw 
+            if (null != MapImage)
+            {
+                g.DrawImage(MapImage, MapImageViewX, MapImageViewY);
+            }
+
             DrawGuideLine(g);
 
+            // 実走ログ
             if (null != LogData)
             {
                 // REPlot
@@ -321,9 +365,11 @@ namespace LocSampLogViewer
                 }
             }
 
+            // TCP or GPSログ
             if( null != TcpLogData )
             {
-                DrawGPSData(g, TcpLogData);
+                double ang = (double)Num_GPSAngle.Value;
+                DrawGPSData(g, ang, TcpLogData);
             }
 
 
@@ -418,7 +464,7 @@ namespace LocSampLogViewer
         /// GPS軌跡描画
         /// </summary>
         /// <param name="g"></param>
-        private void DrawGPSData(Graphics g, LocSumpLogData[] lcData )
+        private void DrawGPSData(Graphics g, double angle, LocSumpLogData[] lcData )
         {
             int drawNum = 10;  // 色変えの単位
 
@@ -428,6 +474,9 @@ namespace LocSampLogViewer
             double fstX, fstY;
             bool bFst = true;
             fstX = fstY = 0.0;
+
+            double dCos = Math.Cos((angle) * Math.PI / 180.0);
+            double dSin = Math.Sin((angle) * Math.PI / 180.0);
 
             for (int i = 0; i < lcData.Length / drawNum; i++)
             {
@@ -451,8 +500,11 @@ namespace LocSampLogViewer
                             fstY = lcData[iR + n].GPSLandY;
                         }
 
-                        px = (int)((lcData[iR + n].GPSLandX - fstX) * LRF_ScaleOfPixel);
-                        py = (int)((lcData[iR + n].GPSLandY - fstY) * LRF_ScaleOfPixel);
+                        double x = (lcData[iR + n].GPSLandX - fstX);
+                        double y = (lcData[iR + n].GPSLandY - fstY);
+
+                        px = (int)((x * dCos - y * dSin) * LRF_ScaleOfPixel);
+                        py = (int)((x * dSin + y * dCos) * LRF_ScaleOfPixel);
                     }
 
                     drawLinePos[iR+1] = new Point(px, py);
@@ -555,12 +607,17 @@ namespace LocSampLogViewer
         int msX, msY;
         int stX, stY;
         bool viewMoveFlg = false;
+        bool mapMoveFlg = false;
         private void PicBox_Map_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                // オブジェクト移動
+                // ビュー移動
                 viewMoveFlg = true;
+            } else if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                // マップ移動
+                mapMoveFlg = true;
             }
 
             // 移動前の座標を記憶
@@ -571,6 +628,11 @@ namespace LocSampLogViewer
             {
                 stX = (int)ViewTransX;
                 stY = (int)ViewTransY;
+            }
+            else if (mapMoveFlg)
+            {
+                stX = (int)MapImageViewX;
+                stY = (int)MapImageViewY;                
             }
         }
 
@@ -598,14 +660,30 @@ namespace LocSampLogViewer
                     //UpdateTRG = true;
                 }
             }
+            else if (mapMoveFlg)
+            {
+                // Map移動
+                int difX = e.X - msX;
+                int difY = e.Y - msY;
+
+                if (difX != 0 && difY != 0)
+                {
+                    MapImageViewX = stX + difX;
+                    MapImageViewY = stY + difY;
+                }
+            }
 
         }
 
         private void PicBox_Map_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 viewMoveFlg = false;
+            }
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                mapMoveFlg = false;
             }
 
         }
@@ -673,6 +751,32 @@ namespace LocSampLogViewer
             ScrlBar_Time.Value = 0;
             ShowLogData(0);
         }
+
+        private void Btn_MapLoadDlg_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fDlg = new OpenFileDialog();
+
+            fDlg.Filter = "MapImage (*.png)|*.png|MapImage (*.bmp)|*.bmp";
+
+            var Result = fDlg.ShowDialog();
+            if (Result != System.Windows.Forms.DialogResult.OK) return;
+
+            Tb_MapName.Text = fDlg.FileName;
+            MapImage = new Bitmap(Tb_MapName.Text);
+
+            Lbl_MapSize.Text = MapImage.Width.ToString() + " x " + MapImage.Height.ToString();
+        }
+
+        private void PicBox_Map_SizeChanged(object sender, EventArgs e)
+        {
+            if (PicBox_Map.Width == 0 || PicBox_Map.Height == 0) return;
+
+            WorldMapBmp = new Bitmap(PicBox_Map.Width, PicBox_Map.Height);
+            PicBox_Map.Image = WorldMapBmp;
+
+            UpdateMapWindow();
+        }
+
 
     }
 }

@@ -67,9 +67,14 @@
             this.Lbl_MapSize = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.Lbl_MapScale = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.Btn_MapLoadDlg = new System.Windows.Forms.Button();
             this.ConnectTabControl = new System.Windows.Forms.TabControl();
             this.tabPage_LogFile = new System.Windows.Forms.TabPage();
+            this.label18 = new System.Windows.Forms.Label();
+            this.Num_GPSAngle = new System.Windows.Forms.NumericUpDown();
+            this.Btn_GPSDlg = new System.Windows.Forms.Button();
+            this.Tb_GPSFileName = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
             this.Btn_LoadTCPLogDlg = new System.Windows.Forms.Button();
             this.Tb_TCPLogFileName = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -88,9 +93,10 @@
             this.tmr_Update = new System.Windows.Forms.Timer(this.components);
             this.ScrlBar_ViewScale = new System.Windows.Forms.HScrollBar();
             this.Lbl_ViewPosScale = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.Tb_GPSFileName = new System.Windows.Forms.TextBox();
-            this.Btn_GPSDlg = new System.Windows.Forms.Button();
+            this.tb_SendUnknown = new System.Windows.Forms.TextBox();
+            this.tb_ResiveUnknown = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.Lbl_LED = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Map)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Sub)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -98,6 +104,7 @@
             this.groupBox3.SuspendLayout();
             this.ConnectTabControl.SuspendLayout();
             this.tabPage_LogFile.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Num_GPSAngle)).BeginInit();
             this.tabPage_Remote.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
@@ -113,6 +120,7 @@
             this.PicBox_Map.Size = new System.Drawing.Size(516, 376);
             this.PicBox_Map.TabIndex = 0;
             this.PicBox_Map.TabStop = false;
+            this.PicBox_Map.SizeChanged += new System.EventHandler(this.PicBox_Map_SizeChanged);
             this.PicBox_Map.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PicBox_Map_MouseDown);
             this.PicBox_Map.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PicBox_Map_MouseMove);
             this.PicBox_Map.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PicBox_Map_MouseUp);
@@ -129,8 +137,9 @@
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 511);
+            this.label1.Location = new System.Drawing.Point(5, 516);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(32, 12);
             this.label1.TabIndex = 4;
@@ -138,7 +147,8 @@
             // 
             // Lbl_Time
             // 
-            this.Lbl_Time.Location = new System.Drawing.Point(43, 511);
+            this.Lbl_Time.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Lbl_Time.Location = new System.Drawing.Point(43, 516);
             this.Lbl_Time.Name = "Lbl_Time";
             this.Lbl_Time.Size = new System.Drawing.Size(92, 12);
             this.Lbl_Time.TabIndex = 5;
@@ -157,7 +167,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 27);
+            this.label3.Location = new System.Drawing.Point(9, 21);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(42, 12);
             this.label3.TabIndex = 8;
@@ -165,7 +175,7 @@
             // 
             // Lbl_Handle
             // 
-            this.Lbl_Handle.Location = new System.Drawing.Point(57, 27);
+            this.Lbl_Handle.Location = new System.Drawing.Point(57, 21);
             this.Lbl_Handle.Name = "Lbl_Handle";
             this.Lbl_Handle.Size = new System.Drawing.Size(62, 12);
             this.Lbl_Handle.TabIndex = 9;
@@ -174,7 +184,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 49);
+            this.label5.Location = new System.Drawing.Point(125, 21);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(31, 12);
             this.label5.TabIndex = 10;
@@ -182,7 +192,7 @@
             // 
             // Lbl_ACC
             // 
-            this.Lbl_ACC.Location = new System.Drawing.Point(57, 49);
+            this.Lbl_ACC.Location = new System.Drawing.Point(169, 21);
             this.Lbl_ACC.Name = "Lbl_ACC";
             this.Lbl_ACC.Size = new System.Drawing.Size(62, 12);
             this.Lbl_ACC.TabIndex = 11;
@@ -209,13 +219,16 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.Lbl_LED);
+            this.groupBox1.Controls.Add(this.label19);
+            this.groupBox1.Controls.Add(this.tb_SendUnknown);
             this.groupBox1.Controls.Add(this.Lbl_ACC);
             this.groupBox1.Controls.Add(this.Lbl_Handle);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(529, 217);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(251, 70);
+            this.groupBox1.Size = new System.Drawing.Size(251, 82);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "送信情報";
@@ -265,6 +278,7 @@
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.tb_ResiveUnknown);
             this.groupBox3.Controls.Add(this.Lbl_E1_Dir);
             this.groupBox3.Controls.Add(this.Lbl_E1_Y);
             this.groupBox3.Controls.Add(this.Lbl_E1_X);
@@ -467,14 +481,15 @@
             this.Lbl_MapScale.TabIndex = 26;
             this.Lbl_MapScale.Text = "1/100";
             // 
-            // button4
+            // Btn_MapLoadDlg
             // 
-            this.button4.Location = new System.Drawing.Point(187, 47);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(51, 24);
-            this.button4.TabIndex = 27;
-            this.button4.Text = "...";
-            this.button4.UseVisualStyleBackColor = true;
+            this.Btn_MapLoadDlg.Location = new System.Drawing.Point(187, 47);
+            this.Btn_MapLoadDlg.Name = "Btn_MapLoadDlg";
+            this.Btn_MapLoadDlg.Size = new System.Drawing.Size(51, 24);
+            this.Btn_MapLoadDlg.TabIndex = 27;
+            this.Btn_MapLoadDlg.Text = "...";
+            this.Btn_MapLoadDlg.UseVisualStyleBackColor = true;
+            this.Btn_MapLoadDlg.Click += new System.EventHandler(this.Btn_MapLoadDlg_Click);
             // 
             // ConnectTabControl
             // 
@@ -490,6 +505,8 @@
             // tabPage_LogFile
             // 
             this.tabPage_LogFile.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_LogFile.Controls.Add(this.label18);
+            this.tabPage_LogFile.Controls.Add(this.Num_GPSAngle);
             this.tabPage_LogFile.Controls.Add(this.Btn_GPSDlg);
             this.tabPage_LogFile.Controls.Add(this.Tb_GPSFileName);
             this.tabPage_LogFile.Controls.Add(this.label16);
@@ -505,6 +522,58 @@
             this.tabPage_LogFile.Size = new System.Drawing.Size(512, 91);
             this.tabPage_LogFile.TabIndex = 1;
             this.tabPage_LogFile.Text = "LogFile";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(409, 65);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(29, 12);
+            this.label18.TabIndex = 10;
+            this.label18.Text = "角度";
+            // 
+            // Num_GPSAngle
+            // 
+            this.Num_GPSAngle.Location = new System.Drawing.Point(444, 63);
+            this.Num_GPSAngle.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.Num_GPSAngle.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.Num_GPSAngle.Name = "Num_GPSAngle";
+            this.Num_GPSAngle.Size = new System.Drawing.Size(62, 19);
+            this.Num_GPSAngle.TabIndex = 9;
+            // 
+            // Btn_GPSDlg
+            // 
+            this.Btn_GPSDlg.Location = new System.Drawing.Point(348, 60);
+            this.Btn_GPSDlg.Name = "Btn_GPSDlg";
+            this.Btn_GPSDlg.Size = new System.Drawing.Size(43, 22);
+            this.Btn_GPSDlg.TabIndex = 8;
+            this.Btn_GPSDlg.Text = "...";
+            this.Btn_GPSDlg.UseVisualStyleBackColor = true;
+            this.Btn_GPSDlg.Click += new System.EventHandler(this.Btn_GPSDlg_Click);
+            // 
+            // Tb_GPSFileName
+            // 
+            this.Tb_GPSFileName.Location = new System.Drawing.Point(91, 62);
+            this.Tb_GPSFileName.Name = "Tb_GPSFileName";
+            this.Tb_GPSFileName.Size = new System.Drawing.Size(251, 19);
+            this.Tb_GPSFileName.TabIndex = 7;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(8, 65);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(61, 12);
+            this.label16.TabIndex = 6;
+            this.label16.Text = "GPSLogger";
             // 
             // Btn_LoadTCPLogDlg
             // 
@@ -629,13 +698,13 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.Tb_MapName);
-            this.groupBox4.Controls.Add(this.button4);
+            this.groupBox4.Controls.Add(this.Btn_MapLoadDlg);
             this.groupBox4.Controls.Add(this.Lbl_MapScale);
             this.groupBox4.Controls.Add(this.label15);
             this.groupBox4.Controls.Add(this.label17);
             this.groupBox4.Controls.Add(this.Lbl_MapSize);
-            this.groupBox4.Enabled = false;
             this.groupBox4.Location = new System.Drawing.Point(529, 9);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(244, 108);
@@ -645,6 +714,8 @@
             // 
             // ScrlBar_Time
             // 
+            this.ScrlBar_Time.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ScrlBar_Time.Location = new System.Drawing.Point(7, 535);
             this.ScrlBar_Time.Name = "ScrlBar_Time";
             this.ScrlBar_Time.Size = new System.Drawing.Size(515, 17);
@@ -658,6 +729,7 @@
             // 
             // ScrlBar_ViewScale
             // 
+            this.ScrlBar_ViewScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ScrlBar_ViewScale.Location = new System.Drawing.Point(302, 511);
             this.ScrlBar_ViewScale.Maximum = 300;
             this.ScrlBar_ViewScale.Minimum = 10;
@@ -669,6 +741,7 @@
             // 
             // Lbl_ViewPosScale
             // 
+            this.Lbl_ViewPosScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Lbl_ViewPosScale.AutoSize = true;
             this.Lbl_ViewPosScale.Location = new System.Drawing.Point(150, 516);
             this.Lbl_ViewPosScale.Name = "Lbl_ViewPosScale";
@@ -676,31 +749,38 @@
             this.Lbl_ViewPosScale.TabIndex = 32;
             this.Lbl_ViewPosScale.Text = "View:";
             // 
-            // label16
+            // tb_SendUnknown
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(8, 65);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(61, 12);
-            this.label16.TabIndex = 6;
-            this.label16.Text = "GPSLogger";
+            this.tb_SendUnknown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_SendUnknown.Location = new System.Drawing.Point(7, 57);
+            this.tb_SendUnknown.Name = "tb_SendUnknown";
+            this.tb_SendUnknown.Size = new System.Drawing.Size(236, 19);
+            this.tb_SendUnknown.TabIndex = 12;
             // 
-            // Tb_GPSFileName
+            // tb_ResiveUnknown
             // 
-            this.Tb_GPSFileName.Location = new System.Drawing.Point(91, 62);
-            this.Tb_GPSFileName.Name = "Tb_GPSFileName";
-            this.Tb_GPSFileName.Size = new System.Drawing.Size(366, 19);
-            this.Tb_GPSFileName.TabIndex = 7;
+            this.tb_ResiveUnknown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_ResiveUnknown.Location = new System.Drawing.Point(2, 164);
+            this.tb_ResiveUnknown.Name = "tb_ResiveUnknown";
+            this.tb_ResiveUnknown.Size = new System.Drawing.Size(236, 19);
+            this.tb_ResiveUnknown.TabIndex = 31;
             // 
-            // Btn_GPSDlg
+            // label19
             // 
-            this.Btn_GPSDlg.Location = new System.Drawing.Point(463, 60);
-            this.Btn_GPSDlg.Name = "Btn_GPSDlg";
-            this.Btn_GPSDlg.Size = new System.Drawing.Size(43, 22);
-            this.Btn_GPSDlg.TabIndex = 8;
-            this.Btn_GPSDlg.Text = "...";
-            this.Btn_GPSDlg.UseVisualStyleBackColor = true;
-            this.Btn_GPSDlg.Click += new System.EventHandler(this.Btn_GPSDlg_Click);
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(12, 40);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(28, 12);
+            this.label19.TabIndex = 13;
+            this.label19.Text = "LED:";
+            // 
+            // Lbl_LED
+            // 
+            this.Lbl_LED.Location = new System.Drawing.Point(57, 40);
+            this.Lbl_LED.Name = "Lbl_LED";
+            this.Lbl_LED.Size = new System.Drawing.Size(34, 12);
+            this.Lbl_LED.TabIndex = 14;
+            this.Lbl_LED.Text = "0.00";
             // 
             // MainForm
             // 
@@ -720,7 +800,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.PicBox_Map);
             this.Name = "MainForm";
-            this.Text = "LogViewer Ver0.20";
+            this.Text = "LogViewer Ver0.30";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Map)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicBox_Sub)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -731,6 +812,7 @@
             this.ConnectTabControl.ResumeLayout(false);
             this.tabPage_LogFile.ResumeLayout(false);
             this.tabPage_LogFile.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Num_GPSAngle)).EndInit();
             this.tabPage_Remote.ResumeLayout(false);
             this.tabPage_Remote.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -766,7 +848,7 @@
         private System.Windows.Forms.Label Lbl_MapSize;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label Lbl_MapScale;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button Btn_MapLoadDlg;
         private System.Windows.Forms.TabControl ConnectTabControl;
         private System.Windows.Forms.TabPage tabPage_Remote;
         private System.Windows.Forms.Label label8;
@@ -804,6 +886,12 @@
         private System.Windows.Forms.Button Btn_GPSDlg;
         private System.Windows.Forms.TextBox Tb_GPSFileName;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.NumericUpDown Num_GPSAngle;
+        private System.Windows.Forms.TextBox tb_SendUnknown;
+        private System.Windows.Forms.TextBox tb_ResiveUnknown;
+        private System.Windows.Forms.Label Lbl_LED;
+        private System.Windows.Forms.Label label19;
     }
 }
 

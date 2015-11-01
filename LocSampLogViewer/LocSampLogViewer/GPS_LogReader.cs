@@ -14,7 +14,10 @@ namespace LocSampLogViewer
         private StreamReader fsr;
         private FileStream fst;
 
-        const double GPSScale = 3000.0;
+        // 緯度、経度 １分の距離[mm]
+        const double GPSScale = 1.852*1000.0*1000.0;
+        const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
+        const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
 
         /*
          * Log Format
@@ -140,6 +143,7 @@ namespace LocSampLogViewer
                 {
                     case "$GPRMC": // RE
                         {
+                            double ido = 0.0;
                             dataIdx++;
 
                             resultData[dataIdx] = new LocSumpLogData();
@@ -153,14 +157,23 @@ namespace LocSampLogViewer
                             {
                                 // dataWord[3] 緯度。dddmm.mmmm
                                 string[] dataGPS = dataWord[3].Split('.');
-                                lsData.GPSLandY = -(double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1]) / 60.0)) * GPSScale;
+                                //ido = double.Parse(dataGPS[0]);
+                                //lsData.GPSLandY = -(double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1])/60.0)) * GPSScale;
+                                string strDo = dataWord[3].Substring(0, dataGPS[0].Length - 2);
+                                string strHun = dataWord[3].Substring(strDo.Length, dataWord[3].Length - strDo.Length);
+                                lsData.GPSLandY = -(double.Parse(strDo) * 60.0 + (double.Parse(strHun))) * GPSScaleY;//GPSScale;
+                                ido = double.Parse(strDo);
                             }
                             // dataWord[4] N,S N = 北緯、South = 南緯
 
                             {
                                 // dataWord[5] 経度。dddmm.mmmm
                                 string[] dataGPS = dataWord[5].Split('.');
-                                lsData.GPSLandX = (double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1]) / 60.0)) * GPSScale;
+
+                                //lsData.GPSLandX = (double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1])) / 60.0) * (GPSScale * Math.Cos((ido / 100.0) * Math.PI / 180.0));
+                                string strDo = dataWord[5].Substring(0, dataGPS[0].Length - 2);
+                                string strHun = dataWord[5].Substring(strDo.Length, dataWord[5].Length - strDo.Length);
+                                lsData.GPSLandX = (double.Parse(strDo) * 60.0 + (double.Parse(strHun))) * GPSScaleX;//(GPSScale * Math.Cos(ido * Math.PI / 180.0));
                             }
                             // dataWord[6] E = 東経、West = 西経
 

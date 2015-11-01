@@ -13,14 +13,19 @@ namespace LocSampLogViewer
 
         // SendData
         public bool bSend;
+        public bool bSendACC;
         public double sendHandle;      // 送信：ハンドル
         public double sendACC;         // 送信：アクセル
+
+        public bool bSendLED;
         public int sendLED;            // 送信：LEDパターン
+
+        public string sendUnkownStr;
 
         // ResiveData
         public bool bRE;
-        public long REL;     // RE
-        public long RER;
+        public double REL;     // RE
+        public double RER;
 
         public bool bREPlot;
         public double REPlotX;     // RE座標
@@ -34,6 +39,8 @@ namespace LocSampLogViewer
         public double GPSLandX;    // GPS座標
         public double GPSLandY;
 
+        public string resiveUnkownStr;
+
         // LocSumpBrainData
         public bool bR1;
         public double R1_X;        // 自己位置推定
@@ -44,6 +51,8 @@ namespace LocSampLogViewer
         public double E1_X;        // REPlot
         public double E1_Y;
         public double E1_Dir;
+
+        public string locsumpUnkownStr;
     }
 
     public class LocSumpLogReader
@@ -248,6 +257,7 @@ namespace LocSampLogViewer
                     case "hwSendStr":
                         {
                             string[] strSendCommand = strSplitData[1].Split('/');
+
                             lsData.bSend = true;
 
                             foreach (var OneCommand in strSendCommand)
@@ -259,12 +269,15 @@ namespace LocSampLogViewer
                                     case "AC":
                                         lsData.sendHandle = double.Parse(dataWord[1]);
                                         lsData.sendACC = double.Parse(dataWord[2]);
+                                        lsData.bSendACC = true;
                                         break;
                                     case "AL":
                                         lsData.sendLED = int.Parse(dataWord[1]);
+                                        lsData.bSendLED = true;
                                         break;
 
-                                    default:// ※未対応
+                                    default:// 未対応 コマンド
+                                        lsData.sendUnkownStr += OneCommand;
                                         break;
                                 }
                             }
@@ -288,8 +301,16 @@ namespace LocSampLogViewer
                                     string[] dataWord = OneCommand.Split(',');
                                     switch (dataWord[0])
                                     {
+                                        case "AC":
+                                        case "AL":
+                                            // 送信結果
+                                            break;
+
                                         case "A1": // RE
-                                            // ※未対応
+                                            // dataWord[1] ms
+                                            lsData.RER = double.Parse(dataWord[2]);
+                                            lsData.REL = double.Parse(dataWord[3]);
+                                            lsData.bRE = true;
                                             break;
                                         case "A2": // Compus
                                             // dataWord[1] ms
@@ -314,6 +335,10 @@ namespace LocSampLogViewer
                                             lsData.REPlotY = double.Parse(dataWord[3]);
                                             lsData.REPlotDir = double.Parse(dataWord[4]);
                                             lsData.bREPlot = true;
+                                            break;
+
+                                        default:
+                                            lsData.resiveUnkownStr += OneCommand;
                                             break;
                                     }
                                 }
@@ -357,7 +382,10 @@ namespace LocSampLogViewer
                         }
                         break;
                     case "V1":
-                        // ※未対応
+                        // ※未対応 パーティクルフィルタ自己位置推定座標
+                        break;
+                    case "C1":
+                        // ※未対応 コンパス座標
                         break;
                     case "E1":
                         {
@@ -385,6 +413,9 @@ namespace LocSampLogViewer
                                 }
                             }
                         }
+                        break;
+                    default:
+                        lsData.locsumpUnkownStr += str;
                         break;
                 }
 
