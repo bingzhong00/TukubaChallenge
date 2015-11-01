@@ -27,12 +27,12 @@ namespace CersioIO
         bool goalFlg = false;   // ゴールしたか？
 
         // 
-        const double touchRange = 3.0;              // チェックポイントに近づく距離(半径) [Pixel]
+        const double touchRange = 10.0;              // チェックポイントに近づく距離(半径) [Pixel]
 
         //  条件が悪い場合見送るチェックポイントの条件
         // (passRange以内の距離で、passOverDir以上の角度なら次のチェックポイントへ)
         const double passRange = touchRange * 3.0;  // パスできるチェックポイントの距離
-        const double passOverDir = 160.0;           // パスできるチェックポイントとの角度
+        const double passOverDir = 130.0;           // パスできるチェックポイントとの角度
 
 
         /// <summary>
@@ -78,6 +78,31 @@ namespace CersioIO
         {
             seqIdx = 0;
             goalFlg = false;
+        }
+
+        /// <summary>
+        /// 前方にチェックポイントを作り直す
+        /// </summary>
+        public void ResetStraitMode()
+        {
+            seqIdx = 0;
+            goalFlg = false;
+
+            RootingData.checkPoint = new Vector3[1];
+
+            double wRad = -RootingData.startDir * Axiom.Math.Utility.PI / 180.0;
+            double cs = Math.Cos(wRad);
+            double sn = Math.Sin(wRad);
+
+            double tgtX = 0.0;
+            double tgtY = -1000.0; // pixel 10cm x 1000 = 100m 先を目指す
+
+            double newCpX = RootingData.startPosition.x + (tgtX * cs - tgtY * sn);
+            double newCpY = RootingData.startPosition.y + (tgtX * sn + tgtY * cs);
+
+
+            RootingData.checkPoint[0] = new Vector3(newCpX, newCpY, 0);
+            //RootingData.checkPoint[1] = new Vector3(nowPos.x, nowPos.y, 0);
         }
 
         // 現在位置セット

@@ -22,11 +22,19 @@ namespace LocationPresumption
     /// </summary>
     public class LocPreSumpSystem
     {
+        // LRF
         public URG_LRF urgLRF = null;               // nullで仮想MAPモード
         public double[] LRF_Data = null;
 
         public double RealToMapSclae;                // マップサイズから メートル変換
         public double LRFmaxRange = 30.0 * 1000.0;   // LRFの有効範囲(単位 mm)
+
+        // LRFノイズリダクション
+        public double[] LRF_UntiNoiseData;
+        private const int maxLrfDir = 270;
+
+        // 割合 (1.0...ノイズ高め　/ 0.0...ノイズ低め　ただし反応がにぶい)
+        double LRF_noiseRate = 0.50; 
 
         // エリアマップ管理
         public WorldMap worldMap;                  // 全体マップ
@@ -87,6 +95,14 @@ namespace LocationPresumption
             {
                 SinTbl[i] = (float)Math.Sin((double)i * Math.PI / 180.0);
                 CosTbl[i] = (float)Math.Cos((double)i * Math.PI / 180.0);
+            }
+
+            LRF_UntiNoiseData = new double[maxLrfDir];
+
+            // 接触状態にならないように初期化
+            for (int i = 0; i < LRF_UntiNoiseData.Length; i++)
+            {
+                LRF_UntiNoiseData[i] = LRFmaxRange;
             }
         }
 
@@ -296,6 +312,12 @@ namespace LocationPresumption
                 LRF_Data = MRF.Sense(R1);
             }
 
+            // lrfノイズ リダクション
+            for (int i = 0; i < LRF_Data.Length; i++)
+            {
+                LRF_UntiNoiseData[i] = (LRF_UntiNoiseData[i] * (1.0 - LRF_noiseRate)) + (LRF_Data[i] * LRF_noiseRate);
+            }
+
             return rt;
         }
 
@@ -326,7 +348,8 @@ namespace LocationPresumption
             // (スタート位置、向きを反映)
             E1.X += (reX - nowREX);
             E1.Y += (reY - nowREY);
-            E1.Theta += (reTheta - nowRETheta);
+            //E1.Theta += (reTheta - nowRETheta);
+            E1.Theta = reTheta;
 
             nowREX = reX;
             nowREY = reY;
@@ -356,9 +379,11 @@ namespace LocationPresumption
         /// <summary>
         /// 自己位置推定 更新
         /// </summary>
-        /// <returns></returns>
+        /// <returns>true...補正した, false..補正不要</returns>
         public bool FilterLocalizeUpdate( bool usePF, bool bEmurateMode )
         {
+            bool bResult = false;
+
             swCNT_MRF.Reset();
 
             // 自己位置推定位置がエリア内になるようにチェック
@@ -373,6 +398,7 @@ namespace LocationPresumption
                 swCNT_Update.Start();
 
                 // パーティクルフィルター演算
+                // ※FilterLocalizeUpdate()はいずれ、この計算のみにして、以外はBrainへ移動
                 {
                     // 計算起点をセット
                     // 位置はロータリーエンコーダ、向きはコンパス
@@ -407,7 +433,16 @@ namespace LocationPresumption
                 // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
                 R1.X += (E1.X - oldE1.X);
                 R1.Y += (E1.Y - oldE1.Y);
-                R1.Theta += (E1.Theta - oldE1.Theta); //  REの向き
+                R1.Theta = E1.Theta; //  REの向き
+
+                if (worldMap.AreaGridMap[(int)R1.X, (int)R1.Y] == Grid.RedArea)
+                {
+                    // 壁の中にいるので補正
+                    R1.X = V1.X;
+                    R1.Y = V1.Y;
+                    R1.Theta = V1.Theta;
+                    bResult = true;
+                }
 
                 // 補正
                 /*
@@ -452,7 +487,7 @@ namespace LocationPresumption
             }
             upDateCnt++;
 
-            return true;
+            return bResult;
         }
 
         // -------------------------------------------------------------------------------------------------------------------------------

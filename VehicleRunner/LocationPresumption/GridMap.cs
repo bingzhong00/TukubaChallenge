@@ -36,10 +36,11 @@ using System.Drawing.Imaging;
 namespace LocationPresumption
 {
     public enum Grid {
-        Fill,
-        Free,
-        Unknown,
-        RangeOver, 
+        Fill,       // 静的障害物
+        Free,       // 通行可能エリア
+        RedArea,    // 異常地帯（壁の中 等）
+        Unknown,    // 不明
+        RangeOver,  // レンジ外
     }
 
     public class GridMap {
@@ -112,7 +113,13 @@ namespace LocationPresumption
                         // 何もないところ
                         this[x, y] = Grid.Free;
                     }
-                    else{
+                    else if (c == Color.FromArgb(255, 0, 0))
+                    {
+                        // 異常地帯　壁の中
+                        this[x, y] = Grid.RedArea;
+                    }
+                    else
+                    {
                         // それ以外
                         this[x, y] = Grid.Unknown;
                     }
@@ -143,6 +150,9 @@ namespace LocationPresumption
                             break;
                         case Grid.Free:
                             cl = Color.White;
+                            break;
+                        case Grid.RedArea:
+                            cl = Color.Red;
                             break;
                         case Grid.Unknown:
                             cl = Color.LightGray;
@@ -185,7 +195,8 @@ namespace LocationPresumption
 
         public delegate void LineDelegate(GridMap map, int x, int y);
 
-        public void DrawLine(int startX, int startY, int endX, int endY, LineDelegate f) {
+        public void DrawLine(int startX, int startY, int endX, int endY, LineDelegate f)
+        {
             int deltaX = 2 * (endX - startX);
             int deltaY = 2 * (endY - startY);
             int stepX = deltaX < 0 ? -1 : 1;
@@ -243,7 +254,7 @@ namespace LocationPresumption
             double max2 = max * max;
             double d2 = 0;
 
-            while (this[(int)x, (int)y] == Grid.Free && d2 < max2)
+            while (this[(int)(x+0.5), (int)(y+0.5)] == Grid.Free && d2 < max2)
             {
                 x += dx;
                 y += dy;

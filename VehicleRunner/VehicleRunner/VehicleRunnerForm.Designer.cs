@@ -61,12 +61,14 @@
             this.label8 = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage_Runner = new System.Windows.Forms.TabPage();
+            this.cb_StraitMode = new System.Windows.Forms.CheckBox();
+            this.RevisionProgBer = new System.Windows.Forms.ProgressBar();
+            this.btn_LocRevision = new System.Windows.Forms.Button();
             this.lbl_MattingScore = new System.Windows.Forms.Label();
             this.tabPage_Emurate = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.btn_LocRevision = new System.Windows.Forms.Button();
-            this.RevisionProgBer = new System.Windows.Forms.ProgressBar();
+            this.cb_EHS = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -127,7 +129,7 @@
             this.cb_TimerUpdate.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_TimerUpdate.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_TimerUpdate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_TimerUpdate.Location = new System.Drawing.Point(626, 552);
+            this.cb_TimerUpdate.Location = new System.Drawing.Point(626, 557);
             this.cb_TimerUpdate.Name = "cb_TimerUpdate";
             this.cb_TimerUpdate.Size = new System.Drawing.Size(127, 53);
             this.cb_TimerUpdate.TabIndex = 5;
@@ -258,7 +260,7 @@
             this.cb_EmgBrake.Checked = true;
             this.cb_EmgBrake.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_EmgBrake.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_EmgBrake.Location = new System.Drawing.Point(770, 585);
+            this.cb_EmgBrake.Location = new System.Drawing.Point(773, 557);
             this.cb_EmgBrake.Name = "cb_EmgBrake";
             this.cb_EmgBrake.Size = new System.Drawing.Size(95, 20);
             this.cb_EmgBrake.TabIndex = 19;
@@ -388,7 +390,7 @@
             // 
             this.lbl_EmurateMode.AutoSize = true;
             this.lbl_EmurateMode.BackColor = System.Drawing.Color.Red;
-            this.lbl_EmurateMode.Location = new System.Drawing.Point(768, 552);
+            this.lbl_EmurateMode.Location = new System.Drawing.Point(634, 542);
             this.lbl_EmurateMode.Name = "lbl_EmurateMode";
             this.lbl_EmurateMode.Size = new System.Drawing.Size(100, 12);
             this.lbl_EmurateMode.TabIndex = 32;
@@ -437,6 +439,7 @@
             // tabPage_Runner
             // 
             this.tabPage_Runner.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_Runner.Controls.Add(this.cb_StraitMode);
             this.tabPage_Runner.Controls.Add(this.RevisionProgBer);
             this.tabPage_Runner.Controls.Add(this.btn_LocRevision);
             this.tabPage_Runner.Controls.Add(this.lbl_MattingScore);
@@ -450,6 +453,36 @@
             this.tabPage_Runner.Size = new System.Drawing.Size(238, 238);
             this.tabPage_Runner.TabIndex = 0;
             this.tabPage_Runner.Text = "Runner";
+            // 
+            // cb_StraitMode
+            // 
+            this.cb_StraitMode.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cb_StraitMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_StraitMode.Location = new System.Drawing.Point(6, 170);
+            this.cb_StraitMode.Name = "cb_StraitMode";
+            this.cb_StraitMode.Size = new System.Drawing.Size(135, 36);
+            this.cb_StraitMode.TabIndex = 20;
+            this.cb_StraitMode.Text = "直進ルートセット";
+            this.cb_StraitMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cb_StraitMode.UseVisualStyleBackColor = true;
+            this.cb_StraitMode.CheckedChanged += new System.EventHandler(this.cb_StraitMode_CheckedChanged);
+            // 
+            // RevisionProgBer
+            // 
+            this.RevisionProgBer.Location = new System.Drawing.Point(134, 132);
+            this.RevisionProgBer.Name = "RevisionProgBer";
+            this.RevisionProgBer.Size = new System.Drawing.Size(85, 23);
+            this.RevisionProgBer.TabIndex = 19;
+            // 
+            // btn_LocRevision
+            // 
+            this.btn_LocRevision.Location = new System.Drawing.Point(6, 121);
+            this.btn_LocRevision.Name = "btn_LocRevision";
+            this.btn_LocRevision.Size = new System.Drawing.Size(117, 43);
+            this.btn_LocRevision.TabIndex = 18;
+            this.btn_LocRevision.Text = "位置補正";
+            this.btn_LocRevision.UseVisualStyleBackColor = true;
+            this.btn_LocRevision.Click += new System.EventHandler(this.btn_LocRevision_Click);
             // 
             // lbl_MattingScore
             // 
@@ -499,28 +532,25 @@
             this.label9.TabIndex = 37;
             this.label9.Text = "LRF";
             // 
-            // btn_LocRevision
+            // cb_EHS
             // 
-            this.btn_LocRevision.Location = new System.Drawing.Point(6, 132);
-            this.btn_LocRevision.Name = "btn_LocRevision";
-            this.btn_LocRevision.Size = new System.Drawing.Size(117, 43);
-            this.btn_LocRevision.TabIndex = 18;
-            this.btn_LocRevision.Text = "位置補正";
-            this.btn_LocRevision.UseVisualStyleBackColor = true;
-            this.btn_LocRevision.Click += new System.EventHandler(this.btn_LocRevision_Click);
-            // 
-            // RevisionProgBer
-            // 
-            this.RevisionProgBer.Location = new System.Drawing.Point(134, 141);
-            this.RevisionProgBer.Name = "RevisionProgBer";
-            this.RevisionProgBer.Size = new System.Drawing.Size(85, 23);
-            this.RevisionProgBer.TabIndex = 19;
+            this.cb_EHS.AutoSize = true;
+            this.cb_EHS.Checked = true;
+            this.cb_EHS.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_EHS.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_EHS.Location = new System.Drawing.Point(773, 583);
+            this.cb_EHS.Name = "cb_EHS";
+            this.cb_EHS.Size = new System.Drawing.Size(78, 20);
+            this.cb_EHS.TabIndex = 38;
+            this.cb_EHS.Text = "壁回避";
+            this.cb_EHS.UseVisualStyleBackColor = true;
             // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 688);
+            this.Controls.Add(this.cb_EHS);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.picbox_LRF);
             this.Controls.Add(this.tabControl);
@@ -608,6 +638,8 @@
         private System.Windows.Forms.Label lbl_MattingScore;
         private System.Windows.Forms.ProgressBar RevisionProgBer;
         private System.Windows.Forms.Button btn_LocRevision;
+        private System.Windows.Forms.CheckBox cb_StraitMode;
+        private System.Windows.Forms.CheckBox cb_EHS;
     }
 }
 

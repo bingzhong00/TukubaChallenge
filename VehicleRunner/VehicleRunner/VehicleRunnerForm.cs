@@ -45,7 +45,7 @@ using System.Drawing.Drawing2D;
 
 using LocationPresumption;
 using CersioIO;
-
+using SCIP_library;
 using Axiom.Math;
 
 namespace VehicleRunner
@@ -69,7 +69,7 @@ namespace VehicleRunner
 
         double LRFViewScale = 1.0;
 
-        private int selPicboxLRFmode = 0;
+        private int selPicboxLRFmode = 1;
 
         private int R1LocRevisionCnt = 0;
 
@@ -243,7 +243,7 @@ namespace VehicleRunner
                        Brushes.Red, Brushes.Black );
 
             DrawString(g, 0, drawFont.Height * 1,
-                       "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwRERad * 180.0 / Math.PI)).ToString("D3") +
+                       "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwREDir)).ToString("D3") +
                        ",ReX:" + ((int)(CersioCt.hwREX)).ToString("D4") + ",Y:" + ((int)(CersioCt.hwREY)).ToString("D4"),
                        Brushes.Blue, Brushes.White);
 
@@ -355,10 +355,10 @@ namespace VehicleRunner
                         scale = 5.0f;
 
                         // EBSに反応があればズーム
-                        scale += ((float)CersioCt.BrainCtrl.EBS_CautionLv * 3.0f / (float)Brain.EBS_CautionLvMax);
+                        //scale += ((float)CersioCt.BrainCtrl.EBS_CautionLv * 3.0f / (float)Brain.EBS_CautionLvMax);
 
                         // EHS
-                        if (CersioCt.BrainCtrl.EHS_Result != Brain.EHS_MODE.None) scale = 10.0f;
+                        //if (CersioCt.BrainCtrl.EHS_Result != Brain.EHS_MODE.None) scale = 10.0f;
                         break;
                 }
 
@@ -380,19 +380,19 @@ namespace VehicleRunner
                         // LRF描画
                         if (LocSys.LRF_Data != null)
                         {
-                            double rScale = (1.0 / LocSys.RealToMapSclae);
+                            //double rScale = (1.0 / LocSys.RealToMapSclae);
                             double rPI = Math.PI / 180.0;
                             int pixelSize = 3;
-                            double picScale = picbox_LRF.Width * (LRFViewScale / 1000.0f);
+                            double picScale = (LRFViewScale / 1000.0f) * scale;
 
                             // LRFの値を描画
                             for (int i = 0; i < LocSys.LRF_Data.Length; i++)
                             {
-                                double val = LocSys.LRF_Data[i] * picScale * rScale;
+                                double val = LocSys.LRF_Data[i] * picScale;// *rScale;
                                 double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
 
-                                float x = (float)(ctrX + val * scale * Math.Cos(rad));
-                                float y = (float)(ctrY + val * scale * Math.Sin(rad));
+                                float x = (float)(ctrX + val * Math.Cos(rad));
+                                float y = (float)(ctrY + val * Math.Sin(rad));
                                 g.FillRectangle(Brushes.Black, x, y, pixelSize, pixelSize);
                             }
                         }
@@ -401,8 +401,8 @@ namespace VehicleRunner
                     case 1:
                         // EBS範囲描画
                         {
-                            int stAng = Brain.EBS_stAng;
-                            int edAng = Brain.EBS_edAng;
+                            int stAng = Brain.EBS_stAng + (int)CersioCt.BrainCtrl.EBS_HandleDiffAngle;
+                            int edAng = Brain.EBS_edAng + (int)CersioCt.BrainCtrl.EBS_HandleDiffAngle;
 
                             int cirSize;
 
@@ -481,23 +481,22 @@ namespace VehicleRunner
                         }
 
                         // ノイズリダクションLRF描画
-                        if (CersioCt.BrainCtrl.lrfUntiNoise != null)
+                        if (LocSys.LRF_UntiNoiseData != null)
                         {
-                            double rScale = (1.0 / LocSys.RealToMapSclae);
                             double rPI = Math.PI / 180.0;
                             int pixelSize = 3;
-                            double picScale = picbox_LRF.Width * (LRFViewScale / 1000.0f);
+                            double picScale = (LRFViewScale / 1000.0f) * scale;
 
-                            double[] lrfdata = CersioCt.BrainCtrl.lrfUntiNoise;
+                            double[] lrfdata = LocSys.LRF_UntiNoiseData;
 
                             // LRFの値を描画
                             for (int i = 0; i < lrfdata.Length; i++)
                             {
-                                double val = lrfdata[i] * picScale * rScale;
+                                double val = lrfdata[i] * picScale;
                                 double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
 
-                                float x = (float)(ctrX + val * scale * Math.Cos(rad));
-                                float y = (float)(ctrY + val * scale * Math.Sin(rad));
+                                float x = (float)(ctrX + val * Math.Cos(rad));
+                                float y = (float)(ctrY + val * Math.Sin(rad));
                                 g.FillRectangle(Brushes.Cyan, x, y, pixelSize, pixelSize);
                             }
                         }
@@ -660,9 +659,10 @@ namespace VehicleRunner
         private void TickFormUpdate()
         {
             // 通常時
+            bool bLocRivision;
 
             // 自己位置推定　計算実行
-            LocSys.FilterLocalizeUpdate(LocalizeFlag, IsEmurateMode);
+            bLocRivision = LocSys.FilterLocalizeUpdate(LocalizeFlag, IsEmurateMode);
 
             // 強制 位置補正
             if (R1LocRevisionCnt > 0)
@@ -679,17 +679,22 @@ namespace VehicleRunner
                 {
                     // パーティクルフィルタの結果で、位置をリセット
                     LocSys.R1.Set(LocSys.V1);
-
-                    // REの向きをリセット
-                    // 位置座標は、ログが残らなくなるのでしない
-                    // （移動差分を見てるのでリセットしなくても問題ない）
-                    CersioCt.RE_Reset(0, 0, LocSys.V1.Theta);
+                    bLocRivision = true;
                     RevisionProgBer.Value = 0;
                 }
             }
 
+            // 補正結果反映
+            if (bLocRivision)
+            {
+                // REの向きをリセット
+                // 位置座標は、ログが残らなくなるのでしない
+                // （移動差分を見てるのでリセットしなくても問題ない）
+                CersioCt.RE_Reset(0, 0, LocSys.V1.Theta);
+            }
+
             // セルシオ コントロール
-            CersioCt.Update( LocSys, cb_EmgBrake.Checked);
+            CersioCt.Update(LocSys, cb_EmgBrake.Checked, cb_EHS.Checked );
 
             // ハンドル、アクセル値　表示
             tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
@@ -733,8 +738,14 @@ namespace VehicleRunner
             }
 
             // エマージェンシーブレーキ 動作カラー表示
-            if (Brain.EmgBrk) cb_EmgBrake.BackColor = Color.Red;
+            if (Brain.EmgBrk && cb_EmgBrake.Checked) cb_EmgBrake.BackColor = Color.Red;
             else cb_EmgBrake.BackColor = SystemColors.Control;
+
+            if (CersioCt.BrainCtrl.EHS_Result != Brain.EHS_MODE.None && cb_EHS.Checked)
+            {
+                cb_EHS.BackColor = Color.Orange;
+            }
+            else cb_EHS.BackColor = SystemColors.Control;
 
             updateMainCnt++;
 
@@ -814,7 +825,7 @@ namespace VehicleRunner
             // ロータリーエンコーダ値,コンパス値 更新
             if (CersioCt.bhwREPlot)
             {
-                LocSys.SetRotaryEncoderData(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwRERad);
+                LocSys.SetRotaryEncoderData(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwREDir);
             }
             if (CersioCt.bhwCompass)
             {
@@ -950,6 +961,20 @@ namespace VehicleRunner
 
             RevisionProgBer.Value = 0;
             R1LocRevisionCnt = 20;
+        }
+
+        /// <summary>
+        /// 直進ルート生成
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cb_StraitMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_StraitMode.Checked)
+            {
+                CersioCt.BrainCtrl.RTS.ResetStraitMode();
+            }
+
         }
 
 

@@ -121,9 +121,11 @@ namespace SCIP_library
                 // 左右反転
                 {
                     double[] data = getScanDataIP();
-                    double[] modData = new double[data.Length];
+                    if( data.Length == 0) return new double[0];
+ 
+                    double[] modData = new double[data.Length-1];
                     int modIdx = 0;
-                    for (int i = 0; i < data.Length; i++)
+                    for (int i = 0; i < data.Length-1; i++)
                     {
                         modData[modIdx] = data[data.Length-(i+1)];
                         modIdx++;

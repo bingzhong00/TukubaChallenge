@@ -36,11 +36,8 @@ namespace CersioIO
 
 
         // ハンドル、アクセル上限値
-        public const double HandleRate = 1.0;  //<========== 調整 0.0 ～ 1.0(100%)
+        public const double HandleRate = 0.8;  //<========== 調整 0.0 ～ 1.0(100%)
         public const double AccRate = 1.0;
-
-        // スローダウン時のアクセル上限
-        public  const double AccSlowdownRate = 0.4;
 
         // ゴール到達フラグ
         public bool goalFlg = false;
@@ -51,7 +48,7 @@ namespace CersioIO
 
         public double hwREX = 0.0;
         public double hwREY = 0.0;
-        public double hwRERad = 0.0;
+        public double hwREDir = 0.0;
         public bool bhwREPlot = false;
 
         // 受信文字
@@ -115,7 +112,7 @@ namespace CersioIO
         /// <param name="LocSys"></param>
         /// <param name="useEBS"></param>
         /// <returns></returns>
-        public bool Update(LocPreSumpSystem LocSys, bool useEBS)
+        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS)
         {
             hwSendStr = "";
             bhwREPlot = false;
@@ -126,7 +123,7 @@ namespace CersioIO
             if (!goalFlg)
             {
                 // 自走処理
-                BrainCtrl.Update( LocSys );
+                BrainCtrl.Update(LocSys, useEHS);
             }
 
 
@@ -270,12 +267,17 @@ namespace CersioIO
                 //TCP_SendCommand("AL," + setPattern.ToString() + ",\n");
                 sendALcom = "AL," + setPattern.ToString() + ",\n";
 
-                cntHeadLED = 20 * 1;          // しばらく変更しない
+                cntHeadLED = 10 * 1;          // しばらく変更しない
                 ptnHeadLED = setPattern;
                 return true;
             }
 
-            if (ptnHeadLED == setPattern) return true;
+
+            if (ptnHeadLED == setPattern)
+            {
+                cntHeadLED = 10 * 1;          // 占有時間延長
+                return true;
+            }
             return false;
         }
 
@@ -399,7 +401,7 @@ namespace CersioIO
                                 // 右上から右下へ
                                 hwREX = ResiveX;
                                 hwREY = -ResiveY;
-                                hwRERad = -ResiveRad * 180.0 / Math.PI;
+                                hwREDir = -ResiveRad * 180.0 / Math.PI;
 
                                 // ※座標回転
                                 /*
