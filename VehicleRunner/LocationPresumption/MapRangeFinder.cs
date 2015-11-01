@@ -51,13 +51,22 @@ namespace LocationPresumption
             //Map = map;
             RangeMax = rangeMax;
 
-            // 傾きテーブル作成？
+            // 傾きテーブル作成
             DeltaX = new double[360];
             DeltaY = new double[360];
+            double r;
 
             for (int theta = 0; theta < 360; ++theta) {
                 DeltaX[theta] = 0.2 * Math.Cos((theta-90) * Math.PI / 180.0);
                 DeltaY[theta] = 0.2 * Math.Sin((theta-90) * Math.PI / 180.0);
+                
+
+                // 1.0を基準にする(高速化)
+                if (Math.Abs(DeltaX[theta]) < Math.Abs(DeltaY[theta])) r = 1.0 / Math.Abs(DeltaY[theta]);
+                else                                                   r = 1.0 / Math.Abs(DeltaX[theta]);
+
+                DeltaX[theta] *= r;
+                DeltaY[theta] *= r;
             }
         }
 
@@ -73,14 +82,19 @@ namespace LocationPresumption
         /// <returns></returns>
         public double[] Sense(GridMap map, double posX, double posY, double robotTheta)
         {
-            double[] result = new double[AngleRange+1];
+            double[] result = new double[AngleRange];
             int i;
             int angRng = AngleRange / 2;
 
+            LocPreSumpSystem.swCNT_MRF.Start();
+
+            int iroboTheta = (int)(robotTheta+0.5);
+            iroboTheta = iroboTheta - ((iroboTheta / 360) * 360);
+
             try {
-                for (i = -angRng; i <= angRng; ++i)
+                for (i = -angRng; i < angRng; ++i)
                 {
-                    int theta = (int)(-robotTheta + i + 360*8) % 360;
+                    int theta = (-iroboTheta + i + 360*2) % 360;
 
                     // 障害物までの距離を取得
                     result[i + angRng] = map.MeasureDist(
@@ -93,6 +107,7 @@ namespace LocationPresumption
             } catch (Exception e) {
                 throw e;
             }
+            LocPreSumpSystem.swCNT_MRF.Stop();
 
             return result;
         }

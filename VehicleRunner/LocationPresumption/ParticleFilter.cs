@@ -41,30 +41,44 @@ namespace LocationPresumption
 
         MarkPoint[] ResamplingSet;
 
+
         /// <summary>
         /// 散らばる範囲
         /// </summary>
         double PtclDefRange;
         double PtclRange;
 
+        double PtclDirRange;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="resamplingNumber">パーティクルの有効サンプル数（パーティクルと同じか少ない数を指定？）</param>
-        public ParticleFilter(int resamplingNumber,double ParticleRange=5 )
+        public ParticleFilter(int resamplingNumber, double ParticleRange=5, double DirRange=10.0 )
         {
             ResamplingNumber = resamplingNumber;
             ResamplingSet = new MarkPoint[ResamplingNumber];
+
             PtclDefRange = PtclRange = ParticleRange;
+            PtclDirRange = DirRange;
         }
 
         /// <summary>
-        /// レンジ変更
+        /// 距離レンジ変更（％）
         /// </summary>
         /// <param name="rangePer">0.0～1.0(100%)～</param>
         public void SetRagePercent(double rangePer)
         {
             PtclRange = PtclDefRange * rangePer;
+        }
+
+        /// <summary>
+        /// 角度レンジ変更　（度）
+        /// </summary>
+        /// <param name="rangeDir"></param>
+        public void SetDirectionRage(double rangeDir)
+        {
+            PtclDirRange = rangeDir;
         }
 
         /// <summary>
@@ -135,8 +149,7 @@ namespace LocationPresumption
             for (int i = 0; i < Particles.Count; ++i)
             {
                 // 散らばらせる
-                // 角度10度
-                MakeParticle(V1, PtclRange, 10.0, Particles[i].Location);
+                MakeParticle(V1, PtclRange, PtclDirRange, Particles[i].Location);
 
                 // 散らばり％ = w ?
                 // マップデータとLRFのデータを比べる

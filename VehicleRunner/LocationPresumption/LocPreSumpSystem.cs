@@ -70,7 +70,17 @@ namespace LocationPresumption
         float[] SinTbl = new float[360];
         float[] CosTbl = new float[360];
 
+        /// <summary>
+        /// コンパスの情報があるか？
+        /// </summary>
+        bool bActiveCompass = false;
 
+        // -------------------------------------------------------------------------------------------------
+        //
+
+        /// <summary>
+        /// 
+        /// </summary>
         public LocPreSumpSystem()
         {
             for(int i=0;i<360;i++)
@@ -194,7 +204,8 @@ namespace LocationPresumption
             {
                 // サンプル数(ParticleSizeと同じで、すべてのパーティクルを対象とする)
                 // LRFの有効距離を半径に変換(*0.5)、30%の距離で散らばる
-                Filter = new ParticleFilter(ParticleSize*3/4, (((LRFmaxRange*0.5) * 0.30) / RealToMapSclae));        // サンプリング数、パーティクルのレンジ
+                // +-5度の範囲
+                Filter = new ParticleFilter(ParticleSize*3/4, (((LRFmaxRange*0.5) * 0.30) / RealToMapSclae), 5.0 );        // サンプリング数、パーティクルのレンジ
 
                 Particles = new List<Particle>();
                 for (int i = 0; i < ParticleSize; ++i)
@@ -205,15 +216,23 @@ namespace LocationPresumption
             }
 
             // ローパスフィルター初期化
-            {
-                lpfV1X = new KalmanFilter.SimpleLPF(V1.X);
-                lpfV1Y = new KalmanFilter.SimpleLPF(V1.Y);
-            }
+            ResetLPF_V1(V1);
 
             // RE更新差分計算用リセット
             nowREX = 0.0;
             nowREY = 0.0;
             nowRETheta = 0.0;
+        }
+
+
+        /// <summary>
+        /// ローパスフィルター初期化
+        /// </summary>
+        /// <param name="mkp"></param>
+        public void ResetLPF_V1(MarkPoint mkp)
+        {
+            lpfV1X = new KalmanFilter.SimpleLPF(mkp.X);
+            lpfV1Y = new KalmanFilter.SimpleLPF(mkp.Y);
         }
 
         /// <summary>
@@ -227,18 +246,23 @@ namespace LocationPresumption
             {
                 // R1の位置を新しいエリアの中心とする
                 worldMap.UpdateAreaCenter(worldMap.GetWorldX((int)(R1.X+0.5)), worldMap.GetWorldY((int)(R1.Y+0.5)));
-                AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
-                MRF.SetMap(worldMap.AreaGridMap);
 
                 // エリア座標更新
-                R1.X -= (double)worldMap.WldOffsetDiff.x;
-                R1.Y -= (double)worldMap.WldOffsetDiff.y;
+                R1.X += (double)worldMap.WldOffsetDiff.x;
+                R1.Y += (double)worldMap.WldOffsetDiff.y;
 
-                V1.X -= (double)worldMap.WldOffsetDiff.x;
-                V1.Y -= (double)worldMap.WldOffsetDiff.y;
+                V1.X += (double)worldMap.WldOffsetDiff.x;
+                V1.Y += (double)worldMap.WldOffsetDiff.y;
 
-                E1.X -= (double)worldMap.WldOffsetDiff.x;
-                E1.Y -= (double)worldMap.WldOffsetDiff.y;
+                E1.X += (double)worldMap.WldOffsetDiff.x;
+                E1.Y += (double)worldMap.WldOffsetDiff.y;
+
+                oldE1.X += (double)worldMap.WldOffsetDiff.x;
+                oldE1.Y += (double)worldMap.WldOffsetDiff.y;
+
+                // エリアマップ更新
+                AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
+                MRF.SetMap(worldMap.AreaGridMap);
             }
         }
 
@@ -318,6 +342,7 @@ namespace LocationPresumption
         /// <returns></returns>
         public bool SetCompassData(double reTheta)
         {
+            bActiveCompass = true;
             C1.Theta = reTheta;
             return true;
         }
@@ -326,6 +351,7 @@ namespace LocationPresumption
         long upDateCnt = 0;
         // 処理カウンタ
         public System.Diagnostics.Stopwatch swCNT_Update = new System.Diagnostics.Stopwatch();
+        public static System.Diagnostics.Stopwatch swCNT_MRF = new System.Diagnostics.Stopwatch();
 
         /// <summary>
         /// 自己位置推定 更新
@@ -333,6 +359,8 @@ namespace LocationPresumption
         /// <returns></returns>
         public bool FilterLocalizeUpdate( bool usePF, bool bEmurateMode )
         {
+            swCNT_MRF.Reset();
+
             // 自己位置推定位置がエリア内になるようにチェック
             MoveAreaCheck();
 
@@ -348,15 +376,23 @@ namespace LocationPresumption
                 {
                     // 計算起点をセット
                     // 位置はロータリーエンコーダ、向きはコンパス
+                    // ※のちに位置はGPS
                     V1.X = R1.X;
                     V1.Y = R1.Y;
-                    V1.Theta = C1.Theta;
+                    if (bActiveCompass)
+                    {
+                        V1.Theta = C1.Theta;
+                    }
+                    else
+                    {
+                        V1.Theta = R1.Theta;
+                    }
 
                     Filter.Localize(LRF_Data, MRF, V1, Particles);
 
                     // 結果にローパスフィルターをかける
                     V1.X = lpfV1X.update(V1.X);
-                    V1.Y = lpfV1X.update(V1.Y);
+                    V1.Y = lpfV1Y.update(V1.Y);
                 }
 
                 // 処理時間計測完了
@@ -364,7 +400,7 @@ namespace LocationPresumption
             }
 
             // 自己位置更新 (※後にBrainへ移動)
-            if (!bEmurateMode)
+            //if (!bEmurateMode)
             {
                 // 実働時
 
@@ -374,6 +410,7 @@ namespace LocationPresumption
                 R1.Theta += (E1.Theta - oldE1.Theta); //  REの向き
 
                 // 補正
+                /*
                 if (usePF)
                 {
                     // ※PFの安定度もみて補正を考慮したい。
@@ -388,7 +425,7 @@ namespace LocationPresumption
                         R1.X += dfX;
                         R1.Y += dfY;
                     }
-                }
+                }*/
 
                 oldE1.Set(E1);
             }

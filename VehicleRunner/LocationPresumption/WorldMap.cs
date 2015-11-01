@@ -100,9 +100,9 @@ namespace LocationPresumption
         /// <param name="y"></param>
         public void UpdateArea(int wldX, int wldY)
         {
-            
-            WldOffsetDiff.x = wldX - WldOffset.x;
-            WldOffsetDiff.y = wldY - WldOffset.y;
+
+            WldOffsetDiff.x = WldOffset.x - wldX;
+            WldOffsetDiff.y = WldOffset.y - wldY;
 
             WldOffset.x = wldX;
             WldOffset.y = wldY;
@@ -200,8 +200,8 @@ namespace LocationPresumption
                     int adX = WldOffset.x + x;
                     int adY = WldOffset.y + y;
 
-                    if (adX < 0 || adX > mapBmp.Width ||
-                        adY < 0 || adY > mapBmp.Height)
+                    if (adX < 0 || adX >= mapBmp.Width ||
+                        adY < 0 || adY >= mapBmp.Height)
                     {
                         // レンジ外
                         c = GColor_Block;

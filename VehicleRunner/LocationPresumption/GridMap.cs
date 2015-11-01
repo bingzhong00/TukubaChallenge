@@ -54,20 +54,24 @@ namespace LocationPresumption
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public Grid this[int x, int y] {
+        public Grid this[int x, int y]
+        {
             get {
                 if (0 <= x && x < W && 0 <= y && y < H) {
                     return M[x, y];
                 }
+                // 画面外
                 //return Grid.RangeOver;
                 return Grid.Free;
             }
+
             set {
                 M[x, y] = value;
             }
         }
 
-        public GridMap(int w, int h) {
+        public GridMap(int w, int h)
+        {
             W = w;
             H = h;
             M = new Grid[W, H];
@@ -239,7 +243,8 @@ namespace LocationPresumption
             double max2 = max * max;
             double d2 = 0;
 
-            while (this[(int)x, (int)y] == Grid.Free && d2 < max2) {
+            while (this[(int)x, (int)y] == Grid.Free && d2 < max2)
+            {
                 x += dx;
                 y += dy;
                 d2 = (startX - x) * (startX - x) + (startY - y) * (startY - y);
@@ -247,6 +252,31 @@ namespace LocationPresumption
             return Math.Sqrt(d2);
 
         }
+
+        /*
+        public double MeasureDist_Fast(double startX, double startY, double dx, double dy, double max)
+        {
+            double x = startX;
+            double y = startY;
+            double max2 = (double)(max * max);
+            double d2 = 0;
+
+            double ax, ay;
+
+            if (dx == 0.0) cx = 0;
+            else if (dx == 0.0) cx = 0;
+            {
+                cx = 1.0 / dx;
+            }
+
+            while (this[(int)x, (int)y] == Grid.Free && d2 < max2)
+            {
+                x += dx;
+                y += dy;
+                d2 = (startX - x) * (startX - x) + (startY - y) * (startY - y);
+            }
+            return Math.Sqrt(d2);
+        }*/
 
     }
 }

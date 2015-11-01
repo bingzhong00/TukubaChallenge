@@ -47,9 +47,12 @@ namespace CersioIO
 
         // HW
         public int hwCompass = 0;
+        public bool bhwCompass = false;
+
         public double hwREX = 0.0;
         public double hwREY = 0.0;
         public double hwRERad = 0.0;
+        public bool bhwREPlot = false;
 
         // 受信文字
         public string hwResiveStr;
@@ -87,6 +90,22 @@ namespace CersioIO
             objTCPSC.Dispose();
         }
 
+        /// <summary>
+        /// ロータリーエンコーダにスタート情報をセット
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="dir"></param>
+        public void RE_Reset(double x, double y, double dir)
+        {
+            //TCP_SendCommand("AD," + ((float)x).ToString("f") + "," + ((float)y).ToString("f") + "\n");
+            TCP_SendCommand("AD,0.0,0.0\n");
+
+            // 角度をパイに、回転の+-を調整
+            double rad = -dir * Math.PI / 180.0;
+            TCP_SendCommand("AR," + rad.ToString("f") + "\n");
+        }
+
 
         // =====================================================================================
 
@@ -99,6 +118,9 @@ namespace CersioIO
         public bool Update(LocPreSumpSystem LocSys, bool useEBS)
         {
             hwSendStr = "";
+            bhwREPlot = false;
+            bhwCompass = false;
+
             LeftBtn = RightBtn = FwdBtn = false;
 
             if (!goalFlg)
@@ -163,6 +185,12 @@ namespace CersioIO
                     double sHandleValue = nowSendHandleValue;
                     // ハンドルアクセル送信
                     TCP_SendCommand("AC," + sHandleValue.ToString("f") + "," + nowSendAccValue.ToString("f") + "\n");
+
+                    if (sendALcom != null)
+                    {
+                        TCP_SendCommand(sendALcom);
+                    }
+                    sendALcom = null;
                 }
             }
 
@@ -213,6 +241,7 @@ namespace CersioIO
         8 ハザード               回避、徐行時
         9 緑ＬＥＤぐるぐる       BoxPC起動時
         */
+        private string sendALcom;
 
         public enum LED_PATTERN {
             Normal = 0,     // 0 通常表示
@@ -238,8 +267,10 @@ namespace CersioIO
         {
             if (bForce || (ptnHeadLED != setPattern && cntHeadLED == 0))
             {
-                TCP_SendCommand("AL," + setPattern.ToString() + ",\n");
-                cntHeadLED = 20*1;          // しばらく変更しない
+                //TCP_SendCommand("AL," + setPattern.ToString() + ",\n");
+                sendALcom = "AL," + setPattern.ToString() + ",\n";
+
+                cntHeadLED = 20 * 1;          // しばらく変更しない
                 ptnHeadLED = setPattern;
                 return true;
             }
@@ -332,6 +363,7 @@ namespace CersioIO
                                 double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
                                 int.TryParse(splStr[2], out ResiveCmp);   // デジタルコンパス値
                                 hwCompass = -ResiveCmp;     // 回転方向が+-逆なので合わせる
+                                bhwCompass = true;
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A4,")
                             {
@@ -368,6 +400,21 @@ namespace CersioIO
                                 hwREX = ResiveX;
                                 hwREY = -ResiveY;
                                 hwRERad = -ResiveRad * 180.0 / Math.PI;
+
+                                // ※座標回転
+                                /*
+                                {
+                                    double wRad = ResiveRad;
+                                    double cs = Math.Cos(wRad);
+                                    double sn = Math.Sin(wRad);
+
+                                    hwREX = (ResiveX * cs - ResiveY * sn);
+                                    hwREY = (ResiveX * sn + ResiveY * cs);
+                                    hwREY = -hwREY;
+                                }
+                                */
+
+                                bhwREPlot = true;
                             }
 
                         }

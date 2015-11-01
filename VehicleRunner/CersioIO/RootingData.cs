@@ -12,121 +12,100 @@ namespace CersioIO
     {
         // マップ情報
         // ファイルは、bmpかpng　24BitColorであること。
-        static public string MapFileName = "./OoSimizuKouen1100x1800Mod.png";
-        static public double RealWidth  = 100.0 * 1100.0;   // 実際のマップの横幅 [mm]
-        static public double RealHeight = 100.0 * 1800.0;   // 実際のマップの縦幅 [mm]　真北を縦とする
+        static public string MapFileName = "./utubo01_1200x1300_fix.png";
+        static public double RealWidth = 100.0 * 1200.0;   // 実際のマップの横幅 [mm]
+        static public double RealHeight = 100.0 * 1300.0;   // 実際のマップの縦幅 [mm]　真北を縦とする
 
         // スタート位置、向き(-360～360度 / 北 0, +東, -西, 南180)
-        static public Vector3 startPosition = new Vector3(788, 1428, 0);
-        static public double startDir = 0;
 
-#if true
-        static public Vector3[] checkPoint = { new Vector3(788,1428, 0), // スタート位置
-                    new Vector3(788,1300,0),
-                    new Vector3(788,1100,0)
-                                 /*
-                    new Vector3(786,1371,0),
-                    new Vector3(781,1307,0),
-                    new Vector3(780,1257,0),
-                    new Vector3(776,1215,0),
-                    new Vector3(773,1143,0),
-                    new Vector3(762,1045,0),
-                    new Vector3(753,964,0),
-                    new Vector3(742,883,0),
-                    new Vector3(732,808,0),
-                    new Vector3(724,752,0),
-                    new Vector3(715,698,0),
-                    new Vector3(707,649,0),
-                    new Vector3(697,590,0),
-                    new Vector3(694,539,0),
-                    new Vector3(688,499,0),
-                    new Vector3(679,467,0),
-                    new Vector3(641,432,0),
-                    new Vector3(607,395,0),
-                    new Vector3(587,361,0),
-                    new Vector3(553,335,0),
-                    new Vector3(510,314,0),
-                    new Vector3(477,300,0),
-                    new Vector3(451,295,0),
-                    new Vector3(428,294,0),
-                    new Vector3(402,295,0),
-                    new Vector3(386,295,0),
-                    new Vector3(365,297,0),
-                    new Vector3(340,303,0),
-                    new Vector3(320,306,0),
-                    new Vector3(300,315,0),
-                    new Vector3(288,324,0),
-                    new Vector3(279,335,0),
-                    new Vector3(279,347,0),
-                    new Vector3(280,361,0),
-                    new Vector3(284,382,0),
-                    new Vector3(290,404,0),
-                    new Vector3(296,419,0),
-                    new Vector3(305,441,0),
-                    new Vector3(310,458,0),
-                    new Vector3(318,474,0),
-                    new Vector3(318,487,0),
-                    new Vector3(316,501,0),
-                    new Vector3(323,521,0),
-                    new Vector3(326,535,0),
-                    new Vector3(332,543,0),
-                    new Vector3(347,551,0),
-                    new Vector3(366,559,0),
-                    new Vector3(386,566,0),
-                    new Vector3(407,574,0),
-                    new Vector3(426,579,0),
-                    new Vector3(448,585,0),
-                    new Vector3(468,588,0),
-                    new Vector3(479,587,0),
-                    new Vector3(501,587,0),
-                    new Vector3(523,587,0),
-                    new Vector3(549,587,0),
-                    new Vector3(567,588,0),
-                    new Vector3(592,585,0),
-                    new Vector3(610,581,0),
-                    new Vector3(616,567,0),
-                    new Vector3(616,553,0),
-                    new Vector3(612,528,0),
-                    new Vector3(610,517,0),
-                    new Vector3(609,509,0),
-                    new Vector3(619,500,0),
-                    new Vector3(635,494,0),
-                    new Vector3(650,494,0),
-                    new Vector3(664,501,0),
-                    new Vector3(669,516,0),
-                    new Vector3(670,526,0),
-                    new Vector3(671,542,0),
-                    new Vector3(672,556,0),
-                    new Vector3(675,571,0),
-                    new Vector3(675,586,0),
-                    new Vector3(678,602,0),
-                    new Vector3(680,618,0),
-                    new Vector3(679,631,0),
-                    new Vector3(675,645,0),
-                    new Vector3(665,652,0),
-                    new Vector3(651,653,0),
-                    new Vector3(624,655,0),
-                    new Vector3(608,655,0),
-                    new Vector3(589,656,0),
-                    new Vector3(563,657,0),*/
-                               };
+        //C:\work\tsukuba\LRFmapEditer\LRFMapEditer20151019\utubo\utubo03.lme
+        //
+#if false
+        static public Vector3 startPosition = new Vector3(0, 0, 0);
+        static public double startDir = 180;
+
+        static public Vector3[] checkPoint = {
+            new Vector3(0,0,0),
+            new Vector3(0,500,0),
+        };
 #else
-                static public Vector3[] checkPoint = { //new Vector3(750, 330, 0), // スタート位置
-                                 //new Vector3(0, 40, 0)};//, new Vector3(0, 10, 0), new Vector3(2, 20, 0), // 右下
-                                 //new Vector3(-5, 30, 0)};//, new Vector3(610, 775, 0), new Vector3(490, 800, 0), new Vector3(416, 814, 0),// 左下
+        static public Vector3 startPosition = new Vector3(726, 386, 0);
+        static public double startDir = 167;
 
-                                 new Vector3(0, -5, 0), new Vector3(0, -10, 0), new Vector3(2, -15, 0), // 右下
-                                 new Vector3(-5, -38, 0), new Vector3(-25, -48, 0), new Vector3(-45, -59, 0)
-                                       , new Vector3(-65, -68, 0), new Vector3(-90, -68, 0)};//, new Vector3(610, 775, 0), new Vector3(490, 800, 0), new Vector3(416, 814, 0),// 左下
-
-//                                 new Vector3(-5, 0, 0), new Vector3(-10, 0, 0), new Vector3(-20, 0, 0), // 右下
-//                                 new Vector3(-30, -5, 0)};//, new Vector3(610, 775, 0), new Vector3(490, 800, 0), new Vector3(416, 814, 0),// 左下
-
-//                                 new Vector3(390, 725, 0), new Vector3(355, 490, 0), new Vector3(340, 422, 0), // 左上
-//                                 new Vector3(783, 387, 0), new Vector3(658, 348, 0),  new Vector3(741, 345, 0),        // 右上
-//                                 new Vector3(750, 330, 0) };
-
+        static public Vector3[] checkPoint = {
+            new Vector3(726,386,0),
+            new Vector3(721,408,0),
+            new Vector3(718,442,0),
+            new Vector3(721,467,0),
+            new Vector3(721,492,0),
+            new Vector3(724,516,0),
+            new Vector3(730,543,0),
+            new Vector3(736,566,0),
+            new Vector3(741,586,0),
+            new Vector3(748,610,0),
+            new Vector3(754,635,0),
+            new Vector3(761,657,0),
+            new Vector3(768,678,0),
+            new Vector3(773,700,0),
+            new Vector3(780,720,0),
+            new Vector3(787,741,0),
+            new Vector3(794,763,0),
+            new Vector3(801,787,0),
+            new Vector3(807,811,0),
+            new Vector3(813,830,0),
+            new Vector3(819,851,0),
+            new Vector3(820,868,0),
+            new Vector3(814,882,0),
+            new Vector3(802,892,0),
+            new Vector3(780,892,0),
+            new Vector3(755,890,0),
+            new Vector3(729,894,0),
+            new Vector3(704,901,0),
+            new Vector3(677,905,0),
+            new Vector3(648,915,0),
+            new Vector3(623,921,0),
+            new Vector3(599,926,0),
+            new Vector3(565,938,0),
+            new Vector3(533,946,0),
+            new Vector3(506,957,0),
+            new Vector3(481,967,0),
+            new Vector3(460,976,0),
+            new Vector3(439,981,0),
+            new Vector3(418,975,0),
+            new Vector3(405,951,0),
+            new Vector3(399,927,0),
+            new Vector3(392,896,0),
+            new Vector3(383,865,0),
+            new Vector3(374,834,0),
+            new Vector3(364,802,0),
+            new Vector3(354,767,0),
+            new Vector3(344,737,0),
+            new Vector3(331,700,0),
+            new Vector3(322,671,0),
+            new Vector3(311,646,0),
+            new Vector3(301,617,0),
+            new Vector3(292,590,0),
+            new Vector3(291,569,0),
+            new Vector3(305,551,0),
+            new Vector3(323,544,0),
+            new Vector3(347,538,0),
+            new Vector3(373,530,0),
+            new Vector3(401,521,0),
+            new Vector3(425,513,0),
+            new Vector3(447,507,0),
+            new Vector3(478,497,0),
+            new Vector3(509,491,0),
+            new Vector3(542,485,0),
+            new Vector3(575,476,0),
+            new Vector3(604,469,0),
+            new Vector3(639,455,0),
+            new Vector3(665,449,0),
+            new Vector3(689,444,0),
+            new Vector3(714,428,0),
+            new Vector3(737,406,0),
+            new Vector3(739,383,0),
+};
 #endif
-
+        
     }
 }

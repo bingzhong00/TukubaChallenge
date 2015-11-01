@@ -25,9 +25,15 @@ namespace CersioIO
         // CheckPoint --------------------------------------
         int seqIdx = 0;         // チェックポイントインデックス
         bool goalFlg = false;   // ゴールしたか？
-        //double touchRange = 15.0;    // チェックポイントに近づく距離 (40)
+
+        // 
         const double touchRange = 3.0;              // チェックポイントに近づく距離(半径) [Pixel]
-        const double passRange = touchRange * 3.0;  // 条件が悪い場合見送るチェックポイントの距離
+
+        //  条件が悪い場合見送るチェックポイントの条件
+        // (passRange以内の距離で、passOverDir以上の角度なら次のチェックポイントへ)
+        const double passRange = touchRange * 3.0;  // パスできるチェックポイントの距離
+        const double passOverDir = 160.0;           // パスできるチェックポイントとの角度
+
 
         /// <summary>
         /// 2つのベクトルがなす角をかえす
@@ -100,7 +106,7 @@ namespace CersioIO
         {
             dir = tgtDir * 180.0 / Axiom.Math.Utility.PI;
         }
-        public double getNowTargetDir(double dir)
+        public double getNowTargetDir()
         {
             double retDir = 0.0;
             getNowTargetDir(ref retDir);
@@ -127,10 +133,13 @@ namespace CersioIO
 
             calcCheckPoint();
 
-            if (Math.Abs(getNowTargetDir(tgtDir)) > 130.0)
+            // ターゲットがある程度の範囲内で、向きが大幅に違う場合パスする。
+            if (Math.Abs(getNowTargetDir() - (nowDir * 180.0 / Math.PI)) > passOverDir)
             {
                 if (GetCheckPointDistance(nowPos) < passRange)
                 {
+                    Brain.addLogMsg += "PassTarget:" + seqIdx.ToString() +",NowDir "+getNowTargetDir().ToString()+",TgtDir "+tgtDir.ToString() + "\n";
+
                     seqIdx++;
                     calcCheckPoint();
                 }
