@@ -65,6 +65,8 @@
             this.tabPage_Emurate = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.btn_LocRevision = new System.Windows.Forms.Button();
+            this.RevisionProgBer = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -435,6 +437,8 @@
             // tabPage_Runner
             // 
             this.tabPage_Runner.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_Runner.Controls.Add(this.RevisionProgBer);
+            this.tabPage_Runner.Controls.Add(this.btn_LocRevision);
             this.tabPage_Runner.Controls.Add(this.lbl_MattingScore);
             this.tabPage_Runner.Controls.Add(this.lb_LRFResult);
             this.tabPage_Runner.Controls.Add(this.tb_LRFPort);
@@ -451,7 +455,7 @@
             // 
             this.lbl_MattingScore.AutoSize = true;
             this.lbl_MattingScore.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_MattingScore.Location = new System.Drawing.Point(13, 191);
+            this.lbl_MattingScore.Location = new System.Drawing.Point(12, 209);
             this.lbl_MattingScore.Name = "lbl_MattingScore";
             this.lbl_MattingScore.Size = new System.Drawing.Size(111, 16);
             this.lbl_MattingScore.TabIndex = 17;
@@ -494,6 +498,23 @@
             this.label9.Size = new System.Drawing.Size(36, 16);
             this.label9.TabIndex = 37;
             this.label9.Text = "LRF";
+            // 
+            // btn_LocRevision
+            // 
+            this.btn_LocRevision.Location = new System.Drawing.Point(6, 132);
+            this.btn_LocRevision.Name = "btn_LocRevision";
+            this.btn_LocRevision.Size = new System.Drawing.Size(117, 43);
+            this.btn_LocRevision.TabIndex = 18;
+            this.btn_LocRevision.Text = "位置補正";
+            this.btn_LocRevision.UseVisualStyleBackColor = true;
+            this.btn_LocRevision.Click += new System.EventHandler(this.btn_LocRevision_Click);
+            // 
+            // RevisionProgBer
+            // 
+            this.RevisionProgBer.Location = new System.Drawing.Point(134, 141);
+            this.RevisionProgBer.Name = "RevisionProgBer";
+            this.RevisionProgBer.Size = new System.Drawing.Size(85, 23);
+            this.RevisionProgBer.TabIndex = 19;
             // 
             // VehicleRunnerForm
             // 
@@ -585,6 +606,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lbl_MattingScore;
+        private System.Windows.Forms.ProgressBar RevisionProgBer;
+        private System.Windows.Forms.Button btn_LocRevision;
     }
 }
 
