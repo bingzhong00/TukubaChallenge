@@ -177,8 +177,6 @@ namespace LocationPresumption
         }
 
 
-        private Color GColor_Block = Color.FromArgb(0, 0, 0);
-        private Color GColor_Free = Color.FromArgb(255, 255, 255);
 
         /// <summary>
         /// ワールドBMPからエリアのGridMapを作成
@@ -204,24 +202,40 @@ namespace LocationPresumption
                         adY < 0 || adY >= mapBmp.Height)
                     {
                         // レンジ外
-                        c = GColor_Block;
+                        c = GridMap.GridColor_Fill;
                     }
                     else
                     {
                         c = bmpAp[adX,adY];
                     }
 
-                    if (c == GColor_Block)
+                    if (c == GridMap.GridColor_Fill)
                     {
                         // 障害物
                         gm.M[x, y] = Grid.Fill;
                     }
-                    else if (c == GColor_Free)
+                    else if (c == GridMap.GridColor_Free)
                     {
-                        // 何もないところ
+                        // 通行可能
                         gm.M[x, y] = Grid.Free;
                     }
-                    else{
+                    else if (c == GridMap.GridColor_RedArea)
+                    {
+                        // 通行不可　壁の中
+                        gm.M[x, y] = Grid.RedArea;
+                    }
+                    else if (c == GridMap.GridColor_GreenArea)
+                    {
+                        // 通行可能 位置補正推奨
+                        gm.M[x, y] = Grid.GreenArea;
+                    }
+                    else if (c == GridMap.GridColor_BlueArea)
+                    {
+                        // 通行可能　スローダウン
+                        gm.M[x, y] = Grid.BlueArea;
+                    }
+                    else
+                    {
                         // それ以外
                         gm.M[x, y] = Grid.Unknown;
                     }

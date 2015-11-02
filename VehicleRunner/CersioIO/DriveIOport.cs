@@ -7,9 +7,9 @@ using System.IO.Ports;
 
 namespace CersioIO
 {
-    public class DriveIOport
+    public class UsbIOport
     {
-        SerialPort serialPort1 = null;
+        protected SerialPort serialPort = null;
 
         // SH2との通信
         public bool Open( string portName, int bouRate )
@@ -23,21 +23,89 @@ namespace CersioIO
 
         public void Close()
         {
-            if (serialPort1 != null && serialPort1.IsOpen)
+            if (serialPort != null && serialPort.IsOpen)
             {
                 // 停止
-                SendSirialData(0, 0);
-                serialPort1.Close();
+                serialPort.Close();
             }
         }
 
-        // シリアル通信部 -------------------------------------------------------------------------------
-        // いずれ分離か セルシオ通信系ライブラリ化
+        public bool IsConnect()
+        {
+            if (null == serialPort) return false;
 
-        private bool SendSirialData(double handleVal, double accVal)
+            return serialPort.IsOpen;
+        }
+
+        // シリアル通信部 -------------------------------------------------------------------------------
+        public bool SendSirialData(string data )
         {
             // シリアルポートにデータ送信
-            if (!serialPort1.IsOpen)
+            if (!serialPort.IsOpen)
+            {
+                return false;
+            }
+
+            byte[] dat = System.Text.Encoding.GetEncoding("SHIFT-JIS").GetBytes(data);
+            serialPort.Write(dat, 0, dat.GetLength(0));
+
+            return true;
+        }
+
+        private Byte[] sirialResvPool = new Byte[256];
+        private int resvIdx = 0;
+        public string resiveStr = "";
+
+
+        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            // シリアルポートからデータ受信
+            {
+                Byte[] buff = new Byte[serialPort.BytesToRead];
+                serialPort.Read(buff, 0, buff.GetLength(0));
+
+                // 受信サイズの10バイトたまるまで、受け取る
+                for (int i = 0; i < buff.Length; i++)
+                {
+                    sirialResvPool[resvIdx + i] = buff[i];
+                }
+                resvIdx += buff.Length;
+            }
+            if (resvIdx < 10) return;
+            resvIdx = 0;
+
+
+
+            try
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    resiveStr += ((int)sirialResvPool[i]).ToString() + " ";
+                }
+            }
+            catch
+            {
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// SH2用　通信ライブラリ
+    /// </summary>
+    public class DriveIOport : UsbIOport
+    {
+        public new void Close()
+        {
+            SendSirialData(0, 0);
+            base.Close();
+        }
+
+        // いずれ分離か セルシオ通信系ライブラリ化
+        public bool SendSirialData(double handleVal, double accVal)
+        {
+            // シリアルポートにデータ送信
+            if (!serialPort.IsOpen)
             {
                 return false;
             }
@@ -78,46 +146,9 @@ namespace CersioIO
             dat[5] = sum;
 
             //System.Text.Encoding.GetEncoding("SHIFT-JIS").GetBytes("abcあいう");
-            serialPort1.Write(dat, 0, dat.GetLength(0));
+            serialPort.Write(dat, 0, dat.GetLength(0));
 
             return true;
-        }
-
-
-        private Byte[] sirialResvPool = new Byte[256];
-        private int resvIdx = 0;
-        public string resiveStr = "";
-
-
-        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
-        {
-            // シリアルポートからデータ受信
-            {
-                Byte[] buff = new Byte[serialPort1.BytesToRead];
-                serialPort1.Read(buff, 0, buff.GetLength(0));
-
-                // 受信サイズの10バイトたまるまで、受け取る
-                for (int i = 0; i < buff.Length; i++)
-                {
-                    sirialResvPool[resvIdx + i] = buff[i];
-                }
-                resvIdx += buff.Length;
-            }
-            if (resvIdx < 10) return;
-            resvIdx = 0;
-
-
-
-            try
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    resiveStr += ((int)sirialResvPool[i]).ToString() + " ";
-                }
-            }
-            catch
-            {
-            }
         }
     }
 }

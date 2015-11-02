@@ -71,7 +71,10 @@ namespace VehicleRunner
 
         private int selPicboxLRFmode = 1;
 
-        private int R1LocRevisionCnt = 0;
+        /// <summary>
+        /// 位置補正指示トリガー
+        /// </summary>
+        private bool bLocRivisionTRG = false;
 
         /// <summary>
         /// 
@@ -100,7 +103,9 @@ namespace VehicleRunner
 
             // セルシオコントローラ初期化
             CersioCt = new CersioCtrl();
-            CersioCt.Start( IsEmurateMode );
+            CersioCt.Start();
+
+            if (!IsEmurateMode) CersioCt.ConnectBoxPC();
 
             // 自己位置推定初期化
             LocSys = new LocPreSumpSystem();
@@ -144,24 +149,12 @@ namespace VehicleRunner
                 }
             }
 
-            // ハードウェア更新タイマ起動
-            tm_UpdateHw.Enabled = true;
-
-            // BoxPC接続状態確認
-            if (CersioCt.TCP_IsConnected())
-            {
-                tb_SendData.BackColor = Color.Lime;
-                tb_ResiveData.BackColor = Color.Lime;
-            }
-            else
-            {
-                tb_SendData.BackColor = SystemColors.Window;
-                tb_ResiveData.BackColor = SystemColors.Window;
-            }
-
-
             // 画面更新
             PictureUpdate();
+
+            // ハードウェア更新タイマ起動
+            tm_UpdateHw.Enabled = true;
+            tm_SendCom.Enabled = true;
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -173,6 +166,7 @@ namespace VehicleRunner
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //DeleteTimer();
+            tm_SendCom.Enabled = false;
             tm_UpdateHw.Enabled = false;
             tm_LocUpdate.Enabled = false;
 
@@ -241,17 +235,17 @@ namespace VehicleRunner
                        ",Y:" + ((int)LocSys.worldMap.GetWorldY(LocSys.R1.Y)).ToString("D4") +
                        ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
                        Brushes.Red, Brushes.Black );
-
+            /*
             DrawString(g, 0, drawFont.Height * 1,
                        "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwREDir)).ToString("D3") +
                        ",ReX:" + ((int)(CersioCt.hwREX)).ToString("D4") + ",Y:" + ((int)(CersioCt.hwREY)).ToString("D4"),
                        Brushes.Blue, Brushes.White);
-
-            DrawString(g, 0, drawFont.Height * 2,
-                       "Goal:" + (CersioCt.goalFlg ? "TRUE" : "FALSE") + "/ Run:" + updateHwCnt.ToString("D8"),
+            */
+            DrawString(g, 0, drawFont.Height * 1,
+                       "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (CersioCt.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + CersioCt.BrainCtrl.RTS.GetNowCheckPointIdx().ToString() ),
                        Brushes.Blue, Brushes.White);
 
-            DrawString(g, 0, drawFont.Height * 3,
+            DrawString(g, 0, drawFont.Height * 2,
                        "LocProc:" + LocSys.swCNT_Update.ElapsedMilliseconds + "ms /Draw:" + LocSys.swCNT_Draw.ElapsedMilliseconds + "ms /MRF:" + LocPreSumpSystem.swCNT_MRF.ElapsedMilliseconds + "ms",
                        Brushes.Blue, Brushes.White);
                            
@@ -524,6 +518,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+#if EMULATOR_MODE
             double mvScale = 300.0 / LocSys.RealToMapSclae;      // 300mm動く
 
             MarkPoint tgtObj = LocSys.E1;               // 操作対象
@@ -543,6 +538,7 @@ namespace VehicleRunner
                     CalcMoveRobot(tgtObj, 0.0, 5.0);
                     break;
              }
+#endif
         }
 
         /// <summary>
@@ -633,8 +629,17 @@ namespace VehicleRunner
         // 自動更新ボタン
         private void cb_TimerUpdate_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_TimerUpdate.Checked) tm_LocUpdate.Enabled = true;
-            else                        tm_LocUpdate.Enabled = false;
+            if (cb_TimerUpdate.Checked)
+            {
+                tm_LocUpdate.Enabled = true;
+
+                // スタート時のGPS情報があれば設定
+                if (CersioCt.bhwGPS)
+                {
+                    LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                }
+            }
+            else tm_LocUpdate.Enabled = false;
         }
 
 
@@ -658,43 +663,8 @@ namespace VehicleRunner
         /// </summary>
         private void TickFormUpdate()
         {
-            // 通常時
-            bool bLocRivision;
-
-            // 自己位置推定　計算実行
-            bLocRivision = LocSys.FilterLocalizeUpdate(LocalizeFlag, IsEmurateMode);
-
-            // 強制 位置補正
-            if (R1LocRevisionCnt > 0)
-            {
-                // 指定回数分位置補正して、LRFの値を使う
-                if (!LocalizeFlag)
-                {
-                    LocSys.FilterLocalizeUpdate(true, IsEmurateMode);
-                }
-
-                RevisionProgBer.PerformStep();
-                R1LocRevisionCnt--;
-                if (R1LocRevisionCnt == 0)
-                {
-                    // パーティクルフィルタの結果で、位置をリセット
-                    LocSys.R1.Set(LocSys.V1);
-                    bLocRivision = true;
-                    RevisionProgBer.Value = 0;
-                }
-            }
-
-            // 補正結果反映
-            if (bLocRivision)
-            {
-                // REの向きをリセット
-                // 位置座標は、ログが残らなくなるのでしない
-                // （移動差分を見てるのでリセットしなくても問題ない）
-                CersioCt.RE_Reset(0, 0, LocSys.V1.Theta);
-            }
-
             // セルシオ コントロール
-            CersioCt.Update(LocSys, cb_EmgBrake.Checked, cb_EHS.Checked );
+            CersioCt.Update(LocSys, cb_EmgBrake.Checked, cb_EHS.Checked, bLocRivisionTRG );
 
             // ハンドル、アクセル値　表示
             tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
@@ -706,16 +676,10 @@ namespace VehicleRunner
             // LRF　マッチングスコア
             lbl_MattingScore.Text = "MatchingScore:" + CersioCt.BrainCtrl.MatchingScore.ToString();
 
-            // セルシオ自動運転　Form内エミュレート
-            /*
-            if (serialPort1.IsOpen)
+            if (IsEmurateMode)
             {
-                SendSirialData(CersioCtrl.handleValue, CersioCtrl.accValue);
-            }
-                * */
+                // エミュレート動作時
 
-            if( IsEmurateMode )
-            {
                 // カーソルを操作
                 {
                     if (CersioCtrl.LeftBtn)
@@ -736,6 +700,18 @@ namespace VehicleRunner
                     }
                 }
             }
+            else
+            {
+                // 実走行時
+                if (updateMainCnt % 50 == 0)
+                {
+                    // 状態を見て、自動接続
+                    if (!CersioCt.TCP_IsConnected())
+                    {
+                        CersioCt.ConnectBoxPC();
+                    }
+                }
+            }
 
             // エマージェンシーブレーキ 動作カラー表示
             if (Brain.EmgBrk && cb_EmgBrake.Checked) cb_EmgBrake.BackColor = Color.Red;
@@ -747,6 +723,20 @@ namespace VehicleRunner
             }
             else cb_EHS.BackColor = SystemColors.Control;
 
+
+            // BoxPC接続状態確認
+            if (CersioCt.TCP_IsConnected())
+            {
+                tb_SendData.BackColor = Color.Lime;
+                tb_ResiveData.BackColor = Color.Lime;
+            }
+            else
+            {
+                tb_SendData.BackColor = SystemColors.Window;
+                tb_ResiveData.BackColor = SystemColors.Window;
+            }
+
+            bLocRivisionTRG = false;
             updateMainCnt++;
 
         }
@@ -807,7 +797,7 @@ namespace VehicleRunner
                 {
                     // LRFから取得
                     if (resultLRF) lb_LRFResult.Text = "OK";
-                    else lb_LRFResult.Text = "NG";
+                    else lb_LRFResult.Text = "OK(noData)";
                 }
                 else
                 {
@@ -826,10 +816,34 @@ namespace VehicleRunner
             if (CersioCt.bhwREPlot)
             {
                 LocSys.SetRotaryEncoderData(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwREDir);
+                lbl_REX.Text = CersioCt.hwREX.ToString("f1");
+                lbl_REY.Text = CersioCt.hwREY.ToString("f1");
+                lbl_REDir.Text = CersioCt.hwREDir.ToString("f1");
             }
             if (CersioCt.bhwCompass)
             {
                 LocSys.SetCompassData(CersioCt.hwCompass);
+                lbl_Compass.Text = CersioCt.hwCompass.ToString();
+            }
+            if (CersioCt.bhwGPS)
+            {
+                LocSys.SetGPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
+                lbl_GPS_X.Text = CersioCt.hwGPS_LandX.ToString("f5");
+            }
+
+            if (CersioCt.ptnHeadLED == -1)
+            {
+                lbl_LED.Text = "ND";
+            }
+            else
+            {
+                lbl_LED.Text = CersioCt.ptnHeadLED.ToString();
+
+                if (CersioCt.ptnHeadLED >= 0 && CersioCt.ptnHeadLED < CersioCtrl.LEDMessage.Count())
+                {
+                    lbl_LED.Text += "," + CersioCtrl.LEDMessage[CersioCt.ptnHeadLED];
+                }
             }
 
             // 送受信文字更新
@@ -899,6 +913,11 @@ namespace VehicleRunner
                              "/ Dir " + LocSys.C1.Theta.ToString("f2") +
                              System.Environment.NewLine);
 
+                    sw.Write("G1:X " + LocSys.worldMap.GetWorldX(LocSys.G1.X).ToString("f3") +
+                             "/Y " + LocSys.worldMap.GetWorldY(LocSys.G1.Y).ToString("f3") +
+                             "/ Dir " + LocSys.G1.Theta.ToString("f2") +
+                             System.Environment.NewLine);
+
                     sw.Write("MatchingScore:" + CersioCt.BrainCtrl.MatchingScore.ToString() + System.Environment.NewLine);
 
                     // Rooting情報
@@ -956,11 +975,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void btn_LocRevision_Click(object sender, EventArgs e)
         {
-            // ※のちにGPS
-            LocSys.ResetLPF_V1(LocSys.R1);
-
-            RevisionProgBer.Value = 0;
-            R1LocRevisionCnt = 20;
+            // 強制位置補正
+            bLocRivisionTRG = true;
         }
 
         /// <summary>
@@ -968,12 +984,30 @@ namespace VehicleRunner
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cb_StraitMode_CheckedChanged(object sender, EventArgs e)
+        private void cb_StraightMode_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_StraitMode.Checked)
+            if (cb_StraightMode.Checked)
             {
-                CersioCt.BrainCtrl.RTS.ResetStraitMode();
+                CersioCt.BrainCtrl.RTS.ResetStraightMode();
             }
+
+        }
+
+        /// <summary>
+        /// 送信コマンド処理 タイマー
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tm_SendCom_Tick(object sender, EventArgs e)
+        {
+            if (null != CersioCt)
+            {
+                CersioCt.SendCommandTick();
+            }
+        }
+
+        private void cb_SirialConnect_CheckedChanged(object sender, EventArgs e)
+        {
 
         }
 

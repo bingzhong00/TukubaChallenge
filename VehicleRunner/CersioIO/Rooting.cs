@@ -83,7 +83,7 @@ namespace CersioIO
         /// <summary>
         /// 前方にチェックポイントを作り直す
         /// </summary>
-        public void ResetStraitMode()
+        public void ResetStraightMode()
         {
             seqIdx = 0;
             goalFlg = false;
@@ -95,14 +95,16 @@ namespace CersioIO
             double sn = Math.Sin(wRad);
 
             double tgtX = 0.0;
-            double tgtY = -1000.0; // pixel 10cm x 1000 = 100m 先を目指す
+            double tgtY = -500.0; // pixel 10cm x 500 = 50m 先を目指す
 
             double newCpX = RootingData.startPosition.x + (tgtX * cs - tgtY * sn);
             double newCpY = RootingData.startPosition.y + (tgtX * sn + tgtY * cs);
 
-
+            // 新チェックポイント作成
             RootingData.checkPoint[0] = new Vector3(newCpX, newCpY, 0);
-            //RootingData.checkPoint[1] = new Vector3(nowPos.x, nowPos.y, 0);
+
+            // 目標座標 再計算
+            calcCheckPoint();
         }
 
         // 現在位置セット

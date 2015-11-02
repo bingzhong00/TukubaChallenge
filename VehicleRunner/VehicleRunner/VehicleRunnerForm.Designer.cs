@@ -61,20 +61,36 @@
             this.label8 = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage_Runner = new System.Windows.Forms.TabPage();
-            this.cb_StraitMode = new System.Windows.Forms.CheckBox();
-            this.RevisionProgBer = new System.Windows.Forms.ProgressBar();
+            this.cb_StraightMode = new System.Windows.Forms.CheckBox();
             this.btn_LocRevision = new System.Windows.Forms.Button();
             this.lbl_MattingScore = new System.Windows.Forms.Label();
-            this.tabPage_Emurate = new System.Windows.Forms.TabPage();
+            this.tabPage_Status = new System.Windows.Forms.TabPage();
+            this.lbl_REDir = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.lbl_REY = new System.Windows.Forms.Label();
+            this.lbl_REX = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.lbl_Compass = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.lbl_LED = new System.Windows.Forms.Label();
+            this.lbl_GPS_X = new System.Windows.Forms.Label();
+            this.lbl_GPS_Y = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.tabPage_Emulate = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
             this.cb_EHS = new System.Windows.Forms.CheckBox();
+            this.tm_SendCom = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage_Runner.SuspendLayout();
-            this.tabPage_Emurate.SuspendLayout();
+            this.tabPage_Status.SuspendLayout();
+            this.tabPage_Emulate.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -293,6 +309,7 @@
             this.cb_SirialConnect.Text = "SH2制御出力";
             this.cb_SirialConnect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_SirialConnect.UseVisualStyleBackColor = true;
+            this.cb_SirialConnect.CheckedChanged += new System.EventHandler(this.cb_SirialConnect_CheckedChanged);
             // 
             // tm_UpdateHw
             // 
@@ -429,7 +446,9 @@
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabPage_Runner);
-            this.tabControl.Controls.Add(this.tabPage_Emurate);
+            this.tabControl.Controls.Add(this.tabPage_Status);
+            this.tabControl.Controls.Add(this.tabPage_Emulate);
+            this.tabControl.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tabControl.Location = new System.Drawing.Point(626, 273);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -439,40 +458,32 @@
             // tabPage_Runner
             // 
             this.tabPage_Runner.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage_Runner.Controls.Add(this.cb_StraitMode);
-            this.tabPage_Runner.Controls.Add(this.RevisionProgBer);
+            this.tabPage_Runner.Controls.Add(this.cb_StraightMode);
             this.tabPage_Runner.Controls.Add(this.btn_LocRevision);
             this.tabPage_Runner.Controls.Add(this.lbl_MattingScore);
             this.tabPage_Runner.Controls.Add(this.lb_LRFResult);
             this.tabPage_Runner.Controls.Add(this.tb_LRFPort);
             this.tabPage_Runner.Controls.Add(this.cb_LRFConnect);
             this.tabPage_Runner.Controls.Add(this.tb_LRFIpAddr);
-            this.tabPage_Runner.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Runner.Location = new System.Drawing.Point(4, 26);
             this.tabPage_Runner.Name = "tabPage_Runner";
             this.tabPage_Runner.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Runner.Size = new System.Drawing.Size(238, 238);
+            this.tabPage_Runner.Size = new System.Drawing.Size(238, 234);
             this.tabPage_Runner.TabIndex = 0;
             this.tabPage_Runner.Text = "Runner";
             // 
-            // cb_StraitMode
+            // cb_StraightMode
             // 
-            this.cb_StraitMode.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_StraitMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_StraitMode.Location = new System.Drawing.Point(6, 170);
-            this.cb_StraitMode.Name = "cb_StraitMode";
-            this.cb_StraitMode.Size = new System.Drawing.Size(135, 36);
-            this.cb_StraitMode.TabIndex = 20;
-            this.cb_StraitMode.Text = "直進ルートセット";
-            this.cb_StraitMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cb_StraitMode.UseVisualStyleBackColor = true;
-            this.cb_StraitMode.CheckedChanged += new System.EventHandler(this.cb_StraitMode_CheckedChanged);
-            // 
-            // RevisionProgBer
-            // 
-            this.RevisionProgBer.Location = new System.Drawing.Point(134, 132);
-            this.RevisionProgBer.Name = "RevisionProgBer";
-            this.RevisionProgBer.Size = new System.Drawing.Size(85, 23);
-            this.RevisionProgBer.TabIndex = 19;
+            this.cb_StraightMode.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cb_StraightMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_StraightMode.Location = new System.Drawing.Point(6, 170);
+            this.cb_StraightMode.Name = "cb_StraightMode";
+            this.cb_StraightMode.Size = new System.Drawing.Size(135, 36);
+            this.cb_StraightMode.TabIndex = 20;
+            this.cb_StraightMode.Text = "直進ルートセット";
+            this.cb_StraightMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cb_StraightMode.UseVisualStyleBackColor = true;
+            this.cb_StraightMode.CheckedChanged += new System.EventHandler(this.cb_StraightMode_CheckedChanged);
             // 
             // btn_LocRevision
             // 
@@ -494,21 +505,180 @@
             this.lbl_MattingScore.TabIndex = 17;
             this.lbl_MattingScore.Text = "MatchingScore:";
             // 
-            // tabPage_Emurate
+            // tabPage_Status
             // 
-            this.tabPage_Emurate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.tabPage_Emurate.Controls.Add(this.groupBox2);
-            this.tabPage_Emurate.Controls.Add(this.label2);
-            this.tabPage_Emurate.Controls.Add(this.tb_LRFScale);
-            this.tabPage_Emurate.Controls.Add(this.btm_LRFScale);
-            this.tabPage_Emurate.Controls.Add(this.label1);
-            this.tabPage_Emurate.Controls.Add(this.groupBox1);
-            this.tabPage_Emurate.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_Emurate.Name = "tabPage_Emurate";
-            this.tabPage_Emurate.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Emurate.Size = new System.Drawing.Size(238, 238);
-            this.tabPage_Emurate.TabIndex = 1;
-            this.tabPage_Emurate.Text = "Emurate";
+            this.tabPage_Status.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_Status.Controls.Add(this.lbl_REDir);
+            this.tabPage_Status.Controls.Add(this.label18);
+            this.tabPage_Status.Controls.Add(this.lbl_REY);
+            this.tabPage_Status.Controls.Add(this.lbl_REX);
+            this.tabPage_Status.Controls.Add(this.label15);
+            this.tabPage_Status.Controls.Add(this.label14);
+            this.tabPage_Status.Controls.Add(this.lbl_Compass);
+            this.tabPage_Status.Controls.Add(this.label13);
+            this.tabPage_Status.Controls.Add(this.lbl_LED);
+            this.tabPage_Status.Controls.Add(this.lbl_GPS_X);
+            this.tabPage_Status.Controls.Add(this.lbl_GPS_Y);
+            this.tabPage_Status.Controls.Add(this.label12);
+            this.tabPage_Status.Controls.Add(this.label11);
+            this.tabPage_Status.Controls.Add(this.label10);
+            this.tabPage_Status.Location = new System.Drawing.Point(4, 26);
+            this.tabPage_Status.Name = "tabPage_Status";
+            this.tabPage_Status.Size = new System.Drawing.Size(238, 234);
+            this.tabPage_Status.TabIndex = 2;
+            this.tabPage_Status.Text = "Status";
+            // 
+            // lbl_REDir
+            // 
+            this.lbl_REDir.AutoSize = true;
+            this.lbl_REDir.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_REDir.Location = new System.Drawing.Point(93, 143);
+            this.lbl_REDir.Name = "lbl_REDir";
+            this.lbl_REDir.Size = new System.Drawing.Size(28, 16);
+            this.lbl_REDir.TabIndex = 13;
+            this.lbl_REDir.Text = "ND";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(13, 143);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(74, 16);
+            this.label18.TabIndex = 12;
+            this.label18.Text = "REplotDir:";
+            // 
+            // lbl_REY
+            // 
+            this.lbl_REY.AutoSize = true;
+            this.lbl_REY.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_REY.Location = new System.Drawing.Point(84, 118);
+            this.lbl_REY.Name = "lbl_REY";
+            this.lbl_REY.Size = new System.Drawing.Size(28, 16);
+            this.lbl_REY.TabIndex = 11;
+            this.lbl_REY.Text = "ND";
+            // 
+            // lbl_REX
+            // 
+            this.lbl_REX.AutoSize = true;
+            this.lbl_REX.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_REX.Location = new System.Drawing.Point(84, 96);
+            this.lbl_REX.Name = "lbl_REX";
+            this.lbl_REX.Size = new System.Drawing.Size(28, 16);
+            this.lbl_REX.TabIndex = 10;
+            this.lbl_REX.Text = "ND";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(13, 118);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(64, 16);
+            this.label15.TabIndex = 9;
+            this.label15.Text = "REplotY:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(13, 96);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(65, 16);
+            this.label14.TabIndex = 8;
+            this.label14.Text = "REplotX:";
+            // 
+            // lbl_Compass
+            // 
+            this.lbl_Compass.AutoSize = true;
+            this.lbl_Compass.Location = new System.Drawing.Point(91, 170);
+            this.lbl_Compass.Name = "lbl_Compass";
+            this.lbl_Compass.Size = new System.Drawing.Size(28, 16);
+            this.lbl_Compass.TabIndex = 7;
+            this.lbl_Compass.Text = "ND";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(13, 170);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(72, 16);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "Compass:";
+            // 
+            // lbl_LED
+            // 
+            this.lbl_LED.AutoSize = true;
+            this.lbl_LED.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_LED.Location = new System.Drawing.Point(62, 17);
+            this.lbl_LED.Name = "lbl_LED";
+            this.lbl_LED.Size = new System.Drawing.Size(28, 16);
+            this.lbl_LED.TabIndex = 5;
+            this.lbl_LED.Text = "ND";
+            // 
+            // lbl_GPS_X
+            // 
+            this.lbl_GPS_X.AutoSize = true;
+            this.lbl_GPS_X.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_GPS_X.Location = new System.Drawing.Point(76, 64);
+            this.lbl_GPS_X.Name = "lbl_GPS_X";
+            this.lbl_GPS_X.Size = new System.Drawing.Size(28, 16);
+            this.lbl_GPS_X.TabIndex = 4;
+            this.lbl_GPS_X.Text = "ND";
+            // 
+            // lbl_GPS_Y
+            // 
+            this.lbl_GPS_Y.AutoSize = true;
+            this.lbl_GPS_Y.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_GPS_Y.Location = new System.Drawing.Point(76, 43);
+            this.lbl_GPS_Y.Name = "lbl_GPS_Y";
+            this.lbl_GPS_Y.Size = new System.Drawing.Size(28, 16);
+            this.lbl_GPS_Y.TabIndex = 3;
+            this.lbl_GPS_Y.Text = "ND";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label12.Location = new System.Drawing.Point(13, 43);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(56, 16);
+            this.label12.TabIndex = 2;
+            this.label12.Text = "GPS Y:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label11.Location = new System.Drawing.Point(13, 64);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(57, 16);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "GPS X:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label10.Location = new System.Drawing.Point(13, 17);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(39, 16);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "LED:";
+            // 
+            // tabPage_Emulate
+            // 
+            this.tabPage_Emulate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.tabPage_Emulate.Controls.Add(this.groupBox2);
+            this.tabPage_Emulate.Controls.Add(this.label2);
+            this.tabPage_Emulate.Controls.Add(this.tb_LRFScale);
+            this.tabPage_Emulate.Controls.Add(this.btm_LRFScale);
+            this.tabPage_Emulate.Controls.Add(this.label1);
+            this.tabPage_Emulate.Controls.Add(this.groupBox1);
+            this.tabPage_Emulate.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tabPage_Emulate.Location = new System.Drawing.Point(4, 26);
+            this.tabPage_Emulate.Name = "tabPage_Emulate";
+            this.tabPage_Emulate.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Emulate.Size = new System.Drawing.Size(238, 234);
+            this.tabPage_Emulate.TabIndex = 1;
+            this.tabPage_Emulate.Text = "Emulate";
             // 
             // groupBox2
             // 
@@ -545,6 +715,11 @@
             this.cb_EHS.Text = "壁回避";
             this.cb_EHS.UseVisualStyleBackColor = true;
             // 
+            // tm_SendCom
+            // 
+            this.tm_SendCom.Interval = 20;
+            this.tm_SendCom.Tick += new System.EventHandler(this.tm_SendCom_Tick);
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -571,7 +746,7 @@
             this.Controls.Add(this.picbox_AreaMap);
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner Ver0.75";
+            this.Text = "VehicleRunner Ver2015-1102";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -585,8 +760,10 @@
             this.tabControl.ResumeLayout(false);
             this.tabPage_Runner.ResumeLayout(false);
             this.tabPage_Runner.PerformLayout();
-            this.tabPage_Emurate.ResumeLayout(false);
-            this.tabPage_Emurate.PerformLayout();
+            this.tabPage_Status.ResumeLayout(false);
+            this.tabPage_Status.PerformLayout();
+            this.tabPage_Emulate.ResumeLayout(false);
+            this.tabPage_Emulate.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -632,14 +809,29 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPage_Runner;
-        private System.Windows.Forms.TabPage tabPage_Emurate;
+        private System.Windows.Forms.TabPage tabPage_Emulate;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lbl_MattingScore;
-        private System.Windows.Forms.ProgressBar RevisionProgBer;
         private System.Windows.Forms.Button btn_LocRevision;
-        private System.Windows.Forms.CheckBox cb_StraitMode;
+        private System.Windows.Forms.CheckBox cb_StraightMode;
         private System.Windows.Forms.CheckBox cb_EHS;
+        private System.Windows.Forms.Timer tm_SendCom;
+        private System.Windows.Forms.TabPage tabPage_Status;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lbl_GPS_X;
+        private System.Windows.Forms.Label lbl_GPS_Y;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label lbl_LED;
+        private System.Windows.Forms.Label lbl_REDir;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label lbl_REY;
+        private System.Windows.Forms.Label lbl_REX;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label lbl_Compass;
+        private System.Windows.Forms.Label label13;
     }
 }
 

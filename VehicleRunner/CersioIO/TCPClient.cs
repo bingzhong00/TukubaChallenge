@@ -62,9 +62,23 @@ namespace CersioIO
         public void DisConnect()
         {
             if (ns != null)
-                ns.Close();
+            {
+                try
+                {
+                    ns.Close();
+                }
+                catch { }
+                ns = null;
+            }
             if (objSck != null)
-                objSck.Close();
+            {
+                try
+                {
+                    objSck.Close();
+                }
+                catch { }
+                objSck = null;
+            }
 				
             ConnectResult = false;
         }

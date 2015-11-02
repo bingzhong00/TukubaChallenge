@@ -36,11 +36,14 @@ using System.Drawing.Imaging;
 namespace LocationPresumption
 {
     public enum Grid {
-        Fill,       // 静的障害物
-        Free,       // 通行可能エリア
-        RedArea,    // 異常地帯（壁の中 等）
-        Unknown,    // 不明
-        RangeOver,  // レンジ外
+        Unknown = 0,
+        Free      = 0x0000000F,  // 通行可能エリア
+        Fill      = 0x000000F0,  // 静的障害物
+        RangeOver = 0x00000F0F,  // レンジ外(通行可能属性を持つ)
+
+        RedArea   = (0x00010000 | Fill),   // 異常地帯（壁の中 等）
+        BlueArea  = (0x00020000 | Free),   // スローダウンエリア
+        GreenArea = (0x00040000 | Free),   // 位置補正エリア
     }
 
     public class GridMap {
@@ -48,6 +51,13 @@ namespace LocationPresumption
         public int H;
         public Grid[,] M;
         Bitmap img;
+
+        public static Color GridColor_Fill = Color.FromArgb(0, 0, 0);
+        public static Color GridColor_Free = Color.FromArgb(255, 255, 255);
+
+        public static Color GridColor_RedArea = Color.FromArgb(255, 0, 0);
+        public static Color GridColor_GreenArea = Color.FromArgb(0, 255, 0);
+        public static Color GridColor_BlueArea = Color.FromArgb(0, 0, 255);
 
         /// <summary>
         /// アクセス関数
@@ -104,19 +114,30 @@ namespace LocationPresumption
                 for (int y = 0; y < H; ++y) {
                     //Color c = access[x, H-1-y];
                     Color c = access[x, y];
-                    if (c == Color.FromArgb(0,0,0))
+                    if (c == GridColor_Fill)
                     {
                         // 障害物
                         this[x, y] = Grid.Fill;
                     }
-                    else if (c == Color.FromArgb(255,255,255)) {
+                    else if (c == GridColor_Free)
+                    {
                         // 何もないところ
                         this[x, y] = Grid.Free;
                     }
-                    else if (c == Color.FromArgb(255, 0, 0))
+                    else if (c == GridColor_RedArea)
                     {
                         // 異常地帯　壁の中
                         this[x, y] = Grid.RedArea;
+                    }
+                    else if (c == GridColor_GreenArea)
+                    {
+                        // 位置補正エリア
+                        this[x, y] = Grid.GreenArea;
+                    }
+                    else if (c == GridColor_BlueArea)
+                    {
+                        // スローエリア
+                        this[x, y] = Grid.BlueArea;
                     }
                     else
                     {
@@ -153,6 +174,12 @@ namespace LocationPresumption
                             break;
                         case Grid.RedArea:
                             cl = Color.Red;
+                            break;
+                        case Grid.BlueArea:
+                            cl = Color.Blue;
+                            break;
+                        case Grid.GreenArea:
+                            cl = Color.Green;
                             break;
                         case Grid.Unknown:
                             cl = Color.LightGray;
@@ -254,7 +281,7 @@ namespace LocationPresumption
             double max2 = max * max;
             double d2 = 0;
 
-            while (this[(int)(x+0.5), (int)(y+0.5)] == Grid.Free && d2 < max2)
+            while ((this[(int)(x+0.5), (int)(y+0.5)] & Grid.Free) != 0 && d2 < max2)
             {
                 x += dx;
                 y += dy;

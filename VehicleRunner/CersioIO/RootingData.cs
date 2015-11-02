@@ -16,19 +16,16 @@ namespace CersioIO
         static public double RealWidth = 100.0 * 1200.0;   // 実際のマップの横幅 [mm]
         static public double RealHeight = 100.0 * 1300.0;   // 実際のマップの縦幅 [mm]　真北を縦とする
 
+
+        // スタート位置GPS
+        //static public double GPS_LandX = 135.2929;
+        //static public double GPS_LandY = 34.4105;
+
         // スタート位置、向き(-360～360度 / 北 0, +東, -西, 南180)
+
 
         //C:\work\tsukuba\LRFmapEditer\LRFMapEditer20151019\utubo\utubo03.lme
         //
-#if false
-        static public Vector3 startPosition = new Vector3(0, 0, 0);
-        static public double startDir = 180;
-
-        static public Vector3[] checkPoint = {
-            new Vector3(0,0,0),
-            new Vector3(0,500,0),
-        };
-#else
         static public Vector3 startPosition = new Vector3(726, 386, 0);
         static public double startDir = 167;
 
@@ -105,7 +102,6 @@ namespace CersioIO
             new Vector3(737,406,0),
             new Vector3(739,383,0),
 };
-#endif
         
     }
 }
