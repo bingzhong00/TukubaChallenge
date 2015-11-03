@@ -23,7 +23,7 @@ namespace CersioIO
 
         // スタート位置、向き(-360～360度 / 北 0, +東, -西, 南180)
 
-
+#if false
         //C:\work\tsukuba\LRFmapEditer\LRFMapEditer20151019\utubo\utubo03.lme
         //
         static public Vector3 startPosition = new Vector3(726, 386, 0);
@@ -102,6 +102,62 @@ namespace CersioIO
             new Vector3(737,406,0),
             new Vector3(739,383,0),
 };
-        
+
+#else
+
+        //static public Vector3 startPosition = new Vector3(665,449, 0);
+        static public Vector3 startPosition = new Vector3(598+5, 472, 0);
+        //static public double startDir = 108;
+        static public double startDir = 108;
+                static public Vector3[] checkPoint = {
+    //new Vector3(665,449,0),
+    new Vector3(598,472,0),
+    new Vector3(535,486,0),
+    new Vector3(475,504,0),
+    new Vector3(424,521,0),
+    new Vector3(364,536,0),
+    new Vector3(323,552,0),
+    new Vector3(295,559,0),
+    new Vector3(288,571,0),
+    new Vector3(288,581,0),
+    new Vector3(293,609,0),
+    new Vector3(301,639,0),
+    new Vector3(307,656,0),
+    new Vector3(323,694,0),
+    new Vector3(334,726,0),
+    new Vector3(342,751,0),
+    new Vector3(354,793,0),
+    new Vector3(370,837,0),
+    new Vector3(376,869,0),
+    new Vector3(387,901,0),
+    new Vector3(400,937,0),
+    new Vector3(413,970,0),
+    new Vector3(428,982,0),
+    new Vector3(446,983,0),
+    new Vector3(479,970,0),
+    new Vector3(502,958,0),
+    new Vector3(537,951,0),
+    new Vector3(563,944,0),
+    new Vector3(601,926,0),
+    new Vector3(639,920,0),
+    new Vector3(686,909,0),
+    new Vector3(725,900,0),
+    new Vector3(769,895,0),
+    new Vector3(800,890,0),
+    new Vector3(817,885,0),
+    new Vector3(827,869,0),
+    new Vector3(825,852,0),
+    new Vector3(812,824,0),
+    new Vector3(800,778,0),
+    new Vector3(784,718,0),
+    new Vector3(766,651,0),
+    new Vector3(763,591,0),
+    new Vector3(772,546,0),
+    new Vector3(770,466,0),
+    new Vector3(757,406,0),
+    new Vector3(735,372,0),
+        };
+#endif
+
     }
 }

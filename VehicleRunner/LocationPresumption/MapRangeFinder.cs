@@ -56,17 +56,21 @@ namespace LocationPresumption
             DeltaY = new double[360];
             double r;
 
-            for (int theta = 0; theta < 360; ++theta) {
-                DeltaX[theta] = 0.2 * Math.Cos((theta-90) * Math.PI / 180.0);
-                DeltaY[theta] = 0.2 * Math.Sin((theta-90) * Math.PI / 180.0);
-                
+            for (int theta = 0; theta < 360; ++theta)
+            {
+                DeltaX[theta] = 0.5 * Math.Cos((theta - 90) * Math.PI / 180.0);
+                DeltaY[theta] = 0.5 * Math.Sin((theta - 90) * Math.PI / 180.0);
+
 
                 // 1.0を基準にする(高速化)
-                if (Math.Abs(DeltaX[theta]) < Math.Abs(DeltaY[theta])) r = 1.0 / Math.Abs(DeltaY[theta]);
-                else                                                   r = 1.0 / Math.Abs(DeltaX[theta]);
+                /*
+                {
+                    if (Math.Abs(DeltaX[theta]) < Math.Abs(DeltaY[theta])) r = 1.0 / Math.Abs(DeltaY[theta]);
+                    else r = 1.0 / Math.Abs(DeltaX[theta]);
 
-                DeltaX[theta] *= r;
-                DeltaY[theta] *= r;
+                    DeltaX[theta] *= r;
+                    DeltaY[theta] *= r;
+                }*/
             }
         }
 

@@ -647,9 +647,9 @@ namespace LocationPresumption
             }
              
             // 描画順を常にかえて、重なっても見えるようにする
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i <4; i++)
             {
-                switch ((i + upDateCnt) % 3)
+                switch ((i + upDateCnt) % 4)
                 {
                     case 0:
                         // RE想定ロボット位置描画
@@ -662,6 +662,10 @@ namespace LocationPresumption
                     case 2:
                         // 実ロボット想定位置描画
                         DrawMaker(g, olScale, R1, Brushes.Red, size);
+                        break;
+                    case 3:
+                        // 実ロボット想定位置描画
+                        DrawMaker(g, olScale, G1, Brushes.Green, size);
                         break;
                 }
             }

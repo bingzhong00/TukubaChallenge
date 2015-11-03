@@ -84,6 +84,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.cb_EHS = new System.Windows.Forms.CheckBox();
             this.tm_SendCom = new System.Windows.Forms.Timer(this.components);
+            this.lbl_BackCnt = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -287,26 +288,26 @@
             // cb_UsbSirial
             // 
             this.cb_UsbSirial.FormattingEnabled = true;
-            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 23);
+            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 27);
             this.cb_UsbSirial.Name = "cb_UsbSirial";
             this.cb_UsbSirial.Size = new System.Drawing.Size(97, 20);
             this.cb_UsbSirial.TabIndex = 21;
             // 
             // tb_SirialResive
             // 
-            this.tb_SirialResive.Location = new System.Drawing.Point(11, 49);
+            this.tb_SirialResive.Location = new System.Drawing.Point(11, 55);
             this.tb_SirialResive.Name = "tb_SirialResive";
-            this.tb_SirialResive.Size = new System.Drawing.Size(99, 19);
+            this.tb_SirialResive.Size = new System.Drawing.Size(202, 19);
             this.tb_SirialResive.TabIndex = 22;
             // 
             // cb_SirialConnect
             // 
             this.cb_SirialConnect.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_SirialConnect.Location = new System.Drawing.Point(128, 45);
+            this.cb_SirialConnect.Location = new System.Drawing.Point(127, 23);
             this.cb_SirialConnect.Name = "cb_SirialConnect";
             this.cb_SirialConnect.Size = new System.Drawing.Size(86, 26);
             this.cb_SirialConnect.TabIndex = 23;
-            this.cb_SirialConnect.Text = "SH2制御出力";
+            this.cb_SirialConnect.Text = "GPS受信";
             this.cb_SirialConnect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_SirialConnect.UseVisualStyleBackColor = true;
             this.cb_SirialConnect.CheckedChanged += new System.EventHandler(this.cb_SirialConnect_CheckedChanged);
@@ -323,7 +324,7 @@
             this.tb_ResiveData.Location = new System.Drawing.Point(55, 655);
             this.tb_ResiveData.Name = "tb_ResiveData";
             this.tb_ResiveData.ReadOnly = true;
-            this.tb_ResiveData.Size = new System.Drawing.Size(512, 23);
+            this.tb_ResiveData.Size = new System.Drawing.Size(469, 23);
             this.tb_ResiveData.TabIndex = 24;
             this.tb_ResiveData.TabStop = false;
             // 
@@ -353,7 +354,7 @@
             this.tb_SendData.Location = new System.Drawing.Point(94, 625);
             this.tb_SendData.Name = "tb_SendData";
             this.tb_SendData.ReadOnly = true;
-            this.tb_SendData.Size = new System.Drawing.Size(473, 23);
+            this.tb_SendData.Size = new System.Drawing.Size(430, 23);
             this.tb_SendData.TabIndex = 27;
             this.tb_SendData.TabStop = false;
             // 
@@ -417,7 +418,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label7.Location = new System.Drawing.Point(582, 655);
+            this.label7.Location = new System.Drawing.Point(530, 654);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(58, 24);
             this.label7.TabIndex = 33;
@@ -427,7 +428,7 @@
             // 
             this.tb_RESpeed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_RESpeed.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_RESpeed.Location = new System.Drawing.Point(645, 653);
+            this.tb_RESpeed.Location = new System.Drawing.Point(594, 652);
             this.tb_RESpeed.Name = "tb_RESpeed";
             this.tb_RESpeed.ReadOnly = true;
             this.tb_RESpeed.Size = new System.Drawing.Size(73, 31);
@@ -437,7 +438,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(724, 666);
+            this.label8.Location = new System.Drawing.Point(673, 671);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(47, 12);
             this.label8.TabIndex = 35;
@@ -690,7 +691,7 @@
             this.groupBox2.Size = new System.Drawing.Size(220, 85);
             this.groupBox2.TabIndex = 24;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "SH2 USBConnect";
+            this.groupBox2.Text = "USBConnect";
             // 
             // label9
             // 
@@ -720,11 +721,22 @@
             this.tm_SendCom.Interval = 20;
             this.tm_SendCom.Tick += new System.EventHandler(this.tm_SendCom_Tick);
             // 
+            // lbl_BackCnt
+            // 
+            this.lbl_BackCnt.AutoSize = true;
+            this.lbl_BackCnt.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_BackCnt.Location = new System.Drawing.Point(734, 663);
+            this.lbl_BackCnt.Name = "lbl_BackCnt";
+            this.lbl_BackCnt.Size = new System.Drawing.Size(75, 16);
+            this.lbl_BackCnt.TabIndex = 39;
+            this.lbl_BackCnt.Text = "EBS cnt:";
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 688);
+            this.Controls.Add(this.lbl_BackCnt);
             this.Controls.Add(this.cb_EHS);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.picbox_LRF);
@@ -791,7 +803,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cb_EmgBrake;
         private System.Windows.Forms.ComboBox cb_UsbSirial;
-        private System.Windows.Forms.TextBox tb_SirialResive;
         private System.Windows.Forms.CheckBox cb_SirialConnect;
         private System.Windows.Forms.Timer tm_UpdateHw;
         private System.Windows.Forms.TextBox tb_ResiveData;
@@ -832,6 +843,8 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label lbl_Compass;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label lbl_BackCnt;
+        private System.Windows.Forms.TextBox tb_SirialResive;
     }
 }
 

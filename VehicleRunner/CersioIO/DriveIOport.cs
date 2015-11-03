@@ -14,10 +14,11 @@ namespace CersioIO
         // SH2との通信
         public bool Open( string portName, int bouRate )
         {
-            SerialPort serialPort1 = new SerialPort( portName, bouRate, Parity.None, 8, StopBits.One);
-            serialPort1.DataReceived += new SerialDataReceivedEventHandler(serialPort1_DataReceived);
+            serialPort = new SerialPort(portName, bouRate, Parity.None, 8, StopBits.One);
+            serialPort.DataReceived += new SerialDataReceivedEventHandler(serialPort1_DataReceived);
+            serialPort.Open();
 
-            if (serialPort1.IsOpen) return true;
+            if (serialPort.IsOpen) return true;
             return false;
         }
 
@@ -52,8 +53,8 @@ namespace CersioIO
             return true;
         }
 
-        private Byte[] sirialResvPool = new Byte[256];
-        private int resvIdx = 0;
+        protected Byte[] sirialResvPool = new Byte[256];
+        protected int resvIdx = 0;
         public string resiveStr = "";
 
 
@@ -61,30 +62,24 @@ namespace CersioIO
         {
             // シリアルポートからデータ受信
             {
-                Byte[] buff = new Byte[serialPort.BytesToRead];
-                serialPort.Read(buff, 0, buff.GetLength(0));
+                Byte[] data = new Byte[serialPort.BytesToRead];
+                serialPort.Read(data, 0, data.GetLength(0));
 
-                // 受信サイズの10バイトたまるまで、受け取る
-                for (int i = 0; i < buff.Length; i++)
-                {
-                    sirialResvPool[resvIdx + i] = buff[i];
-                }
-                resvIdx += buff.Length;
-            }
-            if (resvIdx < 10) return;
-            resvIdx = 0;
+                //ASCII エンコード
+                //string text = System.Text.Encoding.ASCII.GetString(data);
 
+                //データがShift-JISの場合
+                //string text = System.Text.Encoding.GetEncoding("shift_jis").GetString(data);
 
+                //データがEUCの場合
+                //string text = System.Text.Encoding.GetEncoding("euc-jp").GetString(data);
 
-            try
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    resiveStr += ((int)sirialResvPool[i]).ToString() + " ";
-                }
-            }
-            catch
-            {
+                //データがunicodeの場合
+                //string text = System.Text.Encoding.Unicode.GetString(data);
+
+                //データがutf-8の場合
+                string text = System.Text.Encoding.UTF8.GetString(data);
+                resiveStr += text;
             }
         }
     }
@@ -149,6 +144,37 @@ namespace CersioIO
             serialPort.Write(dat, 0, dat.GetLength(0));
 
             return true;
+        }
+
+        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            // シリアルポートからデータ受信
+            {
+                Byte[] buff = new Byte[serialPort.BytesToRead];
+                serialPort.Read(buff, 0, buff.GetLength(0));
+
+                // 受信サイズの10バイトたまるまで、受け取る
+                for (int i = 0; i < buff.Length; i++)
+                {
+                    sirialResvPool[resvIdx + i] = buff[i];
+                }
+                resvIdx += buff.Length;
+            }
+            if (resvIdx < 10) return;
+            resvIdx = 0;
+
+
+
+            try
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    resiveStr += ((int)sirialResvPool[i]).ToString() + " ";
+                }
+            }
+            catch
+            {
+            }
         }
     }
 }

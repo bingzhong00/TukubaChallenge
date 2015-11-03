@@ -57,6 +57,8 @@ namespace VehicleRunner
         LocPreSumpSystem LocSys;
         CersioCtrl CersioCt;
 
+        UsbIOport usbGPS;
+
         // エミュレーションモード
 #if EMULATOR_MODE
         public static bool IsEmurateMode = true;
@@ -118,7 +120,7 @@ namespace VehicleRunner
                                     RootingData.startDir );
 
             // REをリセット
-            CersioCt.RE_Reset(0.0, 0.0, RootingData.startDir);
+            CersioCt.RE_Reset(RootingData.startPosition.x, RootingData.startPosition.y, RootingData.startDir);
 
             // LRF 入力スケール調整反映
             //btm_LRFScale_Click(null, null);
@@ -723,18 +725,8 @@ namespace VehicleRunner
             }
             else cb_EHS.BackColor = SystemColors.Control;
 
-
-            // BoxPC接続状態確認
-            if (CersioCt.TCP_IsConnected())
-            {
-                tb_SendData.BackColor = Color.Lime;
-                tb_ResiveData.BackColor = Color.Lime;
-            }
-            else
-            {
-                tb_SendData.BackColor = SystemColors.Window;
-                tb_ResiveData.BackColor = SystemColors.Window;
-            }
+            // UntiEBS Cnt
+            lbl_BackCnt.Text = "EBS cnt:" + CersioCt.BrainCtrl.EmgBrakeContinueCnt.ToString();
 
             bLocRivisionTRG = false;
             updateMainCnt++;
@@ -827,6 +819,11 @@ namespace VehicleRunner
             }
             if (CersioCt.bhwGPS)
             {
+                // 途中からでもGPSのデータを拾う
+                if (!LocPreSumpSystem.bEnableGPS)
+                {
+                    LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                }
                 LocSys.SetGPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
                 lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
                 lbl_GPS_X.Text = CersioCt.hwGPS_LandX.ToString("f5");
@@ -838,17 +835,54 @@ namespace VehicleRunner
             }
             else
             {
-                lbl_LED.Text = CersioCt.ptnHeadLED.ToString();
+                string ledStr = CersioCt.ptnHeadLED.ToString();
 
                 if (CersioCt.ptnHeadLED >= 0 && CersioCt.ptnHeadLED < CersioCtrl.LEDMessage.Count())
                 {
-                    lbl_LED.Text += "," + CersioCtrl.LEDMessage[CersioCt.ptnHeadLED];
+                    ledStr += "," + CersioCtrl.LEDMessage[CersioCt.ptnHeadLED];
+                }
+
+                if (!ledStr.Equals(lbl_LED.Text))
+                {
+                    lbl_LED.Text = ledStr;
                 }
             }
 
+            // BoxPC接続状態確認
+            if (CersioCt.TCP_IsConnected())
+            {
+                tb_SendData.BackColor = Color.Lime;
+                tb_ResiveData.BackColor = Color.Lime;
+            }
+            else
+            {
+                tb_SendData.BackColor = SystemColors.Window;
+                tb_ResiveData.BackColor = SystemColors.Window;
+            }
+
+
             // 送受信文字更新
-            tb_ResiveData.Text = CersioCt.hwResiveStr;
-            tb_SendData.Text = CersioCt.hwSendStr;
+            if (null != CersioCt.hwResiveStr)
+            {
+                tb_ResiveData.Text = CersioCt.hwResiveStr.Replace('\n', ' ');
+            }
+            if (null != CersioCt.hwSendStr)
+            {
+                tb_SendData.Text = CersioCt.hwSendStr.Replace('\n', ' ');
+            }
+
+            if (null != usbGPS)
+            {
+                tb_SirialResive.Text = usbGPS.resiveStr;
+                /*
+                {
+                    System.IO.StreamWriter sw = new System.IO.StreamWriter(saveLogFname, true, System.Text.Encoding.GetEncoding("shift_jis"));
+                    sw.Write(usbGPS.resiveStr);
+                    sw.Close();
+                }*/
+                usbGPS.resiveStr = "";
+            }
+
 
             updateHwCnt++;
             if (0 == updateHwCnt % 10)
@@ -881,7 +915,7 @@ namespace VehicleRunner
                 // ハードウェア情報
                 if (CersioCt.TCP_IsConnected())
                 {
-                    sw.Write("hwSendStr:" + CersioCt.hwSendStr + System.Environment.NewLine);
+                    sw.Write("hwSendStr:" + CersioCt.hwSendStr.Replace('\n', ' ') + System.Environment.NewLine);
                     sw.Write("hwResiveStr:" + CersioCt.hwResiveStr + System.Environment.NewLine);
                     sw.Write("handle:" + CersioCtrl.nowSendHandleValue + " / acc:" + CersioCtrl.nowSendAccValue + System.Environment.NewLine);
                     //sw.Write("checkPoint:" + CersioCt.RTS.GetNowCheckPointIdx() + "/" + CersioCt.RTS.GetNumCheckPoint() + System.Environment.NewLine);
@@ -890,6 +924,7 @@ namespace VehicleRunner
                 {
                     sw.Write("Comment:No Connect BoxPC" + System.Environment.NewLine);
                 }
+                CersioCt.hwSendStr = "";
 
                 // 位置情報
                 {
@@ -1008,7 +1043,16 @@ namespace VehicleRunner
 
         private void cb_SirialConnect_CheckedChanged(object sender, EventArgs e)
         {
+            if (cb_SirialConnect.Checked)
+            {
+                usbGPS = new UsbIOport();
+                if (!usbGPS.Open(cb_UsbSirial.Text, 4800))
+                {
+                    tb_SirialResive.Text = "ConnectFail";
+                    usbGPS = null;
+                }
 
+            }
         }
 
 

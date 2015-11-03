@@ -35,8 +35,8 @@ namespace CersioIO
 
 
         // ハンドル、アクセル上限値
-        public const double HandleRate = 0.8;  //<========== 調整 0.0 ～ 1.0(100%)
-        public const double AccRate = 1.0;
+        public const double HandleRate = 1.0;//0.8;  //<========== 調整 0.0 ～ 1.0(100%)
+        public const double AccRate =0.5;// 1.0;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.125; // 0.15;
@@ -133,8 +133,8 @@ namespace CersioIO
         /// <param name="dir"></param>
         public void RE_Reset(double x, double y, double dir)
         {
-            //TCP_SendCommand("AD," + ((float)x).ToString("f") + "," + ((float)y).ToString("f") + "\n");
-            SendCommand("AD,0.0,0.0\n");
+            SendCommand("AD," + ((float)x).ToString("f") + "," + ((float)y).ToString("f") + "\n");
+            //SendCommand("AD,0.0,0.0\n");
 
             // 角度をパイに、回転の+-を調整
             double rad = -dir * Math.PI / 180.0;
@@ -152,7 +152,9 @@ namespace CersioIO
         /// <returns></returns>
         public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG)
         {
-            hwSendStr = "";
+            bool untiEBS = false;
+
+ 
             bhwREPlot = false;
             bhwCompass = false;
 
@@ -161,11 +163,11 @@ namespace CersioIO
             if (!goalFlg)
             {
                 // 自走処理
-                BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG);
+                untiEBS = BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG);
             }
 
 
-            if ((Brain.EmgBrk && useEBS) || goalFlg)
+            if ((Brain.EmgBrk && useEBS && !untiEBS) || goalFlg)
             {
                 // 強制停止状態
 
