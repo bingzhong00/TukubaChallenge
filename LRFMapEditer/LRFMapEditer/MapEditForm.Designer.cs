@@ -43,6 +43,8 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton_Edit = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.WaitProressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.sb_VMapLayer = new System.Windows.Forms.HScrollBar();
             this.label1 = new System.Windows.Forms.Label();
             this.lb_NumLayer = new System.Windows.Forms.Label();
@@ -103,8 +105,8 @@
             this.rbtn_AddPoint = new System.Windows.Forms.RadioButton();
             this.listbox_CheckPoint = new System.Windows.Forms.ListBox();
             this.pb_CPMap = new System.Windows.Forms.PictureBox();
-            this.WaitProressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem_LoadBGMap = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pb_EditLayer)).BeginInit();
             this.MenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_PositionX)).BeginInit();
@@ -164,7 +166,9 @@
             this.toolStripSeparator4,
             this.sAVEMapDataToolStripMenuItem,
             this.sAVEMapImageToolStripMenuItem,
-            this.exportCheckPointToolStripMenuItem});
+            this.exportCheckPointToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.toolStripMenuItem_LoadBGMap});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -238,6 +242,16 @@
             this.toolStripMenuItem1.Size = new System.Drawing.Size(244, 22);
             this.toolStripMenuItem1.Text = "Mapローカル座標修正（暫定）";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // WaitProressBar
+            // 
+            this.WaitProressBar.Name = "WaitProressBar";
+            this.WaitProressBar.Size = new System.Drawing.Size(100, 22);
             // 
             // sb_VMapLayer
             // 
@@ -657,7 +671,7 @@
             this.TabLayerEdit.Location = new System.Drawing.Point(4, 26);
             this.TabLayerEdit.Name = "TabLayerEdit";
             this.TabLayerEdit.Padding = new System.Windows.Forms.Padding(3);
-            this.TabLayerEdit.Size = new System.Drawing.Size(350, 187);
+            this.TabLayerEdit.Size = new System.Drawing.Size(350, 205);
             this.TabLayerEdit.TabIndex = 0;
             this.TabLayerEdit.Text = "Layer";
             // 
@@ -672,7 +686,7 @@
             this.TabEditManual.Location = new System.Drawing.Point(4, 26);
             this.TabEditManual.Name = "TabEditManual";
             this.TabEditManual.Padding = new System.Windows.Forms.Padding(3);
-            this.TabEditManual.Size = new System.Drawing.Size(350, 187);
+            this.TabEditManual.Size = new System.Drawing.Size(350, 205);
             this.TabEditManual.TabIndex = 1;
             this.TabEditManual.Text = "EditManual";
             this.TabEditManual.UseVisualStyleBackColor = true;
@@ -783,7 +797,7 @@
             this.tabPage_CheckPoint.Location = new System.Drawing.Point(26, 4);
             this.tabPage_CheckPoint.Name = "tabPage_CheckPoint";
             this.tabPage_CheckPoint.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_CheckPoint.Size = new System.Drawing.Size(1154, 645);
+            this.tabPage_CheckPoint.Size = new System.Drawing.Size(1185, 645);
             this.tabPage_CheckPoint.TabIndex = 1;
             this.tabPage_CheckPoint.Text = "CheckPoint";
             // 
@@ -956,15 +970,17 @@
             this.pb_CPMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pb_CPMap_MouseMove);
             this.pb_CPMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pb_CPMap_MouseUp);
             // 
-            // WaitProressBar
+            // toolStripSeparator3
             // 
-            this.WaitProressBar.Name = "WaitProressBar";
-            this.WaitProressBar.Size = new System.Drawing.Size(100, 22);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(228, 6);
             // 
-            // toolStripSeparator2
+            // toolStripMenuItem_LoadBGMap
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripMenuItem_LoadBGMap.Name = "toolStripMenuItem_LoadBGMap";
+            this.toolStripMenuItem_LoadBGMap.Size = new System.Drawing.Size(231, 22);
+            this.toolStripMenuItem_LoadBGMap.Text = "背景画像 読み込み";
+            this.toolStripMenuItem_LoadBGMap.Click += new System.EventHandler(this.toolStripMenuItem_LoadBGMap_Click);
             // 
             // MapEditForm
             // 
@@ -1097,6 +1113,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripProgressBar WaitProressBar;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_LoadBGMap;
     }
 }
 

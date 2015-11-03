@@ -187,10 +187,13 @@ namespace LRFMapEditer
                 {
                     // LRFがなければ、背景を消しておく
                     g.FillRectangle(Brushes.Black, 0, 0, pb_VMap.Width, pb_VMap.Height);
+
+                    //DrawBGMap(g);
                 }
                 else
                 {
                     //g.FillRectangle(Brushes.Black, 0, 0, pb_VMap.Width, pb_VMap.Height);
+                    //DrawBGMap(g);
 
                     // バックレイヤー描画
                     g.DrawImage(LayerMap, 0, 0, LayerMap.Width, LayerMap.Height);
@@ -237,6 +240,8 @@ namespace LRFMapEditer
         private bool wldMoveFlg = false;
         private bool viewMoveFlg = false;
         private bool wldRotFlg = false;
+        private bool bgMoveFlg = false;
+
         int msX, msY;
         int stX, stY;
         double stAng;
@@ -257,12 +262,17 @@ namespace LRFMapEditer
                 // View移動
                 viewMoveFlg = true;
             }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                // BGMap移動
+                bgMoveFlg = true;
+            }
 
             // 移動前の座標を記憶
             msX = e.X;
             msY = e.Y;
 
-            if (null != EditLayer)
+            if (null != EditLayer && wldMoveFlg)
             {
                 stX = (int)EditLayer.GetLocalX();
                 stY = (int)EditLayer.GetLocalY();
@@ -274,6 +284,13 @@ namespace LRFMapEditer
                 stX = (int)ViewTransX;
                 stY = (int)ViewTransY;
                 stAng = ViewScale;
+            }
+
+            if (bgMoveFlg)
+            {
+                stX = (int)BGMapViewTransX;
+                stY = (int)BGMapViewTransY;
+                stAng = BGMapViewScale;
             }
         }
 
@@ -340,6 +357,27 @@ namespace LRFMapEditer
                     UpdateTRG = true;
                 }
             }
+            else if (bgMoveFlg)
+            {
+                // BGMap移動
+                int difX = e.X - msX;
+                int difY = e.Y - msY;
+
+                if (difX != 0 && difY != 0)
+                {
+                    if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    {
+                        // Shift+でスケール
+                        BGMapViewScale = (float)stAng + (float)difX * 0.1f;
+                    }
+                    else
+                    {
+                        BGMapViewTransX = stX + difX;
+                        BGMapViewTransY = stY + difY;
+                    }
+                    UpdateTRG = true;
+                }
+            }
         }
 
         private void pb_VMap_MouseUp(object sender, MouseEventArgs e)
@@ -351,6 +389,10 @@ namespace LRFMapEditer
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 viewMoveFlg = false;
+            }
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                bgMoveFlg = false;
             }
 
             // Mapの時差更新 OFF

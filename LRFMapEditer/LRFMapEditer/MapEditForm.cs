@@ -43,6 +43,10 @@ namespace LRFMapEditer
         float ViewTransY = 0.0f;
         float ViewScale = 1.0f;
 
+        float BGMapViewTransX = 0.0f;
+        float BGMapViewTransY = 0.0f;
+        float BGMapViewScale = 1.0f;
+
         // ロータリーエンコーダ
         PointD[] reWheelR;
         PointD[] reWheelL;
@@ -62,6 +66,7 @@ namespace LRFMapEditer
         Bitmap CheckPointMap;        // チェックポイントマップ
         Bitmap RenderedWorldMap;     // チェックポイント用ワールドマップ
 
+        Bitmap BGMap;           // 背景画像
 
         private int FileVersion = 0x00000100;   // ファイルバージョン
 
@@ -148,6 +153,23 @@ namespace LRFMapEditer
                 g.DrawLine(Pens.DarkGray, -GideLength + (gridPix * i), -nonScl, -GideLength + (gridPix * i), nonScl);
                 g.DrawLine(Pens.DarkGray, -nonScl, -GideLength + (gridPix * i), nonScl, -GideLength + (gridPix * i));
             }
+        }
+
+        /// <summary>
+        /// BGMap描画
+        /// </summary>
+        /// <param name="g"></param>
+        private void DrawBGMap(Graphics g)
+        {
+            if (null == BGMap) return;
+
+            g.ResetTransform();
+            // View
+            g.ScaleTransform(BGMapViewScale, BGMapViewScale, MatrixOrder.Append);
+            g.ScaleTransform(ViewScale, ViewScale, MatrixOrder.Append);
+            g.TranslateTransform(ViewTransX + BGMapViewTransX, ViewTransY + BGMapViewTransY, MatrixOrder.Append);
+
+            g.DrawImageUnscaled(BGMap, 0, 0);
         }
 
         /// <summary>
@@ -290,6 +312,7 @@ namespace LRFMapEditer
             }
 
             nowMapFilename = fDlg.FileName;
+            tb_MapFileName.Text = fDlg.FileName;
             lb_NumLayer.Text = MapLyaer.Count.ToString();
             sb_VMapLayer.Maximum = MapLyaer.Count;
             num_Layer.Maximum = MapLyaer.Count;
@@ -664,6 +687,11 @@ namespace LRFMapEditer
                 return;
             }
 
+
+            WaitProressBar.Value = 0;
+            WaitProressBar.Maximum = MapLyaer.Count*2;
+            WaitProressBar.Step = 1;
+
             {
                 Bitmap SaveMapBmp = new Bitmap(mapWidth, mapHeight);
 
@@ -681,6 +709,7 @@ namespace LRFMapEditer
                         layer.UpdateMapBmp(LRF_PixelSize, Color.FromArgb(0x0, 0x0, 0x0), Color.FromArgb(0xFF, 0xFF, 0xFF), false);
                         DrawLayerToWorld(g, layer, false, false);
                     }
+                    WaitProressBar.PerformStep();
                 }
                 g.Dispose();
 
@@ -699,7 +728,9 @@ namespace LRFMapEditer
                 foreach (var layer in MapLyaer)
                 {
                     layer.UpdateMapBmp(LRF_PixelSize, colLayerPixel, colLayerBase);
+                    WaitProressBar.PerformStep();
                 }
+
                 if (null != EditLayer)
                 {
                     EditLayer.UpdateMapBmp(LRF_PixelSize, colEditLayerPixel, colLayerBase);
@@ -712,6 +743,8 @@ namespace LRFMapEditer
                              "BmpSave",
                              MessageBoxButtons.OK,
                              MessageBoxIcon.Information);
+
+            WaitProressBar.Value = 0;
 
         }
 
@@ -903,6 +936,19 @@ namespace LRFMapEditer
             else if (rgb == 2) return colLayerBase.B;
 
             return 0;
+        }
+
+        // 背景画像
+        private void toolStripMenuItem_LoadBGMap_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fDlg = new OpenFileDialog();
+
+            fDlg.Filter = "ImageFile(*.jpg)|*.jpg|ImageFile(*.bmp)|*.bmp|ImageFile(*.png)|*.png|AllFile (*.*)|*.*";
+
+            var Result = fDlg.ShowDialog();
+            if (Result != System.Windows.Forms.DialogResult.OK) return;
+
+            BGMap = new Bitmap(fDlg.FileName);
         }
 
     }
