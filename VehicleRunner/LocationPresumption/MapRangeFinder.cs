@@ -54,17 +54,18 @@ namespace LocationPresumption
             // 傾きテーブル作成
             DeltaX = new double[360];
             DeltaY = new double[360];
-            double r;
 
             for (int theta = 0; theta < 360; ++theta)
             {
-                DeltaX[theta] = 0.5 * Math.Cos((theta - 90) * Math.PI / 180.0);
-                DeltaY[theta] = 0.5 * Math.Sin((theta - 90) * Math.PI / 180.0);
+                DeltaX[theta] = 1.0 * Math.Cos((theta - 90) * Math.PI / 180.0);
+                DeltaY[theta] = 1.0 * Math.Sin((theta - 90) * Math.PI / 180.0);
 
 
                 // 1.0を基準にする(高速化)
                 /*
                 {
+                    double r;
+                 * 
                     if (Math.Abs(DeltaX[theta]) < Math.Abs(DeltaY[theta])) r = 1.0 / Math.Abs(DeltaY[theta]);
                     else r = 1.0 / Math.Abs(DeltaX[theta]);
 

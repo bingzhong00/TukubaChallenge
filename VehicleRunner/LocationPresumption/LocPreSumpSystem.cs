@@ -88,6 +88,8 @@ namespace LocationPresumption
         // GPSスタート地点 
         public static double startPosGPSX = 0.0;
         public static double startPosGPSY = 0.0;
+        public static int startPosGPS_MapX = 0;
+        public static int startPosGPS_MapY = 0;
         public static bool bEnableGPS = false;
 
         // -------------------------------------------------------------------------------------------------
@@ -392,7 +394,7 @@ namespace LocationPresumption
         /// <param name="landX"></param>
         /// <param name="landY"></param>
         /// <returns></returns>
-        public bool SetGPSData(double landX, double landY)
+        public bool SetGPSData(double landX, double landY, double moveDir )
         {
             if (!bEnableGPS) return false;
 
@@ -400,17 +402,16 @@ namespace LocationPresumption
             double kdo = (int)landX;
 
             double mapY = (ido * 60.0 + (landY - ido)) * GPSScale;
-            double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
-
-            //mapX = (kdo * 60.0 + (landX - kdo)) * (GPSScale * Math.Cos(((ido * 60.0 + (landY - ido))/60.0) * Math.PI / 180.0));   // ※要テスト
+            //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
+            double mapX = (kdo * 60.0 + (landX - kdo)) * (GPSScale * Math.Cos(((ido * 60.0 + (landY - ido))/60.0) * Math.PI / 180.0));
 
             // 単位変換
             mapX = (mapX - startPosGPSX) / RealToMapSclae;
             mapY = -(mapY - startPosGPSY) / RealToMapSclae;
 
-            G1.X = worldMap.GetAreaX((int)mapX);
-            G1.Y = worldMap.GetAreaY((int)mapY);
-            G1.Theta = 0.0;
+            G1.X = worldMap.GetAreaX((int)mapX + startPosGPS_MapX);
+            G1.Y = worldMap.GetAreaY((int)mapY + startPosGPS_MapY);
+            G1.Theta = moveDir;
 
             return true;
         }
@@ -421,15 +422,18 @@ namespace LocationPresumption
         /// <param name="landX"></param>
         /// <param name="landY"></param>
         /// <returns></returns>
-        public static void SetStartGPS(double landX, double landY)
+        public static void SetStartGPS(double landX, double landY, int mapX, int mapY )
         {
             double ido = (int)landY;
             double kdo = (int)landX;
 
             startPosGPSY = (ido * 60.0 + (landY - ido)) * GPSScale;
-            startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
+            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
+            startPosGPSX = (kdo * 60.0 + (landX - kdo)) * (GPSScale * Math.Cos(((ido * 60.0 + (landY - ido))/60.0) * Math.PI / 180.0));
 
-            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * (GPSScale * Math.Cos(((ido * 60.0 + (landY - ido))/60.0) * Math.PI / 180.0));   // ※要テスト
+            // マップの基準点をセット
+            startPosGPS_MapX = mapX;
+            startPosGPS_MapY = mapY;
 
             bEnableGPS = true;
         }
@@ -796,7 +800,8 @@ namespace LocationPresumption
             DrawMakerLogLine_World(g, V1Log, Color.Cyan.R, Color.Cyan.G, Color.Cyan.B);
             // ロータリーエンコーダ座標
             DrawMakerLogLine_World(g, E1Log, Color.Purple.R, Color.Purple.G, Color.Purple.B);
-
+            // GPS座標
+            DrawMakerLogLine_World(g, G1Log, Color.Green.R, Color.Green.G, Color.Green.B);
 
             // 最終地点にマーカ表示
             if (R1Log.Count > 0)
@@ -810,6 +815,10 @@ namespace LocationPresumption
             if (E1Log.Count > 0)
             {
                 DrawMaker(g, 1.0f, E1Log[E1Log.Count - 1], Brushes.Purple, 4);
+            }
+            if (G1Log.Count > 0)
+            {
+                DrawMaker(g, 1.0f, G1Log[G1Log.Count - 1], Brushes.Green, 4);
             }
             if (null != marker)
             {

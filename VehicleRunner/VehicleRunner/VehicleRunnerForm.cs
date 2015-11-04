@@ -149,6 +149,11 @@ namespace VehicleRunner
                     // 取得したシリアル・ポート名を出力する
                     cb_UsbSirial.Items.Add(port);
                 }
+
+                if (cb_UsbSirial.Items.Count > 0)
+                {
+                    cb_UsbSirial.SelectedIndex = 0;
+                }
             }
 
             // 画面更新
@@ -638,7 +643,10 @@ namespace VehicleRunner
                 // スタート時のGPS情報があれば設定
                 if (CersioCt.bhwGPS)
                 {
-                    LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                    LocPreSumpSystem.SetStartGPS( CersioCt.hwGPS_LandX,
+                                                  CersioCt.hwGPS_LandY,
+                                                  (int)(LocSys.worldMap.GetWorldX(LocSys.R1.X)+0.5),
+                                                  (int)(LocSys.worldMap.GetWorldY(LocSys.R1.Y)+0.5));
                 }
             }
             else tm_LocUpdate.Enabled = false;
@@ -802,7 +810,7 @@ namespace VehicleRunner
             }
 
             // セルシオ ハードウェア情報取得
-            CersioCt.GetHWStatus();
+            CersioCt.GetHWStatus( ((usbGPS!=null)?true:false) );
 
             // ロータリーエンコーダ値,コンパス値 更新
             if (CersioCt.bhwREPlot)
@@ -822,9 +830,12 @@ namespace VehicleRunner
                 // 途中からでもGPSのデータを拾う
                 if (!LocPreSumpSystem.bEnableGPS)
                 {
-                    LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                    LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX,
+                                                  CersioCt.hwGPS_LandY,
+                                                  (int)(LocSys.worldMap.GetWorldX(LocSys.R1.X)+0.5),
+                                                  (int)(LocSys.worldMap.GetWorldY(LocSys.R1.Y)+0.5));
                 }
-                LocSys.SetGPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                LocSys.SetGPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY, CersioCt.hwGPS_MoveDir);
                 lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
                 lbl_GPS_X.Text = CersioCt.hwGPS_LandX.ToString("f5");
             }
@@ -880,7 +891,16 @@ namespace VehicleRunner
                     sw.Write(usbGPS.resiveStr);
                     sw.Close();
                 }*/
+                if (!string.IsNullOrEmpty(usbGPS.resiveStr))
+                {
+                    CersioCt.usbGPSResive.Add(usbGPS.resiveStr);
+                }
                 usbGPS.resiveStr = "";
+
+                if (CersioCt.usbGPSResive.Count > 30)
+                {
+                    CersioCt.usbGPSResive.RemoveRange(0, CersioCt.usbGPSResive.Count - 30);
+                }
             }
 
 
@@ -918,7 +938,6 @@ namespace VehicleRunner
                     sw.Write("hwSendStr:" + CersioCt.hwSendStr.Replace('\n', ' ') + System.Environment.NewLine);
                     sw.Write("hwResiveStr:" + CersioCt.hwResiveStr + System.Environment.NewLine);
                     sw.Write("handle:" + CersioCtrl.nowSendHandleValue + " / acc:" + CersioCtrl.nowSendAccValue + System.Environment.NewLine);
-                    //sw.Write("checkPoint:" + CersioCt.RTS.GetNowCheckPointIdx() + "/" + CersioCt.RTS.GetNumCheckPoint() + System.Environment.NewLine);
                 }
                 else
                 {
@@ -952,7 +971,10 @@ namespace VehicleRunner
                              "/Y " + LocSys.worldMap.GetWorldY(LocSys.G1.Y).ToString("f3") +
                              "/ Dir " + LocSys.G1.Theta.ToString("f2") +
                              System.Environment.NewLine);
+                }
 
+                // 
+                {
                     sw.Write("MatchingScore:" + CersioCt.BrainCtrl.MatchingScore.ToString() + System.Environment.NewLine);
 
                     // Rooting情報
@@ -966,15 +988,48 @@ namespace VehicleRunner
                         CersioCt.BrainCtrl.RTS.getNowTargetDir(ref tgtDir);
 
                         sw.Write("RTS_TargetPos:X " + tgtPosX.ToString("f3") +
-                                 "/Y " + tgtPosY.ToString("f3") + "/Dir " +
-                                 tgtDir.ToString("f2") +
+                                 "/Y " + tgtPosY.ToString("f3") +
+                                 "/Dir " + tgtDir.ToString("f2") +
                                  System.Environment.NewLine);
+
+                        sw.Write("RTS_Handle:" + CersioCt.BrainCtrl.RTS.getHandleValue().ToString("f2") + System.Environment.NewLine);
+                    }
+
+                    // Brain情報
+                    {
+                        sw.Write("EBS_CautionLv:" + CersioCt.BrainCtrl.EBS_CautionLv.ToString() + System.Environment.NewLine);
+                        sw.Write("EHS_Handle:" + CersioCt.BrainCtrl.EhsHandleVal.ToString("f2") + "/Result " + Brain.EHS_ResultStr[(int)CersioCt.BrainCtrl.EHS_Result] + System.Environment.NewLine);
+                    }
+
+                    // CersioCtrl
+                    {
+                        sw.Write("GoalFlg:" + (CersioCt.goalFlg ? "TRUE": "FALSE") + System.Environment.NewLine);
+
+                        if( CersioCt.bhwCompass )
+                        {
+                            sw.Write("hwCompass:" + CersioCt.hwCompass.ToString() + System.Environment.NewLine );
+                        }
+
+                        if( CersioCt.bhwREPlot )
+                        {
+                            sw.Write("hwREPlot:X " + CersioCt.hwREX.ToString("f3") +
+                                     "/Y " + CersioCt.hwREY.ToString("f3") +
+                                     "/Dir " + CersioCt.hwREDir.ToString("f2") +
+                                     System.Environment.NewLine);
+                        }
+
+                        if( CersioCt.bhwGPS )
+                        {
+                            sw.Write("hwGPS:X " + CersioCt.hwGPS_LandX.ToString("f3") +
+                                     "/Y " + CersioCt.hwGPS_LandY.ToString("f3") +
+                                     System.Environment.NewLine);
+                        }
                     }
 
                     // 特記事項メッセージ出力
                     if (Brain.addLogMsg != null)
                     {
-                        sw.Write(Brain.addLogMsg + System.Environment.NewLine);
+                        sw.Write("AddLog:" + Brain.addLogMsg + System.Environment.NewLine);
                     }
                     Brain.addLogMsg = null;
                 }
@@ -1041,17 +1096,44 @@ namespace VehicleRunner
             }
         }
 
+        /// <summary>
+        /// usbGPS取得ボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_SirialConnect_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_SirialConnect.Checked)
             {
-                usbGPS = new UsbIOport();
-                if (!usbGPS.Open(cb_UsbSirial.Text, 4800))
+                if (null != usbGPS)
                 {
-                    tb_SirialResive.Text = "ConnectFail";
+                    usbGPS.Close();
                     usbGPS = null;
                 }
 
+                {
+                    usbGPS = new UsbIOport();
+                    if (usbGPS.Open(cb_UsbSirial.Text, 4800))
+                    {
+                        // 接続成功
+                        tb_SirialResive.BackColor = Color.Lime;
+                    }
+                    else
+                    {
+                        // 接続失敗
+                        tb_SirialResive.BackColor = SystemColors.Control;
+                        tb_SirialResive.Text = "ConnectFail";
+                        usbGPS = null;
+                    }
+                }
+            }
+            else
+            {
+                if (null != usbGPS)
+                {
+                    usbGPS.Close();
+                    usbGPS = null;
+                }
             }
         }
 

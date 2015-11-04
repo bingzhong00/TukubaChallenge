@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 using LocationPresumption;
 using SCIP_library;
@@ -57,12 +58,15 @@ namespace CersioIO
 
         public double hwGPS_LandX = 0.0;
         public double hwGPS_LandY = 0.0;
+        public double hwGPS_MoveDir = 0.0;  // 0 ～ 359度
         public bool bhwGPS = false;
 
         // 受信文字
         public string hwResiveStr;
         public string hwSendStr;
 
+
+        public List<string> usbGPSResive = new List<string>();
 
         // --------------------------------------------------------------------------------------------------
         public CersioCtrl()
@@ -229,8 +233,17 @@ namespace CersioIO
         /// <summary>
         /// ハードウェアステータス取得
         /// </summary>
-        public void GetHWStatus()
+        /// <param name="useUsbGPS">USBのＧＰＳを使っている</param>
+        public void GetHWStatus( bool useUsbGPS )
         {
+            /*
+            hwGPS_LandX = emuGPSX;
+            hwGPS_LandY = emuGPSY;
+            bhwGPS = true;
+
+            emuGPSX += 0.00001;//2cm
+            */
+
             if (TCP_IsConnected())
             {
                 TCP_ReciveCommand();
@@ -242,7 +255,10 @@ namespace CersioIO
                 SendCommand("A2" + "\n");
 
                 // GPS取得
-                SendCommand("A3" + "\n");
+                if (!useUsbGPS)
+                {
+                    SendCommand("A3" + "\n");
+                }
 
                 // ロータリーエンコーダ　絶対値取得
                 SendCommand("A4" + "\n");
@@ -251,6 +267,9 @@ namespace CersioIO
                 //double rad = (double)(-hwCompass) * Math.PI / 180.0;
                 //TCP_SendCommand("AR," + rad.ToString("f") + "\n");
             }
+
+            //usbGPS取得
+            if( useUsbGPS ) AnalizeUsbGPS();
 
             // カウンタ更新
             if (cntHeadLED > 0) cntHeadLED--;
@@ -411,11 +430,16 @@ namespace CersioIO
         double oldResiveMS;         // 速度計測用 受信時間差分
         int oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
 
+        public double emuGPSX = 134.0000;
+        public double emuGPSY = 35.0000;
+
         public string TCP_ReciveCommand()
         {
             System.Net.Sockets.TcpClient objSck = objTCPSC.SckProperty;
             System.Net.Sockets.NetworkStream objStm = objTCPSC.MyProperty;
             string readStr = "";
+
+
 
             if (objStm != null && objSck != null)
             {
@@ -567,6 +591,136 @@ namespace CersioIO
             return false;
         }
 
+
+        // -----------------------------------------------------------------------------------------------
+        const double GPSScale = 1.852 * 1000.0 * 1000.0;
+
+        //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
+        //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
+
+        private bool AnalizeUsbGPS()
+        {
+            if (usbGPSResive.Count == 0) return false;
+
+            string strBuf = "";
+
+            foreach (var lineStr in usbGPSResive)
+            {
+                strBuf += lineStr;
+            }
+
+            {
+                byte[] dat = System.Text.Encoding.GetEncoding("SHIFT-JIS").GetBytes(strBuf);
+                MemoryStream mst = new MemoryStream(dat, false);
+                StreamReader fsr = new StreamReader(mst, Encoding.GetEncoding("Shift_JIS"));
+
+                string str;
+
+                do
+                {
+                    str = fsr.ReadLine();
+
+                    if (str == null) break;
+                    if (str.Length == 0) continue;
+
+                    string[] dataWord = str.Split(',');
+
+
+
+                    switch (dataWord[0])
+                    {
+                        case "$GPRMC":
+                            try
+                            {
+                                // $GPRMC,020850.000,A,3604.8100,N,14006.9366,E,0.00,15.03,171015,,,A*54
+                                if (dataWord.Length < 13) break;
+
+                                double ido = 0.0;
+
+                                // 定世界時(UTC）での時刻。日本標準時は協定世界時より9時間進んでいる。hhmmss.ss
+                                //lsData.ms = ParseGPS_MS(dataWord[1]);
+
+                                // dataWord[2] A,V  ステータス。V = 警告、A = 有効
+                                if (dataWord[2].ToUpper() != "A") break;    // 受信不良時は受け取らない
+
+                                {
+                                    // dataWord[3] 緯度。dddmm.mmmm
+                                    string[] dataGPS = dataWord[3].Split('.');
+                                    //ido = double.Parse(dataGPS[0]);
+                                    //lsData.GPSLandY = -(double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1])/60.0)) * GPSScale;
+                                    string strDo = dataWord[3].Substring(0, dataGPS[0].Length - 2);
+                                    string strHun = dataWord[3].Substring(strDo.Length, dataWord[3].Length - strDo.Length);
+
+                                    hwGPS_LandY = double.Parse(strDo) + (double.Parse(strHun) / 60.0);
+                                    //hwGPS_LandY = -(double.Parse(strDo) * 60.0 + (double.Parse(strHun))) * GPSScale;  // MAP座標系
+                                    ido = double.Parse(strDo);
+                                }
+                                // dataWord[4] N,S N = 北緯、South = 南緯
+
+                                {
+                                    // dataWord[5] 経度。dddmm.mmmm
+                                    string[] dataGPS = dataWord[5].Split('.');
+
+                                    //lsData.GPSLandX = (double.Parse(dataGPS[0]) + (double.Parse(dataGPS[1])) / 60.0) * (GPSScale * Math.Cos((ido / 100.0) * Math.PI / 180.0));
+                                    string strDo = dataWord[5].Substring(0, dataGPS[0].Length - 2);
+                                    string strHun = dataWord[5].Substring(strDo.Length, dataWord[5].Length - strDo.Length);
+
+                                    hwGPS_LandX = double.Parse(strDo) + (double.Parse(strHun) / 60.0);
+                                    //hwGPS_LandX = (double.Parse(strDo) * 60.0 + (double.Parse(strHun))) * (GPSScale * Math.Cos(ido * Math.PI / 180.0));  // MAP座標系
+                                }
+                                // dataWord[6] E = 東経、West = 西経
+
+                                // dataWord[7] 地表における移動の速度。000.0～999.9[knot]
+                                // dataWord[8] 地表における移動の真方位。000.0～359.9度
+                                hwGPS_MoveDir = double.Parse(dataWord[8]);
+
+                                // dataWord[9] 協定世界時(UTC）での日付。ddmmyy
+                                // dataWord[10] 磁北と真北の間の角度の差。000.0～359.9度 	
+                                // dataWord[11] 磁北と真北の間の角度の差の方向。E = 東、W = 西 	
+                                // dataWord[12] モード, N = データなし, A = Autonomous（自律方式）, D = Differential（干渉測位方式）, E = Estimated（推定）* チェックサム
+
+                                bhwGPS = true;
+                            }
+                            catch
+                            {
+                            }
+                            break;
+                        case "$GPGGA":
+                            // ※未対応
+                            break;
+                        case "$GPGSA":
+                            // ※未対応
+                            break;
+                    }
+                }
+                while (true);
+
+
+
+                // Close
+                {
+                    if (null != fsr)
+                    {
+                        fsr.Close();
+                        fsr = null;
+                    }
+                    if (null != mst)
+                    {
+                        mst.Close();
+                        mst = null;
+                    }
+                }
+            }
+
+            usbGPSResive.Clear();
+
+            return true;
+        }
+
+        private long ParseGPS_MS(string str)
+        {
+            return (long)(double.Parse(str) * 1000.0);
+        }
 
 
     }
