@@ -34,7 +34,10 @@ namespace LocationPresumption
         private const int maxLrfDir = 270;
 
         // 割合 (1.0...ノイズ高め　/ 0.0...ノイズ低め　ただし反応がにぶい)
-        double LRF_noiseRate = 0.50; 
+        double LRF_noiseRate = 0.50;
+
+        // GPSからMap変換時のスケール（計算上は必要ないはず。。）
+        const double GPStoMapScale = 30.0;
 
         // エリアマップ管理
         public WorldMap worldMap;                  // 全体マップ
@@ -90,7 +93,10 @@ namespace LocationPresumption
         public static double startPosGPSY = 0.0;
         public static int startPosGPS_MapX = 0;
         public static int startPosGPS_MapY = 0;
+
         public static bool bEnableGPS = false;
+        public static bool bTrustGPS = false;
+
 
         // -------------------------------------------------------------------------------------------------
         //
@@ -145,7 +151,7 @@ namespace LocationPresumption
         public void InitWorld( string fnameMapBmp, double worldWith, double worldHeight )
         {
             worldMap = new WorldMap(fnameMapBmp);
-            RealToMapSclae = (worldWith / (double)worldMap.Worldize.w);     // 実サイズ（ｍｍ）/ピクセル数　＝　１ピクセルを何mmとするか
+            RealToMapSclae = (worldWith / (double)worldMap.WorldSize.w);     // 実サイズ（ｍｍ）/ピクセル数　＝　１ピクセルを何mmとするか
 
             URG_LRF.setScale(1.0 / RealToMapSclae);      // mm単位からピクセル単位へ スケール変換
 
@@ -384,8 +390,9 @@ namespace LocationPresumption
             return true;
         }
 
-        const double GPSScale = 1.85225 * 1000.0 * 1000.0;
-        const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
+        // 1分の距離[mm] 1.85225Km
+        const double GPSScale = 1.85225 * 1000.0 * 1000.0 * GPStoMapScale;
+        //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
         //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
 
         /// <summary>
@@ -403,7 +410,8 @@ namespace LocationPresumption
 
             double mapY = (ido * 60.0 + (landY - ido)) * GPSScale;
             //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
-            double mapX = (kdo * 60.0 + (landX - kdo)) * (GPSScale * Math.Cos(((ido * 60.0 + (landY - ido))/60.0) * Math.PI / 180.0));
+            //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(((ido + (landY - ido))/60.0) * Math.PI / 180.0);
+            double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
 
             // 単位変換
             mapX = (mapX - startPosGPSX) / RealToMapSclae;
@@ -422,20 +430,22 @@ namespace LocationPresumption
         /// <param name="landX"></param>
         /// <param name="landY"></param>
         /// <returns></returns>
-        public static void SetStartGPS(double landX, double landY, int mapX, int mapY )
+        public static void SetStartGPS(double landX, double landY, int mapX, int mapY, bool bTrustFlg )
         {
             double ido = (int)landY;
             double kdo = (int)landX;
 
             startPosGPSY = (ido * 60.0 + (landY - ido)) * GPSScale;
             //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
-            startPosGPSX = (kdo * 60.0 + (landX - kdo)) * (GPSScale * Math.Cos(((ido * 60.0 + (landY - ido))/60.0) * Math.PI / 180.0));
+            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(((ido + (landY - ido))/60.0) * Math.PI / 180.0);
+            startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
 
             // マップの基準点をセット
             startPosGPS_MapX = mapX;
             startPosGPS_MapY = mapY;
 
             bEnableGPS = true;
+            bTrustGPS = bTrustFlg;
         }
 
 
@@ -450,7 +460,7 @@ namespace LocationPresumption
         /// 自己位置計算
         /// </summary>
         /// <param name="numPF"></param>
-        public void CalcLocalize(MarkPoint mkp, int numPF = 1)
+        public void CalcLocalize(MarkPoint mkp, bool useLowFilter, int numPF = 1)
         {
             // 処理時間計測
             swCNT_Update.Reset();
@@ -459,7 +469,11 @@ namespace LocationPresumption
             // パーティクルフィルター演算
             {
                 // 計算起点をセット
-                ResetLPF_V1(mkp);
+                if (useLowFilter)
+                {
+                    ResetLPF_V1(mkp);
+                }
+
                 V1.Set(mkp);
 
                 for (int i = 0; i < numPF; i++)
@@ -467,8 +481,11 @@ namespace LocationPresumption
                     Filter.Localize(LRF_Data, MRF, V1, Particles);
 
                     // 結果にローパスフィルターをかける
-                    V1.X = lpfV1X.update(V1.X);
-                    V1.Y = lpfV1Y.update(V1.Y);
+                    if (useLowFilter)
+                    {
+                        V1.X = lpfV1X.update(V1.X);
+                        V1.Y = lpfV1Y.update(V1.Y);
+                    }
                 }
             }
 
@@ -480,7 +497,7 @@ namespace LocationPresumption
         /// 自己位置推定 更新
         /// </summary>
         /// <returns>true...補正した, false..補正不要</returns>
-        public bool Update()
+        public bool Update(bool useAlwaysPF)
         {
             bool bResult = false;   // 補正したか？
 
@@ -496,8 +513,29 @@ namespace LocationPresumption
                 R1.Y += (E1.Y - oldE1.Y);
                 R1.Theta = E1.Theta; //  REの向き
 
+                // パーティクルフィルター定期更新
+                if (useAlwaysPF)
+                {
+                    // 毎回更新PF
+                    V1.X += (E1.X - oldE1.X);
+                    V1.Y += (E1.Y - oldE1.Y);
+
+                    if (bActiveCompass)
+                    {
+                        V1.Theta = C1.Theta; //  Compass
+                    }
+                    else
+                    {
+                        V1.Theta = E1.Theta; //  REの向き
+                    }
+
+                    CalcLocalize(V1,true);
+                }
+
                 oldE1.Set(E1);
             }
+
+            
 
             // 軌跡ログ
             try
@@ -611,6 +649,8 @@ namespace LocationPresumption
         // 処理カウンタ
         public System.Diagnostics.Stopwatch swCNT_Draw = new System.Diagnostics.Stopwatch();
 
+        int locMapDrawCnt = 0;
+
         /// <summary>
         /// 自己位置情報表示 Bmp更新
         /// </summary>
@@ -653,7 +693,7 @@ namespace LocationPresumption
             // 描画順を常にかえて、重なっても見えるようにする
             for (int i = 0; i <4; i++)
             {
-                switch ((i + upDateCnt) % 4)
+                switch ((i + locMapDrawCnt) % 4)
                 {
                     case 0:
                         // RE想定ロボット位置描画
@@ -668,13 +708,14 @@ namespace LocationPresumption
                         DrawMaker(g, olScale, R1, Brushes.Red, size);
                         break;
                     case 3:
-                        // 実ロボット想定位置描画
+                        // GPS位置描画
                         DrawMaker(g, olScale, G1, Brushes.Green, size);
                         break;
                 }
             }
 
             g.Dispose();
+            locMapDrawCnt++;
 
             swCNT_Draw.Stop();
         }
@@ -744,14 +785,24 @@ namespace LocationPresumption
         /// <param name="colB"></param>
         private void DrawMakerLog_Area(Graphics g, float fScale, List<MarkPoint> mkLog, byte colR, byte colG, byte colB)
         {
-            Point[] ps = new Point[mkLog.Count];
-
             if (mkLog.Count < 2) return;
 
-            for(int i=0; i<mkLog.Count; i++ )
+            int baseIdx = 0;
+            int drawNum = mkLog.Count;
+            const int maxDrawNum = 100; // 描画数上限
+
+            if (drawNum > maxDrawNum)
             {
-                ps[i].X = (int)(worldMap.GetAreaX((int)mkLog[i].X) * fScale);
-                ps[i].Y = (int)(worldMap.GetAreaY((int)mkLog[i].Y) * fScale);
+                baseIdx = (mkLog.Count-1) - maxDrawNum;
+                drawNum = maxDrawNum;
+            }
+
+            Point[] ps = new Point[drawNum];
+
+            for (int i = 0; i < drawNum; i++)
+            {
+                ps[i].X = (int)(worldMap.GetAreaX((int)mkLog[baseIdx+i].X) * fScale);
+                ps[i].Y = (int)(worldMap.GetAreaY((int)mkLog[baseIdx+i].Y) * fScale);
             }
 
             //折れ線を引く

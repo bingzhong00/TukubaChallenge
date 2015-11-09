@@ -56,6 +56,10 @@ namespace CersioIO
         public double hwREDir = 0.0;
         public bool bhwREPlot = false;
 
+        public double hwRErotR = 0.0;
+        public double hwRErotL = 0.0;
+        public bool bhwRE = false;
+
         public double hwGPS_LandX = 0.0;
         public double hwGPS_LandY = 0.0;
         public double hwGPS_MoveDir = 0.0;  // 0 ～ 359度
@@ -154,7 +158,7 @@ namespace CersioIO
         /// <param name="LocSys"></param>
         /// <param name="useEBS"></param>
         /// <returns></returns>
-        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG)
+        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF )
         {
             bool untiEBS = false;
 
@@ -167,7 +171,7 @@ namespace CersioIO
             if (!goalFlg)
             {
                 // 自走処理
-                untiEBS = BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG);
+                untiEBS = BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF);
             }
 
 
@@ -428,7 +432,7 @@ namespace CersioIO
 
         public static int SpeedMH = 0;   // 速度　mm/Sec
         double oldResiveMS;         // 速度計測用 受信時間差分
-        int oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
+        double oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
 
         public double emuGPSX = 134.0000;
         public double emuGPSY = 35.0000;
@@ -464,22 +468,26 @@ namespace CersioIO
                             // ロータリーエンコーダから　速度を計算
                             if (rsvCmd[i].Substring(0, 3) == "A1,")
                             {
+                                const double tiyeSize = 140.0;  // タイヤ直径 [mm]
+                                const double OnePuls = 260.0;   // 一周のパルス数
                                 double ResiveMS;
-                                int wheelR;
                                 //string[] splStr = (rsvCmd[i].Replace('[', ',').Replace(']', ',').Replace(' ', ',')).Split(',');
                                 string[] splStr = rsvCmd[i].Split(',');
 
                                 // 0 A1
                                 double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
-                                int.TryParse(splStr[2], out wheelR);        // Right Wheel
+                                double.TryParse(splStr[2], out hwRErotR);        // Right Wheel
+                                double.TryParse(splStr[3], out hwRErotL);        // Left Wheel
 
-                                // 絶対値用計算
-                                SpeedMH = (int)(((double)(wheelR - oldWheelR)/260.0 * Math.PI*140.0)*10000.0/(ResiveMS - oldResiveMS));
+                                // 絶対値用計算 10000  万ミリ秒
+                                SpeedMH = (int)(((double)(hwRErotR - oldWheelR) / OnePuls * Math.PI * tiyeSize) * 10000.0 / (ResiveMS - oldResiveMS));
                                 // mm/sec
                                 //SpeedMH = (int)(((double)wheelR / 260.0 * Math.PI * 140.0) * 10000.0 / 200.0);
 
                                 oldResiveMS = ResiveMS;
-                                oldWheelR = wheelR;
+                                oldWheelR = hwRErotR;
+
+                                bhwRE = true;
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A2,")
                             {
@@ -550,19 +558,6 @@ namespace CersioIO
                                 hwREX = ResiveX;
                                 hwREY = -ResiveY;
                                 hwREDir = -ResiveRad * 180.0 / Math.PI;
-
-                                // ※座標回転
-                                /*
-                                {
-                                    double wRad = ResiveRad;
-                                    double cs = Math.Cos(wRad);
-                                    double sn = Math.Sin(wRad);
-
-                                    hwREX = (ResiveX * cs - ResiveY * sn);
-                                    hwREY = (ResiveX * sn + ResiveY * cs);
-                                    hwREY = -hwREY;
-                                }
-                                */
 
                                 bhwREPlot = true;
                             }
@@ -672,7 +667,7 @@ namespace CersioIO
 
                                 // dataWord[7] 地表における移動の速度。000.0～999.9[knot]
                                 // dataWord[8] 地表における移動の真方位。000.0～359.9度
-                                hwGPS_MoveDir = double.Parse(dataWord[8]);
+                                hwGPS_MoveDir = -double.Parse(dataWord[8]);
 
                                 // dataWord[9] 協定世界時(UTC）での日付。ddmmyy
                                 // dataWord[10] 磁北と真北の間の角度の差。000.0～359.9度 	

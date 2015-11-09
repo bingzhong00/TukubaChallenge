@@ -64,7 +64,7 @@ namespace LocationPresumption
         public PointI WldOffsetDiff = new PointI();
 
         public SizeI GridSize = new SizeI();
-        public SizeI Worldize = new SizeI();
+        public SizeI WorldSize = new SizeI();
 
         /// <summary>
         /// ワールドマップ初期化
@@ -76,8 +76,8 @@ namespace LocationPresumption
             GridSize = new SizeI();
             mapBmp = new Bitmap(mapFname);
 
-            Worldize.w = mapBmp.Width;
-            Worldize.h = mapBmp.Height;
+            WorldSize.w = mapBmp.Width;
+            WorldSize.h = mapBmp.Height;
         }
 
         /// <summary>

@@ -65,6 +65,10 @@
             this.btn_LocRevision = new System.Windows.Forms.Button();
             this.lbl_MattingScore = new System.Windows.Forms.Label();
             this.tabPage_Status = new System.Windows.Forms.TabPage();
+            this.lbl_RErotL = new System.Windows.Forms.Label();
+            this.lbl_RErotR = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             this.lbl_REDir = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.lbl_REY = new System.Windows.Forms.Label();
@@ -104,8 +108,8 @@
             this.picbox_AreaMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picbox_AreaMap.TabIndex = 0;
             this.picbox_AreaMap.TabStop = false;
-            this.picbox_AreaMap.Click += new System.EventHandler(this.picbox_AreaMap_Click);
             this.picbox_AreaMap.Paint += new System.Windows.Forms.PaintEventHandler(this.picbox_AreaMap_Paint);
+            this.picbox_AreaMap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picbox_AreaMap_MouseClick);
             // 
             // picbox_LRF
             // 
@@ -509,6 +513,10 @@
             // tabPage_Status
             // 
             this.tabPage_Status.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_Status.Controls.Add(this.lbl_RErotL);
+            this.tabPage_Status.Controls.Add(this.lbl_RErotR);
+            this.tabPage_Status.Controls.Add(this.label17);
+            this.tabPage_Status.Controls.Add(this.label16);
             this.tabPage_Status.Controls.Add(this.lbl_REDir);
             this.tabPage_Status.Controls.Add(this.label18);
             this.tabPage_Status.Controls.Add(this.lbl_REY);
@@ -529,11 +537,49 @@
             this.tabPage_Status.TabIndex = 2;
             this.tabPage_Status.Text = "Status";
             // 
+            // lbl_RErotL
+            // 
+            this.lbl_RErotL.AutoSize = true;
+            this.lbl_RErotL.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_RErotL.Location = new System.Drawing.Point(75, 180);
+            this.lbl_RErotL.Name = "lbl_RErotL";
+            this.lbl_RErotL.Size = new System.Drawing.Size(28, 16);
+            this.lbl_RErotL.TabIndex = 17;
+            this.lbl_RErotL.Text = "ND";
+            // 
+            // lbl_RErotR
+            // 
+            this.lbl_RErotR.AutoSize = true;
+            this.lbl_RErotR.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_RErotR.Location = new System.Drawing.Point(75, 159);
+            this.lbl_RErotR.Name = "lbl_RErotR";
+            this.lbl_RErotR.Size = new System.Drawing.Size(28, 16);
+            this.lbl_RErotR.TabIndex = 16;
+            this.lbl_RErotR.Text = "ND";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(5, 180);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(59, 16);
+            this.label17.TabIndex = 15;
+            this.label17.Text = "RErotL:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(4, 159);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(60, 16);
+            this.label16.TabIndex = 14;
+            this.label16.Text = "RErotR:";
+            // 
             // lbl_REDir
             // 
             this.lbl_REDir.AutoSize = true;
             this.lbl_REDir.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REDir.Location = new System.Drawing.Point(93, 143);
+            this.lbl_REDir.Location = new System.Drawing.Point(84, 133);
             this.lbl_REDir.Name = "lbl_REDir";
             this.lbl_REDir.Size = new System.Drawing.Size(28, 16);
             this.lbl_REDir.TabIndex = 13;
@@ -542,7 +588,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(13, 143);
+            this.label18.Location = new System.Drawing.Point(4, 133);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(74, 16);
             this.label18.TabIndex = 12;
@@ -552,7 +598,7 @@
             // 
             this.lbl_REY.AutoSize = true;
             this.lbl_REY.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REY.Location = new System.Drawing.Point(84, 118);
+            this.lbl_REY.Location = new System.Drawing.Point(75, 108);
             this.lbl_REY.Name = "lbl_REY";
             this.lbl_REY.Size = new System.Drawing.Size(28, 16);
             this.lbl_REY.TabIndex = 11;
@@ -562,7 +608,7 @@
             // 
             this.lbl_REX.AutoSize = true;
             this.lbl_REX.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REX.Location = new System.Drawing.Point(84, 96);
+            this.lbl_REX.Location = new System.Drawing.Point(75, 86);
             this.lbl_REX.Name = "lbl_REX";
             this.lbl_REX.Size = new System.Drawing.Size(28, 16);
             this.lbl_REX.TabIndex = 10;
@@ -571,7 +617,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(13, 118);
+            this.label15.Location = new System.Drawing.Point(4, 108);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(64, 16);
             this.label15.TabIndex = 9;
@@ -580,7 +626,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(13, 96);
+            this.label14.Location = new System.Drawing.Point(4, 86);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(65, 16);
             this.label14.TabIndex = 8;
@@ -589,7 +635,7 @@
             // lbl_Compass
             // 
             this.lbl_Compass.AutoSize = true;
-            this.lbl_Compass.Location = new System.Drawing.Point(91, 170);
+            this.lbl_Compass.Location = new System.Drawing.Point(84, 206);
             this.lbl_Compass.Name = "lbl_Compass";
             this.lbl_Compass.Size = new System.Drawing.Size(28, 16);
             this.lbl_Compass.TabIndex = 7;
@@ -598,7 +644,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(13, 170);
+            this.label13.Location = new System.Drawing.Point(3, 206);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(72, 16);
             this.label13.TabIndex = 6;
@@ -608,7 +654,7 @@
             // 
             this.lbl_LED.AutoSize = true;
             this.lbl_LED.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_LED.Location = new System.Drawing.Point(62, 17);
+            this.lbl_LED.Location = new System.Drawing.Point(53, 7);
             this.lbl_LED.Name = "lbl_LED";
             this.lbl_LED.Size = new System.Drawing.Size(28, 16);
             this.lbl_LED.TabIndex = 5;
@@ -618,7 +664,7 @@
             // 
             this.lbl_GPS_X.AutoSize = true;
             this.lbl_GPS_X.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_GPS_X.Location = new System.Drawing.Point(76, 64);
+            this.lbl_GPS_X.Location = new System.Drawing.Point(67, 54);
             this.lbl_GPS_X.Name = "lbl_GPS_X";
             this.lbl_GPS_X.Size = new System.Drawing.Size(28, 16);
             this.lbl_GPS_X.TabIndex = 4;
@@ -628,7 +674,7 @@
             // 
             this.lbl_GPS_Y.AutoSize = true;
             this.lbl_GPS_Y.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_GPS_Y.Location = new System.Drawing.Point(76, 43);
+            this.lbl_GPS_Y.Location = new System.Drawing.Point(67, 33);
             this.lbl_GPS_Y.Name = "lbl_GPS_Y";
             this.lbl_GPS_Y.Size = new System.Drawing.Size(28, 16);
             this.lbl_GPS_Y.TabIndex = 3;
@@ -638,7 +684,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label12.Location = new System.Drawing.Point(13, 43);
+            this.label12.Location = new System.Drawing.Point(4, 33);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(56, 16);
             this.label12.TabIndex = 2;
@@ -648,7 +694,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label11.Location = new System.Drawing.Point(13, 64);
+            this.label11.Location = new System.Drawing.Point(4, 54);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(57, 16);
             this.label11.TabIndex = 1;
@@ -658,7 +704,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label10.Location = new System.Drawing.Point(13, 17);
+            this.label10.Location = new System.Drawing.Point(4, 7);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(39, 16);
             this.label10.TabIndex = 0;
@@ -758,7 +804,7 @@
             this.Controls.Add(this.picbox_AreaMap);
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner Ver2015-1102";
+            this.Text = "VehicleRunner Ver2015-1107";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -845,6 +891,10 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label lbl_BackCnt;
         private System.Windows.Forms.TextBox tb_SirialResive;
+        private System.Windows.Forms.Label lbl_RErotL;
+        private System.Windows.Forms.Label lbl_RErotR;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
     }
 }
 
