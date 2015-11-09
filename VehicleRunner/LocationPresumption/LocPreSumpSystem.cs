@@ -12,7 +12,7 @@ using Axiom.Math;
 
 /* Todo
  * 
- * BoxPCとの通信を任意でOn Offできるように
+ *
  */
 
 namespace LocationPresumption
@@ -34,10 +34,7 @@ namespace LocationPresumption
         private const int maxLrfDir = 270;
 
         // 割合 (1.0...ノイズ高め　/ 0.0...ノイズ低め　ただし反応がにぶい)
-        double LRF_noiseRate = 0.50;
-
-        // GPSからMap変換時のスケール（計算上は必要ないはず。。）
-        const double GPStoMapScale = 30.0;
+        double LRF_noiseRate = 0.40;//0.50;
 
         // エリアマップ管理
         public WorldMap worldMap;                  // 全体マップ
@@ -78,7 +75,10 @@ namespace LocationPresumption
         List<MarkPoint> V1Log;
         List<MarkPoint> E1Log;
         List<MarkPoint> G1Log;
-        
+
+        const int LogLine_maxDrawNum = 300; // 描画数上限
+
+
         // 
         float[] SinTbl = new float[360];
         float[] CosTbl = new float[360];
@@ -94,9 +94,39 @@ namespace LocationPresumption
         public static int startPosGPS_MapX = 0;
         public static int startPosGPS_MapY = 0;
 
+        /// <summary>
+        /// GPSが受信して使える状態になっている
+        /// </summary>
         public static bool bEnableGPS = false;
+
+        /// <summary>
+        /// GPSがスタート時から更新されて信頼できる
+        /// </summary>
         public static bool bTrustGPS = false;
 
+        // GPSからMap変換時のスケール（計算上は必要ないはず。。）
+        const double GPStoMapScale = 60.0;
+
+        // 1分の距離[mm] 1.85225Km
+        const double GPSScale = 1.85225 * 1000.0 * 1000.0 * GPStoMapScale;
+        //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
+        //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
+
+
+        /// <summary>
+        /// GPSの値を使って補正する
+        /// </summary>
+        public static bool bRivisonGPS = false;
+
+        /// <summary>
+        /// ParticleFilterをつかって補正する
+        /// </summary>
+        public static bool bRivisonPF = false;
+
+        /// <summary>
+        /// 一定時間で補正
+        /// </summary>
+        public static bool bTimeRivision = false;
 
         // -------------------------------------------------------------------------------------------------
         //
@@ -390,10 +420,6 @@ namespace LocationPresumption
             return true;
         }
 
-        // 1分の距離[mm] 1.85225Km
-        const double GPSScale = 1.85225 * 1000.0 * 1000.0 * GPStoMapScale;
-        //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
-        //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
 
         /// <summary>
         /// GPS値取得
@@ -411,7 +437,8 @@ namespace LocationPresumption
             double mapY = (ido * 60.0 + (landY - ido)) * GPSScale;
             //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
             //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(((ido + (landY - ido))/60.0) * Math.PI / 180.0);
-            double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
+            //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
+            double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
 
             // 単位変換
             mapX = (mapX - startPosGPSX) / RealToMapSclae;
@@ -438,7 +465,8 @@ namespace LocationPresumption
             startPosGPSY = (ido * 60.0 + (landY - ido)) * GPSScale;
             //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
             //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(((ido + (landY - ido))/60.0) * Math.PI / 180.0);
-            startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
+            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
+            startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
 
             // マップの基準点をセット
             startPosGPS_MapX = mapX;
@@ -497,7 +525,7 @@ namespace LocationPresumption
         /// 自己位置推定 更新
         /// </summary>
         /// <returns>true...補正した, false..補正不要</returns>
-        public bool Update(bool useAlwaysPF)
+        public bool Update(bool useAlwaysPF, bool bActiveREPlot)
         {
             bool bResult = false;   // 補正したか？
 
@@ -508,6 +536,7 @@ namespace LocationPresumption
 
             // 自己位置更新 (※後にBrainへ移動)
             // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
+            if( bActiveREPlot )
             {
                 R1.X += (E1.X - oldE1.X);
                 R1.Y += (E1.Y - oldE1.Y);
@@ -789,12 +818,11 @@ namespace LocationPresumption
 
             int baseIdx = 0;
             int drawNum = mkLog.Count;
-            const int maxDrawNum = 100; // 描画数上限
 
-            if (drawNum > maxDrawNum)
+            if (drawNum > LogLine_maxDrawNum)
             {
-                baseIdx = (mkLog.Count-1) - maxDrawNum;
-                drawNum = maxDrawNum;
+                baseIdx = (mkLog.Count-1) - LogLine_maxDrawNum;
+                drawNum = LogLine_maxDrawNum;
             }
 
             Point[] ps = new Point[drawNum];

@@ -30,7 +30,6 @@
             this.cb_LRFConnect = new System.Windows.Forms.CheckBox();
             this.lb_LRFResult = new System.Windows.Forms.Label();
             this.cb_TimerUpdate = new System.Windows.Forms.CheckBox();
-            this.cb_LocationPresumption = new System.Windows.Forms.CheckBox();
             this.btm_LRFScale = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_LRFScale = new System.Windows.Forms.TextBox();
@@ -42,9 +41,6 @@
             this.tb_LRFPort = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_EmgBrake = new System.Windows.Forms.CheckBox();
-            this.cb_UsbSirial = new System.Windows.Forms.ComboBox();
-            this.tb_SirialResive = new System.Windows.Forms.TextBox();
-            this.cb_SirialConnect = new System.Windows.Forms.CheckBox();
             this.tm_UpdateHw = new System.Windows.Forms.Timer(this.components);
             this.tb_ResiveData = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -64,6 +60,15 @@
             this.cb_StraightMode = new System.Windows.Forms.CheckBox();
             this.btn_LocRevision = new System.Windows.Forms.Button();
             this.lbl_MattingScore = new System.Windows.Forms.Label();
+            this.tabPage_LocSump = new System.Windows.Forms.TabPage();
+            this.cb_TimeRivision = new System.Windows.Forms.CheckBox();
+            this.cb_RivisionPF = new System.Windows.Forms.CheckBox();
+            this.cb_LocationPresumption = new System.Windows.Forms.CheckBox();
+            this.cb_RivisonGPS = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cb_SirialConnect = new System.Windows.Forms.CheckBox();
+            this.cb_UsbSirial = new System.Windows.Forms.ComboBox();
+            this.tb_SirialResive = new System.Windows.Forms.TextBox();
             this.tabPage_Status = new System.Windows.Forms.TabPage();
             this.lbl_RErotL = new System.Windows.Forms.Label();
             this.lbl_RErotR = new System.Windows.Forms.Label();
@@ -84,7 +89,6 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.tabPage_Emulate = new System.Windows.Forms.TabPage();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
             this.cb_EHS = new System.Windows.Forms.CheckBox();
             this.tm_SendCom = new System.Windows.Forms.Timer(this.components);
@@ -94,9 +98,10 @@
             this.groupBox1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage_Runner.SuspendLayout();
+            this.tabPage_LocSump.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabPage_Status.SuspendLayout();
             this.tabPage_Emulate.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -159,18 +164,6 @@
             this.cb_TimerUpdate.UseVisualStyleBackColor = true;
             this.cb_TimerUpdate.CheckedChanged += new System.EventHandler(this.cb_TimerUpdate_CheckedChanged);
             this.cb_TimerUpdate.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.cb_TimerUpdate_PreviewKeyDown);
-            // 
-            // cb_LocationPresumption
-            // 
-            this.cb_LocationPresumption.AutoSize = true;
-            this.cb_LocationPresumption.Location = new System.Drawing.Point(6, 24);
-            this.cb_LocationPresumption.Name = "cb_LocationPresumption";
-            this.cb_LocationPresumption.Size = new System.Drawing.Size(90, 16);
-            this.cb_LocationPresumption.TabIndex = 6;
-            this.cb_LocationPresumption.Text = "ParticleFilter";
-            this.cb_LocationPresumption.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cb_LocationPresumption.UseVisualStyleBackColor = true;
-            this.cb_LocationPresumption.CheckedChanged += new System.EventHandler(this.cb_LocationPresumpring_CheckedChanged);
             // 
             // btm_LRFScale
             // 
@@ -267,7 +260,6 @@
             this.groupBox1.Controls.Add(this.cb_EleConpus);
             this.groupBox1.Controls.Add(this.cb_RotEnc);
             this.groupBox1.Controls.Add(this.btn_PositionReset);
-            this.groupBox1.Controls.Add(this.cb_LocationPresumption);
             this.groupBox1.Location = new System.Drawing.Point(11, 39);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(218, 94);
@@ -288,33 +280,6 @@
             this.cb_EmgBrake.Text = "緊急停止";
             this.cb_EmgBrake.UseVisualStyleBackColor = true;
             this.cb_EmgBrake.CheckedChanged += new System.EventHandler(this.cb_EmgBrake_CheckedChanged);
-            // 
-            // cb_UsbSirial
-            // 
-            this.cb_UsbSirial.FormattingEnabled = true;
-            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 27);
-            this.cb_UsbSirial.Name = "cb_UsbSirial";
-            this.cb_UsbSirial.Size = new System.Drawing.Size(97, 20);
-            this.cb_UsbSirial.TabIndex = 21;
-            // 
-            // tb_SirialResive
-            // 
-            this.tb_SirialResive.Location = new System.Drawing.Point(11, 55);
-            this.tb_SirialResive.Name = "tb_SirialResive";
-            this.tb_SirialResive.Size = new System.Drawing.Size(202, 19);
-            this.tb_SirialResive.TabIndex = 22;
-            // 
-            // cb_SirialConnect
-            // 
-            this.cb_SirialConnect.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_SirialConnect.Location = new System.Drawing.Point(127, 23);
-            this.cb_SirialConnect.Name = "cb_SirialConnect";
-            this.cb_SirialConnect.Size = new System.Drawing.Size(86, 26);
-            this.cb_SirialConnect.TabIndex = 23;
-            this.cb_SirialConnect.Text = "GPS受信";
-            this.cb_SirialConnect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cb_SirialConnect.UseVisualStyleBackColor = true;
-            this.cb_SirialConnect.CheckedChanged += new System.EventHandler(this.cb_SirialConnect_CheckedChanged);
             // 
             // tm_UpdateHw
             // 
@@ -451,6 +416,7 @@
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabPage_Runner);
+            this.tabControl.Controls.Add(this.tabPage_LocSump);
             this.tabControl.Controls.Add(this.tabPage_Status);
             this.tabControl.Controls.Add(this.tabPage_Emulate);
             this.tabControl.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -509,6 +475,108 @@
             this.lbl_MattingScore.Size = new System.Drawing.Size(111, 16);
             this.lbl_MattingScore.TabIndex = 17;
             this.lbl_MattingScore.Text = "MatchingScore:";
+            // 
+            // tabPage_LocSump
+            // 
+            this.tabPage_LocSump.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_LocSump.Controls.Add(this.cb_TimeRivision);
+            this.tabPage_LocSump.Controls.Add(this.cb_RivisionPF);
+            this.tabPage_LocSump.Controls.Add(this.cb_LocationPresumption);
+            this.tabPage_LocSump.Controls.Add(this.cb_RivisonGPS);
+            this.tabPage_LocSump.Controls.Add(this.groupBox2);
+            this.tabPage_LocSump.Location = new System.Drawing.Point(4, 26);
+            this.tabPage_LocSump.Name = "tabPage_LocSump";
+            this.tabPage_LocSump.Size = new System.Drawing.Size(238, 234);
+            this.tabPage_LocSump.TabIndex = 3;
+            this.tabPage_LocSump.Text = "補正";
+            // 
+            // cb_TimeRivision
+            // 
+            this.cb_TimeRivision.AutoSize = true;
+            this.cb_TimeRivision.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_TimeRivision.Location = new System.Drawing.Point(13, 138);
+            this.cb_TimeRivision.Name = "cb_TimeRivision";
+            this.cb_TimeRivision.Size = new System.Drawing.Size(115, 17);
+            this.cb_TimeRivision.TabIndex = 30;
+            this.cb_TimeRivision.Text = "一定間隔で補正";
+            this.cb_TimeRivision.UseVisualStyleBackColor = true;
+            this.cb_TimeRivision.CheckedChanged += new System.EventHandler(this.cb_TimeRivision_CheckedChanged);
+            // 
+            // cb_RivisionPF
+            // 
+            this.cb_RivisionPF.AutoSize = true;
+            this.cb_RivisionPF.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_RivisionPF.Location = new System.Drawing.Point(13, 178);
+            this.cb_RivisionPF.Name = "cb_RivisionPF";
+            this.cb_RivisionPF.Size = new System.Drawing.Size(108, 17);
+            this.cb_RivisionPF.TabIndex = 29;
+            this.cb_RivisionPF.Text = "PFを補正に使う";
+            this.cb_RivisionPF.UseVisualStyleBackColor = true;
+            this.cb_RivisionPF.CheckedChanged += new System.EventHandler(this.cb_RivisionPF_CheckedChanged);
+            // 
+            // cb_LocationPresumption
+            // 
+            this.cb_LocationPresumption.AutoSize = true;
+            this.cb_LocationPresumption.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_LocationPresumption.Location = new System.Drawing.Point(13, 201);
+            this.cb_LocationPresumption.Name = "cb_LocationPresumption";
+            this.cb_LocationPresumption.Size = new System.Drawing.Size(152, 17);
+            this.cb_LocationPresumption.TabIndex = 28;
+            this.cb_LocationPresumption.Text = "ParticleFilter常時更新";
+            this.cb_LocationPresumption.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cb_LocationPresumption.UseVisualStyleBackColor = true;
+            // 
+            // cb_RivisonGPS
+            // 
+            this.cb_RivisonGPS.AutoSize = true;
+            this.cb_RivisonGPS.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_RivisonGPS.Location = new System.Drawing.Point(13, 113);
+            this.cb_RivisonGPS.Name = "cb_RivisonGPS";
+            this.cb_RivisonGPS.Size = new System.Drawing.Size(118, 17);
+            this.cb_RivisonGPS.TabIndex = 26;
+            this.cb_RivisonGPS.Text = "GPSを補正に使う";
+            this.cb_RivisonGPS.UseVisualStyleBackColor = true;
+            this.cb_RivisonGPS.CheckedChanged += new System.EventHandler(this.cb_RivisonGPS_CheckedChanged);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cb_SirialConnect);
+            this.groupBox2.Controls.Add(this.cb_UsbSirial);
+            this.groupBox2.Controls.Add(this.tb_SirialResive);
+            this.groupBox2.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.groupBox2.Location = new System.Drawing.Point(6, 12);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(220, 85);
+            this.groupBox2.TabIndex = 25;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "USBConnect";
+            // 
+            // cb_SirialConnect
+            // 
+            this.cb_SirialConnect.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cb_SirialConnect.Location = new System.Drawing.Point(127, 23);
+            this.cb_SirialConnect.Name = "cb_SirialConnect";
+            this.cb_SirialConnect.Size = new System.Drawing.Size(86, 26);
+            this.cb_SirialConnect.TabIndex = 23;
+            this.cb_SirialConnect.Text = "GPS受信";
+            this.cb_SirialConnect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cb_SirialConnect.UseVisualStyleBackColor = true;
+            this.cb_SirialConnect.CheckedChanged += new System.EventHandler(this.cb_SirialConnect_CheckedChanged);
+            // 
+            // cb_UsbSirial
+            // 
+            this.cb_UsbSirial.FormattingEnabled = true;
+            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 27);
+            this.cb_UsbSirial.Name = "cb_UsbSirial";
+            this.cb_UsbSirial.Size = new System.Drawing.Size(97, 21);
+            this.cb_UsbSirial.TabIndex = 21;
+            // 
+            // tb_SirialResive
+            // 
+            this.tb_SirialResive.Location = new System.Drawing.Point(11, 55);
+            this.tb_SirialResive.Name = "tb_SirialResive";
+            this.tb_SirialResive.Size = new System.Drawing.Size(202, 20);
+            this.tb_SirialResive.TabIndex = 22;
             // 
             // tabPage_Status
             // 
@@ -713,7 +781,6 @@
             // tabPage_Emulate
             // 
             this.tabPage_Emulate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.tabPage_Emulate.Controls.Add(this.groupBox2);
             this.tabPage_Emulate.Controls.Add(this.label2);
             this.tabPage_Emulate.Controls.Add(this.tb_LRFScale);
             this.tabPage_Emulate.Controls.Add(this.btm_LRFScale);
@@ -726,18 +793,6 @@
             this.tabPage_Emulate.Size = new System.Drawing.Size(238, 234);
             this.tabPage_Emulate.TabIndex = 1;
             this.tabPage_Emulate.Text = "Emulate";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.cb_SirialConnect);
-            this.groupBox2.Controls.Add(this.cb_UsbSirial);
-            this.groupBox2.Controls.Add(this.tb_SirialResive);
-            this.groupBox2.Location = new System.Drawing.Point(8, 139);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(220, 85);
-            this.groupBox2.TabIndex = 24;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "USBConnect";
             // 
             // label9
             // 
@@ -804,7 +859,7 @@
             this.Controls.Add(this.picbox_AreaMap);
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner Ver2015-1107";
+            this.Text = "VehicleRunner Ver2015-1108B Pinball";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -818,12 +873,14 @@
             this.tabControl.ResumeLayout(false);
             this.tabPage_Runner.ResumeLayout(false);
             this.tabPage_Runner.PerformLayout();
+            this.tabPage_LocSump.ResumeLayout(false);
+            this.tabPage_LocSump.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.tabPage_Status.ResumeLayout(false);
             this.tabPage_Status.PerformLayout();
             this.tabPage_Emulate.ResumeLayout(false);
             this.tabPage_Emulate.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -836,7 +893,6 @@
         private System.Windows.Forms.CheckBox cb_LRFConnect;
         private System.Windows.Forms.Label lb_LRFResult;
         private System.Windows.Forms.CheckBox cb_TimerUpdate;
-        private System.Windows.Forms.CheckBox cb_LocationPresumption;
         private System.Windows.Forms.Button btm_LRFScale;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tb_LRFScale;
@@ -848,8 +904,6 @@
         private System.Windows.Forms.TextBox tb_LRFPort;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cb_EmgBrake;
-        private System.Windows.Forms.ComboBox cb_UsbSirial;
-        private System.Windows.Forms.CheckBox cb_SirialConnect;
         private System.Windows.Forms.Timer tm_UpdateHw;
         private System.Windows.Forms.TextBox tb_ResiveData;
         private System.Windows.Forms.Label label3;
@@ -867,7 +921,6 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPage_Runner;
         private System.Windows.Forms.TabPage tabPage_Emulate;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lbl_MattingScore;
         private System.Windows.Forms.Button btn_LocRevision;
@@ -890,11 +943,19 @@
         private System.Windows.Forms.Label lbl_Compass;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label lbl_BackCnt;
-        private System.Windows.Forms.TextBox tb_SirialResive;
         private System.Windows.Forms.Label lbl_RErotL;
         private System.Windows.Forms.Label lbl_RErotR;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TabPage tabPage_LocSump;
+        private System.Windows.Forms.CheckBox cb_RivisonGPS;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox cb_SirialConnect;
+        private System.Windows.Forms.ComboBox cb_UsbSirial;
+        private System.Windows.Forms.TextBox tb_SirialResive;
+        private System.Windows.Forms.CheckBox cb_LocationPresumption;
+        private System.Windows.Forms.CheckBox cb_RivisionPF;
+        private System.Windows.Forms.CheckBox cb_TimeRivision;
     }
 }
 

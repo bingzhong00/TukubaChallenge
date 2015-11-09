@@ -149,6 +149,17 @@ namespace CersioIO
             SendCommand("AR," + rad.ToString("f") + "\n");
         }
 
+        /// <summary>
+        /// RE回転のみリセット
+        /// </summary>
+        /// <param name="dir"></param>
+        public void RE_Reset(double dir)
+        {
+            // 角度をパイに、回転の+-を調整
+            double rad = -dir * Math.PI / 180.0;
+            SendCommand("AR," + rad.ToString("f") + "\n");
+        }
+
 
         // =====================================================================================
 
@@ -163,8 +174,8 @@ namespace CersioIO
             bool untiEBS = false;
 
  
-            bhwREPlot = false;
-            bhwCompass = false;
+            //bhwREPlot = false;
+            //bhwCompass = false;
 
             LeftBtn = RightBtn = FwdBtn = false;
 
@@ -173,7 +184,9 @@ namespace CersioIO
                 // 自走処理
                 untiEBS = BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF);
             }
-
+            
+            // 直進用　常にスタート時の方位を向いてることにする。
+            RE_Reset(RootingData.startDir);
 
             if ((Brain.EmgBrk && useEBS && !untiEBS) || goalFlg)
             {
@@ -588,14 +601,14 @@ namespace CersioIO
 
 
         // -----------------------------------------------------------------------------------------------
-        const double GPSScale = 1.852 * 1000.0 * 1000.0;
+        //const double GPSScale = 1.852 * 1000.0 * 1000.0;
 
         //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
         //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
 
         private bool AnalizeUsbGPS()
         {
-            if (usbGPSResive.Count == 0) return false;
+            if (usbGPSResive.Count <= 10) return false;
 
             string strBuf = "";
 

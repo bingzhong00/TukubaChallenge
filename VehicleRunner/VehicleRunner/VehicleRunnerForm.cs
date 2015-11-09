@@ -22,7 +22,7 @@
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 // The views and conclusions contained in the software and documentation are those 
-// of the authors and should not be interpreted as representing official policies, 
+// of the authors and sho:]uld not be interpreted as representing official policies, 
 // either expressed or implied, of the FreeBSD Project.
 
 
@@ -30,7 +30,7 @@
 #define LOGIMAGE_MODE   // イメージログ出力
 
 #define GPSLOG_OUTPUT   //  GPSログ出力
-#define EMULATOR_MODE   // エミュレートモード
+//#define EMULATOR_MODE   // エミュレートモード
 
 using System;
 using System.Collections.Generic;
@@ -144,6 +144,7 @@ namespace VehicleRunner
         {
             this.SetDesktopLocation(0, 0);
 
+            // USB
             {
                 // すべてのシリアル・ポート名を取得する
                 string[] ports = System.IO.Ports.SerialPort.GetPortNames();
@@ -162,6 +163,10 @@ namespace VehicleRunner
                     cb_UsbSirial.SelectedIndex = 0;
                 }
             }
+
+            LocPreSumpSystem.bRivisonGPS = cb_RivisonGPS.Checked;
+            LocPreSumpSystem.bRivisonPF = cb_RivisionPF.Checked;
+            LocPreSumpSystem.bTimeRivision = cb_TimeRivision.Checked;
 
             // 画面更新
             PictureUpdate();
@@ -477,6 +482,20 @@ namespace VehicleRunner
                             LocSys.V1.X = e.X * viewScale;
                             LocSys.V1.Y = e.Y * viewScale;
                         }
+                        else if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
+                        {
+                            LocSys.G1.X = e.X * viewScale;
+                            LocSys.G1.Y = e.Y * viewScale;
+
+                            // GPSの値があれば、GPSの位置情報もリセット
+                            if (LocPreSumpSystem.bEnableGPS)
+                            {
+                                LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX,
+                                                              CersioCt.hwGPS_LandY,
+                                                              (int)(LocSys.worldMap.GetWorldX(LocSys.G1.X) + 0.5),
+                                                              (int)(LocSys.worldMap.GetWorldY(LocSys.G1.Y) + 0.5), false);
+                            }
+                        }
                         else
                         {
                             LocSys.R1.X = e.X * viewScale;
@@ -505,6 +524,20 @@ namespace VehicleRunner
                         {
                             LocSys.V1.X = LocSys.worldMap.GetAreaX((int)(e.X * viewScale));
                             LocSys.V1.Y = LocSys.worldMap.GetAreaY((int)(e.Y * viewScale));
+                        }
+                        else if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
+                        {
+                            LocSys.G1.X = LocSys.worldMap.GetAreaX((int)(e.X * viewScale));
+                            LocSys.G1.Y = LocSys.worldMap.GetAreaY((int)(e.Y * viewScale));
+
+                            // GPSの値があれば、GPSの位置情報もリセット
+                            if (LocPreSumpSystem.bEnableGPS)
+                            {
+                                LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX,
+                                                              CersioCt.hwGPS_LandY,
+                                                              (int)(LocSys.worldMap.GetWorldX(LocSys.G1.X) + 0.5),
+                                                              (int)(LocSys.worldMap.GetWorldY(LocSys.G1.Y) + 0.5), false);
+                            }
                         }
                         else
                         {
@@ -922,8 +955,7 @@ namespace VehicleRunner
         {
             if (cb_TimerUpdate.Checked)
             {
-                tm_LocUpdate.Enabled = true;
-
+                CersioCt.SendCommandList.Clear();
                 // スタート時のGPS情報があれば設定
                 if (CersioCt.bhwGPS)
                 {
@@ -932,6 +964,11 @@ namespace VehicleRunner
                                                   (int)(LocSys.worldMap.GetWorldX(LocSys.R1.X)+0.5),
                                                   (int)(LocSys.worldMap.GetWorldY(LocSys.R1.Y)+0.5), true);
                 }
+
+                // RE1リセット
+                CersioCt.RE_Reset(LocSys.R1.X, LocSys.R1.Y, LocSys.R1.Theta);
+
+                tm_LocUpdate.Enabled = true;
             }
             else tm_LocUpdate.Enabled = false;
         }
@@ -1410,6 +1447,7 @@ namespace VehicleRunner
                     {
                         // 接続成功
                         tb_SirialResive.BackColor = Color.Lime;
+                        cb_RivisonGPS.Checked = true;
                     }
                     else
                     {
@@ -1426,8 +1464,25 @@ namespace VehicleRunner
                 {
                     usbGPS.Close();
                     usbGPS = null;
+
+                    tb_SirialResive.BackColor = SystemColors.Control;
                 }
             }
+        }
+
+        private void cb_RivisonGPS_CheckedChanged(object sender, EventArgs e)
+        {
+            LocPreSumpSystem.bRivisonGPS = cb_RivisonGPS.Checked;
+        }
+
+        private void cb_RivisionPF_CheckedChanged(object sender, EventArgs e)
+        {
+            LocPreSumpSystem.bRivisonPF = cb_RivisionPF.Checked;
+        }
+
+        private void cb_TimeRivision_CheckedChanged(object sender, EventArgs e)
+        {
+            LocPreSumpSystem.bTimeRivision = cb_TimeRivision.Checked;
         }
 
     }

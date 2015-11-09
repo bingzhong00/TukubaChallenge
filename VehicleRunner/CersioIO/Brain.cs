@@ -65,6 +65,7 @@ namespace CersioIO
         public const double AccSlowdownRate = 0.5;
 
 #if false
+        // 室内向け
         // EHS設定 壁検知　ハンドル制御
         // ハンドル　－が右
         public const int EHS_stLAng = -30;     // 左側感知角度 -35～-10度
@@ -80,16 +81,16 @@ namespace CersioIO
 #else
         // EHS設定 壁検知　ハンドル制御
         // ハンドル　－が右
-        public const int EHS_stLAng = -30;     // 左側感知角度 -35～-10度
+        public const int EHS_stLAng = -40;     // 左側感知角度 -35～-10度
         public const int EHS_edLAng = -10;
 
         public const int EHS_stRAng = 10;      // 右側感知角度 10～35度
-        public const int EHS_edRAng = 30;
+        public const int EHS_edRAng = 40;
 
         public const double EHS_MinRange = 600.0;     // 感知最小距離 [mm] 30cm
-        public const double EHS_MaxRange = 1500.0;    // 感知最大距離 [mm] 150cm
+        public const double EHS_MaxRange = 3000.0;    // 感知最大距離 [mm] 150cm
 
-        const double EHS_WallRange = 450.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+        const double EHS_WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
 #endif
         public enum EHS_MODE
         {
@@ -145,7 +146,7 @@ namespace CersioIO
         bool bGreenAreaFlg = false;
 
         /// <summary>
-        /// 更新
+        /// 更新4
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -161,7 +162,7 @@ namespace CersioIO
 
             // 自己位置更新
             {
-                LocSys.Update(useAlwaysPF);
+                LocSys.Update(useAlwaysPF, CarCtrl.bhwREPlot );
 
                 // 距離で補正 (PFの信頼がある場合)
                 /*
@@ -177,13 +178,13 @@ namespace CersioIO
                     }
                 */
 
-                /*
-                 * // 一定時間で更新
-                if ((UpdateCnt % 100) == 0 && UpdateCnt != 0)
+                
+                // 一定時間で更新
+                if ((UpdateCnt % 30) == 0 && UpdateCnt != 0 && LocPreSumpSystem.bTimeRivision)
                 {
                     bLocRivisionTRG = true;
                     Brain.addLogMsg += "LocRivision:Time\n";
-                }*/
+                }
 
                 // 強制補正フラグが立っている　または　壁の中にいる状態であれば、補正
                 if ( bLocRivisionTRG ||
@@ -208,14 +209,25 @@ namespace CersioIO
                         double locY = LocSys.R1.Y;
                         double locDir = (LocSys.bActiveCompass ? LocSys.C1.Theta : LocSys.R1.Theta);
 
-                        if (LocPreSumpSystem.bTrustGPS)
+                        // GPSの値を使う
+                        if (LocPreSumpSystem.bRivisonGPS)
                         {
-                            // 信頼できる状態ならGPSを採用
-                            locX = LocSys.G1.X;
-                            locY = LocSys.G1.Y;
+                            //if (LocPreSumpSystem.bTrustGPS)
+                            {
+                                // 信頼できる状態ならGPSを採用
+                                locX = LocSys.G1.X;
+                                locY = LocSys.G1.Y;
+                            }
                         }
 
-                        LocSys.CalcLocalize(new MarkPoint(locX, locY, locDir), false );
+                        if (LocPreSumpSystem.bRivisonPF)
+                        {
+                            LocSys.CalcLocalize(new MarkPoint(locX, locY, locDir), false);
+                        }
+                        else
+                        {
+                            LocSys.V1.Set(locX,locY,locDir);
+                        }
                     }
 
                     // 補正情報をログ出力
@@ -226,13 +238,20 @@ namespace CersioIO
                         // コンパスを使った
                         Brain.addLogMsg += "LocRivision:useCompass C1 Dir " + LocSys.C1.Theta.ToString("f2") + "\n";
                     }
-                    if (LocPreSumpSystem.bTrustGPS)
+                    if (LocPreSumpSystem.bRivisonGPS)
                     {
                         // GPSを使った
                         Brain.addLogMsg += "LocRivision: useGPS G1 X" + LocSys.worldMap.GetWorldX(LocSys.G1.X).ToString("f2") + "/Y " + LocSys.worldMap.GetWorldX(LocSys.G1.Y).ToString("f2") + "/Dir " + LocSys.G1.Theta.ToString("f2") + "\n";
                     }
                     // 補正後の座標
-                    Brain.addLogMsg += "LocRivision: toV1 X" + LocSys.worldMap.GetWorldX(LocSys.V1.X).ToString("f2") + "/Y " + LocSys.worldMap.GetWorldX(LocSys.V1.Y).ToString("f2") + "/Dir " + LocSys.V1.Theta.ToString("f2") + "\n";
+                    if (LocPreSumpSystem.bRivisonPF)
+                    {
+                        Brain.addLogMsg += "LocRivision: usePF toV1 X" + LocSys.worldMap.GetWorldX(LocSys.V1.X).ToString("f2") + "/Y " + LocSys.worldMap.GetWorldX(LocSys.V1.Y).ToString("f2") + "/Dir " + LocSys.V1.Theta.ToString("f2") + "\n";
+                    }
+                    else
+                    {
+                        Brain.addLogMsg += "LocRivision: toR1 X" + LocSys.worldMap.GetWorldX(LocSys.V1.X).ToString("f2") + "/Y " + LocSys.worldMap.GetWorldX(LocSys.V1.Y).ToString("f2") + "/Dir " + LocSys.V1.Theta.ToString("f2") + "\n";
+                    }
 
                     // 結果を反映
                     LocSys.R1.Set(LocSys.V1);
@@ -274,7 +293,8 @@ namespace CersioIO
             EmgBrk = false;
             if (null != lrfData && lrfData.Length > 0)
             {
-                int BrakeLv = CheckEBS(lrfData);
+                //int BrakeLv = CheckEBS(lrfData);
+                int BrakeLv = CheckEBS(LocSys.LRF_UntiNoiseData);  // ノイズ除去モーとで非常停止発動
 
                 // 注意Lvに応じた対処(スローダウン指示)
                 // Lvで段階ごとに分けてるのは、揺れなどによるLRFのノイズ対策
@@ -488,28 +508,39 @@ namespace CersioIO
 
                 double minPixRange = (EHS_MinRange * lrfScale);
                 double maxPixRange = (EHS_MaxRange * lrfScale);
+                double minDistance;
 
                 // LRFの値を調べる
 
                 // 左側
+                minDistance = maxPixRange;
                 for (int i = (EHS_stLAng + rangeCenterAng); i < (EHS_edLAng + rangeCenterAng); i++)
                 {
                     // 範囲内なら反応
                     if (lrfData[i] > minPixRange && lrfData[i] < maxPixRange)
                     {
-                        LHitLength = lrfData[i];
-                        LHitDir = (double)i;
+                        if (lrfData[i] < minDistance)
+                        {
+                            minDistance = lrfData[i];
+                            LHitLength = lrfData[i];
+                            LHitDir = (double)i;
+                        }
                     }
                 }
 
                 // 右側
+                minDistance = maxPixRange;
                 for (int i = (EHS_edRAng + rangeCenterAng); i >= (EHS_stRAng + rangeCenterAng); i--)
                 {
                     // 以下なら反応
                     if (lrfData[i] > minPixRange && lrfData[i] < maxPixRange)
                     {
-                        RHitLength = lrfData[i];
-                        RHitDir = (double)i;
+                        if (lrfData[i] < minDistance)
+                        {
+                            minDistance = lrfData[i];
+                            RHitLength = lrfData[i];
+                            RHitDir = (double)i;
+                        }
                     }
                 }
 
@@ -563,7 +594,7 @@ namespace CersioIO
             }
 
             // 極小値は切り捨て
-            rtHandleVal = (double)(((int)(rtHandleVal * 100.0)) / 100.0);
+            rtHandleVal = (double)((int)(rtHandleVal * 100.0)) / 100.0;
 
             return rtHandleVal;
         }

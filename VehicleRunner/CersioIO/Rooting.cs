@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define CHECKPOINT_PASS     // 角度差がある場合にチェックポイントを飛ばす
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -161,6 +163,7 @@ namespace CersioIO
             calcCheckPoint();
 
             // ターゲットがある程度の範囲内で、向きが大幅に違う場合パスする。
+#if CHECKPOINT_PASS
             if (Math.Abs(getNowTargetDir() - (nowDir * 180.0 / Math.PI)) > passOverDir)
             {
                 if (GetCheckPointDistance(nowPos) < passRange)
@@ -171,6 +174,7 @@ namespace CersioIO
                     calcCheckPoint();
                 }
             }
+#endif
         }
 
         /// <summary>
