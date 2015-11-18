@@ -141,15 +141,17 @@ namespace LocationPresumption
         /// </summary>
         /// <param name="LRF_Data">ＬＲＦ実取得データ</param>
         /// <param name="MRF">MAPデータ</param>
-        /// <param name="V1">想定ロボット位置(計算基点)</param>
+        /// <param name="mkp">想定ロボット位置(計算基点)</param>
         /// <param name="Particles">パーティクル作業バッファ</param>
-        public void Localize(double[] LRF_Data, MapRangeFinder MRF, MarkPoint V1, List<Particle> Particles)
+        public void Localize(double[] LRF_Data, MapRangeFinder MRF, MarkPoint mkp, List<Particle> Particles)
         {
             double sum = 0;
+
+            // パーティクルをばらまく
             for (int i = 0; i < Particles.Count; ++i)
             {
                 // 散らばらせる
-                MakeParticle(V1, PtclRange, PtclDirRange, Particles[i].Location);
+                MakeParticle(mkp, PtclRange, PtclDirRange, Particles[i].Location);
 
                 // 散らばり％ = w ?
                 // マップデータとLRFのデータを比べる
@@ -188,9 +190,9 @@ namespace LocationPresumption
                 newTheta += ResamplingSet[n].Theta;
             }
 
-            V1.X = newX / ResamplingNumber;
-            V1.Y = newY / ResamplingNumber;
-            V1.Theta = newTheta / ResamplingNumber;
+            mkp.X = newX / ResamplingNumber;
+            mkp.Y = newY / ResamplingNumber;
+            mkp.Theta = newTheta / ResamplingNumber;
         }
     }
 }

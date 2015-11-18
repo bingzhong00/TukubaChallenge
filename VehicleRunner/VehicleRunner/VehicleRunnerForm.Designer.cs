@@ -57,6 +57,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage_Runner = new System.Windows.Forms.TabPage();
+            this.cb_UsbSH2Connect = new System.Windows.Forms.CheckBox();
+            this.cmbbox_UsbSH2Connect = new System.Windows.Forms.ComboBox();
             this.cb_StraightMode = new System.Windows.Forms.CheckBox();
             this.btn_LocRevision = new System.Windows.Forms.Button();
             this.lbl_MattingScore = new System.Windows.Forms.Label();
@@ -429,6 +431,8 @@
             // tabPage_Runner
             // 
             this.tabPage_Runner.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_Runner.Controls.Add(this.cb_UsbSH2Connect);
+            this.tabPage_Runner.Controls.Add(this.cmbbox_UsbSH2Connect);
             this.tabPage_Runner.Controls.Add(this.cb_StraightMode);
             this.tabPage_Runner.Controls.Add(this.btn_LocRevision);
             this.tabPage_Runner.Controls.Add(this.lbl_MattingScore);
@@ -443,24 +447,44 @@
             this.tabPage_Runner.TabIndex = 0;
             this.tabPage_Runner.Text = "Runner";
             // 
+            // cb_UsbSH2Connect
+            // 
+            this.cb_UsbSH2Connect.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cb_UsbSH2Connect.Location = new System.Drawing.Point(133, 117);
+            this.cb_UsbSH2Connect.Name = "cb_UsbSH2Connect";
+            this.cb_UsbSH2Connect.Size = new System.Drawing.Size(88, 35);
+            this.cb_UsbSH2Connect.TabIndex = 22;
+            this.cb_UsbSH2Connect.Text = "SH2接続";
+            this.cb_UsbSH2Connect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cb_UsbSH2Connect.UseVisualStyleBackColor = true;
+            this.cb_UsbSH2Connect.CheckedChanged += new System.EventHandler(this.cb_UsbSH2Connect_CheckedChanged);
+            // 
+            // cmbbox_UsbSH2Connect
+            // 
+            this.cmbbox_UsbSH2Connect.FormattingEnabled = true;
+            this.cmbbox_UsbSH2Connect.Location = new System.Drawing.Point(6, 123);
+            this.cmbbox_UsbSH2Connect.Name = "cmbbox_UsbSH2Connect";
+            this.cmbbox_UsbSH2Connect.Size = new System.Drawing.Size(117, 24);
+            this.cmbbox_UsbSH2Connect.TabIndex = 21;
+            // 
             // cb_StraightMode
             // 
             this.cb_StraightMode.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_StraightMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.cb_StraightMode.Location = new System.Drawing.Point(6, 170);
             this.cb_StraightMode.Name = "cb_StraightMode";
-            this.cb_StraightMode.Size = new System.Drawing.Size(135, 36);
+            this.cb_StraightMode.Size = new System.Drawing.Size(98, 36);
             this.cb_StraightMode.TabIndex = 20;
-            this.cb_StraightMode.Text = "直進ルートセット";
+            this.cb_StraightMode.Text = "直進セット";
             this.cb_StraightMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_StraightMode.UseVisualStyleBackColor = true;
             this.cb_StraightMode.CheckedChanged += new System.EventHandler(this.cb_StraightMode_CheckedChanged);
             // 
             // btn_LocRevision
             // 
-            this.btn_LocRevision.Location = new System.Drawing.Point(6, 121);
+            this.btn_LocRevision.Location = new System.Drawing.Point(118, 170);
             this.btn_LocRevision.Name = "btn_LocRevision";
-            this.btn_LocRevision.Size = new System.Drawing.Size(117, 43);
+            this.btn_LocRevision.Size = new System.Drawing.Size(103, 36);
             this.btn_LocRevision.TabIndex = 18;
             this.btn_LocRevision.Text = "位置補正";
             this.btn_LocRevision.UseVisualStyleBackColor = true;
@@ -859,7 +883,7 @@
             this.Controls.Add(this.picbox_AreaMap);
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner Ver2015-1108B Pinball";
+            this.Text = "VehicleRunner Ver2015-1201";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -956,6 +980,8 @@
         private System.Windows.Forms.CheckBox cb_LocationPresumption;
         private System.Windows.Forms.CheckBox cb_RivisionPF;
         private System.Windows.Forms.CheckBox cb_TimeRivision;
+        private System.Windows.Forms.ComboBox cmbbox_UsbSH2Connect;
+        private System.Windows.Forms.CheckBox cb_UsbSH2Connect;
     }
 }
 

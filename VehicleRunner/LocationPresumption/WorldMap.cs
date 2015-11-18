@@ -61,7 +61,7 @@ namespace LocationPresumption
         public GridMap AreaGridMap;
 
         public PointI WldOffset = new PointI();
-        public PointI WldOffsetDiff = new PointI();
+        //public PointI WldOffsetDiff = new PointI();
 
         public SizeI GridSize = new SizeI();
         public SizeI WorldSize = new SizeI();
@@ -101,8 +101,8 @@ namespace LocationPresumption
         public void UpdateArea(int wldX, int wldY)
         {
 
-            WldOffsetDiff.x = WldOffset.x - wldX;
-            WldOffsetDiff.y = WldOffset.y - wldY;
+            //WldOffsetDiff.x = WldOffset.x - wldX;
+            //WldOffsetDiff.y = WldOffset.y - wldY;
 
             WldOffset.x = wldX;
             WldOffset.y = wldY;
@@ -134,6 +134,14 @@ namespace LocationPresumption
         {
             return (worldY - WldOffset.y);
         }
+        public double GetAreaX(double worldX)
+        {
+            return (worldX - (double)WldOffset.x);
+        }
+        public double GetAreaY(double worldY)
+        {
+            return (worldY - (double)WldOffset.y);
+        }
 
         /// <summary>
         /// エリア座標からワールド座標変換
@@ -160,13 +168,13 @@ namespace LocationPresumption
         /// <summary>
         /// ローカルエリア内に収まっているか？
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="wldX"></param>
+        /// <param name="wldY"></param>
         /// <returns></returns>
-        public bool IsInArea(int x, int y)
+        public bool IsInArea(int wldX, int wldY )
         {
-            int laX = GetAreaX(x);
-            int laY = GetAreaY(y);
+            int laX = GetAreaX(wldX);
+            int laY = GetAreaY(wldY);
 
             if ((laX < 0 || laX >= GridSize.w) ||
                 (laY < 0 || laY >= GridSize.h))
@@ -177,6 +185,23 @@ namespace LocationPresumption
         }
 
 
+        /// <summary>
+        /// GetAreaMapInfo()
+        /// </summary>
+        /// <param name="wldX"></param>
+        /// <param name="wldY"></param>
+        /// <returns></returns>
+        public Grid GetAreaMapInfo(int wldX, int wldY)
+        {
+            if (!IsInArea(wldX, wldY)) return Grid.RangeOver;
+
+            return AreaGridMap[GetAreaX(wldX), GetAreaY(wldY)];
+        }
+
+        public Grid GetAreaMapInfo(double wldX, double wldY)
+        {
+            return GetAreaMapInfo((int)(wldX+0.5),(int)(wldY+0.5));
+        }
 
         /// <summary>
         /// ワールドBMPからエリアのGridMapを作成

@@ -41,7 +41,7 @@ namespace LocationPresumption
         public double[] LRFdata;
 
         /// <summary>
-        /// ロボット抽象化クラス？
+        /// ロボット抽象化クラス
         /// </summary>
         /// <param name="lrf">ＬＲＦ</param>
         /// <param name="x">座標x</param>

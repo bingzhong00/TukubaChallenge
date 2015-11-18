@@ -20,7 +20,7 @@ namespace CersioIO
         public Brain BrainCtrl;
 
         // SH2直結時のアクセル、ハンドルコントロール
-        public DriveIOport UsbDriveIO;
+        public DriveIOport UsbSH2IO;
 
         // BOXPC通信用
         TCPClient objTCPSC = new TCPClient();
@@ -77,11 +77,6 @@ namespace CersioIO
         {
             BrainCtrl = new Brain(this);
             goalFlg = false;
-
-            //UsbDriveIO = new DriveIOport();      // USB SH2通信 ※現在使わない
-
-            // GPS初期位置設定
-            //LocPreSumpSystem.SetStartGPS(RootingData.GPS_LandX, RootingData.GPS_LandY);
         }
 
         /// <summary>
@@ -91,7 +86,6 @@ namespace CersioIO
         {
             BrainCtrl.Reset();
             goalFlg = false;
-
         }
 
         /// <summary>
@@ -109,9 +103,9 @@ namespace CersioIO
                 System.Threading.Thread.Sleep(50);
             }
 
-            if (null != UsbDriveIO)
+            if (null != UsbSH2IO)
             {
-                UsbDriveIO.Close();
+                UsbSH2IO.Close();
             }
 
             objTCPSC.Dispose();
@@ -308,11 +302,11 @@ namespace CersioIO
             else
             {
                 // USB接続時
-                if (null != UsbDriveIO)
+                if (null != UsbSH2IO)
                 {
-                    if (UsbDriveIO.IsConnect())
+                    if (UsbSH2IO.IsConnect())
                     {
-                        UsbDriveIO.SendSirialData(sendHandle, sendAcc);
+                        UsbSH2IO.Send_AC_Command(sendHandle, sendAcc);
                     }
                 }
             }

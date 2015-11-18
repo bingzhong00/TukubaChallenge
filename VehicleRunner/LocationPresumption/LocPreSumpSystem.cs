@@ -45,6 +45,7 @@ namespace LocationPresumption
 
         // 自己位置推定用 -----------------------
         private MapRangeFinder MRF;             // マップレンジファインダー
+
         public MarkPoint R1;                    // 実体想定ロボット位置
         public MarkPoint E1;                    // RE想定ロボット位置
         public MarkPoint oldE1;                 // RE 差分計算用
@@ -57,6 +58,7 @@ namespace LocationPresumption
         /// </summary>
         private KalmanFilter.SimpleLPF lpfV1X = new KalmanFilter.SimpleLPF();
         private KalmanFilter.SimpleLPF lpfV1Y = new KalmanFilter.SimpleLPF();
+        private KalmanFilter.SimpleLPF lpfV1Theta = new KalmanFilter.SimpleLPF();
 
 
         // REの絶対座標(差分計算用)
@@ -254,14 +256,14 @@ namespace LocationPresumption
             MRF.SetMap(worldMap.AreaGridMap);
 
             // ロボットマーカ設定
-            R1 = new MarkPoint(worldMap.GetAreaX(stWldX), worldMap.GetAreaY(stWldY), stDir);        // 実ロボット位置 R.E,Compass,GPSでの位置+ LRF補正
+            R1 = new MarkPoint(stWldX, stWldY, stDir);        // 実ロボット位置 R.E,Compass,GPSでの位置+ LRF補正
 
-            E1 = new MarkPoint(worldMap.GetAreaX(stWldX), worldMap.GetAreaY(stWldY), stDir);        // R.Encoderの位置
-            oldE1 = new MarkPoint(worldMap.GetAreaX(stWldX), worldMap.GetAreaY(stWldY), stDir);     // 
+            E1 = new MarkPoint(stWldX, stWldY, stDir);        // R.Encoderの位置
+            oldE1 = new MarkPoint(stWldX, stWldY, stDir);     // 
 
-            V1 = new MarkPoint(worldMap.GetAreaX(stWldX), worldMap.GetAreaY(stWldY), stDir);        // 推定位置ロボット
-            C1 = new MarkPoint(worldMap.GetAreaX(0), worldMap.GetAreaY(0), stDir);
-            G1 = new MarkPoint(worldMap.GetAreaX(0), worldMap.GetAreaY(0), 0);        // GPS
+            V1 = new MarkPoint(stWldX, stWldY, stDir);        // 推定位置ロボット
+            C1 = new MarkPoint(0, 0, stDir);
+            G1 = new MarkPoint(0, 0, 0);        // GPS
 
             // パーティクルフィルター初期化
             {
@@ -274,7 +276,7 @@ namespace LocationPresumption
                 for (int i = 0; i < ParticleSize; ++i)
                 {
                     // パーティクルマーカー
-                    Particles.Add(new Particle(new MarkPoint(V1.X, V1.Y, V1.Theta), 1));
+                    Particles.Add(new Particle(new MarkPoint(0,0,0), 0));
                 }
             }
 
@@ -296,6 +298,7 @@ namespace LocationPresumption
         {
             lpfV1X = new KalmanFilter.SimpleLPF(mkp.X);
             lpfV1Y = new KalmanFilter.SimpleLPF(mkp.Y);
+            lpfV1Theta = new KalmanFilter.SimpleLPF(mkp.Theta);
         }
 
         /// <summary>
@@ -308,26 +311,7 @@ namespace LocationPresumption
                 (R1.Y < worldMap.GridSize.h / 4 || R1.Y > worldMap.GridSize.h * 3 / 4))
             {
                 // R1の位置を新しいエリアの中心とする
-                worldMap.UpdateAreaCenter(worldMap.GetWorldX((int)(R1.X+0.5)), worldMap.GetWorldY((int)(R1.Y+0.5)));
-
-                // エリア座標更新
-                R1.X += (double)worldMap.WldOffsetDiff.x;
-                R1.Y += (double)worldMap.WldOffsetDiff.y;
-
-                V1.X += (double)worldMap.WldOffsetDiff.x;
-                V1.Y += (double)worldMap.WldOffsetDiff.y;
-
-                E1.X += (double)worldMap.WldOffsetDiff.x;
-                E1.Y += (double)worldMap.WldOffsetDiff.y;
-
-                oldE1.X += (double)worldMap.WldOffsetDiff.x;
-                oldE1.Y += (double)worldMap.WldOffsetDiff.y;
-
-                G1.X += (double)worldMap.WldOffsetDiff.x;
-                G1.Y += (double)worldMap.WldOffsetDiff.y;
-
-                // 更新後の座標にローパスフィルターをリセット
-                ResetLPF_V1(V1);
+                worldMap.UpdateAreaCenter( (int)(R1.X+0.5), (int)(R1.Y+0.5) );
 
                 // エリアマップ更新
                 AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
@@ -359,7 +343,7 @@ namespace LocationPresumption
             else
             {
                 // マップから生成 (LRFエミュレーションモード)
-                LRF_Data = MRF.Sense(R1);
+                LRF_Data = MRF.Sense( new MarkPoint( worldMap.GetAreaX(R1.X), worldMap.GetAreaY(R1.Y), R1.Theta ) );
             }
 
             // lrfノイズ リダクション
@@ -398,7 +382,6 @@ namespace LocationPresumption
             // (スタート位置、向きを反映)
             E1.X += (reX - nowREX);
             E1.Y += (reY - nowREY);
-            //E1.Theta += (reTheta - nowRETheta);
             E1.Theta = reTheta;
 
             nowREX = reX;
@@ -444,8 +427,8 @@ namespace LocationPresumption
             mapX = (mapX - startPosGPSX) / RealToMapSclae;
             mapY = -(mapY - startPosGPSY) / RealToMapSclae;
 
-            G1.X = worldMap.GetAreaX((int)mapX + startPosGPS_MapX);
-            G1.Y = worldMap.GetAreaY((int)mapY + startPosGPS_MapY);
+            G1.X = mapX + startPosGPS_MapX;
+            G1.Y = mapY + startPosGPS_MapY;
             G1.Theta = moveDir;
 
             return true;
@@ -485,7 +468,7 @@ namespace LocationPresumption
 
 
         /// <summary>
-        /// 自己位置計算
+        /// PF自己位置計算
         /// </summary>
         /// <param name="numPF"></param>
         public void CalcLocalize(MarkPoint mkp, bool useLowFilter, int numPF = 1)
@@ -495,27 +478,76 @@ namespace LocationPresumption
             swCNT_Update.Start();
 
             // パーティクルフィルター演算
-            {
-                // 計算起点をセット
-                if (useLowFilter)
-                {
-                    ResetLPF_V1(mkp);
-                }
 
-                V1.Set(mkp);
+            if (useLowFilter)
+            {
+                KalmanFilter.SimpleLPF lpfX = null;
+                KalmanFilter.SimpleLPF lpfY = null;
+                KalmanFilter.SimpleLPF lpTheta = null;
 
                 for (int i = 0; i < numPF; i++)
                 {
-                    Filter.Localize(LRF_Data, MRF, V1, Particles);
+                    MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(mkp.X), worldMap.GetAreaY(mkp.Y), mkp.Theta);
+
+                    Filter.Localize(LRF_Data, MRF, locMkp, Particles);
+
+                    locMkp.X = worldMap.GetWorldX(locMkp.X);
+                    locMkp.Y = worldMap.GetWorldY(locMkp.Y);
 
                     // 結果にローパスフィルターをかける
-                    if (useLowFilter)
+                    if (null == lpfX)
                     {
-                        V1.X = lpfV1X.update(V1.X);
-                        V1.Y = lpfV1Y.update(V1.Y);
+                        // 最初の値を初期値にする
+                        lpfX = new KalmanFilter.SimpleLPF(locMkp.X);
+                        lpfY = new KalmanFilter.SimpleLPF(locMkp.Y);
+                        lpTheta = new KalmanFilter.SimpleLPF(locMkp.Theta);
+                    }
+                    else
+                    {
+                        lpfX.update(locMkp.X);
+                        lpfY.update(locMkp.Y);
+                        lpTheta.update(locMkp.Theta);
                     }
                 }
+
+                if (null != lpfX)
+                {
+                    mkp.X = lpfX.value();
+                    mkp.Y = lpfY.value();
+                    mkp.Theta = lpTheta.value();
+                }
             }
+            else
+            {
+                Filter.Localize(LRF_Data, MRF, mkp, Particles);
+            }
+            
+
+            // 処理時間計測完了
+            swCNT_Update.Stop();
+        }
+
+        /// <summary>
+        /// PF自己位置計算 継続
+        /// </summary>
+        /// <param name="mkp"></param>
+        /// <param name="useLowFilter"></param>
+        /// <param name="numPF"></param>
+        public void ParticleFilterLocalize()
+        {
+            // 処理時間計測
+            swCNT_Update.Reset();
+            swCNT_Update.Start();
+
+            MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(V1.X), worldMap.GetAreaY(V1.Y), V1.Theta);
+
+            // パーティクルフィルター演算
+            Filter.Localize(LRF_Data, MRF, locMkp, Particles);
+
+            // 結果にローパスフィルターをかける
+            V1.X = lpfV1X.update(worldMap.GetWorldX(locMkp.X));
+            V1.Y = lpfV1Y.update(worldMap.GetWorldY(locMkp.Y));
+            V1.Theta = lpfV1Theta.update(locMkp.Theta);
 
             // 処理時間計測完了
             swCNT_Update.Stop();
@@ -538,16 +570,18 @@ namespace LocationPresumption
             // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
             if( bActiveREPlot )
             {
-                R1.X += (E1.X - oldE1.X);
-                R1.Y += (E1.Y - oldE1.Y);
+                double diffREX = (E1.X - oldE1.X);
+                double diffREY = (E1.Y - oldE1.Y);
+                R1.X += diffREX;
+                R1.Y += diffREY;
                 R1.Theta = E1.Theta; //  REの向き
 
                 // パーティクルフィルター定期更新
                 if (useAlwaysPF)
                 {
                     // 毎回更新PF
-                    V1.X += (E1.X - oldE1.X);
-                    V1.Y += (E1.Y - oldE1.Y);
+                    V1.X += diffREX;
+                    V1.Y += diffREY;
 
                     if (bActiveCompass)
                     {
@@ -558,7 +592,7 @@ namespace LocationPresumption
                         V1.Theta = E1.Theta; //  REの向き
                     }
 
-                    CalcLocalize(V1,true);
+                    ParticleFilterLocalize();
                 }
 
                 oldE1.Set(E1);
@@ -569,7 +603,7 @@ namespace LocationPresumption
             // 軌跡ログ
             try
             {
-                MarkPoint logR1 = new MarkPoint(worldMap.GetWorldX(R1.X), worldMap.GetWorldY(R1.Y), R1.Theta);
+                MarkPoint logR1 = new MarkPoint( R1.X, R1.Y, R1.Theta);
                 //if (R1Log.Count == 0 || !logR1.IsEqual(R1Log[R1Log.Count - 1])) // ※メモリを壊してるかも・・・
                 {
                     R1Log.Add(logR1);
@@ -578,7 +612,7 @@ namespace LocationPresumption
                 // ParticleFiler
                 //if (usePF)
                 {
-                    MarkPoint logV1 = new MarkPoint(worldMap.GetWorldX(V1.X), worldMap.GetWorldY(V1.Y), V1.Theta);
+                    MarkPoint logV1 = new MarkPoint( V1.X, V1.Y, V1.Theta);
                     //if (V1Log.Count == 0 || !logV1.IsEqual(V1Log[V1Log.Count - 1]))
                     {
                         V1Log.Add(logV1);
@@ -586,7 +620,7 @@ namespace LocationPresumption
                 }
 
                 // RotaryEncoder
-                MarkPoint logE1 = new MarkPoint(worldMap.GetWorldX(E1.X), worldMap.GetWorldY(E1.Y), E1.Theta);
+                MarkPoint logE1 = new MarkPoint( E1.X, E1.Y, E1.Theta);
                 //if (E1Log.Count == 0 || !logE1.IsEqual(E1Log[E1Log.Count - 1]))
                 {
                     E1Log.Add(logE1);
@@ -595,7 +629,7 @@ namespace LocationPresumption
                 // GPS
                 if (bEnableGPS)
                 {
-                    MarkPoint logG1 = new MarkPoint(worldMap.GetWorldX(G1.X), worldMap.GetWorldY(G1.Y), G1.Theta);
+                    MarkPoint logG1 = new MarkPoint( G1.X, G1.Y, G1.Theta);
                     //if (E1Log.Count == 0 || !logE1.IsEqual(E1Log[E1Log.Count - 1]))
                     {
                         G1Log.Add(logG1);
@@ -621,7 +655,7 @@ namespace LocationPresumption
         /// <returns></returns>
         public double GetResultLocationX()
         {
-            return worldMap.GetWorldX(R1.X);
+            return R1.X;
         }
         /// <summary>
         /// 自己位置推定座標 Y (マップ座標)
@@ -629,7 +663,7 @@ namespace LocationPresumption
         /// <returns></returns>
         public double GetResultLocationY()
         {
-            return worldMap.GetWorldY(R1.Y);
+            return R1.Y;
         }
 
         /// <summary>
@@ -656,7 +690,7 @@ namespace LocationPresumption
         }
         public double[] GetMapLRF(MarkPoint mkp)
         {
-            return MRF.Sense(mkp);
+            return GetMapLRF((int)(mkp.X+0.5), (int)(mkp.Y+0.5), mkp.Theta);
         }
 
         /// <summary>
@@ -665,11 +699,11 @@ namespace LocationPresumption
         /// <returns></returns>
         public Grid GetMapInfo_R1()
         {
-            return worldMap.AreaGridMap[(int)R1.X, (int)R1.Y];
+            return worldMap.GetAreaMapInfo(R1.X, R1.Y);
         }
         public Grid GetMapInfo(MarkPoint mkp)
         {
-            return worldMap.AreaGridMap[(int)R1.X, (int)R1.Y];
+            return worldMap.GetAreaMapInfo(mkp.X, mkp.Y);
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------
@@ -706,7 +740,7 @@ namespace LocationPresumption
                 //for (int i = 0; i < Particles.Count; i++)
                 {
                     var p = Particles[i];
-                    DrawMakerFast(g, olScale, p.Location, Brushes.Blue, 5);
+                    DrawMakerFast_Area(g, olScale, p.Location, Brushes.Blue, 5);
                 }
             }
 
@@ -726,19 +760,19 @@ namespace LocationPresumption
                 {
                     case 0:
                         // RE想定ロボット位置描画
-                        DrawMaker(g, olScale, E1, Brushes.Purple, size);
+                        DrawMaker_Area(g, olScale, E1, Brushes.Purple, size);
                         break;
                     case 1:
                         // PF想定ロボット位置描画
-                        DrawMaker(g, olScale, V1, Brushes.Cyan, size);
+                        DrawMaker_Area(g, olScale, V1, Brushes.Cyan, size);
                         break;
                     case 2:
                         // 実ロボット想定位置描画
-                        DrawMaker(g, olScale, R1, Brushes.Red, size);
+                        DrawMaker_Area(g, olScale, R1, Brushes.Red, size);
                         break;
                     case 3:
                         // GPS位置描画
-                        DrawMaker(g, olScale, G1, Brushes.Green, size);
+                        DrawMaker_Area(g, olScale, G1, Brushes.Green, size);
                         break;
                 }
             }
@@ -756,10 +790,10 @@ namespace LocationPresumption
         /// <param name="robot"></param>
         /// <param name="brush"></param>
         /// <param name="size"></param>
-        private void DrawMaker(Graphics g, float fScale, MarkPoint robot, Brush brush, int size )
+        private void DrawMaker_Area(Graphics g, float fScale, MarkPoint robot, Brush brush, int size )
         {
-            double mkX = robot.X * fScale;
-            double mkY = robot.Y * fScale;
+            double mkX = worldMap.GetAreaX(robot.X) * fScale;
+            double mkY = worldMap.GetAreaY(robot.Y) * fScale;
             double mkDir = robot.Theta - 90.0;
 
             var P1 = new PointF(
@@ -783,10 +817,10 @@ namespace LocationPresumption
         /// <param name="robot"></param>
         /// <param name="brush"></param>
         /// <param name="size"></param>
-        private void DrawMakerFast(Graphics g, float fScale, MarkPoint robot, Brush brush, int size)
+        private void DrawMakerFast_Area(Graphics g, float fScale, MarkPoint robot, Brush brush, int size)
         {
-            float mkX = (float)(robot.X * fScale);
-            float mkY = (float)(robot.Y * fScale);
+            float mkX = (float)(worldMap.GetAreaX(robot.X) * fScale);
+            float mkY = (float)(worldMap.GetAreaY(robot.Y) * fScale);
             int mkDir = (int)(robot.Theta - 90.0);
 
             var P1 = new PointF(
@@ -885,23 +919,23 @@ namespace LocationPresumption
             // 最終地点にマーカ表示
             if (R1Log.Count > 0)
             {
-                DrawMaker(g, 1.0f, R1Log[R1Log.Count - 1], Brushes.Red, 4);
+                DrawMaker_Area(g, 1.0f, R1Log[R1Log.Count - 1], Brushes.Red, 4);
             }
             if (V1Log.Count > 0)
             {
-                DrawMaker(g, 1.0f, V1Log[V1Log.Count - 1], Brushes.Cyan, 4);
+                DrawMaker_Area(g, 1.0f, V1Log[V1Log.Count - 1], Brushes.Cyan, 4);
             }
             if (E1Log.Count > 0)
             {
-                DrawMaker(g, 1.0f, E1Log[E1Log.Count - 1], Brushes.Purple, 4);
+                DrawMaker_Area(g, 1.0f, E1Log[E1Log.Count - 1], Brushes.Purple, 4);
             }
             if (G1Log.Count > 0)
             {
-                DrawMaker(g, 1.0f, G1Log[G1Log.Count - 1], Brushes.Green, 4);
+                DrawMaker_Area(g, 1.0f, G1Log[G1Log.Count - 1], Brushes.Green, 4);
             }
             if (null != marker)
             {
-                DrawMaker(g, 1.0f, marker, Brushes.GreenYellow, 4);
+                DrawMaker_Area(g, 1.0f, marker, Brushes.GreenYellow, 4);
             }
 
             // 一定期間ごとの位置と向き
@@ -912,7 +946,7 @@ namespace LocationPresumption
                 for (int i = 0; i < R1Log.Count; i++)
                 {
                     if ((i % 30) != 0) continue;
-                    DrawMaker(g, 1.0f, R1Log[i], Brushes.Red, 4);
+                    DrawMaker_Area(g, 1.0f, R1Log[i], Brushes.Red, 4);
                 }
 
                 
@@ -921,7 +955,7 @@ namespace LocationPresumption
                 for( int i=0; i<V1Log.Count; i++ )
                 {
                     if ((i % 30) != 0) continue;
-                    DrawMaker(g, 1.0f, V1Log[i], Brushes.Cyan, 3);
+                    DrawMaker_Area(g, 1.0f, V1Log[i], Brushes.Cyan, 3);
                 }
                 
 
@@ -930,7 +964,7 @@ namespace LocationPresumption
                 for (int i = 0; i < E1Log.Count; i++)
                 {
                     if ((i % 30) != 0) continue;
-                    DrawMaker(g, 1.0f, E1Log[i], Brushes.Purple, 4);
+                    DrawMaker_Area(g, 1.0f, E1Log[i], Brushes.Purple, 4);
                 }
             }
 

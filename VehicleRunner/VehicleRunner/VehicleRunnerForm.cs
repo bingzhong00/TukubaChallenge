@@ -30,6 +30,7 @@
 #define LOGIMAGE_MODE   // イメージログ出力
 
 #define GPSLOG_OUTPUT   //  GPSログ出力
+#define LRFLOG_OUTPUT   //  LRFログ出力
 //#define EMULATOR_MODE   // エミュレートモード
 
 using System;
@@ -53,8 +54,11 @@ namespace VehicleRunner
 {
     public partial class VehicleRunnerForm : Form
     {
+        // ログファイル名
         public static string saveLogFname;
         public static string saveGPSLogFname;
+        public static string saveLRFLogFname;
+
 
         LocPreSumpSystem LocSys;
         CersioCtrl CersioCt;
@@ -92,6 +96,7 @@ namespace VehicleRunner
 
             saveLogFname = GetTimeStampFileName("./Log/LocSampLog", ".log");
             saveGPSLogFname = GetTimeStampFileName("./Log/GPSLog", ".log");
+            saveLRFLogFname = GetTimeStampFileName("./Log/LRFLog", ".log");
 
             // ログファイルディレクトリ確認
             {
@@ -120,12 +125,15 @@ namespace VehicleRunner
             // マップ情報設定
             //  マップファイル名、実サイズの横[mm], 実サイズ縦[mm] (北向き基準)
             LocSys.InitWorld( RootingData.MapFileName, RootingData.RealWidth, RootingData.RealHeight);
+
             LocSys.SetStartPostion( (int)RootingData.startPosition.x,
                                     (int)RootingData.startPosition.y,
                                     RootingData.startDir );
 
             // REをリセット
-            CersioCt.RE_Reset(RootingData.startPosition.x, RootingData.startPosition.y, RootingData.startDir);
+            CersioCt.RE_Reset(RootingData.startPosition.x * LocSys.RealToMapSclae,
+                              RootingData.startPosition.y * LocSys.RealToMapSclae,
+                              RootingData.startDir);
 
             worldMapBmp = MakeScaledWorldMap(LocSys.worldMap.mapBmp);
 
@@ -144,23 +152,26 @@ namespace VehicleRunner
         {
             this.SetDesktopLocation(0, 0);
 
-            // USB
+            // USB Connect Select
             {
                 // すべてのシリアル・ポート名を取得する
                 string[] ports = System.IO.Ports.SerialPort.GetPortNames();
 
                 // シリアルポートを毎回取得して表示するために表示の度にリストをクリアする
                 cb_UsbSirial.Items.Clear();
+                cmbbox_UsbSH2Connect.Items.Clear();
 
                 foreach (string port in ports)
                 {
                     // 取得したシリアル・ポート名を出力する
                     cb_UsbSirial.Items.Add(port);
+                    cmbbox_UsbSH2Connect.Items.Add(port);
                 }
 
                 if (cb_UsbSirial.Items.Count > 0)
                 {
                     cb_UsbSirial.SelectedIndex = 0;
+                    cmbbox_UsbSH2Connect.SelectedIndex = 0;
                 }
             }
 
@@ -305,19 +316,19 @@ namespace VehicleRunner
                     {
                         case 0:
                             // RE想定ロボット位置描画
-                            DrawMaker(g, viewScale, new MarkPoint(LocSys.worldMap.GetWorldX(LocSys.E1.X), LocSys.worldMap.GetWorldY(LocSys.E1.Y), LocSys.E1.Theta), Brushes.Purple, mkSize);
+                            DrawMaker(g, viewScale, LocSys.E1, Brushes.Purple, mkSize);
                             break;
                         case 1:
                             // PF想定ロボット位置描画
-                            DrawMaker(g, viewScale, new MarkPoint(LocSys.worldMap.GetWorldX(LocSys.V1.X), LocSys.worldMap.GetWorldY(LocSys.V1.Y), LocSys.V1.Theta), Brushes.Cyan, mkSize);
+                            DrawMaker(g, viewScale, LocSys.V1, Brushes.Cyan, mkSize);
                             break;
                         case 2:
                             // 実ロボット想定位置描画
-                            DrawMaker(g, viewScale, new MarkPoint(LocSys.worldMap.GetWorldX(LocSys.R1.X), LocSys.worldMap.GetWorldY(LocSys.R1.Y), LocSys.R1.Theta), Brushes.Red, mkSize);
+                            DrawMaker(g, viewScale, LocSys.R1, Brushes.Red, mkSize);
                             break;
                         case 3:
                             // GPS位置描画
-                            DrawMaker(g, viewScale, new MarkPoint(LocSys.worldMap.GetWorldX(LocSys.G1.X), LocSys.worldMap.GetWorldY(LocSys.G1.Y), LocSys.G1.Theta), Brushes.Green, mkSize);
+                            DrawMaker(g, viewScale, LocSys.G1, Brushes.Green, mkSize);
                             break;
                     }
                 }
@@ -334,8 +345,8 @@ namespace VehicleRunner
 
             // Info
             DrawString(g, 0, drawFont.Height * 0,
-                       "R1 X:" + ((int)LocSys.worldMap.GetWorldX(LocSys.R1.X)).ToString("D4") +
-                       ",Y:" + ((int)LocSys.worldMap.GetWorldY(LocSys.R1.Y)).ToString("D4") +
+                       "R1 X:" + ((int)LocSys.R1.X+0.5).ToString("D4") +
+                       ",Y:" + ((int)LocSys.R1.Y+0.5).ToString("D4") +
                        ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
                        Brushes.Red, Brushes.Black);
             /*
@@ -474,32 +485,32 @@ namespace VehicleRunner
 
                         if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
                         {
-                            LocSys.E1.X = e.X * viewScale;
-                            LocSys.E1.Y = e.Y * viewScale;
+                            LocSys.E1.X = LocSys.worldMap.GetWorldX(e.X * viewScale);
+                            LocSys.E1.Y = LocSys.worldMap.GetWorldY(e.Y * viewScale);
                         }
                         else if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
                         {
-                            LocSys.V1.X = e.X * viewScale;
-                            LocSys.V1.Y = e.Y * viewScale;
+                            LocSys.V1.X = LocSys.worldMap.GetWorldX(e.X * viewScale);
+                            LocSys.V1.Y = LocSys.worldMap.GetWorldY(e.Y * viewScale);
                         }
                         else if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
                         {
-                            LocSys.G1.X = e.X * viewScale;
-                            LocSys.G1.Y = e.Y * viewScale;
+                            LocSys.G1.X = LocSys.worldMap.GetWorldX(e.X * viewScale);
+                            LocSys.G1.Y = LocSys.worldMap.GetWorldY(e.Y * viewScale);
 
                             // GPSの値があれば、GPSの位置情報もリセット
                             if (LocPreSumpSystem.bEnableGPS)
                             {
                                 LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX,
                                                               CersioCt.hwGPS_LandY,
-                                                              (int)(LocSys.worldMap.GetWorldX(LocSys.G1.X) + 0.5),
-                                                              (int)(LocSys.worldMap.GetWorldY(LocSys.G1.Y) + 0.5), false);
+                                                              (int)(LocSys.G1.X + 0.5),
+                                                              (int)(LocSys.G1.Y + 0.5), false);
                             }
                         }
                         else
                         {
-                            LocSys.R1.X = e.X * viewScale;
-                            LocSys.R1.Y = e.Y * viewScale;
+                            LocSys.R1.X = LocSys.worldMap.GetWorldX(e.X * viewScale);
+                            LocSys.R1.Y = LocSys.worldMap.GetWorldY(e.Y * viewScale);
                         }
                     }
                     else if (selAreaMapMode == 1)
@@ -517,32 +528,32 @@ namespace VehicleRunner
 
                         if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
                         {
-                            LocSys.E1.X = LocSys.worldMap.GetAreaX((int)(e.X * viewScale));
-                            LocSys.E1.Y = LocSys.worldMap.GetAreaY((int)(e.Y * viewScale));
+                            LocSys.E1.X = e.X * viewScale;
+                            LocSys.E1.Y = e.Y * viewScale;
                         }
                         else if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
                         {
-                            LocSys.V1.X = LocSys.worldMap.GetAreaX((int)(e.X * viewScale));
-                            LocSys.V1.Y = LocSys.worldMap.GetAreaY((int)(e.Y * viewScale));
+                            LocSys.V1.X = e.X * viewScale;
+                            LocSys.V1.Y = e.Y * viewScale;
                         }
                         else if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
                         {
-                            LocSys.G1.X = LocSys.worldMap.GetAreaX((int)(e.X * viewScale));
-                            LocSys.G1.Y = LocSys.worldMap.GetAreaY((int)(e.Y * viewScale));
+                            LocSys.G1.X = e.X * viewScale;
+                            LocSys.G1.Y = e.Y * viewScale;
 
                             // GPSの値があれば、GPSの位置情報もリセット
                             if (LocPreSumpSystem.bEnableGPS)
                             {
-                                LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX,
+                                LocPreSumpSystem.SetStartGPS( CersioCt.hwGPS_LandX,
                                                               CersioCt.hwGPS_LandY,
-                                                              (int)(LocSys.worldMap.GetWorldX(LocSys.G1.X) + 0.5),
-                                                              (int)(LocSys.worldMap.GetWorldY(LocSys.G1.Y) + 0.5), false);
+                                                              (int)(LocSys.G1.X + 0.5),
+                                                              (int)(LocSys.G1.Y + 0.5), false);
                             }
                         }
                         else
                         {
-                            LocSys.R1.X = LocSys.worldMap.GetAreaX((int)(e.X * viewScale));
-                            LocSys.R1.Y = LocSys.worldMap.GetAreaY((int)(e.Y * viewScale));
+                            LocSys.R1.X = e.X * viewScale;
+                            LocSys.R1.Y = e.Y * viewScale;
                         }
                     }
                 }
@@ -961,12 +972,14 @@ namespace VehicleRunner
                 {
                     LocPreSumpSystem.SetStartGPS( CersioCt.hwGPS_LandX,
                                                   CersioCt.hwGPS_LandY,
-                                                  (int)(LocSys.worldMap.GetWorldX(LocSys.R1.X)+0.5),
-                                                  (int)(LocSys.worldMap.GetWorldY(LocSys.R1.Y)+0.5), true);
+                                                  (int)(LocSys.R1.X+0.5),
+                                                  (int)(LocSys.R1.Y+0.5), true);
                 }
 
                 // RE1リセット
-                CersioCt.RE_Reset(LocSys.R1.X, LocSys.R1.Y, LocSys.R1.Theta);
+                CersioCt.RE_Reset(LocSys.R1.X * LocSys.RealToMapSclae,
+                                  LocSys.R1.Y * LocSys.RealToMapSclae,
+                                  LocSys.R1.Theta);
 
                 tm_LocUpdate.Enabled = true;
             }
@@ -1056,6 +1069,27 @@ namespace VehicleRunner
 
             // UntiEBS Cnt
             lbl_BackCnt.Text = "EBS cnt:" + CersioCt.BrainCtrl.EmgBrakeContinueCnt.ToString();
+
+
+#if LRFLOG_OUTPUT
+            // LRFログ出力 
+            // データ量が多いので、メインの更新処理時のデータを保存
+            if (LocSys.IsLRFConnect())
+            {
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(saveLRFLogFname, true, System.Text.Encoding.GetEncoding("shift_jis"));
+
+                sw.Write("LRFLog:"+ DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + System.Environment.NewLine);
+
+                for (int i = 0; i < LocSys.LRF_Data.Length; i++)
+                {
+                    sw.Write( LocSys.LRF_Data[i].ToString("F0")+"," );
+                }
+                sw.Write(System.Environment.NewLine);
+
+                sw.Close();
+            }
+#endif
+
 
             bLocRivisionTRG = false;
             updateMainCnt++;
@@ -1160,8 +1194,8 @@ namespace VehicleRunner
                 {
                     LocPreSumpSystem.SetStartGPS(CersioCt.hwGPS_LandX,
                                                   CersioCt.hwGPS_LandY,
-                                                  (int)(LocSys.worldMap.GetWorldX(LocSys.R1.X)+0.5),
-                                                  (int)(LocSys.worldMap.GetWorldY(LocSys.R1.Y)+0.5), false);
+                                                  (int)(LocSys.R1.X+0.5),
+                                                  (int)(LocSys.R1.Y+0.5), false);
                 }
                 LocSys.SetGPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY, CersioCt.hwGPS_MoveDir);
                 lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
@@ -1276,28 +1310,28 @@ namespace VehicleRunner
 
                 // 位置情報
                 {
-                    sw.Write("R1:X " + LocSys.worldMap.GetWorldX(LocSys.R1.X).ToString("f3") +
-                             "/Y " + LocSys.worldMap.GetWorldY(LocSys.R1.Y).ToString("f3") +
+                    sw.Write("R1:X " + LocSys.R1.X.ToString("f3") +
+                             "/Y " + LocSys.R1.Y.ToString("f3") +
                              "/ Dir " + LocSys.R1.Theta.ToString("f2") +
                              System.Environment.NewLine);
 
-                    sw.Write("V1:X " + LocSys.worldMap.GetWorldX(LocSys.V1.X).ToString("f3") +
-                             "/Y " + LocSys.worldMap.GetWorldY(LocSys.V1.Y).ToString("f3") +
+                    sw.Write("V1:X " + LocSys.V1.X.ToString("f3") +
+                             "/Y " + LocSys.V1.Y.ToString("f3") +
                              "/ Dir " + LocSys.V1.Theta.ToString("f2") +
                              System.Environment.NewLine);
 
-                    sw.Write("E1:X " + LocSys.worldMap.GetWorldX(LocSys.E1.X).ToString("f3") +
-                             "/Y " + LocSys.worldMap.GetWorldY(LocSys.E1.Y).ToString("f3") +
+                    sw.Write("E1:X " + LocSys.E1.X.ToString("f3") +
+                             "/Y " + LocSys.E1.Y.ToString("f3") +
                              "/ Dir " + LocSys.E1.Theta.ToString("f2") +
                              System.Environment.NewLine);
 
-                    sw.Write("C1:X " + LocSys.worldMap.GetWorldX(LocSys.C1.X).ToString("f3") +
-                             "/Y " + LocSys.worldMap.GetWorldY(LocSys.C1.Y).ToString("f3") +
+                    sw.Write("C1:X " + LocSys.C1.X.ToString("f3") +
+                             "/Y " + LocSys.C1.Y.ToString("f3") +
                              "/ Dir " + LocSys.C1.Theta.ToString("f2") +
                              System.Environment.NewLine);
 
-                    sw.Write("G1:X " + LocSys.worldMap.GetWorldX(LocSys.G1.X).ToString("f3") +
-                             "/Y " + LocSys.worldMap.GetWorldY(LocSys.G1.Y).ToString("f3") +
+                    sw.Write("G1:X " + LocSys.G1.X.ToString("f3") +
+                             "/Y " + LocSys.G1.Y.ToString("f3") +
                              "/ Dir " + LocSys.G1.Theta.ToString("f2") +
                              System.Environment.NewLine);
                 }
@@ -1433,56 +1467,102 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void cb_SirialConnect_CheckedChanged(object sender, EventArgs e)
         {
+            if (null != usbGPS)
+            {
+                usbGPS.Close();
+                usbGPS = null;
+            }
+
             if (cb_SirialConnect.Checked)
             {
-                if (null != usbGPS)
+                usbGPS = new UsbIOport();
+                if (usbGPS.Open(cb_UsbSirial.Text, 4800))
                 {
-                    usbGPS.Close();
-                    usbGPS = null;
+                    // 接続成功
+                    tb_SirialResive.BackColor = Color.Lime;
+                    cb_RivisonGPS.Checked = true;
                 }
-
+                else
                 {
-                    usbGPS = new UsbIOport();
-                    if (usbGPS.Open(cb_UsbSirial.Text, 4800))
-                    {
-                        // 接続成功
-                        tb_SirialResive.BackColor = Color.Lime;
-                        cb_RivisonGPS.Checked = true;
-                    }
-                    else
-                    {
-                        // 接続失敗
-                        tb_SirialResive.BackColor = SystemColors.Control;
-                        tb_SirialResive.Text = "ConnectFail";
-                        usbGPS = null;
-                    }
+                    // 接続失敗
+                    tb_SirialResive.BackColor = SystemColors.Control;
+                    tb_SirialResive.Text = "ConnectFail";
+                    usbGPS = null;
                 }
             }
             else
             {
-                if (null != usbGPS)
-                {
-                    usbGPS.Close();
-                    usbGPS = null;
-
-                    tb_SirialResive.BackColor = SystemColors.Control;
-                }
+                tb_SirialResive.BackColor = SystemColors.Control;
             }
         }
 
+        /// <summary>
+        /// GPS補正 ON,OFF
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_RivisonGPS_CheckedChanged(object sender, EventArgs e)
         {
             LocPreSumpSystem.bRivisonGPS = cb_RivisonGPS.Checked;
         }
 
+        /// <summary>
+        /// パーティクルフィルター On,OFF
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_RivisionPF_CheckedChanged(object sender, EventArgs e)
         {
             LocPreSumpSystem.bRivisonPF = cb_RivisionPF.Checked;
         }
 
+        /// <summary>
+        /// 時間補正 On,OFF
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_TimeRivision_CheckedChanged(object sender, EventArgs e)
         {
             LocPreSumpSystem.bTimeRivision = cb_TimeRivision.Checked;
+        }
+
+        /// <summary>
+        /// SH2 USB接続
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cb_UsbSH2Connect_CheckedChanged(object sender, EventArgs e)
+        {
+            if (CersioCt != null) return;
+
+            // 接続中なら切断
+            if (null != CersioCt.UsbSH2IO)
+            {
+                CersioCt.UsbSH2IO.Close();
+                CersioCt.UsbSH2IO = null;
+            }
+
+            if (cb_UsbSH2Connect.Checked)
+            {
+                // 接続
+                CersioCt.UsbSH2IO = new DriveIOport();
+                if (CersioCt.UsbSH2IO.Open(cmbbox_UsbSH2Connect.Text, 57600))
+                {
+                    // 接続成功
+                    cmbbox_UsbSH2Connect.BackColor = Color.Lime;
+                }
+                else
+                {
+                    // 接続失敗
+                    cmbbox_UsbSH2Connect.BackColor = SystemColors.Control;
+                    CersioCt.UsbSH2IO = null;
+                }
+            }
+            else
+            {
+                cmbbox_UsbSH2Connect.BackColor = SystemColors.Control;
+            }
+
         }
 
     }

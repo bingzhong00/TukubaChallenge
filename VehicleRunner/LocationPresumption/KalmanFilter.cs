@@ -71,6 +71,11 @@ namespace LocationPresumption
 		        if(pointer==win_size) pointer = 0;
 		        return total/win_size;
 	        }
+
+            public double value()
+            {
+                return total / win_size;
+            }
         }
 
         /// <summary>

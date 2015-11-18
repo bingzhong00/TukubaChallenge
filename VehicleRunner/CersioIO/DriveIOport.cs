@@ -15,7 +15,7 @@ namespace CersioIO
         public bool Open( string portName, int bouRate )
         {
             serialPort = new SerialPort(portName, bouRate, Parity.None, 8, StopBits.One);
-            serialPort.DataReceived += new SerialDataReceivedEventHandler(serialPort1_DataReceived);
+            serialPort.DataReceived += new SerialDataReceivedEventHandler(serialPort_DataReceived);
             serialPort.Open();
 
             if (serialPort.IsOpen) return true;
@@ -58,7 +58,7 @@ namespace CersioIO
         public string resiveStr = "";
 
 
-        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        private void serialPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             // シリアルポートからデータ受信
             {
@@ -92,12 +92,12 @@ namespace CersioIO
     {
         public new void Close()
         {
-            SendSirialData(0, 0);
+            Send_AC_Command(0, 0);
             base.Close();
         }
 
-        // いずれ分離か セルシオ通信系ライブラリ化
-        public bool SendSirialData(double handleVal, double accVal)
+        // 送信
+        public bool Send_AC_Command(double handleVal, double accVal)
         {
             // シリアルポートにデータ送信
             if (!serialPort.IsOpen)
@@ -143,10 +143,13 @@ namespace CersioIO
             //System.Text.Encoding.GetEncoding("SHIFT-JIS").GetBytes("abcあいう");
             serialPort.Write(dat, 0, dat.GetLength(0));
 
+            // 受信データを削除しておく
+            resiveStr = "";
+
             return true;
         }
 
-        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        private void serialPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             // シリアルポートからデータ受信
             {
@@ -160,6 +163,8 @@ namespace CersioIO
                 }
                 resvIdx += buff.Length;
             }
+
+            // 10バイト受け取るまで待つ
             if (resvIdx < 10) return;
             resvIdx = 0;
 
