@@ -120,6 +120,7 @@ namespace CersioIO
             if (TCP_IsConnected())
             {
                 objTCPSC.Dispose();
+                // 少し待つ
                 System.Threading.Thread.Sleep(100);
             }
 
@@ -299,15 +300,12 @@ namespace CersioIO
                 // LAN接続
                 SendCommand("AC," + sendHandle.ToString("f2") + "," + sendAcc.ToString("f2") + "\n");
             }
-            else
+            else if (null != UsbSH2IO)
             {
                 // USB接続時
-                if (null != UsbSH2IO)
+                if (UsbSH2IO.IsConnect())
                 {
-                    if (UsbSH2IO.IsConnect())
-                    {
-                        UsbSH2IO.Send_AC_Command(sendHandle, sendAcc);
-                    }
+                    UsbSH2IO.Send_AC_Command(sendHandle, sendAcc);
                 }
             }
         }
@@ -405,7 +403,10 @@ namespace CersioIO
 
         public void SendCommand( string comStr )
         {
-            SendCommandList.Add(comStr);
+            if (TCP_IsConnected())
+            {
+                SendCommandList.Add(comStr);
+            }
         }
 
         /// <summary>

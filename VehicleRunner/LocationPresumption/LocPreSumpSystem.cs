@@ -106,7 +106,7 @@ namespace LocationPresumption
         /// </summary>
         public static bool bTrustGPS = false;
 
-        // GPSからMap変換時のスケール（計算上は必要ないはず。。）
+        // GPSからMap変換時の(手で合わせた)スケール（計算上は必要ないはず。。）
         const double GPStoMapScale = 60.0;
 
         // 1分の距離[mm] 1.85225Km
@@ -463,7 +463,7 @@ namespace LocationPresumption
 
         long upDateCnt = 0;
         // 処理カウンタ
-        public System.Diagnostics.Stopwatch swCNT_Update = new System.Diagnostics.Stopwatch();
+        public static System.Diagnostics.Stopwatch swCNT_Update = new System.Diagnostics.Stopwatch();
         public static System.Diagnostics.Stopwatch swCNT_MRF = new System.Diagnostics.Stopwatch();
 
 
@@ -473,10 +473,6 @@ namespace LocationPresumption
         /// <param name="numPF"></param>
         public void CalcLocalize(MarkPoint mkp, bool useLowFilter, int numPF = 1)
         {
-            // 処理時間計測
-            swCNT_Update.Reset();
-            swCNT_Update.Start();
-
             // パーティクルフィルター演算
 
             if (useLowFilter)
@@ -521,10 +517,6 @@ namespace LocationPresumption
             {
                 Filter.Localize(LRF_Data, MRF, mkp, Particles);
             }
-            
-
-            // 処理時間計測完了
-            swCNT_Update.Stop();
         }
 
         /// <summary>
@@ -535,10 +527,6 @@ namespace LocationPresumption
         /// <param name="numPF"></param>
         public void ParticleFilterLocalize()
         {
-            // 処理時間計測
-            swCNT_Update.Reset();
-            swCNT_Update.Start();
-
             MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(V1.X), worldMap.GetAreaY(V1.Y), V1.Theta);
 
             // パーティクルフィルター演算
@@ -548,9 +536,6 @@ namespace LocationPresumption
             V1.X = lpfV1X.update(worldMap.GetWorldX(locMkp.X));
             V1.Y = lpfV1Y.update(worldMap.GetWorldY(locMkp.Y));
             V1.Theta = lpfV1Theta.update(locMkp.Theta);
-
-            // 処理時間計測完了
-            swCNT_Update.Stop();
         }
 
         /// <summary>
@@ -561,7 +546,8 @@ namespace LocationPresumption
         {
             bool bResult = false;   // 補正したか？
 
-            swCNT_MRF.Reset();
+            // 処理時間計測
+            swCNT_Update.Start();
 
             // 自己位置推定位置がエリア内になるようにチェック
             MoveAreaCheck();
@@ -576,26 +562,17 @@ namespace LocationPresumption
                 R1.Y += diffREY;
                 R1.Theta = E1.Theta; //  REの向き
 
-                // パーティクルフィルター定期更新
-                if (useAlwaysPF)
-                {
-                    // 毎回更新PF
-                    V1.X += diffREX;
-                    V1.Y += diffREY;
-
-                    if (bActiveCompass)
-                    {
-                        V1.Theta = C1.Theta; //  Compass
-                    }
-                    else
-                    {
-                        V1.Theta = E1.Theta; //  REの向き
-                    }
-
-                    ParticleFilterLocalize();
-                }
+                V1.X += diffREX;
+                V1.Y += diffREY;
+                if (bActiveCompass) V1.Theta = C1.Theta; //  Compass
+                else                V1.Theta = E1.Theta; //  REの向き
 
                 oldE1.Set(E1);
+            }
+
+            if (useAlwaysPF)
+            {
+                ParticleFilterLocalize();
             }
 
             
@@ -604,7 +581,7 @@ namespace LocationPresumption
             try
             {
                 MarkPoint logR1 = new MarkPoint( R1.X, R1.Y, R1.Theta);
-                //if (R1Log.Count == 0 || !logR1.IsEqual(R1Log[R1Log.Count - 1])) // ※メモリを壊してるかも・・・
+                if (R1Log.Count == 0 || !logR1.IsEqual(R1Log.Last()))
                 {
                     R1Log.Add(logR1);
                 }
@@ -613,7 +590,7 @@ namespace LocationPresumption
                 //if (usePF)
                 {
                     MarkPoint logV1 = new MarkPoint( V1.X, V1.Y, V1.Theta);
-                    //if (V1Log.Count == 0 || !logV1.IsEqual(V1Log[V1Log.Count - 1]))
+                    if (V1Log.Count == 0 || !logV1.IsEqual(V1Log.Last()))
                     {
                         V1Log.Add(logV1);
                     }
@@ -621,7 +598,7 @@ namespace LocationPresumption
 
                 // RotaryEncoder
                 MarkPoint logE1 = new MarkPoint( E1.X, E1.Y, E1.Theta);
-                //if (E1Log.Count == 0 || !logE1.IsEqual(E1Log[E1Log.Count - 1]))
+                if (E1Log.Count == 0 || !logE1.IsEqual(E1Log.Last()))
                 {
                     E1Log.Add(logE1);
                 }
@@ -630,16 +607,20 @@ namespace LocationPresumption
                 if (bEnableGPS)
                 {
                     MarkPoint logG1 = new MarkPoint( G1.X, G1.Y, G1.Theta);
-                    //if (E1Log.Count == 0 || !logE1.IsEqual(E1Log[E1Log.Count - 1]))
+                    if (G1Log.Count == 0 || !logG1.IsEqual(G1Log.Last()))
                     {
                         G1Log.Add(logG1);
                     }
                 }
             }
-            catch
+            catch( Exception ex )
             {
                 // ログ時のエラーは無視
+                Console.WriteLine(ex.Message);
             }
+
+            // 処理時間計測完了
+            swCNT_Update.Stop();
 
             upDateCnt++;
 
@@ -883,7 +864,7 @@ namespace LocationPresumption
         {
             Point[] ps = new Point[mkLog.Count];
 
-            if (mkLog.Count == 0) return;
+            if (mkLog.Count <= 1) return;
 
             for (int i = 0; i < mkLog.Count; i++)
             {

@@ -93,8 +93,6 @@ namespace LocationPresumption
             for (int i = 0; i < real.Length; ++i)
             {
                 sum += Math.Abs(real[i] - particle[i]);
-                //sum += (real[i] - particle[i]) * (real[i] - particle[i]);
-                //sum += Math.Cos(real[i] 
             }
 
             // 0.0～1.0までの数値に変換 誤差が大きいほど0に近くなる
@@ -165,8 +163,6 @@ namespace LocationPresumption
             // パーティクルから 整合性の高いデータを取り出す？(リサンプリング)
             for (int n = 0; n < ResamplingNumber; ++n)
             {
-                // ※変なランダムになっているだけでは？
-                // W値高いものからとったほうが精度が上がるのでは？？
                 double selectVal = Rand.NextDouble() * sum;
                 double subsum = 0;
                 for (int i = 0; i < Particles.Count; ++i)

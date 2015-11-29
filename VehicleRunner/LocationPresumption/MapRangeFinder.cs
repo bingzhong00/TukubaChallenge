@@ -91,15 +91,16 @@ namespace LocationPresumption
             int i;
             int angRng = AngleRange / 2;
 
-            LocPreSumpSystem.swCNT_MRF.Start();
 
             int iroboTheta = (int)(robotTheta+0.5);
             iroboTheta = iroboTheta - ((iroboTheta / 360) * 360);
 
-            try {
+            LocPreSumpSystem.swCNT_MRF.Start();
+            try
+            {
                 for (i = -angRng; i < angRng; ++i)
                 {
-                    int theta = (-iroboTheta + i + 360*2) % 360;
+                    int theta = (-iroboTheta + i + 360 * 2) % 360;
 
                     // 障害物までの距離を取得
                     result[i + angRng] = map.MeasureDist(
@@ -109,10 +110,15 @@ namespace LocationPresumption
                         DeltaY[theta],
                         RangeMax);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw e;
             }
-            LocPreSumpSystem.swCNT_MRF.Stop();
+            finally
+            {
+                LocPreSumpSystem.swCNT_MRF.Stop();
+            }
 
             return result;
         }

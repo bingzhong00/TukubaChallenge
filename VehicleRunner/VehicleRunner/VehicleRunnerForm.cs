@@ -31,7 +31,7 @@
 
 #define GPSLOG_OUTPUT   //  GPSログ出力
 #define LRFLOG_OUTPUT   //  LRFログ出力
-//#define EMULATOR_MODE   // エミュレートモード
+#define EMULATOR_MODE   // エミュレートモード
 
 using System;
 using System.Collections.Generic;
@@ -201,31 +201,40 @@ namespace VehicleRunner
             tm_LocUpdate.Enabled = false;
 
 #if LOGIMAGE_MODE
-            // 軌跡ログ出力
-            if (!string.IsNullOrEmpty(saveLogFname))
+            try
             {
-                MarkPoint tgtMaker = null;
-
-                // 次の目的地取得
-                if (null != CersioCt)
+                // 軌跡ログ出力
+                if (!string.IsNullOrEmpty(saveLogFname))
                 {
-                    int tgtPosX = 0;
-                    int tgtPosY = 0;
-                    double dir = 0;
+                    MarkPoint tgtMaker = null;
 
-                    CersioCt.BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
-                    CersioCt.BrainCtrl.RTS.getNowTargetDir(ref dir);
+                    // 次の目的地取得
+                    if (null != CersioCt)
+                    {
+                        int tgtPosX = 0;
+                        int tgtPosY = 0;
+                        double dir = 0;
 
-                    tgtMaker = new MarkPoint(tgtPosX, tgtPosY, dir);
+                        CersioCt.BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
+                        CersioCt.BrainCtrl.RTS.getNowTargetDir(ref dir);
+
+                        tgtMaker = new MarkPoint(tgtPosX, tgtPosY, dir);
+                    }
+
+                    {
+                        Bitmap bmp = LocSys.MakeMakerLogBmp(false, tgtMaker);
+                        if (null != bmp)
+                        {
+                            // 画像ファイル保存
+                            string saveImageLogFname = Path.ChangeExtension(saveLogFname, "png");
+                            bmp.Save(saveImageLogFname, System.Drawing.Imaging.ImageFormat.Png);
+                        }
+                    }
                 }
-
-                Bitmap bmp = LocSys.MakeMakerLogBmp(false, tgtMaker);
-                if (null != bmp)
-                {
-                    // 画像ファイル保存
-                    string saveImageLogFname = Path.ChangeExtension(saveLogFname, "png");
-                    bmp.Save(saveImageLogFname, System.Drawing.Imaging.ImageFormat.Png);
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + System.Environment.NewLine + ex.StackTrace);
             }
 #endif
         }
@@ -343,25 +352,37 @@ namespace VehicleRunner
 
             g.ResetTransform();
 
-            // Info
-            DrawString(g, 0, drawFont.Height * 0,
-                       "R1 X:" + ((int)LocSys.R1.X+0.5).ToString("D4") +
-                       ",Y:" + ((int)LocSys.R1.Y+0.5).ToString("D4") +
-                       ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
-                       Brushes.Red, Brushes.Black);
-            /*
-            DrawString(g, 0, drawFont.Height * 1,
-                       "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwREDir)).ToString("D3") +
-                       ",ReX:" + ((int)(CersioCt.hwREX)).ToString("D4") + ",Y:" + ((int)(CersioCt.hwREY)).ToString("D4"),
-                       Brushes.Blue, Brushes.White);
-            */
-            DrawString(g, 0, drawFont.Height * 1,
-                       "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (CersioCt.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + CersioCt.BrainCtrl.RTS.GetNowCheckPointIdx().ToString()),
-                       Brushes.Blue, Brushes.White);
+            try
+            {
+                // Info
+                DrawString(g, 0, drawFont.Height * 0,
+                           "R1 X:" + ((int)(LocSys.R1.X + 0.5)).ToString("D4") +
+                           ",Y:" + ((int)(LocSys.R1.Y + 0.5)).ToString("D4") +
+                           ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
+                           Brushes.Red, Brushes.Black);
+                /*
+                DrawString(g, 0, drawFont.Height * 1,
+                           "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwREDir)).ToString("D3") +
+                           ",ReX:" + ((int)(CersioCt.hwREX)).ToString("D4") + ",Y:" + ((int)(CersioCt.hwREY)).ToString("D4"),
+                           Brushes.Blue, Brushes.White);
+                */
+                DrawString(g, 0, drawFont.Height * 1,
+                           "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (CersioCt.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + CersioCt.BrainCtrl.RTS.GetNowCheckPointIdx().ToString()),
+                           Brushes.Blue, Brushes.White);
 
-            DrawString(g, 0, drawFont.Height * 2,
-                       "LocProc:" + LocSys.swCNT_Update.ElapsedMilliseconds + "ms /Draw:" + LocSys.swCNT_Draw.ElapsedMilliseconds + "ms /MRF:" + LocPreSumpSystem.swCNT_MRF.ElapsedMilliseconds + "ms",
-                       Brushes.Blue, Brushes.White);
+                DrawString(g, 0, drawFont.Height * 2,
+                           "LocProc:" + LocPreSumpSystem.swCNT_Update.ElapsedMilliseconds +
+                           "ms /Draw:" + LocSys.swCNT_Draw.ElapsedMilliseconds +
+                           "ms /MRF:" + LocPreSumpSystem.swCNT_MRF.ElapsedMilliseconds + "ms",
+                           Brushes.Blue, Brushes.White);
+
+                LocPreSumpSystem.swCNT_Update.Reset();
+                LocPreSumpSystem.swCNT_MRF.Reset();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
 
             areaMapDrawCnt++;
