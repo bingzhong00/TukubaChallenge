@@ -438,13 +438,13 @@ namespace VehicleRunner
             double mkDir = robot.Theta - 90.0;
 
             var P1 = new PointF(
-                (float)(mkX + size * -Math.Cos(mkDir * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
             var P2 = new PointF(
-                (float)(mkX + size * -Math.Cos((mkDir - 150) * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos((mkDir - 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir - 150) * Math.PI / 180.0)));
             var P3 = new PointF(
-                (float)(mkX + size * -Math.Cos((mkDir + 150) * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos((mkDir + 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
@@ -458,13 +458,13 @@ namespace VehicleRunner
             mkDir = mkDir - 90.0;
 
             var P1 = new PointF(
-                (float)(mkX + size * -Math.Cos(mkDir * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
             var P2 = new PointF(
-                (float)(mkX + size * -Math.Cos((mkDir - 150) * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos((mkDir - 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir - 150) * Math.PI / 180.0)));
             var P3 = new PointF(
-                (float)(mkX + size * -Math.Cos((mkDir + 150) * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos((mkDir + 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
@@ -668,6 +668,7 @@ namespace VehicleRunner
                                 double val = LocSys.LRF_Data[i] * picScale;// *rScale;
                                 double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
 
+                                // LRFは左下から右回り
                                 float x = (float)(ctrX + val * Math.Cos(rad));
                                 float y = (float)(ctrY + val * Math.Sin(rad));
                                 g.FillRectangle(Brushes.Yellow, x, y, pixelSize, pixelSize);
@@ -877,7 +878,12 @@ namespace VehicleRunner
 #if EMULATOR_MODE
             double mvScale = 300.0 / LocSys.RealToMapSclae;      // 300mm動く
 
+
             MarkPoint tgtObj = LocSys.E1;               // 操作対象
+            if (e.Shift)
+            {
+                tgtObj = LocSys.R1;
+            }
 
             switch (e.KeyCode) {
                 case Keys.Up:
@@ -888,10 +894,10 @@ namespace VehicleRunner
                     CalcMoveRobot(tgtObj, - mvScale, 0.0);
                     break;
                 case Keys.Right:
-                    CalcMoveRobot(tgtObj, 0.0, -5.0);
+                    CalcMoveRobot(tgtObj, 0.0, 5.0);
                     break;
                 case Keys.Left:
-                    CalcMoveRobot(tgtObj, 0.0, 5.0);
+                    CalcMoveRobot(tgtObj, 0.0, -5.0);
                     break;
              }
 #endif
@@ -919,7 +925,7 @@ namespace VehicleRunner
                 nzDir = (Rand.NextDouble() - 0.5) * 2;
             }
 
-            movObj.X += (-Math.Cos(mvRad) + nzX) * movVal;
+            movObj.X += (Math.Cos(mvRad) + nzX) * movVal;
             movObj.Y += (Math.Sin(mvRad) + nzY) * movVal;
 
             movObj.Theta += (dirVal + nzDir + 360) % 360;

@@ -19,7 +19,7 @@ namespace CersioIO
 
         static public Vector3 startPosition = new Vector3(725,372, 0);
 
-        static public double startDir = 160;
+        static public double startDir = 0;
 
 
         static public Vector3[] checkPoint =

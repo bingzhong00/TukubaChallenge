@@ -621,7 +621,7 @@ namespace CersioIO
             double val = lrfLength;
             double rad = (lrfDir - rangeCenterAng - 90) * Math.PI / 180.0;
 
-            x = lrfLength * -Math.Cos(rad);
+            x = lrfLength * Math.Cos(rad);
             y = lrfLength * Math.Sin(rad);
         }
 

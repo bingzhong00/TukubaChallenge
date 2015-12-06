@@ -111,8 +111,6 @@ namespace LocationPresumption
 
         // 1分の距離[mm] 1.85225Km
         const double GPSScale = 1.85225 * 1000.0 * 1000.0 * GPStoMapScale;
-        //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
-        //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
 
 
         /// <summary>
@@ -146,7 +144,7 @@ namespace LocationPresumption
 
             LRF_UntiNoiseData = new double[maxLrfDir];
 
-            // 接触状態にならないように初期化
+            // いきなり接触状態にならないように初期化
             for (int i = 0; i < LRF_UntiNoiseData.Length; i++)
             {
                 LRF_UntiNoiseData[i] = LRFmaxRange;
@@ -155,8 +153,8 @@ namespace LocationPresumption
 
         public float fSin( int ang )
         {
-            int ln = (ang / 360)+1;
-            ang = (ang + (360*ln)) % 360;
+            int ln = (ang / 360) + 1;
+            ang = (ang + (360 * ln)) % 360;
 
             return SinTbl[ang];
         }
@@ -418,9 +416,6 @@ namespace LocationPresumption
             double kdo = (int)landX;
 
             double mapY = (ido * 60.0 + (landY - ido)) * GPSScale;
-            //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
-            //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(((ido + (landY - ido))/60.0) * Math.PI / 180.0);
-            //double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
             double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
 
             // 単位変換
@@ -446,9 +441,6 @@ namespace LocationPresumption
             double kdo = (int)landX;
 
             startPosGPSY = (ido * 60.0 + (landY - ido)) * GPSScale;
-            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScaleX;
-            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(((ido + (landY - ido))/60.0) * Math.PI / 180.0);
-            //startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(landY * Math.PI / 180.0);
             startPosGPSX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
 
             // マップの基準点をセット
@@ -778,13 +770,13 @@ namespace LocationPresumption
             double mkDir = robot.Theta - 90.0;
 
             var P1 = new PointF(
-                (float)(mkX + size * -Math.Cos(mkDir * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
             var P2 = new PointF(
-                (float)(mkX + size * -Math.Cos((mkDir - 150) * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos((mkDir - 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir - 150) * Math.PI / 180.0)));
             var P3 = new PointF(
-                (float)(mkX + size * -Math.Cos((mkDir + 150) * Math.PI / 180.0)),
+                (float)(mkX + size * Math.Cos((mkDir + 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
@@ -805,17 +797,16 @@ namespace LocationPresumption
             int mkDir = (int)(robot.Theta - 90.0);
 
             var P1 = new PointF(
-                mkX + size * -fCos(mkDir),
+                mkX + size * fCos(mkDir),
                 mkY + size * fSin(mkDir));
             var P2 = new PointF(
-                mkX + size * -fCos(mkDir - 150),
+                mkX + size * fCos(mkDir - 150),
                 mkY + size * fSin(mkDir - 150));
             var P3 = new PointF(
-                mkX + size * -fCos(mkDir + 150),
+                mkX + size * fCos(mkDir + 150),
                 mkY + size * fSin(mkDir + 150));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
-            //g.DrawPolygon(brush, new PointF[] { P1, P2, P3 });
         }
 
         /// <summary>
