@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BServerReader.cs" />
     <Compile Include="TCPClient.cs" />
     <Compile Include="TCPServerCheck.cs" />
     <Compile Include="MainForm.cs">
@@ -83,6 +84,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SCIP_library\SCIP_library.csproj">
+      <Project>{c6a48db4-e53f-4615-aebf-6b2100b6f9ff}</Project>
+      <Name>SCIP_library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

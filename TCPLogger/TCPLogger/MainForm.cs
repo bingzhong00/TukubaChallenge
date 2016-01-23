@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
+using SCIP_library;
+
 namespace TCPLogger
 {
     public partial class MainForm : Form
@@ -16,8 +18,16 @@ namespace TCPLogger
 //        TCPServerCheck objTCPSC;
         TCPClient objTCPSC;// default 192.168.1.1:50001
         TCPServerCheck objTCPSC_INFO;// default 192.168.1.1:9020
+        BServerReader bsReder;
 
- 
+        public URG_LRF urgLRF;
+        public bool LRF_IPConnectFlg = false;
+
+        Bitmap autoMapBmp;
+        public const int mapWidthPix = 3000;
+        public const int mapHeightPix = 3000;
+
+        public double[] LRF_Data;
         private string saveLogFname = "";
 
         public MainForm()
@@ -33,12 +43,49 @@ namespace TCPLogger
             textBox_ChangeIPAdressINFO.Text = objTCPSC_INFO.ipStringProperty;
             textBox_portINFO.Text = objTCPSC_INFO.portProperty.ToString();
 
+            urgLRF = new URG_LRF();
+            bsReder = new BServerReader();
+
             // SavePath
-            tb_LogFile.Text = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "\\" + GetTimeStampFileName();
+            tb_LogFile.Text = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "\\" + GetNowTimeStampFileName("tcpLog", ".log");
+            tb_MapLogFile.Text = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "\\" + GetNowTimeStampFileName("AutoMap", "png");
 
-
-        
+            // 300m四方
+            autoMapBmp = new Bitmap(mapWidthPix, mapHeightPix);
+            {
+                Graphics g = Graphics.FromImage(autoMapBmp);
+                g.FillRectangle(Brushes.Black, 0, 0, mapWidthPix, mapHeightPix);
+                g.Dispose();
+            }
+            picbox_LRFMap.Image = autoMapBmp;
         }
+
+        /// <summary>
+        /// LRF接続
+        /// </summary>
+        /// <returns></returns>
+        public bool ConnectLRF(string logFname)
+        {
+            urgLRF.Close();
+
+            if (!string.IsNullOrEmpty(logFname))
+            {
+                urgLRF.setSaveLogFile(logFname);
+            }
+
+            LRF_IPConnectFlg = urgLRF.IpOpen();
+            return LRF_IPConnectFlg;
+        }
+
+        /// <summary>
+        /// LRF切断
+        /// </summary>
+        public void DisconnectLRF()
+        {
+            urgLRF.Close();
+            LRF_IPConnectFlg = false;
+        }
+
 
         /// <summary>
         /// BServer 接続ボタン
@@ -58,7 +105,9 @@ namespace TCPLogger
             {
             }
 
-            toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connecting...";
+            //toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connecting...";
+            textBox_ChangeIPAdress.BackColor = Color.Yellow;
+            textBox_port.BackColor = Color.Yellow;
 
             check = objTCPSC.Start();
             if (check || true )
@@ -67,21 +116,20 @@ namespace TCPLogger
                 button_sendCMD.Enabled = true;
                 saveLogFname = tb_LogFile.Text;
 
-                toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connected";
+                //toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connected";
 
                 textBox_port.BackColor = Color.Lime;
                 textBox_ChangeIPAdress.BackColor = Color.Lime;
 
                 textBox_sendCMD.Focus();
-                timer1.Enabled = true;
             }
             else
             {
                 // 接続ＮＧ
-                toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connect Fail!";
+                //toolStripStatusLabel1.Text = textBox_ChangeIPAdress.Text + " Connect Fail!";
 
-                textBox_port.BackColor = SystemColors.Window;
-                textBox_ChangeIPAdress.BackColor = SystemColors.Window;
+                textBox_port.BackColor = Color.Red;
+                textBox_ChangeIPAdress.BackColor = Color.Red;
             }
         }
 
@@ -104,19 +152,18 @@ namespace TCPLogger
             {
             }
 
-            toolStripStatusLabel1.Text = textBox_ChangeIPAdressINFO.Text + " Connecting...";
+            //toolStripStatusLabel1.Text = textBox_ChangeIPAdressINFO.Text + " Connecting...";
 
             check = objTCPSC_INFO.Start();
             if (check)
             {
                 button_sendCMD.Enabled = true;
-                timer1.Enabled = true;
 
-                toolStripStatusLabel1.Text = textBox_ChangeIPAdressINFO.Text + " Connected";
+                //toolStripStatusLabel1.Text = textBox_ChangeIPAdressINFO.Text + " Connected";
             }
             else
             {
-                toolStripStatusLabel1.Text = textBox_ChangeIPAdressINFO.Text + " Connect Fail!";
+                //toolStripStatusLabel1.Text = textBox_ChangeIPAdressINFO.Text + " Connect Fail!";
             }
         }
 
@@ -151,8 +198,15 @@ namespace TCPLogger
             }
         }
 
+
+        /// <summary>
+        /// 更新タイマ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void timer1_Tick(object sender, EventArgs e)
         {
+            // Bserver データ取得
             System.Net.Sockets.TcpClient objSck = objTCPSC.SckProperty;
             System.Net.Sockets.NetworkStream objStm = objTCPSC.MyProperty;
 
@@ -166,7 +220,8 @@ namespace TCPLogger
                     objStm.Read(dat, 0, dat.GetLength(0));
 
                     string readStr = System.Text.Encoding.GetEncoding("SHIFT-JIS").GetString(dat);
-                    
+
+                    // リストボックス更新
                     listBox_ReceiveData.Items.Add(readStr);
                     if( listBox_ReceiveData.Items.Count > 500 )
                     {
@@ -188,6 +243,9 @@ namespace TCPLogger
                         //閉じる
                         sw.Close();
                     }
+
+                    // 受信データ解析
+                    bsReder.TCP_ReciveCommand(readStr);
                 }
 
 
@@ -219,21 +277,37 @@ namespace TCPLogger
                 }
 
             }
+
+            // LRFデータ取得
+            // ログファイルは、内部でコマンドごと取得
+            if (urgLRF != null && LRF_IPConnectFlg )
+            {
+                LRF_Data = urgLRF.getScanData();
+            }
         }
 
+        /// <summary>
+        /// 終了
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             objTCPSC.Dispose();// = null;// default 192.168.1.1:50001
             objTCPSC_INFO.Dispose();// = null;// default 192.168.1.1:9020
 
+            DisconnectLRF();
 
-
-
+            // Mapファイル保存
+            if( cb_MapLogFile.Checked )
+            {
+                autoMapBmp.Save(tb_MapLogFile.Text, System .Drawing.Imaging.ImageFormat.Png);
+            }
         }
 
-        public string GetTimeStampFileName()
+        public string GetNowTimeStampFileName(string fnameHead, string fnameExt)
         {
-            return "tcpLog" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
+            return fnameHead + DateTime.Now.ToString("yyyyMMdd_HHmmss") + fnameExt;
         }
 
         /// <summary>
@@ -246,7 +320,7 @@ namespace TCPLogger
             SaveFileDialog SvDlg = new SaveFileDialog();
 
             SvDlg.InitialDirectory = Path.GetDirectoryName(tb_LogFile.Text);
-            SvDlg.FileName = GetTimeStampFileName();
+            SvDlg.FileName = GetNowTimeStampFileName("tcpLog", ".log");
             SvDlg.Filter = "LogFile(*.log)|*.log|All Files(*.*)|*.*";
 
             if (DialogResult.OK == SvDlg.ShowDialog())
@@ -264,7 +338,8 @@ namespace TCPLogger
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            timer1.Enabled = false;
+            timerUpdate.Enabled = false;
+            timerMapUpdate.Enabled = false;
         }
 
         private void cb_AutoAll_CheckedChanged(object sender, EventArgs e)
@@ -288,11 +363,147 @@ namespace TCPLogger
 
         }
 
+        private void btn_MapLogFileDir_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog SvDlg = new SaveFileDialog();
+
+            SvDlg.InitialDirectory = Path.GetDirectoryName(tb_MapLogFile.Text);
+            SvDlg.FileName = GetNowTimeStampFileName("AutoMap", ".png");
+            SvDlg.Filter = "ImageFile(*.png)|*.png|All Files(*.*)|*.*";
+
+            if (DialogResult.OK == SvDlg.ShowDialog())
+            {
+                tb_MapLogFile.Text = SvDlg.FileName;
+                cb_MapLogFile.Checked = true;
+            }
+        }
+
+        private void cb_Lrf_CheckedChanged(object sender, EventArgs e)
+        {
+            // Connecting...
+            tb_LrfIP.BackColor = Color.Yellow;
+            tb_LrfPort.BackColor = Color.Yellow;
+
+            string saveLrfLogFname = null;
+
+            if (cb_MapLogFile.Checked)
+            {
+                saveLrfLogFname = tb_MapLogFile.Text;
+            }
+
+            if (ConnectLRF(saveLrfLogFname))
+            {
+                // 接続ＯＫ
+                saveLogFname = tb_LogFile.Text;
+
+                tb_LrfIP.BackColor = Color.Lime;
+                tb_LrfPort.BackColor = Color.Lime;
+            }
+            else
+            {
+                tb_LrfIP.BackColor = Color.Red;
+                tb_LrfPort.BackColor = Color.Red;
+            }
+
+        }
+
+        private void cb_LogStart_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_LogStart.Checked)
+            {
+                timerUpdate.Enabled = true;
+
+                if (cb_MapLogFile.Checked)
+                {
+                    timerMapUpdate.Enabled = true;
+                }
+            }
+            else
+            {
+                timerUpdate.Enabled = false;
+                timerMapUpdate.Enabled = false;
+            }
+        }
 
 
 
 
+        public double RealToMapSclae = 100;                // マップサイズから メートル変換  1ピクセル 100mm
+        public const int AngleRange = 270;     // 認識角 270度
+        public const int AngleRangeHalf = (AngleRange / 2);
 
-        //listBox_ReceiveData
+        /// <summary>
+        /// マップ描画タスク
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void timerMapUpdate_Tick(object sender, EventArgs e)
+        {
+            // LRF描画
+            if (LRF_Data != null)
+            {
+                Graphics g = Graphics.FromImage(autoMapBmp);
+
+                //double rScale = (1.0 / LocSys.RealToMapSclae);
+                double rPI = Math.PI / 180.0;
+                int pixelSize = 1;
+                double picScale = 1.0 / RealToMapSclae;
+
+                float ctrX = (mapWidthPix / 2.0f) + (float)bsReder.hwREX;
+                float ctrY = (mapHeightPix / 2.0f) + (float)bsReder.hwREY;
+
+                // LRFの値を描画
+                for (int i = 0; i < LRF_Data.Length; i++)
+                {
+                    double val = LRF_Data[i] * picScale;// *rScale;
+                    double rad = ((i - AngleRangeHalf - 90) * rPI) + (float)bsReder.hwREDir;
+
+                    // LRFは左下から右回り
+                    float x = (float)(ctrX + val * Math.Cos(rad));
+                    float y = (float)(ctrY + val * Math.Sin(rad));
+                    //g.FillRectangle(Brushes.Yellow, x, y, pixelSize, pixelSize);
+                    g.DrawLine(Pens.White, ctrX, ctrY, x,y);
+                }
+
+                g.Dispose();
+
+                picbox_LRFMap.Invalidate();
+            }
+            tb_PosX_REPlot.Text = bsReder.hwREX.ToString("f2");
+            tb_PosY_REPlot.Text = bsReder.hwREY.ToString("f2");
+        }
+
+        /// <summary>
+        /// マップ クリア
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_Clear_Click(object sender, EventArgs e)
+        {
+            // REリセット
+            RE_Reset(0.0,0.0, 0.0);
+
+            Graphics g = Graphics.FromImage(autoMapBmp);
+            g.FillRectangle(Brushes.Black, 0, 0, mapWidthPix, mapHeightPix);
+            g.Dispose();
+
+            picbox_LRFMap.Invalidate();
+        }
+
+        /// <summary>
+        /// ロータリーエンコーダにスタート情報をセット
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="dir"></param>
+        public void RE_Reset(double x, double y, double dir)
+        {
+            TCP_SendCommand("AD," + ((float)x).ToString("f") + "," + ((float)y).ToString("f") + "\n");
+
+            // 角度をパイ
+            double rad = dir * Math.PI / 180.0;
+            TCP_SendCommand("AR," + rad.ToString("f") + "\n");
+        }
+
     }
 }
