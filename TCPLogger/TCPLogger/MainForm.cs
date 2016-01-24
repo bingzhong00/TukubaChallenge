@@ -24,8 +24,8 @@ namespace TCPLogger
         public bool LRF_IPConnectFlg = false;
 
         Bitmap autoMapBmp;
-        public const int mapWidthPix = 3000;
-        public const int mapHeightPix = 3000;
+        public const int mapWidthPix = 500;
+        public const int mapHeightPix = 500;
 
         public double[] LRF_Data;
         private string saveLogFname = "";
@@ -48,7 +48,7 @@ namespace TCPLogger
 
             // SavePath
             tb_LogFile.Text = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "\\" + GetNowTimeStampFileName("tcpLog", ".log");
-            tb_MapLogFile.Text = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "\\" + GetNowTimeStampFileName("AutoMap", "png");
+            tb_MapLogFile.Text = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "\\" + GetNowTimeStampFileName("AutoMap", ".png");
 
             // 300m四方
             autoMapBmp = new Bitmap(mapWidthPix, mapHeightPix);
@@ -428,7 +428,7 @@ namespace TCPLogger
 
 
 
-        public double RealToMapSclae = 100;                // マップサイズから メートル変換  1ピクセル 100mm
+        public double RealToMapSclae = 100.0;                // マップサイズから メートル変換  1ピクセル 100mm
         public const int AngleRange = 270;     // 認識角 270度
         public const int AngleRangeHalf = (AngleRange / 2);
 
@@ -446,31 +446,43 @@ namespace TCPLogger
 
                 //double rScale = (1.0 / LocSys.RealToMapSclae);
                 double rPI = Math.PI / 180.0;
-                int pixelSize = 1;
+                int pixelSize = 2;
                 double picScale = 1.0 / RealToMapSclae;
 
-                float ctrX = (mapWidthPix / 2.0f) + (float)bsReder.hwREX;
-                float ctrY = (mapHeightPix / 2.0f) + (float)bsReder.hwREY;
-
+                float ctrX = (mapWidthPix / 2.0f) + (float)(bsReder.hwREX / RealToMapSclae);
+                float ctrY = (mapHeightPix / 2.0f) + (float)(-bsReder.hwREY / RealToMapSclae);
+                
+                //g.FillRectangle(Brushes.Black, 0, 0, mapWidthPix, mapHeightPix);
+                
                 // LRFの値を描画
                 for (int i = 0; i < LRF_Data.Length; i++)
                 {
-                    double val = LRF_Data[i] * picScale;// *rScale;
-                    double rad = ((i - AngleRangeHalf - 90) * rPI) + (float)bsReder.hwREDir;
+                    if (LRF_Data[i] > 100 && LRF_Data[i] < 20 * 1000)
+                    {
+                        double val = LRF_Data[i] * picScale;
+                        //double rad = (((-i + AngleRangeHalf - 90)+(float)(bsReder.hwREDir)) * rPI);
+                        double rad = (((-i + AngleRangeHalf - 90) + (float)(bsReder.hwCompass)) * rPI);
 
-                    // LRFは左下から右回り
-                    float x = (float)(ctrX + val * Math.Cos(rad));
-                    float y = (float)(ctrY + val * Math.Sin(rad));
-                    //g.FillRectangle(Brushes.Yellow, x, y, pixelSize, pixelSize);
-                    g.DrawLine(Pens.White, ctrX, ctrY, x,y);
+                        // LRFは左下から右回り
+                        float x = (float)(ctrX + val * Math.Cos(rad));
+                        float y = (float)(ctrY + val * Math.Sin(rad));
+                        g.DrawLine(Pens.White, ctrX, ctrY, x, y);
+                    }
                 }
+                // 自分の位置描画
+                g.FillRectangle(Brushes.Red, ctrX, ctrY, pixelSize, pixelSize);
 
                 g.Dispose();
 
                 picbox_LRFMap.Invalidate();
+
+                tb_PosX_Gps.Text = ctrX.ToString("f2");
+                tb_PosY_Gps.Text = ctrY.ToString("f2");
             }
             tb_PosX_REPlot.Text = bsReder.hwREX.ToString("f2");
             tb_PosY_REPlot.Text = bsReder.hwREY.ToString("f2");
+            tb_Dir_REPlot.Text = bsReder.hwREDir.ToString("f2");
+            tb_compus_Dir.Text = bsReder.hwCompass.ToString("f2");
         }
 
         /// <summary>

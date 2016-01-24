@@ -84,6 +84,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.cb_LogStart = new System.Windows.Forms.CheckBox();
             this.timerMapUpdate = new System.Windows.Forms.Timer(this.components);
+            this.tb_Dir_REPlot = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tb_compus_Dir = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -271,7 +275,8 @@
             // cb_AutoREPlot
             // 
             this.cb_AutoREPlot.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_AutoREPlot.Enabled = false;
+            this.cb_AutoREPlot.Checked = true;
+            this.cb_AutoREPlot.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_AutoREPlot.Location = new System.Drawing.Point(149, 70);
             this.cb_AutoREPlot.Name = "cb_AutoREPlot";
             this.cb_AutoREPlot.Size = new System.Drawing.Size(107, 36);
@@ -308,6 +313,8 @@
             // cb_AutoCompass
             // 
             this.cb_AutoCompass.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cb_AutoCompass.Checked = true;
+            this.cb_AutoCompass.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_AutoCompass.Location = new System.Drawing.Point(262, 28);
             this.cb_AutoCompass.Name = "cb_AutoCompass";
             this.cb_AutoCompass.Size = new System.Drawing.Size(104, 36);
@@ -426,6 +433,8 @@
             // cb_MapLogFile
             // 
             this.cb_MapLogFile.AutoSize = true;
+            this.cb_MapLogFile.Checked = true;
+            this.cb_MapLogFile.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_MapLogFile.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.cb_MapLogFile.Location = new System.Drawing.Point(419, 18);
             this.cb_MapLogFile.Name = "cb_MapLogFile";
@@ -457,8 +466,8 @@
             // 
             // tabControl
             // 
-            this.tabControl.Controls.Add(this.tabPage_TextLog);
             this.tabControl.Controls.Add(this.tabPage_MapLog);
+            this.tabControl.Controls.Add(this.tabPage_TextLog);
             this.tabControl.Location = new System.Drawing.Point(0, 147);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -504,6 +513,10 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.tb_compus_Dir);
+            this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.label1);
+            this.groupBox3.Controls.Add(this.tb_Dir_REPlot);
             this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.label5);
@@ -517,7 +530,7 @@
             this.groupBox3.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.groupBox3.Location = new System.Drawing.Point(568, 80);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(301, 131);
+            this.groupBox3.Size = new System.Drawing.Size(301, 170);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "自己位置";
@@ -565,6 +578,7 @@
             this.tb_PosY_REPlot.ReadOnly = true;
             this.tb_PosY_REPlot.Size = new System.Drawing.Size(52, 23);
             this.tb_PosY_REPlot.TabIndex = 5;
+            this.tb_PosY_REPlot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // tb_PosX_REPlot
             // 
@@ -573,6 +587,7 @@
             this.tb_PosX_REPlot.ReadOnly = true;
             this.tb_PosX_REPlot.Size = new System.Drawing.Size(52, 23);
             this.tb_PosX_REPlot.TabIndex = 4;
+            this.tb_PosX_REPlot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // tb_PosY_Gps
             // 
@@ -581,6 +596,7 @@
             this.tb_PosY_Gps.ReadOnly = true;
             this.tb_PosY_Gps.Size = new System.Drawing.Size(52, 23);
             this.tb_PosY_Gps.TabIndex = 3;
+            this.tb_PosY_Gps.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // tb_PosX_Gps
             // 
@@ -589,6 +605,7 @@
             this.tb_PosX_Gps.ReadOnly = true;
             this.tb_PosX_Gps.Size = new System.Drawing.Size(52, 23);
             this.tb_PosX_Gps.TabIndex = 2;
+            this.tb_PosX_Gps.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // rb_REPlot
             // 
@@ -638,7 +655,7 @@
             this.picbox_LRFMap.Location = new System.Drawing.Point(6, 5);
             this.picbox_LRFMap.Name = "picbox_LRFMap";
             this.picbox_LRFMap.Size = new System.Drawing.Size(556, 442);
-            this.picbox_LRFMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.picbox_LRFMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picbox_LRFMap.TabIndex = 0;
             this.picbox_LRFMap.TabStop = false;
             // 
@@ -700,6 +717,42 @@
             // 
             this.timerMapUpdate.Tick += new System.EventHandler(this.timerMapUpdate_Tick);
             // 
+            // tb_Dir_REPlot
+            // 
+            this.tb_Dir_REPlot.Location = new System.Drawing.Point(197, 88);
+            this.tb_Dir_REPlot.Name = "tb_Dir_REPlot";
+            this.tb_Dir_REPlot.ReadOnly = true;
+            this.tb_Dir_REPlot.Size = new System.Drawing.Size(71, 23);
+            this.tb_Dir_REPlot.TabIndex = 10;
+            this.tb_Dir_REPlot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(161, 91);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(30, 16);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Dir:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(110, 132);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(81, 16);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "compusDir:";
+            // 
+            // tb_compus_Dir
+            // 
+            this.tb_compus_Dir.Location = new System.Drawing.Point(200, 129);
+            this.tb_compus_Dir.Name = "tb_compus_Dir";
+            this.tb_compus_Dir.ReadOnly = true;
+            this.tb_compus_Dir.Size = new System.Drawing.Size(71, 23);
+            this.tb_compus_Dir.TabIndex = 13;
+            this.tb_compus_Dir.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -716,6 +769,7 @@
             this.Controls.Add(this.textBox_ChangeIPAdress);
             this.Controls.Add(this.button_Connect);
             this.Controls.Add(this.textBox_port);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "MainForm";
             this.Text = "TcpLogger Ver0.60";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -733,7 +787,6 @@
             this.tabControl.ResumeLayout(false);
             this.tabPage_TextLog.ResumeLayout(false);
             this.tabPage_MapLog.ResumeLayout(false);
-            this.tabPage_MapLog.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRFMap)).EndInit();
@@ -799,6 +852,10 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox cb_LogStart;
         private System.Windows.Forms.Timer timerMapUpdate;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tb_Dir_REPlot;
+        private System.Windows.Forms.TextBox tb_compus_Dir;
+        private System.Windows.Forms.Label label9;
     }
 }
 

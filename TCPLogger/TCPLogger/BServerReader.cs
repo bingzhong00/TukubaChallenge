@@ -75,7 +75,7 @@ namespace TCPLogger
                         // ミリ秒取得
                         double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
                         int.TryParse(splStr[2], out ResiveCmp);   // デジタルコンパス値
-                        hwCompass = -ResiveCmp;     // 回転方向が+-逆なので合わせる
+                        hwCompass = ResiveCmp;
                         bhwCompass = true;
                     }
                     else if (rsvCmd[i].Substring(0, 3) == "A3,")
