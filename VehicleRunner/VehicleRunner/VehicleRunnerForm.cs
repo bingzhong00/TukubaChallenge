@@ -31,7 +31,7 @@
 
 #define GPSLOG_OUTPUT   //  GPSログ出力
 #define LRFLOG_OUTPUT   //  LRFログ出力
-#define EMULATOR_MODE   // エミュレートモード
+//#define EMULATOR_MODE   // エミュレートモード
 
 using System;
 using System.Collections.Generic;
@@ -75,7 +75,6 @@ namespace VehicleRunner
 #endif
 
         Random Rand = new Random();
-        bool LocalizeFlag;
 
         double LRFViewScale = 1.0;
 
@@ -92,7 +91,6 @@ namespace VehicleRunner
         public VehicleRunnerForm()
         {
             InitializeComponent();
-
 
             saveLogFname = GetTimeStampFileName("./Log/LocSampLog", ".log");
             saveGPSLogFname = GetTimeStampFileName("./Log/GPSLog", ".log");
@@ -141,9 +139,6 @@ namespace VehicleRunner
             //btm_LRFScale_Click(null, null);
             tb_LRFScale_TextChanged(null, null);
 
-            // 自己位置推定計算
-            cb_LocationPresumption.Checked = LocalizeFlag = false;
-
             // エミュレーションモード表示
             lbl_EmurateMode.Visible = IsEmurateMode;
         }
@@ -175,9 +170,9 @@ namespace VehicleRunner
                 }
             }
 
-            LocPreSumpSystem.bRivisonGPS = cb_RivisonGPS.Checked;
-            LocPreSumpSystem.bRivisonPF = cb_RivisionPF.Checked;
-            LocPreSumpSystem.bTimeRivision = cb_TimeRivision.Checked;
+            LocPreSumpSystem.bRivisonGPS = cb_UseGPS_Rivison.Checked;
+            LocPreSumpSystem.bRivisonPF = cb_UsePF_Rivision.Checked;
+            LocPreSumpSystem.bTimeRivision = !cb_DontAlwaysRivision.Checked;
 
             // 画面更新
             PictureUpdate();
@@ -283,12 +278,19 @@ namespace VehicleRunner
                     double dir = 0;
                     tgtPosX = tgtPosY = 0;
                     float olScale = (float)LocSys.AreaOverlayBmp.Width / (float)LocSys.AreaBmp.Width;
-
                     CersioCt.BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
                     CersioCt.BrainCtrl.RTS.getNowTargetDir(ref dir);
+                    MarkPoint tgtMk = new MarkPoint(LocSys.worldMap.GetAreaX(tgtPosX), LocSys.worldMap.GetAreaY(tgtPosY), dir);
 
-                    DrawMaker(g, olScale, new MarkPoint(LocSys.worldMap.GetAreaX(tgtPosX), LocSys.worldMap.GetAreaY(tgtPosY), dir), Brushes.GreenYellow, 8);
+                    DrawMaker(g, olScale, tgtMk, Brushes.GreenYellow, 8);
+
+                    // ターゲットまでのライン
+                    DrawMakerLine(g, olScale,
+                        new MarkPoint(LocSys.worldMap.GetAreaX(LocSys.R1.X), LocSys.worldMap.GetAreaY(LocSys.R1.Y), 0),
+                        tgtMk,
+                        Pens.Olive,1);
                 }
+
             }
             else if (selAreaMapMode == 1)
             {
@@ -342,8 +344,28 @@ namespace VehicleRunner
                     }
                 }
 
-                // エリア描画
-                g.DrawRectangle(Pens.Red,
+                // ターゲット描画
+                if (null != CersioCt)
+                {
+                    int tgtPosX, tgtPosY;
+                    double dir = 0;
+                    tgtPosX = tgtPosY = 0;
+
+                    CersioCt.BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
+                    CersioCt.BrainCtrl.RTS.getNowTargetDir(ref dir);
+                    MarkPoint tgtMk = new MarkPoint(tgtPosX, tgtPosY, dir + 180);
+
+                    DrawMaker(g, viewScale, tgtMk, Brushes.GreenYellow, 8);
+
+                    // ターゲットまでのライン
+                    DrawMakerLine(g, viewScale,
+                        LocSys.R1,
+                        tgtMk,
+                        Pens.Olive, 1);
+                }
+
+                // エリア枠描画
+                g.DrawRectangle(Pens.Pink,
                                  (LocSys.worldMap.WldOffset.x * viewScale),
                                  (LocSys.worldMap.WldOffset.y * viewScale),
                                  (LocSys.worldMap.GridSize.w * viewScale),
@@ -477,6 +499,19 @@ namespace VehicleRunner
             g.DrawString(str, drawFont, bkBrush, x, y - 1);
             g.DrawString(str, drawFont, bkBrush, x, y + 1);
             g.DrawString(str, drawFont, brush, x, y);
+        }
+
+
+        private void DrawMakerLine(Graphics g, float fScale, MarkPoint robotA, MarkPoint robotB, Pen pen, int size)
+        {
+            var P1 = new PointF(
+                (float)(robotA.X * fScale),
+                (float)(robotA.Y * fScale));
+            var P2 = new PointF(
+                (float)(robotB.X * fScale),
+                (float)(robotB.Y * fScale));
+
+            g.DrawLine(pen, P1, P2);
         }
 
         /// <summary>
@@ -973,7 +1008,6 @@ namespace VehicleRunner
 
         private void cb_LocationPresumpring_CheckedChanged(object sender, EventArgs e)
         {
-            LocalizeFlag = cb_LocationPresumption.Checked;
         }
 
         private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1020,7 +1054,7 @@ namespace VehicleRunner
         // Form内のピクチャー更新
         private void PictureUpdate()
         {
-            LocSys.UpdateLocalizeBitmap(LocalizeFlag, true );
+            LocSys.UpdateLocalizeBitmap(cb_AlwaysPFCalc.Checked, true);
 
             this.picbox_AreaMap.Refresh();
             this.picbox_LRF.Refresh();
@@ -1035,7 +1069,7 @@ namespace VehicleRunner
         private void TickFormUpdate()
         {
             // セルシオ コントロール
-            CersioCt.Update(LocSys, cb_EmgBrake.Checked, cb_EHS.Checked, bLocRivisionTRG, cb_LocationPresumption.Checked );
+            CersioCt.Update(LocSys, cb_EmgBrake.Checked, cb_EHS.Checked, bLocRivisionTRG, cb_AlwaysPFCalc.Checked );
 
             // ハンドル、アクセル値　表示
             tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
@@ -1253,11 +1287,15 @@ namespace VehicleRunner
             {
                 tb_SendData.BackColor = Color.Lime;
                 tb_ResiveData.BackColor = Color.Lime;
+                lb_BServerConnect.Text = "BServer 接続OK";
+                lb_BServerConnect.BackColor = Color.Lime;
             }
             else
             {
                 tb_SendData.BackColor = SystemColors.Window;
                 tb_ResiveData.BackColor = SystemColors.Window;
+                lb_BServerConnect.Text = "BServer 未接続";
+                lb_BServerConnect.BackColor = SystemColors.Window;
             }
 
 
@@ -1507,7 +1545,7 @@ namespace VehicleRunner
                 {
                     // 接続成功
                     tb_SirialResive.BackColor = Color.Lime;
-                    cb_RivisonGPS.Checked = true;
+                    cb_UseGPS_Rivison.Checked = true;
                 }
                 else
                 {
@@ -1530,7 +1568,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void cb_RivisonGPS_CheckedChanged(object sender, EventArgs e)
         {
-            LocPreSumpSystem.bRivisonGPS = cb_RivisonGPS.Checked;
+            LocPreSumpSystem.bRivisonGPS = cb_UseGPS_Rivison.Checked;
         }
 
         /// <summary>
@@ -1540,7 +1578,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void cb_RivisionPF_CheckedChanged(object sender, EventArgs e)
         {
-            LocPreSumpSystem.bRivisonPF = cb_RivisionPF.Checked;
+            LocPreSumpSystem.bRivisonPF = cb_UsePF_Rivision.Checked;
         }
 
         /// <summary>
@@ -1550,7 +1588,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void cb_TimeRivision_CheckedChanged(object sender, EventArgs e)
         {
-            LocPreSumpSystem.bTimeRivision = cb_TimeRivision.Checked;
+            LocPreSumpSystem.bTimeRivision = !cb_DontAlwaysRivision.Checked;
         }
 
         /// <summary>

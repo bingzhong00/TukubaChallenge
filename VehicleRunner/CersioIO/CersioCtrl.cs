@@ -166,12 +166,10 @@ namespace CersioIO
         /// <returns></returns>
         public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF )
         {
+            //
             bool untiEBS = false;
 
  
-            //bhwREPlot = false;
-            //bhwCompass = false;
-
             LeftBtn = RightBtn = FwdBtn = false;
 
             if (!goalFlg)
@@ -180,8 +178,10 @@ namespace CersioIO
                 untiEBS = BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF);
             }
             
+#if DEBUG
             // 直進用　常にスタート時の方位を向いてることにする。
-            RE_Reset(RootingData.startDir);
+            //RE_Reset(RootingData.startDir);
+#endif
 
             if ((Brain.EmgBrk && useEBS && !untiEBS) || goalFlg)
             {
@@ -509,7 +509,7 @@ namespace CersioIO
                                 // ミリ秒取得
                                 double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
                                 int.TryParse(splStr[2], out ResiveCmp);   // デジタルコンパス値
-                                hwCompass = -ResiveCmp;     // 回転方向が+-逆なので合わせる
+                                hwCompass = ResiveCmp;
                                 bhwCompass = true;
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A3,")

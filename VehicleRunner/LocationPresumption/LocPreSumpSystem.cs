@@ -33,25 +33,39 @@ namespace LocationPresumption
         public double[] LRF_UntiNoiseData;
         private const int maxLrfDir = 270;
 
-        // 割合 (1.0...ノイズ高め　/ 0.0...ノイズ低め　ただし反応がにぶい)
+        /// <summary>LRFノイズリダクション係数 (1.0...ノイズ高め　/ 0.0...ノイズ低め　ただし反応がにぶい)</summary>
         double LRF_noiseRate = 0.40;//0.50;
 
         // エリアマップ管理
-        public WorldMap worldMap;                  // 全体マップ
-        public Bitmap AreaBmp;                     // 表示用　エリアBMP
-        public Bitmap AreaOverlayBmp;              // 自己位置情報　表示BMP
+        /// <summary>全体マップ</summary>
+        public WorldMap worldMap;
+        /// <summary>表示用　エリアBMP</summary>
+        public Bitmap AreaBmp;
+        /// <summary>自己位置情報　表示BMP</summary>
+        public Bitmap AreaOverlayBmp;
 
-        private const int OverlayBmpSize = 600;     // 自己位置情報表示BMP 解像度（ピクセル）
+        /// <summary>自己位置情報表示BMP 解像度（ピクセル）</summary>
+        private const int OverlayBmpSize = 600;
 
         // 自己位置推定用 -----------------------
-        private MapRangeFinder MRF;             // マップレンジファインダー
+        /// <summary>マップレンジファインダ</summary>
+        private MapRangeFinder MRF;
 
-        public MarkPoint R1;                    // 実体想定ロボット位置
-        public MarkPoint E1;                    // RE想定ロボット位置
-        public MarkPoint oldE1;                 // RE 差分計算用
-        public MarkPoint V1;                    // PF想定ロボット位置
-        public MarkPoint C1;                    // コンパス値
-        public MarkPoint G1;                    // GPS
+        /// <summary>現在のロボット位置</summary>
+        public MarkPoint R1;
+        /// <summary>REplotロボット位置</summary>
+        public MarkPoint E1;
+        /// <summary>REplot差分計算</summary>
+        public MarkPoint oldE1;
+        /// <summary>PF想定ロボット位置</summary>
+        public MarkPoint V1;
+
+        /// <summary>地磁気コンパス値</summary>
+        public MarkPoint C1; 
+        /// <summary>GPS位置</summary>
+        public MarkPoint G1;
+        /// <summaryGPS差分計算</summary>
+        public MarkPoint oldG1;
 
         /// <summary>
         /// ローパスフィルター
@@ -262,6 +276,7 @@ namespace LocationPresumption
             V1 = new MarkPoint(stWldX, stWldY, stDir);        // 推定位置ロボット
             C1 = new MarkPoint(0, 0, stDir);
             G1 = new MarkPoint(0, 0, 0);        // GPS
+            oldG1 = new MarkPoint(stWldX, stWldY, stDir);     // 
 
             // パーティクルフィルター初期化
             {
@@ -460,7 +475,7 @@ namespace LocationPresumption
 
 
         /// <summary>
-        /// PF自己位置計算
+        /// 任意座標でのＰＦ補正
         /// </summary>
         /// <param name="numPF"></param>
         public void CalcLocalize(MarkPoint mkp, bool useLowFilter, int numPF = 1)
@@ -517,62 +532,112 @@ namespace LocationPresumption
         /// <param name="mkp"></param>
         /// <param name="useLowFilter"></param>
         /// <param name="numPF"></param>
-        public void ParticleFilterLocalize()
+        public void ParticleFilterLocalize(bool useLPF)
         {
             MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(V1.X), worldMap.GetAreaY(V1.Y), V1.Theta);
 
             // パーティクルフィルター演算
             Filter.Localize(LRF_Data, MRF, locMkp, Particles);
 
-            // 結果にローパスフィルターをかける
-            V1.X = lpfV1X.update(worldMap.GetWorldX(locMkp.X));
-            V1.Y = lpfV1Y.update(worldMap.GetWorldY(locMkp.Y));
-            V1.Theta = lpfV1Theta.update(locMkp.Theta);
+            if (useLPF)
+            {
+                // 結果にローパスフィルターをかける
+                V1.X = lpfV1X.update(worldMap.GetWorldX(locMkp.X));
+                V1.Y = lpfV1Y.update(worldMap.GetWorldY(locMkp.Y));
+                V1.Theta = lpfV1Theta.update(locMkp.Theta);
+            }
+            else
+            {
+                V1.X = worldMap.GetWorldX(locMkp.X);
+                V1.Y = worldMap.GetWorldY(locMkp.Y);
+                V1.Theta = locMkp.Theta;
+            }
         }
 
         /// <summary>
         /// 自己位置推定 更新
         /// </summary>
+        /// <param name="useAlwaysPF">毎回パーティクルフィルターを計算する</param>
         /// <returns>true...補正した, false..補正不要</returns>
-        public bool Update(bool useAlwaysPF, bool bActiveREPlot)
+        public bool Update(bool useAlwaysPF)
         {
             bool bResult = false;   // 補正したか？
-
-            // 処理時間計測
-            swCNT_Update.Start();
 
             // 自己位置推定位置がエリア内になるようにチェック
             MoveAreaCheck();
 
-            // 自己位置更新 (※後にBrainへ移動)
+            if( useAlwaysPF)
+            {
+                // 処理時間計測
+                swCNT_Update.Start();
+
+                // PF演算
+                ParticleFilterLocalize(true);
+
+                // 処理時間計測完了
+                swCNT_Update.Stop();
+            }
+
+            upDateCnt++;
+
+            return bResult;
+        }
+
+
+        /// <summary>
+        /// ロータリーエンコーダの移動量を元に自己位置更新
+        /// </summary>
+        public void R1update_FromREPlot()
+        {
+            // 自己位置更新
             // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
-            if( bActiveREPlot )
-            {
-                double diffREX = (E1.X - oldE1.X);
-                double diffREY = (E1.Y - oldE1.Y);
-                R1.X += diffREX;
-                R1.Y += diffREY;
-                R1.Theta = E1.Theta; //  REの向き
+            double diffREX = (E1.X - oldE1.X);
+            double diffREY = (E1.Y - oldE1.Y);
 
-                V1.X += diffREX;
-                V1.Y += diffREY;
-                if (bActiveCompass) V1.Theta = C1.Theta; //  Compass
-                else                V1.Theta = E1.Theta; //  REの向き
+            // 現在位置更新
+            R1.X += diffREX;
+            R1.Y += diffREY;
+            R1.Theta = E1.Theta; //  REの向き
 
-                oldE1.Set(E1);
-            }
+            // PF現在位置更新
+            V1.X += diffREX;
+            V1.Y += diffREY;
+            if (bActiveCompass) V1.Theta = C1.Theta; //  Compass
+            else V1.Theta = E1.Theta; //  REの向き
 
-            if (useAlwaysPF)
-            {
-                ParticleFilterLocalize();
-            }
+            oldE1.Set(E1);
+        }
 
-            
+        /// <summary>
+        /// GPSの移動量を元に自己位置更新
+        /// </summary>
+        public void R1update_FromGPS()
+        {
+            // 自己位置更新
+            // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
+            double diffREX = (G1.X - oldG1.X);
+            double diffREY = (G1.Y - oldG1.Y);
+            R1.X += diffREX;
+            R1.Y += diffREY;
+            R1.Theta = C1.Theta; //  REの向き
 
+            V1.X += diffREX;
+            V1.Y += diffREY;
+            if (bActiveCompass) V1.Theta = C1.Theta; //  Compass
+            else V1.Theta = G1.Theta; //  REの向き
+
+            oldG1.Set(G1);
+        }
+
+        /// <summary>
+        /// ログデータ更新
+        /// </summary>
+        public void UpdateLogData()
+        {
             // 軌跡ログ
             try
             {
-                MarkPoint logR1 = new MarkPoint( R1.X, R1.Y, R1.Theta);
+                MarkPoint logR1 = new MarkPoint(R1.X, R1.Y, R1.Theta);
                 if (R1Log.Count == 0 || !logR1.IsEqual(R1Log.Last()))
                 {
                     R1Log.Add(logR1);
@@ -581,7 +646,7 @@ namespace LocationPresumption
                 // ParticleFiler
                 //if (usePF)
                 {
-                    MarkPoint logV1 = new MarkPoint( V1.X, V1.Y, V1.Theta);
+                    MarkPoint logV1 = new MarkPoint(V1.X, V1.Y, V1.Theta);
                     if (V1Log.Count == 0 || !logV1.IsEqual(V1Log.Last()))
                     {
                         V1Log.Add(logV1);
@@ -589,7 +654,7 @@ namespace LocationPresumption
                 }
 
                 // RotaryEncoder
-                MarkPoint logE1 = new MarkPoint( E1.X, E1.Y, E1.Theta);
+                MarkPoint logE1 = new MarkPoint(E1.X, E1.Y, E1.Theta);
                 if (E1Log.Count == 0 || !logE1.IsEqual(E1Log.Last()))
                 {
                     E1Log.Add(logE1);
@@ -598,25 +663,19 @@ namespace LocationPresumption
                 // GPS
                 if (bEnableGPS)
                 {
-                    MarkPoint logG1 = new MarkPoint( G1.X, G1.Y, G1.Theta);
+                    MarkPoint logG1 = new MarkPoint(G1.X, G1.Y, G1.Theta);
                     if (G1Log.Count == 0 || !logG1.IsEqual(G1Log.Last()))
                     {
                         G1Log.Add(logG1);
                     }
                 }
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 // ログ時のエラーは無視
                 Console.WriteLine(ex.Message);
             }
 
-            // 処理時間計測完了
-            swCNT_Update.Stop();
-
-            upDateCnt++;
-
-            return bResult;
         }
 
         // -------------------------------------------------------------------------------------------------------------------------------
