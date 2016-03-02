@@ -24,7 +24,7 @@ namespace CersioSim
         public Bitmap MapBmp;
 
         // mm からピクセルへの変換
-        const double ScalePixelToReal = 10.0;    // 10mmを１ピクセルとする
+        const double ScalePixelToReal = 100.0;    // 10mmを１ピクセルとする
         const double ScaleRealToPixel = 1.0 / ScalePixelToReal;
 
         CarSim carSim = new CarSim();
@@ -63,6 +63,49 @@ namespace CersioSim
             tmr_Update.Enabled = true;
         }
 
+        /// <summary>
+        /// タイマー更新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tmr_Update_Tick(object sender, EventArgs e)
+        {
+            //if (keyUp) carAccVal += 0.05;
+            //else carAccVal *= 0.80;
+
+            //if (carAccVal > 1.0) carAccVal = 1.0;
+
+            if (keyLeft) carSim.carHandleAng += -0.5;
+            else if (keyRight) carSim.carHandleAng += 0.5;
+            else carSim.carHandleAng *= 0.80;
+
+            if (carSim.carHandleAng > carSim.carHandleAngMax) carSim.carHandleAng = carSim.carHandleAngMax;
+            if (carSim.carHandleAng < -carSim.carHandleAngMax) carSim.carHandleAng = -carSim.carHandleAngMax;
+
+            if (Math.Abs(carSim.carAccVal) < 0.01) carSim.carAccVal = 0.0;
+            if (Math.Abs(carSim.carHandleAng) < 0.01) carSim.carHandleAng = 0.0;
+
+            lbl_HandleVal.Text = "ハンドル:" + carSim.carHandleAng.ToString("F2");
+            lbl_AccVal.Text = "アクセル:" + carSim.carAccVal.ToString("F2");
+
+            lbl_CarX.Text = "carX:" + ((double)carSim.wdCarF.x).ToString("F2");
+            lbl_CarY.Text = "carY:" + ((double)carSim.wdCarF.y).ToString("F2");
+            lbl_Speed.Text = "Speed(Km):" + ((double)(4.0 * carSim.carAccVal)).ToString("F2");
+
+            // CarSim更新
+            // 位置情報更新
+            carSim.calcTirePos(tmr_Update.Interval);
+
+            // 
+            carSim.SenserUpdate();
+
+            // 描画更新
+            DrawUpdateSimArea();
+            picbox_SimArea.Invalidate();
+
+            // マップフォーム処理
+            mapForm.tmr_Update_Tick(sender, e);
+        }
 
         /// <summary>
         /// 描画更新
@@ -99,7 +142,7 @@ namespace CersioSim
         }
 
 
-
+        // キー入力----------------------------------------------------------------------
 
         bool keyUp = false;
         bool keyDown = false;
@@ -121,39 +164,6 @@ namespace CersioSim
             if (e.KeyCode == Keys.Right) keyRight = false;
         }
 
-        /// <summary>
-        /// 更新
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tmr_Update_Tick(object sender, EventArgs e)
-        {
-            //if (keyUp) carAccVal += 0.05;
-            //else carAccVal *= 0.80;
-
-            //if (carAccVal > 1.0) carAccVal = 1.0;
-
-            if (keyLeft) carSim.carHandleAng += 0.5;
-            else if (keyRight) carSim.carHandleAng -= 0.5;
-            else carSim.carHandleAng *= 0.80;
-
-            if (carSim.carHandleAng > carSim.carHandleAngMax) carSim.carHandleAng = carSim.carHandleAngMax;
-            if (carSim.carHandleAng < -carSim.carHandleAngMax) carSim.carHandleAng = -carSim.carHandleAngMax;
-
-            if (Math.Abs(carSim.carAccVal) < 0.01) carSim.carAccVal = 0.0;
-            if (Math.Abs(carSim.carHandleAng) < 0.01) carSim.carHandleAng = 0.0;
-
-            lbl_HandleVal.Text = "ハンドル:" + carSim.carHandleAng.ToString("F2");
-            lbl_AccVal.Text = "アクセル:" + carSim.carAccVal.ToString("F2");
-
-            lbl_CarX.Text = "carX:" + ((double)carSim.wdCarF.x).ToString("F2");
-            lbl_CarY.Text = "carY:" + ((double)carSim.wdCarF.y).ToString("F2");
-            lbl_Speed.Text = "Speed(Km):" + ((double)(4.0 * carSim.carAccVal)).ToString("F2");
-
-            carSim.calcTirePos(tmr_Update.Interval);
-            DrawUpdateSimArea();
-            picbox_SimArea.Invalidate();
-        }
 
         private void tb_KeyInput_KeyDown(object sender, KeyEventArgs e)
         {

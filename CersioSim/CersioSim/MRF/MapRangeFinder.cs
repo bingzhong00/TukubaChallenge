@@ -38,6 +38,7 @@ namespace LocationPresumption
     public class MapRangeFinder {
         private GridMap Map;
         private double RangeMax;
+        private double PixelScale;
         private double[] DeltaX;
         private double[] DeltaY;
 
@@ -49,10 +50,12 @@ namespace LocationPresumption
         /// </summary>
         /// <param name="map"></param>
         /// <param name="rangeMax"></param>
-        public MapRangeFinder(double rangeMax)
+        /// <param name="pixelScale">１ピクセルに対するmm</param>
+        public MapRangeFinder(double rangeMax, double _pixelScale)
         {
             //Map = map;
-            RangeMax = rangeMax;
+            RangeMax = rangeMax / _pixelScale;
+            PixelScale = _pixelScale;
 
             // 傾きテーブル作成
             DeltaX = new double[360];
@@ -85,7 +88,8 @@ namespace LocationPresumption
         /// </summary>
         /// <param name="rangeMax"></param>
         /// <param name="bmpMapFilename"></param>
-        public MapRangeFinder(double rangeMax,string bmpMapFilename ) : this(rangeMax)
+        public MapRangeFinder(double rangeMax, double pixelScale, string bmpMapFilename)
+            : this(rangeMax, pixelScale)
         {
             Bitmap bmpMap = new Bitmap(bmpMapFilename);
 
@@ -120,12 +124,11 @@ namespace LocationPresumption
                     int theta = (iroboTheta + i + 360 * 2) % 360;
 
                     // 障害物までの距離を取得
-                    result[i + angRng] = map.MeasureDist(
-                        posX,
-                        posY,
-                        DeltaX[theta],
-                        DeltaY[theta],
-                        RangeMax);
+                    result[i + angRng] = map.MeasureDist( posX / PixelScale,
+                                                          posY / PixelScale,
+                                                          DeltaX[theta],
+                                                          DeltaY[theta],
+                                                          RangeMax) * PixelScale;
                 }
             }
             catch (Exception e)

@@ -17,8 +17,9 @@ namespace CersioSim
     {
         // センサー系シミュレート変数
         // car senser emu
-        MapRangeFinder mrf;
-        MarkPoint mkp = new MarkPoint(0,0,0); 
+        public MapRangeFinder mrf;
+        public MarkPoint mkp = new MarkPoint(0,0,0);
+        public double PixelScale = 100.0;
 
 
         // 走行系シミュレート変数
@@ -76,13 +77,13 @@ namespace CersioSim
         public void CarInit(MarkPoint _mkp)
         {
             CarInit(_mkp.X, _mkp.Y);
-            //CarInit(0,0);
             mkp.Set(_mkp);
         }
 
         public void SenserUpdate()
         {
-            mrf.Sense(mkp);
+            // マップ座標に変換
+            mkp.LRFdata = mrf.Sense(new MarkPoint(mkp.X, mkp.Y, mkp.Theta));
         }
 
         /// <summary>
@@ -91,7 +92,8 @@ namespace CersioSim
         /// <param name="fname"></param>
         public void MapInit(string fname)
         {
-            mrf = new MapRangeFinder(30 * 1000, fname);
+            // 30m
+            mrf = new MapRangeFinder((30 * 1000),PixelScale, fname);
         }
 
         /// <summary>
@@ -129,6 +131,7 @@ namespace CersioSim
         {
             long difMS = timeTick; //DateTime.Now.Millisecond - oldMS;
             //double moveRad = (wdCarAng + carHandleAng) * Math.PI / 180.0;
+
             double moveLength = ((double)((4 * 1000 * 1000) / 60 / 60) / 1000.0);      // 単位時間内の移動量 時速4Km計算
 
             moveLength = moveLength * -carAccVal * (double)difMS;

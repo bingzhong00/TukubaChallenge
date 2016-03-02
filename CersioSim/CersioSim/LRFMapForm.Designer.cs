@@ -28,27 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.picboxLRF = new System.Windows.Forms.PictureBox();
             this.picboxMap = new System.Windows.Forms.PictureBox();
+            this.tmr_Update = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.picboxLRF)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picboxMap)).BeginInit();
             this.SuspendLayout();
             // 
             // picboxLRF
             // 
+            this.picboxLRF.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picboxLRF.Location = new System.Drawing.Point(12, 17);
             this.picboxLRF.Name = "picboxLRF";
             this.picboxLRF.Size = new System.Drawing.Size(316, 302);
             this.picboxLRF.TabIndex = 0;
             this.picboxLRF.TabStop = false;
+            this.picboxLRF.Click += new System.EventHandler(this.picboxLRF_Click);
+            this.picboxLRF.Paint += new System.Windows.Forms.PaintEventHandler(this.picboxLRF_Paint);
             // 
             // picboxMap
             // 
+            this.picboxMap.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picboxMap.Location = new System.Drawing.Point(343, 17);
             this.picboxMap.Name = "picboxMap";
             this.picboxMap.Size = new System.Drawing.Size(597, 495);
             this.picboxMap.TabIndex = 1;
             this.picboxMap.TabStop = false;
+            // 
+            // tmr_Update
+            // 
+            this.tmr_Update.Interval = 25;
+            this.tmr_Update.Tick += new System.EventHandler(this.tmr_Update_Tick);
             // 
             // LRFMapForm
             // 
@@ -69,5 +80,6 @@
 
         private System.Windows.Forms.PictureBox picboxLRF;
         private System.Windows.Forms.PictureBox picboxMap;
+        private System.Windows.Forms.Timer tmr_Update;
     }
 }
