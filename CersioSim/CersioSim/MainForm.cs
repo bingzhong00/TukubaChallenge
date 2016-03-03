@@ -75,9 +75,11 @@ namespace CersioSim
 
             //if (carAccVal > 1.0) carAccVal = 1.0;
 
+            /*
             if (keyLeft) carSim.carHandleAng += -0.5;
             else if (keyRight) carSim.carHandleAng += 0.5;
             else carSim.carHandleAng *= 0.80;
+            */
 
             if (carSim.carHandleAng > carSim.carHandleAngMax) carSim.carHandleAng = carSim.carHandleAngMax;
             if (carSim.carHandleAng < -carSim.carHandleAngMax) carSim.carHandleAng = -carSim.carHandleAngMax;
@@ -143,47 +145,9 @@ namespace CersioSim
 
 
         // キー入力----------------------------------------------------------------------
-
-        bool keyUp = false;
-        bool keyDown = false;
-        bool keyLeft = false;
-        bool keyRight = false;
-        private void btn_KeyInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Up) keyUp = true;
-            if (e.KeyCode == Keys.Down) keyDown = true;
-            if (e.KeyCode == Keys.Left) keyLeft = true;
-            if (e.KeyCode == Keys.Right) keyRight = true;
-        }
-
-        private void btn_KeyInput_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Up) keyUp = false;
-            if (e.KeyCode == Keys.Down) keyDown = false;
-            if (e.KeyCode == Keys.Left) keyLeft = false;
-            if (e.KeyCode == Keys.Right) keyRight = false;
-        }
-
-
-        private void tb_KeyInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Up) keyUp = true;
-            if (e.KeyCode == Keys.Down) keyDown = true;
-            if (e.KeyCode == Keys.Left) keyLeft = true;
-            if (e.KeyCode == Keys.Right) keyRight = true;
-        }
-
-        private void tb_KeyInput_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Up) keyUp = false;
-            if (e.KeyCode == Keys.Down) keyDown = false;
-            if (e.KeyCode == Keys.Left) keyLeft = false;
-            if (e.KeyCode == Keys.Right) keyRight = false;
-        }
-
         private void tbar_Scroll(object sender, EventArgs e)
         {
-            carSim.carAccVal = (double)tbar_Speed.Value * 0.1;
+            //carSim.carAccVal = (double)tbar_Speed.Value * 0.1;
         }
 
         int stX, stY;
@@ -294,6 +258,57 @@ namespace CersioSim
             // Mapの時差更新 OFF
             //UpdateTRG = true;
 
+        }
+
+        // マウスコントローラ
+        bool bMsControlON = false;
+        private void picbox_MsController_MouseDown(object sender, MouseEventArgs e)
+        {
+            System.Drawing.Point mp = picbox_MsController.PointToScreen(new System.Drawing.Point(picbox_MsController.Width / 2, picbox_MsController.Height / 2));
+
+            //マウスポインタの位置を設定する
+            System.Windows.Forms.Cursor.Position = mp;
+            //System.Drawing.Point cp = picbox_MsController.PointToClient(mp);
+
+            msX = picbox_MsController.Width / 2;
+            msY = picbox_MsController.Height / 2;
+            bMsControlON = true;
+        }
+
+        private void picbox_MsController_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (bMsControlON)
+            {
+                int difX = e.X - msX;
+                int difY = e.Y - msY;
+
+                //マウスポインタの位置を枠からでないようにする
+                {
+                    int newMsX = e.X;
+                    int newMsY = e.Y;
+                    bool bAjastMs = false;
+                    if (newMsX < 0) { newMsX = 0; bAjastMs = true; }
+                    if (newMsX > picbox_MsController.Width) { newMsX = picbox_MsController.Width; bAjastMs = true; }
+                    if (newMsY < 0) { newMsY = 0; bAjastMs = true; }
+                    if (newMsY > picbox_MsController.Height) { newMsY = picbox_MsController.Height; bAjastMs = true; }
+
+                    if (bAjastMs)
+                    {
+                        System.Drawing.Point mp = picbox_MsController.PointToScreen(new System.Drawing.Point(newMsX, newMsY));
+                        System.Windows.Forms.Cursor.Position = mp;
+                    }
+                }
+
+                carSim.carHandleAng = ((double)difX / (picbox_MsController.Width / 2.0)) * 30.0;
+                carSim.carAccVal = (double)-difY / (picbox_MsController.Height / 2.0);
+            }
+        }
+
+        private void picbox_MsController_MouseUp(object sender, MouseEventArgs e)
+        {
+            carSim.carAccVal = 0.0;
+            carSim.carHandleAng = 0.0;
+            bMsControlON = false;
         }
 
     }
