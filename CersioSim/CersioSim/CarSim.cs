@@ -194,7 +194,7 @@ namespace CersioSim
         }
 
 
-        public void DrawCar(Graphics g, double ScaleRealToPixel, double viewX, double viewY )
+        public void DrawCar(Graphics g, double ScaleRealToPixel, double ViewScale, double viewX, double viewY)
         {
             // 左右車輪間のライン、前後車軸間のライン
             // クルマの向きと同じ角度で、車輪位置にタイヤライン (フロントはクルマの向き+ハンドル角)
@@ -209,6 +209,7 @@ namespace CersioSim
             g.ResetTransform();
             g.ScaleTransform((float)ScaleRealToPixel, (float)ScaleRealToPixel);
             g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
+            g.ScaleTransform((float)ViewScale, (float)ViewScale, MatrixOrder.Append);
 
 
             g.TranslateTransform((float)wdCarF.x, (float)wdCarF.y, MatrixOrder.Prepend);
@@ -250,6 +251,7 @@ namespace CersioSim
             g.ResetTransform();
             g.ScaleTransform((float)ScaleRealToPixel, (float)ScaleRealToPixel);
             g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
+            g.ScaleTransform((float)ViewScale, (float)ViewScale, MatrixOrder.Append);
 
 
             g.TranslateTransform((float)wdCarF.x, (float)wdCarF.y, MatrixOrder.Prepend);

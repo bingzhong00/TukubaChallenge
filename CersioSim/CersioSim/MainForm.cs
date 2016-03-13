@@ -28,13 +28,16 @@ namespace CersioSim
         const double ScaleRealToPixel = 1.0 / ScalePixelToReal;
 
         CarSim carSim = new CarSim();
-        MarkPoint carPos = new MarkPoint(820 * ScalePixelToReal, 850 * ScalePixelToReal, 0);
+        MarkPoint carInitPos = new MarkPoint(820 * ScalePixelToReal, 850 * ScalePixelToReal, 0);
+        MarkPoint carPos;
         LRFMapForm mapForm;
 
         const string MapFileName = "../mapdata/utubo01_1200x1300_fix.png";
 
         private double viewX;
         private double viewY;
+
+        private double viewScale = 1.0;
 
         /// <summary>
         /// 
@@ -45,22 +48,35 @@ namespace CersioSim
 
             SimAreaBmp = new Bitmap(picbox_SimArea.Width, picbox_SimArea.Height);
             picbox_SimArea.Image = SimAreaBmp;
-            viewX = -picbox_SimArea.Width / 2;
-            viewY = -picbox_SimArea.Height / 2;
 
-            viewX += carPos.X * ScaleRealToPixel;
-            viewY += carPos.Y * ScaleRealToPixel;
+            SetView_CarCenter();
 
             MapBmp = new Bitmap(MapFileName);
 
-            carSim.CarInit(carPos);
+            carPos = new MarkPoint(carInitPos.X, carInitPos.Y, carInitPos.Theta );
+            carSim.CarInit(carInitPos);
             carSim.MapInit(MapFileName);
             {
-                mapForm = new LRFMapForm(carSim);
+                mapForm = new LRFMapForm(carSim, 1200, 1300, ScaleRealToPixel);
                 mapForm.Show();
             }
 
             tmr_Update.Enabled = true;
+        }
+
+        /// <summary>
+        /// クルマの中心にビューを移動
+        /// </summary>
+        public void SetView_CarCenter()
+        {
+            //画面中心に移動
+            viewX = -(picbox_SimArea.Width / viewScale) / 2;
+            viewY = -(picbox_SimArea.Height / viewScale) / 2;
+            // クルマの位置
+            //viewX += carPos.X * ScaleRealToPixel;
+            //viewY += carPos.Y * ScaleRealToPixel;
+            viewX += ((double)carSim.wdCarF.x) * ScaleRealToPixel;
+            viewY += ((double)carSim.wdCarF.y) * ScaleRealToPixel;
         }
 
         /// <summary>
@@ -90,16 +106,27 @@ namespace CersioSim
             lbl_HandleVal.Text = "ハンドル:" + carSim.carHandleAng.ToString("F2");
             lbl_AccVal.Text = "アクセル:" + carSim.carAccVal.ToString("F2");
 
-            lbl_CarX.Text = "carX:" + ((double)carSim.wdCarF.x).ToString("F2");
-            lbl_CarY.Text = "carY:" + ((double)carSim.wdCarF.y).ToString("F2");
+            //lbl_CarX.Text = "carX:" + ((double)carSim.wdCarF.x).ToString("F2");
+            //lbl_CarY.Text = "carY:" + ((double)carSim.wdCarF.y).ToString("F2");
+            lbl_CarX.Text = "carX:" + ((double)carSim.mkp.X * ScaleRealToPixel).ToString("F2");
+            lbl_CarY.Text = "carY:" + ((double)carSim.mkp.Y * ScaleRealToPixel).ToString("F2");
             lbl_Speed.Text = "Speed(Km):" + ((double)(4.0 * carSim.carAccVal)).ToString("F2");
 
             // CarSim更新
             // 位置情報更新
             carSim.calcTirePos(tmr_Update.Interval);
 
-            // 
+            // センサー情報更新
             carSim.SenserUpdate();
+
+            //carPos.X = (double)carSim.wdCarF.x;
+            //carPos.Y = (double)carSim.wdCarF.y;
+
+            // 画面移動
+            if (cb_TraceView.Checked == true)
+            {
+                SetView_CarCenter();
+            }
 
             // 描画更新
             DrawUpdateSimArea();
@@ -118,27 +145,31 @@ namespace CersioSim
 
             g.FillRectangle(Brushes.Black, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
 
-            g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
+            g.TranslateTransform((float)(-viewX * viewScale), (float)(-viewY * viewScale), MatrixOrder.Append);
+            g.ScaleTransform((float)(viewScale), (float)(viewScale));
 
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.DrawImage(MapBmp, 0, 0);
 
             g.ResetTransform();
-            g.ScaleTransform((float)ScaleRealToPixel, (float)ScaleRealToPixel);
+            g.ScaleTransform((float)(ScaleRealToPixel * viewScale), (float)(ScaleRealToPixel * viewScale));
 
             // グリッド線
             for (int x = 0; x <= (int)((SimAreaBmp.Width / ScaleRealToPixel) / 1000.0); x++)
             {
-                g.DrawLine(Pens.DarkGray, x * 1000, 0, x * 1000, (int)(SimAreaBmp.Height / ScaleRealToPixel));
+                int dx = (x * 1000) + (((int)((-viewX * ScalePixelToReal) + 0.5)) % 1000);
+                g.DrawLine(Pens.DarkGray, dx, 0, dx, (int)(SimAreaBmp.Height / ScaleRealToPixel));
             }
             for (int y = 0; y <= (int)((SimAreaBmp.Height / ScaleRealToPixel) / 1000.0); y++)
             {
-                g.DrawLine(Pens.DarkGray, 0, y * 1000, (int)(SimAreaBmp.Width / ScaleRealToPixel), y * 1000);
+                int dy = (y * 1000) + (((int)((-viewY * ScalePixelToReal) + 0.5)) % 1000);
+                g.DrawLine(Pens.DarkGray, 0, dy, (int)(SimAreaBmp.Width / ScaleRealToPixel), dy);
             }
 
 
             g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
 
-            carSim.DrawCar(g, ScaleRealToPixel, viewX, viewY );
+            carSim.DrawCar(g, ScaleRealToPixel, viewScale, viewX, viewY);
 
             g.Dispose();
         }
@@ -309,6 +340,17 @@ namespace CersioSim
             carSim.carAccVal = 0.0;
             carSim.carHandleAng = 0.0;
             bMsControlON = false;
+        }
+
+        /// <summary>
+        /// ビューサイズ変更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tBarScale_Scroll(object sender, EventArgs e)
+        {
+            viewScale = 1.0 + tBarScale.Value*0.5;
+            lbl_ScaleVal.Text = viewScale.ToString("F1");
         }
 
     }

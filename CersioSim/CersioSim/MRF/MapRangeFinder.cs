@@ -34,8 +34,15 @@ using System.Drawing;
 
 namespace LocationPresumption
 {
-
-    public class MapRangeFinder {
+    /// <summary>
+    /// マップレンジファインダー
+    /// LRFのMAPデータ版
+    /// 
+    /// VehicleRunnerは、ピクセル座標系で計算しているが、本来はmm座標にすべき。
+    /// こちらは、マップ座標取得後　mm座標に変換している。
+    /// </summary>
+    public class MapRangeFinder
+    {
         private GridMap Map;
         private double RangeMax;
         private double PixelScale;

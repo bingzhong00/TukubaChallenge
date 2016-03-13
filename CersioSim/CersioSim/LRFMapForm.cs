@@ -12,19 +12,36 @@ using LocationPresumption;
 
 namespace CersioSim
 {
+    /// <summary>
+    /// LRF　マップ自動生成フォーム
+    /// </summary>
     public partial class LRFMapForm : Form
     {
         CarSim carSim;
         Bitmap LrfBmp;
+        double ScaleToPixel;
 
-        public LRFMapForm(CarSim _carSim )
+        /// <summary>
+        /// 自動マップ描画　最大レンジ（30m以上はつきぬけなので、描画しない）
+        /// </summary>
+        const double MAP_DRAW_MAX_RANGE = 25 * 1000;
+
+        public LRFMapForm(CarSim _carSim,int mapWidth, int mapHeight,double _ScaleToPixel )
         {
             InitializeComponent();
 
             carSim = _carSim;
-            LrfBmp = new Bitmap(picboxLRF.Width, picboxLRF.Height);
+            LrfBmp = new Bitmap(mapWidth, mapHeight);
+            ScaleToPixel = _ScaleToPixel;
 
-            picboxLRF.Image = LrfBmp;
+            {
+                Graphics g = Graphics.FromImage(LrfBmp);
+                g.FillRectangle(Brushes.Black, 0, 0, mapWidth, mapHeight);
+
+                g.Dispose();
+            }
+
+            //picboxLRF.Image = LrfBmp;
 
             //tmr_Update.Enabled = true;
         }
@@ -33,32 +50,38 @@ namespace CersioSim
         {
             if (carSim.mkp.LRFdata != null)
             {
-                /*
                 Graphics g = Graphics.FromImage(LrfBmp);
 
                 //double rScale = (1.0 / LocSys.RealToMapSclae);
                 double rPI = Math.PI / 180.0;
                 int pixelSize = 3;
-                double picScale = (100.0f / 1000.0f) * 1.0;
+                double mapScale = 1.00;
+                double picScale = ScaleToPixel * mapScale;
 
-                double ctrX = picboxLRF.Width / 2.0;
-                double ctrY = picboxLRF.Height / 2.0;
+                double ctrX = carSim.mkp.X * ScaleToPixel;
+                double ctrY = carSim.mkp.Y * ScaleToPixel;
 
                 // LRFの値を描画
                 for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
                 {
-                    double val = carSim.mkp.LRFdata[i] * picScale;// *rScale;
-                    double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
+                    if (carSim.mkp.LRFdata[i] < MAP_DRAW_MAX_RANGE)
+                    {
+                        double val = carSim.mkp.LRFdata[i] * picScale;
+                        double rad = (((i - MapRangeFinder.AngleRangeHalf) - 90) + carSim.mkp.Theta) * rPI;
 
-                    // LRFは左下から右回り
-                    float x = (float)(ctrX + val * Math.Cos(rad));
-                    float y = (float)(ctrY + val * Math.Sin(rad));
-                    g.FillRectangle(Brushes.Yellow, x, y, pixelSize, pixelSize);
+                        // LRFは左下から右回り
+                        float x = (float)(ctrX + val * Math.Cos(rad));
+                        float y = (float)(ctrY + val * Math.Sin(rad));
+
+                        g.DrawLine(Pens.LightGray, (float)ctrX, (float)ctrY, x, y);
+                        //g.FillRectangle(Brushes.Yellow, x, y, pixelSize, pixelSize);
+                    }
                 }
 
                 g.Dispose();
-                */
-                //picboxLRF.Image = LrfBmp;
+
+                picboxMap.Image = LrfBmp;
+                picboxMap.Invalidate();
                 picboxLRF.Invalidate();
             }
 
@@ -77,7 +100,8 @@ namespace CersioSim
 
                 //double rScale = (1.0 / LocSys.RealToMapSclae);
                 double rPI = Math.PI / 180.0;
-                int pixelSize = 3;
+                float pixelSize = 3;
+                // 画面を30m(mm)
                 double picScale = ((picboxLRF.Width)/(30.0 * 1000.0));
 
                 double ctrX = picboxLRF.Width / 2.0;
@@ -95,7 +119,9 @@ namespace CersioSim
                     // LRFは左下から右回り
                     float x = (float)(ctrX + val * Math.Cos(rad));
                     float y = (float)(ctrY + val * Math.Sin(rad));
-                    g.FillRectangle(Brushes.Yellow, x, y, pixelSize, pixelSize);
+
+                    g.DrawLine(Pens.Cyan, (float)ctrX, (float)ctrY, x, y);
+                    g.FillRectangle(Brushes.Yellow, x - ((float)pixelSize * 0.5f), y - ((float)pixelSize * 0.5f), pixelSize, pixelSize);
                 }
 
                 //g.Dispose();

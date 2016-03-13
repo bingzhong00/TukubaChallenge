@@ -53,6 +53,7 @@
             this.picboxMap.Location = new System.Drawing.Point(343, 17);
             this.picboxMap.Name = "picboxMap";
             this.picboxMap.Size = new System.Drawing.Size(597, 495);
+            this.picboxMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picboxMap.TabIndex = 1;
             this.picboxMap.TabStop = false;
             // 
