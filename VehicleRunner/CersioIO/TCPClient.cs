@@ -43,11 +43,15 @@ namespace CersioIO
         // 接続フラグ
         public bool ConnectResult = false;
 
-        public TCPClient()
+        public TCPClient(string ipAddr, int ipPort )
         {
-            ipString = "192.168.1.1";
-            port = 50001;
+            ipString = ipAddr;
+            port = ipPort;
             ConnectResult = false;
+        }
+
+        public TCPClient() : this("192.168.1.1",50001)
+        {
         }
 
         //~TCPClient()

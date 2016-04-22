@@ -72,7 +72,6 @@
             this.cb_StraightMode = new System.Windows.Forms.CheckBox();
             this.cb_UsePF_Rivision = new System.Windows.Forms.CheckBox();
             this.cb_AlwaysPFCalc = new System.Windows.Forms.CheckBox();
-            this.cb_UseGPS_Rivison = new System.Windows.Forms.CheckBox();
             this.tabPage_Status = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lbl_RErotL = new System.Windows.Forms.Label();
@@ -101,6 +100,10 @@
             this.tm_SendCom = new System.Windows.Forms.Timer(this.components);
             this.lbl_BackCnt = new System.Windows.Forms.Label();
             this.gb_DriveControl = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -113,6 +116,9 @@
             this.groupBox3.SuspendLayout();
             this.tabPage_Emulate.SuspendLayout();
             this.gb_DriveControl.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -523,15 +529,12 @@
             // tabPage_LocSump
             // 
             this.tabPage_LocSump.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage_LocSump.Controls.Add(this.label19);
-            this.tabPage_LocSump.Controls.Add(this.cb_UseGPS_Move);
-            this.tabPage_LocSump.Controls.Add(this.cb_DontAlwaysRivision);
+            this.tabPage_LocSump.Controls.Add(this.groupBox7);
+            this.tabPage_LocSump.Controls.Add(this.groupBox6);
+            this.tabPage_LocSump.Controls.Add(this.groupBox5);
             this.tabPage_LocSump.Controls.Add(this.lbl_MattingScore);
             this.tabPage_LocSump.Controls.Add(this.btn_LocRevision);
             this.tabPage_LocSump.Controls.Add(this.cb_StraightMode);
-            this.tabPage_LocSump.Controls.Add(this.cb_UsePF_Rivision);
-            this.tabPage_LocSump.Controls.Add(this.cb_AlwaysPFCalc);
-            this.tabPage_LocSump.Controls.Add(this.cb_UseGPS_Rivison);
             this.tabPage_LocSump.Location = new System.Drawing.Point(4, 26);
             this.tabPage_LocSump.Name = "tabPage_LocSump";
             this.tabPage_LocSump.Size = new System.Drawing.Size(245, 379);
@@ -542,32 +545,33 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label19.Location = new System.Drawing.Point(37, 43);
+            this.label19.Location = new System.Drawing.Point(85, 24);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(164, 12);
+            this.label19.Size = new System.Drawing.Size(134, 12);
             this.label19.TabIndex = 32;
-            this.label19.Text = "(OFF時はロータリーエンコーダから)";
+            this.label19.Text = "(False..ロータリーエンコーダ)";
             // 
             // cb_UseGPS_Move
             // 
             this.cb_UseGPS_Move.AutoSize = true;
             this.cb_UseGPS_Move.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_UseGPS_Move.Location = new System.Drawing.Point(17, 23);
+            this.cb_UseGPS_Move.Location = new System.Drawing.Point(13, 22);
             this.cb_UseGPS_Move.Name = "cb_UseGPS_Move";
-            this.cb_UseGPS_Move.Size = new System.Drawing.Size(150, 17);
+            this.cb_UseGPS_Move.Size = new System.Drawing.Size(51, 17);
             this.cb_UseGPS_Move.TabIndex = 31;
-            this.cb_UseGPS_Move.Text = "自己位置をGPSで更新";
+            this.cb_UseGPS_Move.Text = "GPS";
             this.cb_UseGPS_Move.UseVisualStyleBackColor = true;
+            this.cb_UseGPS_Move.CheckedChanged += new System.EventHandler(this.cb_UseGPS_Move_CheckedChanged);
             // 
             // cb_DontAlwaysRivision
             // 
             this.cb_DontAlwaysRivision.AutoSize = true;
             this.cb_DontAlwaysRivision.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_DontAlwaysRivision.Location = new System.Drawing.Point(17, 94);
+            this.cb_DontAlwaysRivision.Location = new System.Drawing.Point(13, 29);
             this.cb_DontAlwaysRivision.Name = "cb_DontAlwaysRivision";
             this.cb_DontAlwaysRivision.Size = new System.Drawing.Size(114, 17);
             this.cb_DontAlwaysRivision.TabIndex = 30;
-            this.cb_DontAlwaysRivision.Text = "異常時のみ補正";
+            this.cb_DontAlwaysRivision.Text = "異常状態時のみ";
             this.cb_DontAlwaysRivision.UseVisualStyleBackColor = true;
             this.cb_DontAlwaysRivision.CheckedChanged += new System.EventHandler(this.cb_TimeRivision_CheckedChanged);
             // 
@@ -575,7 +579,7 @@
             // 
             this.lbl_MattingScore.AutoSize = true;
             this.lbl_MattingScore.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_MattingScore.Location = new System.Drawing.Point(20, 244);
+            this.lbl_MattingScore.Location = new System.Drawing.Point(19, 263);
             this.lbl_MattingScore.Name = "lbl_MattingScore";
             this.lbl_MattingScore.Size = new System.Drawing.Size(111, 16);
             this.lbl_MattingScore.TabIndex = 17;
@@ -587,7 +591,7 @@
             this.btn_LocRevision.Name = "btn_LocRevision";
             this.btn_LocRevision.Size = new System.Drawing.Size(103, 47);
             this.btn_LocRevision.TabIndex = 18;
-            this.btn_LocRevision.Text = "異常時補正";
+            this.btn_LocRevision.Text = "強制補正";
             this.btn_LocRevision.UseVisualStyleBackColor = true;
             this.btn_LocRevision.Click += new System.EventHandler(this.btn_LocRevision_Click);
             // 
@@ -607,43 +611,27 @@
             // cb_UsePF_Rivision
             // 
             this.cb_UsePF_Rivision.AutoSize = true;
-            this.cb_UsePF_Rivision.Checked = true;
-            this.cb_UsePF_Rivision.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_UsePF_Rivision.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_UsePF_Rivision.Location = new System.Drawing.Point(17, 118);
+            this.cb_UsePF_Rivision.Location = new System.Drawing.Point(11, 24);
             this.cb_UsePF_Rivision.Name = "cb_UsePF_Rivision";
-            this.cb_UsePF_Rivision.Size = new System.Drawing.Size(147, 17);
+            this.cb_UsePF_Rivision.Size = new System.Drawing.Size(100, 17);
             this.cb_UsePF_Rivision.TabIndex = 29;
-            this.cb_UsePF_Rivision.Text = "ParticleFilter補正 ON";
+            this.cb_UsePF_Rivision.Text = "ParticleFilter";
             this.cb_UsePF_Rivision.UseVisualStyleBackColor = true;
             this.cb_UsePF_Rivision.CheckedChanged += new System.EventHandler(this.cb_RivisionPF_CheckedChanged);
             // 
             // cb_AlwaysPFCalc
             // 
             this.cb_AlwaysPFCalc.AutoSize = true;
-            this.cb_AlwaysPFCalc.Checked = true;
-            this.cb_AlwaysPFCalc.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_AlwaysPFCalc.Enabled = false;
             this.cb_AlwaysPFCalc.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_AlwaysPFCalc.Location = new System.Drawing.Point(49, 141);
+            this.cb_AlwaysPFCalc.Location = new System.Drawing.Point(130, 24);
             this.cb_AlwaysPFCalc.Name = "cb_AlwaysPFCalc";
             this.cb_AlwaysPFCalc.Size = new System.Drawing.Size(93, 17);
             this.cb_AlwaysPFCalc.TabIndex = 28;
-            this.cb_AlwaysPFCalc.Text = "常時PF計算";
+            this.cb_AlwaysPFCalc.Text = "常時PF演算";
             this.cb_AlwaysPFCalc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_AlwaysPFCalc.UseVisualStyleBackColor = true;
-            // 
-            // cb_UseGPS_Rivison
-            // 
-            this.cb_UseGPS_Rivison.AutoSize = true;
-            this.cb_UseGPS_Rivison.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_UseGPS_Rivison.Location = new System.Drawing.Point(17, 70);
-            this.cb_UseGPS_Rivison.Name = "cb_UseGPS_Rivison";
-            this.cb_UseGPS_Rivison.Size = new System.Drawing.Size(144, 17);
-            this.cb_UseGPS_Rivison.TabIndex = 26;
-            this.cb_UseGPS_Rivison.Text = "GPSを基準に補正する";
-            this.cb_UseGPS_Rivison.UseVisualStyleBackColor = true;
-            this.cb_UseGPS_Rivison.CheckedChanged += new System.EventHandler(this.cb_RivisonGPS_CheckedChanged);
             // 
             // tabPage_Status
             // 
@@ -957,6 +945,52 @@
             this.gb_DriveControl.TabStop = false;
             this.gb_DriveControl.Text = "DriveControl";
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label20.Location = new System.Drawing.Point(15, 44);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(67, 12);
+            this.label20.TabIndex = 33;
+            this.label20.Text = "(False..GPS)";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label19);
+            this.groupBox5.Controls.Add(this.cb_UseGPS_Move);
+            this.groupBox5.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.groupBox5.Location = new System.Drawing.Point(3, 12);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(232, 58);
+            this.groupBox5.TabIndex = 34;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "自己位置　更新";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.cb_DontAlwaysRivision);
+            this.groupBox6.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.groupBox6.Location = new System.Drawing.Point(3, 82);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(231, 57);
+            this.groupBox6.TabIndex = 35;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "補正条件";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.label20);
+            this.groupBox7.Controls.Add(this.cb_UsePF_Rivision);
+            this.groupBox7.Controls.Add(this.cb_AlwaysPFCalc);
+            this.groupBox7.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.groupBox7.Location = new System.Drawing.Point(5, 149);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(229, 86);
+            this.groupBox7.TabIndex = 36;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "補正方法";
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -998,6 +1032,12 @@
             this.tabPage_Emulate.PerformLayout();
             this.gb_DriveControl.ResumeLayout(false);
             this.gb_DriveControl.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1065,7 +1105,6 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TabPage tabPage_LocSump;
-        private System.Windows.Forms.CheckBox cb_UseGPS_Rivison;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox cb_SirialConnect;
         private System.Windows.Forms.ComboBox cb_UsbSirial;
@@ -1081,6 +1120,10 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.CheckBox cb_UseGPS_Move;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.GroupBox groupBox7;
     }
 }
 

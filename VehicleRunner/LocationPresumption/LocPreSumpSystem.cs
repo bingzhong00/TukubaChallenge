@@ -1,5 +1,6 @@
 ﻿
 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,6 +134,12 @@ namespace LocationPresumption
         public static bool bRivisonGPS = false;
 
         /// <summary>
+        /// GPSで自己位置を更新する
+        /// True..GPS, False...RE
+        /// </summary>
+        public static bool bMoveUpdateGPS = false;
+        
+        /// <summary>
         /// ParticleFilterをつかって補正する
         /// </summary>
         public static bool bRivisonPF = false;
@@ -165,9 +172,16 @@ namespace LocationPresumption
             }
         }
 
+        public int iAbs( int _v )
+        {
+            return (_v<0) ? -(_v) : (_v);
+        }
+
+
+
         public float fSin( int ang )
         {
-            int ln = (ang / 360) + 1;
+            int ln = (iAbs(ang) / 360) + 1;
             ang = (ang + (360 * ln)) % 360;
 
             return SinTbl[ang];
@@ -175,7 +189,7 @@ namespace LocationPresumption
 
         public float fCos(int ang)
         {
-            int ln = (ang / 360) + 1;
+            int ln = (iAbs(ang) / 360) + 1;
             ang = (ang + (360 * ln)) % 360;
 
             return CosTbl[ang];

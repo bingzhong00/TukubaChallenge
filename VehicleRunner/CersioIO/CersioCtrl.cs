@@ -1,4 +1,4 @@
-﻿//#define EMULATOR_MODE  // エミュレーション
+﻿#define EMULATOR_MODE  // エミュレーション
 
 
 using System;
@@ -23,7 +23,12 @@ namespace CersioIO
         public DriveIOport UsbSH2IO;
 
         // BOXPC通信用
-        TCPClient objTCPSC = new TCPClient();
+#if EMULATOR_MODE
+        TCPClient objTCPSC = new TCPClient("127.0.0.1", 50001);
+#else
+        TCPClient objTCPSC = new TCPClient("192.168.1.1", 50001);
+#endif
+
 
         // エミュレーション用　パッド操作
         static public bool LeftBtn = false;
@@ -224,14 +229,6 @@ namespace CersioIO
                 nowSendHandleValue += (handleTgt - nowSendHandleValue) * HandleControlPow;
                 nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));   
 
-
-#if EMULATOR_MODE
-                // デジタルボタン操作に変換
-                if (handleValue > 0.05) LeftBtn = true;
-                if (handleValue < -0.05) RightBtn = true;
-
-                if (accValue > 0.5) FwdBtn = true;
-#endif
 
                 // 送信
                 SetCommandAC(nowSendHandleValue, nowSendAccValue);
@@ -456,11 +453,16 @@ namespace CersioIO
             if (objStm != null && objSck != null)
             {
                 // ソケット受信
-                if (objSck.Available > 0)
+                if (objSck.Available > 0 && objStm.DataAvailable)
                 {
                     Byte[] dat = new Byte[objSck.Available];
 
-                    objStm.Read(dat, 0, dat.GetLength(0));
+                    if (0 == objStm.Read(dat, 0, dat.GetLength(0)))
+                    {
+                        // 切断を検知
+                        objTCPSC.Dispose();
+                        return "";
+                    }
 
                     readStr = System.Text.Encoding.GetEncoding("SHIFT-JIS").GetString(dat);
                     hwResiveStr = readStr;
@@ -563,6 +565,9 @@ namespace CersioIO
 
                                 // 座標系変換
                                 // 右上から右下へ
+
+                                // ※リセットした時点での電子コンパスの向きを元にマップ座標へ変換する必要がある。
+                                // 現在、真南に向けた状態であうように符号調整で対応されている状態
                                 hwREX = ResiveX;
                                 hwREY = -ResiveY;
                                 hwREDir = -ResiveRad * 180.0 / Math.PI;

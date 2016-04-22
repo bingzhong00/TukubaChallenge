@@ -143,6 +143,11 @@ namespace VehicleRunner
             lbl_EmurateMode.Visible = IsEmurateMode;
         }
 
+        /// <summary>
+        /// フォーム初期化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             this.SetDesktopLocation(0, 0);
@@ -170,8 +175,18 @@ namespace VehicleRunner
                 }
             }
 
-            LocPreSumpSystem.bRivisonGPS = cb_UseGPS_Rivison.Checked;
+            // フォームのパラメータ反映
+            // 自己位置 更新方法
+            LocPreSumpSystem.bMoveUpdateGPS = cb_UseGPS_Move.Checked;
+
+            // 補正方法
+            // PF補正
             LocPreSumpSystem.bRivisonPF = cb_UsePF_Rivision.Checked;
+            cb_AlwaysPFCalc.Enabled = cb_UsePF_Rivision.Checked;
+            // GPS補正
+            LocPreSumpSystem.bRivisonGPS = !cb_UsePF_Rivision.Checked;
+
+            // 常時補正
             LocPreSumpSystem.bTimeRivision = !cb_DontAlwaysRivision.Checked;
 
             // 画面更新
@@ -1105,18 +1120,6 @@ namespace VehicleRunner
                     }
                 }
             }
-            else
-            {
-                // 実走行時
-                if (updateMainCnt % 50 == 0)
-                {
-                    // 状態を見て、自動接続
-                    if (!CersioCt.TCP_IsConnected())
-                    {
-                        CersioCt.ConnectBoxPC();
-                    }
-                }
-            }
 
             // エマージェンシーブレーキ 動作カラー表示
             if (Brain.EmgBrk && cb_EmgBrake.Checked) cb_EmgBrake.BackColor = Color.Red;
@@ -1223,6 +1226,20 @@ namespace VehicleRunner
             }
             catch
             {
+            }
+
+
+            if (!IsEmurateMode)
+            {
+                // 実走行時
+                if (updateHwCnt % 50 == 0)
+                {
+                    // 状態を見て、自動接続
+                    if (!CersioCt.TCP_IsConnected())
+                    {
+                        CersioCt.ConnectBoxPC();
+                    }
+                }
             }
 
             // セルシオ ハードウェア情報取得
@@ -1545,7 +1562,6 @@ namespace VehicleRunner
                 {
                     // 接続成功
                     tb_SirialResive.BackColor = Color.Lime;
-                    cb_UseGPS_Rivison.Checked = true;
                 }
                 else
                 {
@@ -1562,13 +1578,13 @@ namespace VehicleRunner
         }
 
         /// <summary>
-        /// GPS補正 ON,OFF
+        /// GPS or REで自己位置更新
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cb_RivisonGPS_CheckedChanged(object sender, EventArgs e)
+        private void cb_UseGPS_Move_CheckedChanged(object sender, EventArgs e)
         {
-            LocPreSumpSystem.bRivisonGPS = cb_UseGPS_Rivison.Checked;
+            LocPreSumpSystem.bMoveUpdateGPS = cb_UseGPS_Move.Checked;
         }
 
         /// <summary>
@@ -1579,6 +1595,7 @@ namespace VehicleRunner
         private void cb_RivisionPF_CheckedChanged(object sender, EventArgs e)
         {
             LocPreSumpSystem.bRivisonPF = cb_UsePF_Rivision.Checked;
+            cb_AlwaysPFCalc.Enabled = cb_UsePF_Rivision.Checked;
         }
 
         /// <summary>
@@ -1629,6 +1646,7 @@ namespace VehicleRunner
             }
 
         }
+
 
     }
 }

@@ -168,10 +168,18 @@ namespace CersioIO
             // 自己位置更新
             {
                 // 移動量更新
-                LocSys.R1update_FromGPS();      // GPSを基準に移動
+                if (LocPreSumpSystem.bMoveUpdateGPS)
+                {
+                    LocSys.R1update_FromGPS();      // GPSを基準に移動
+                }
+                else
+                {
+                    LocSys.R1update_FromREPlot();      // Re Plotを基準に移動
+                }
 
                 // 位置座標更新処理
                 LocSys.Update(useAlwaysPF);     // 
+#if false
 
                 // 更新結果ログ保存
                 LocSys.UpdateLogData();
@@ -281,7 +289,7 @@ namespace CersioIO
                         LocSys.ResetLPF_V1(LocSys.V1);
                     }
                 }
-
+#endif
 
                 // マップ情報反映
                 // スローダウン
@@ -299,7 +307,7 @@ namespace CersioIO
             // Rooting ------------------------------------------------------------------------------------------------
 #if DEBUG
             // マップ マッチングスコア計算
-            CalcMatching(LocSys);
+            //CalcMatching(LocSys);
 #endif
 
             // ルート算定
