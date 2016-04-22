@@ -56,14 +56,27 @@ namespace CersioSim
         /// <summary>
         /// クルマ初期化
         /// </summary>
-        public void CarInit(double posx,double posy)
+        public void CarInit(double posx,double posy,double ang)
         {
             carHandleAng = 0.0;
             carAccVal = 0.0;
-            wdCarAng = 0.0;
+
+            wdCarAng = ang;
 
             wdCarF = new Vector3(posx, posy, 0.0);
-            wdCarR = new Vector3(posx, posy+carHeight, 0.0);
+            //wdCarR = new Vector3(posx, posy+carHeight, 0.0);
+            {
+                Vector3 carVec = new Vector3();
+
+                // 車体のベクトル
+                Quaternion rotRQt = new Quaternion();
+                rotRQt.RollInDegrees = wdCarAng;
+                carVec.y = carHeight;
+                carVec = rotRQt.ToRotationMatrix() * carVec;
+
+                wdCarR = new Vector3(carVec.x + posx, carVec.y + posy, carVec.z);
+            }
+
             wdFL = new Vector3();
             wdFR = new Vector3();
             wdRL = new Vector3();
@@ -76,7 +89,7 @@ namespace CersioSim
 
         public void CarInit(MarkPoint _mkp)
         {
-            CarInit(_mkp.X, _mkp.Y);
+            CarInit(_mkp.X, _mkp.Y, _mkp.Theta);
             mkp.Set(_mkp);
         }
 
@@ -184,7 +197,7 @@ namespace CersioSim
                     mkp.Y += moveVec.y;
                     mkp.Theta = wdCarAng;
                 }
-                Debug.Write(wdCarF);
+                //Debug.WriteLine(wdCarF);
             }
 
             // フロント軸位置とクルマの向きを元に、車輪の位置を求める

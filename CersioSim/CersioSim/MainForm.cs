@@ -16,6 +16,7 @@ using LocationPresumption;
 
 using Axiom.Math;
 
+
 namespace CersioSim
 {
     public partial class CersioSimForm : Form
@@ -28,9 +29,15 @@ namespace CersioSim
         const double ScaleRealToPixel = 1.0 / ScalePixelToReal;
 
         CarSim carSim = new CarSim();
-        MarkPoint carInitPos = new MarkPoint(820 * ScalePixelToReal, 850 * ScalePixelToReal, 0);
+        MarkPoint carInitPos = new MarkPoint(730 * ScalePixelToReal, 400 * ScalePixelToReal, 180.0);
         MarkPoint carPos;
-        LRFMapForm mapForm;
+
+        // SLAM用フォーム
+        // LRFデータをMap化
+        LRFMapForm slamForm;
+
+        // SLAMフォームを生成するか？
+        private const bool useSlamForm = false;
 
         const string MapFileName = "../mapdata/utubo01_1200x1300_fix.png";
 
@@ -40,28 +47,61 @@ namespace CersioSim
         private double viewScale = 1.0;
 
         /// <summary>
+        /// bServerエミュレータ
+        /// </summary>
+        private bServer bSrv = new bServer();
+
+        /// <summary>
+        /// URG SCIPシミュレータ
+        /// </summary>
+        private SCIPsim UrgSim = new SCIPsim();
+
+        /// <summary>
         /// 
         /// </summary>
         public CersioSimForm()
         {
             InitializeComponent();
 
+            //シミュレーションマップエリア
             SimAreaBmp = new Bitmap(picbox_SimArea.Width, picbox_SimArea.Height);
             picbox_SimArea.Image = SimAreaBmp;
 
+            // クルマが中心にくるようにビューを設定する
             SetView_CarCenter();
 
+            // マップファイル読み込み
             MapBmp = new Bitmap(MapFileName);
 
+            // シムカー生成
             carPos = new MarkPoint(carInitPos.X, carInitPos.Y, carInitPos.Theta );
             carSim.CarInit(carInitPos);
             carSim.MapInit(MapFileName);
+
+            if( useSlamForm )
             {
-                mapForm = new LRFMapForm(carSim, 1200, 1300, ScaleRealToPixel);
-                mapForm.Show();
+                slamForm = new LRFMapForm(carSim, 1200, 1300, ScaleRealToPixel);
+                slamForm.Show();
             }
 
+            // bServer Open
+            bSrv.Open();
+
+            UrgSim.Open();
+
             tmr_Update.Enabled = true;
+        }
+
+        /// <summary>
+        /// 閉じる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CersioSimForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            bSrv.Close();
+
+            UrgSim.Close();
         }
 
         /// <summary>
@@ -86,17 +126,29 @@ namespace CersioSim
         /// <param name="e"></param>
         private void tmr_Update_Tick(object sender, EventArgs e)
         {
-            //if (keyUp) carAccVal += 0.05;
-            //else carAccVal *= 0.80;
+            // bServer受信　メッセージ処理
+            if (bSrv.readMessage())
+            {
+                carSim.carHandleAng = bSrv.ctrHandle * 30.0;
+                carSim.carAccVal = bSrv.ctrAccel;
 
-            //if (carAccVal > 1.0) carAccVal = 1.0;
+                // ※リセット時に自分の向きに対して前をY+方向の座標としてX,Y座標、向きをかえす
+                // 暫定的に真南を向いた状態で合うように調整
+                // ↑ Y+
+                //  → X+
+                bSrv.senRePlotX = (carSim.mkp.X - carInitPos.X);
+                bSrv.senRePlotY = -(carSim.mkp.Y - carInitPos.Y);
+                //bSrv.senReAng = -((carSim.mkp.Theta - carInitPos.Theta) * Math.PI / 180.0);
+                bSrv.senReAng = -(carSim.mkp.Theta * Math.PI / 180.0);
+                bSrv.senCompusDir = carSim.mkp.Theta;
+            }
 
-            /*
-            if (keyLeft) carSim.carHandleAng += -0.5;
-            else if (keyRight) carSim.carHandleAng += 0.5;
-            else carSim.carHandleAng *= 0.80;
-            */
+            // URG受信
+            if (UrgSim.readMessage())
+            {
+            }
 
+            // ハンドル上限、下限
             if (carSim.carHandleAng > carSim.carHandleAngMax) carSim.carHandleAng = carSim.carHandleAngMax;
             if (carSim.carHandleAng < -carSim.carHandleAngMax) carSim.carHandleAng = -carSim.carHandleAngMax;
 
@@ -106,8 +158,6 @@ namespace CersioSim
             lbl_HandleVal.Text = "ハンドル:" + carSim.carHandleAng.ToString("F2");
             lbl_AccVal.Text = "アクセル:" + carSim.carAccVal.ToString("F2");
 
-            //lbl_CarX.Text = "carX:" + ((double)carSim.wdCarF.x).ToString("F2");
-            //lbl_CarY.Text = "carY:" + ((double)carSim.wdCarF.y).ToString("F2");
             lbl_CarX.Text = "carX:" + ((double)carSim.mkp.X * ScaleRealToPixel).ToString("F2");
             lbl_CarY.Text = "carY:" + ((double)carSim.mkp.Y * ScaleRealToPixel).ToString("F2");
             lbl_Speed.Text = "Speed(Km):" + ((double)(4.0 * carSim.carAccVal)).ToString("F2");
@@ -133,7 +183,10 @@ namespace CersioSim
             picbox_SimArea.Invalidate();
 
             // マップフォーム処理
-            mapForm.tmr_Update_Tick(sender, e);
+            if (null != slamForm)
+            {
+                slamForm.tmr_Update_Tick(sender, e);
+            }
         }
 
         /// <summary>
@@ -352,6 +405,7 @@ namespace CersioSim
             viewScale = 1.0 + tBarScale.Value*0.5;
             lbl_ScaleVal.Text = viewScale.ToString("F1");
         }
+
 
     }
 }

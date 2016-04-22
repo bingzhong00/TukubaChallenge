@@ -234,6 +234,7 @@
             this.Controls.Add(this.picbox_SimArea);
             this.Name = "CersioSimForm";
             this.Text = "TKBC2016 Cersio Simurator";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CersioSimForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarScale)).EndInit();
