@@ -52,7 +52,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tb_LoginPW = new System.Windows.Forms.TextBox();
             this.tb_LoginID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.tb_LogFile = new System.Windows.Forms.TextBox();
             this.btn_LogFileDir = new System.Windows.Forms.Button();
             this.cb_LogFile = new System.Windows.Forms.CheckBox();
@@ -61,10 +60,13 @@
             this.tb_MapLogFile = new System.Windows.Forms.TextBox();
             this.btn_MapLogFileDir = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
-            this.tabPage_TextLog = new System.Windows.Forms.TabPage();
             this.tabPage_MapLog = new System.Windows.Forms.TabPage();
             this.btn_Clear = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tb_compus_Dir = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tb_Dir_REPlot = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -78,16 +80,14 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cb_UsbGps = new System.Windows.Forms.CheckBox();
             this.picbox_LRFMap = new System.Windows.Forms.PictureBox();
+            this.tabPage_TextLog = new System.Windows.Forms.TabPage();
             this.tb_LrfPort = new System.Windows.Forms.TextBox();
             this.tb_LrfIP = new System.Windows.Forms.TextBox();
             this.cb_Lrf = new System.Windows.Forms.CheckBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.cb_LogStart = new System.Windows.Forms.CheckBox();
             this.timerMapUpdate = new System.Windows.Forms.Timer(this.components);
-            this.tb_Dir_REPlot = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.tb_compus_Dir = new System.Windows.Forms.TextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -96,18 +96,20 @@
             this.groupBox4.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabControl.SuspendLayout();
-            this.tabPage_TextLog.SuspendLayout();
             this.tabPage_MapLog.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRFMap)).BeginInit();
+            this.tabPage_TextLog.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_Connect
             // 
             this.button_Connect.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_Connect.Location = new System.Drawing.Point(249, 75);
+            this.button_Connect.Location = new System.Drawing.Point(214, 14);
             this.button_Connect.Name = "button_Connect";
-            this.button_Connect.Size = new System.Drawing.Size(82, 28);
+            this.button_Connect.Size = new System.Drawing.Size(82, 25);
             this.button_Connect.TabIndex = 0;
             this.button_Connect.Text = "接続";
             this.button_Connect.UseVisualStyleBackColor = true;
@@ -116,7 +118,7 @@
             // textBox_ChangeIPAdress
             // 
             this.textBox_ChangeIPAdress.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox_ChangeIPAdress.Location = new System.Drawing.Point(64, 79);
+            this.textBox_ChangeIPAdress.Location = new System.Drawing.Point(17, 17);
             this.textBox_ChangeIPAdress.Name = "textBox_ChangeIPAdress";
             this.textBox_ChangeIPAdress.Size = new System.Drawing.Size(104, 23);
             this.textBox_ChangeIPAdress.TabIndex = 1;
@@ -138,7 +140,7 @@
             // textBox_port
             // 
             this.textBox_port.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox_port.Location = new System.Drawing.Point(175, 79);
+            this.textBox_port.Location = new System.Drawing.Point(127, 17);
             this.textBox_port.Name = "textBox_port";
             this.textBox_port.Size = new System.Drawing.Size(61, 23);
             this.textBox_port.TabIndex = 3;
@@ -369,15 +371,6 @@
             this.tb_LoginID.TabIndex = 11;
             this.tb_LoginID.Text = "noboru";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 85);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 12);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "BServer";
-            // 
             // tb_LogFile
             // 
             this.tb_LogFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -385,13 +378,13 @@
             this.tb_LogFile.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tb_LogFile.Location = new System.Drawing.Point(100, 18);
             this.tb_LogFile.Name = "tb_LogFile";
-            this.tb_LogFile.Size = new System.Drawing.Size(219, 20);
+            this.tb_LogFile.Size = new System.Drawing.Size(717, 20);
             this.tb_LogFile.TabIndex = 12;
             // 
             // btn_LogFileDir
             // 
             this.btn_LogFileDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_LogFileDir.Location = new System.Drawing.Point(325, 18);
+            this.btn_LogFileDir.Location = new System.Drawing.Point(823, 18);
             this.btn_LogFileDir.Name = "btn_LogFileDir";
             this.btn_LogFileDir.Size = new System.Drawing.Size(35, 23);
             this.btn_LogFileDir.TabIndex = 13;
@@ -423,9 +416,9 @@
             this.groupBox1.Controls.Add(this.cb_LogFile);
             this.groupBox1.Controls.Add(this.tb_LogFile);
             this.groupBox1.Controls.Add(this.btn_LogFileDir);
-            this.groupBox1.Location = new System.Drawing.Point(12, 15);
+            this.groupBox1.Location = new System.Drawing.Point(12, 8);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(864, 58);
+            this.groupBox1.Size = new System.Drawing.Size(864, 72);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Log出力";
@@ -436,7 +429,7 @@
             this.cb_MapLogFile.Checked = true;
             this.cb_MapLogFile.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_MapLogFile.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_MapLogFile.Location = new System.Drawing.Point(419, 18);
+            this.cb_MapLogFile.Location = new System.Drawing.Point(9, 44);
             this.cb_MapLogFile.Name = "cb_MapLogFile";
             this.cb_MapLogFile.Size = new System.Drawing.Size(89, 20);
             this.cb_MapLogFile.TabIndex = 18;
@@ -448,15 +441,15 @@
             this.tb_MapLogFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_MapLogFile.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_MapLogFile.Location = new System.Drawing.Point(514, 18);
+            this.tb_MapLogFile.Location = new System.Drawing.Point(100, 44);
             this.tb_MapLogFile.Name = "tb_MapLogFile";
-            this.tb_MapLogFile.Size = new System.Drawing.Size(205, 20);
+            this.tb_MapLogFile.Size = new System.Drawing.Size(717, 20);
             this.tb_MapLogFile.TabIndex = 16;
             // 
             // btn_MapLogFileDir
             // 
             this.btn_MapLogFileDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_MapLogFileDir.Location = new System.Drawing.Point(725, 18);
+            this.btn_MapLogFileDir.Location = new System.Drawing.Point(823, 43);
             this.btn_MapLogFileDir.Name = "btn_MapLogFileDir";
             this.btn_MapLogFileDir.Size = new System.Drawing.Size(35, 23);
             this.btn_MapLogFileDir.TabIndex = 17;
@@ -473,17 +466,6 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(888, 491);
             this.tabControl.TabIndex = 17;
-            // 
-            // tabPage_TextLog
-            // 
-            this.tabPage_TextLog.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage_TextLog.Controls.Add(this.splitContainer1);
-            this.tabPage_TextLog.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_TextLog.Name = "tabPage_TextLog";
-            this.tabPage_TextLog.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_TextLog.Size = new System.Drawing.Size(880, 465);
-            this.tabPage_TextLog.TabIndex = 0;
-            this.tabPage_TextLog.Text = "TextLog";
             // 
             // tabPage_MapLog
             // 
@@ -534,6 +516,42 @@
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "自己位置";
+            // 
+            // tb_compus_Dir
+            // 
+            this.tb_compus_Dir.Location = new System.Drawing.Point(200, 129);
+            this.tb_compus_Dir.Name = "tb_compus_Dir";
+            this.tb_compus_Dir.ReadOnly = true;
+            this.tb_compus_Dir.Size = new System.Drawing.Size(71, 23);
+            this.tb_compus_Dir.TabIndex = 13;
+            this.tb_compus_Dir.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(110, 132);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(81, 16);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "compusDir:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(161, 91);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(30, 16);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Dir:";
+            // 
+            // tb_Dir_REPlot
+            // 
+            this.tb_Dir_REPlot.Location = new System.Drawing.Point(197, 88);
+            this.tb_Dir_REPlot.Name = "tb_Dir_REPlot";
+            this.tb_Dir_REPlot.ReadOnly = true;
+            this.tb_Dir_REPlot.Size = new System.Drawing.Size(71, 23);
+            this.tb_Dir_REPlot.TabIndex = 10;
+            this.tb_Dir_REPlot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label7
             // 
@@ -659,10 +677,21 @@
             this.picbox_LRFMap.TabIndex = 0;
             this.picbox_LRFMap.TabStop = false;
             // 
+            // tabPage_TextLog
+            // 
+            this.tabPage_TextLog.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_TextLog.Controls.Add(this.splitContainer1);
+            this.tabPage_TextLog.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_TextLog.Name = "tabPage_TextLog";
+            this.tabPage_TextLog.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_TextLog.Size = new System.Drawing.Size(880, 465);
+            this.tabPage_TextLog.TabIndex = 0;
+            this.tabPage_TextLog.Text = "TextLog";
+            // 
             // tb_LrfPort
             // 
             this.tb_LrfPort.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_LrfPort.Location = new System.Drawing.Point(175, 112);
+            this.tb_LrfPort.Location = new System.Drawing.Point(125, 15);
             this.tb_LrfPort.Name = "tb_LrfPort";
             this.tb_LrfPort.Size = new System.Drawing.Size(61, 23);
             this.tb_LrfPort.TabIndex = 5;
@@ -671,7 +700,7 @@
             // tb_LrfIP
             // 
             this.tb_LrfIP.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_LrfIP.Location = new System.Drawing.Point(64, 112);
+            this.tb_LrfIP.Location = new System.Drawing.Point(15, 15);
             this.tb_LrfIP.Name = "tb_LrfIP";
             this.tb_LrfIP.Size = new System.Drawing.Size(104, 23);
             this.tb_LrfIP.TabIndex = 4;
@@ -681,30 +710,21 @@
             // 
             this.cb_Lrf.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_Lrf.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_Lrf.Location = new System.Drawing.Point(249, 109);
+            this.cb_Lrf.Location = new System.Drawing.Point(214, 15);
             this.cb_Lrf.Name = "cb_Lrf";
-            this.cb_Lrf.Size = new System.Drawing.Size(82, 28);
+            this.cb_Lrf.Size = new System.Drawing.Size(82, 25);
             this.cb_Lrf.TabIndex = 3;
             this.cb_Lrf.Text = "接続";
             this.cb_Lrf.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_Lrf.UseVisualStyleBackColor = true;
             this.cb_Lrf.CheckedChanged += new System.EventHandler(this.cb_Lrf_CheckedChanged);
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 119);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(26, 12);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "LRF";
-            // 
             // cb_LogStart
             // 
             this.cb_LogStart.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_LogStart.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.cb_LogStart.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.cb_LogStart.Location = new System.Drawing.Point(760, 105);
+            this.cb_LogStart.Location = new System.Drawing.Point(760, 94);
             this.cb_LogStart.Name = "cb_LogStart";
             this.cb_LogStart.Size = new System.Drawing.Size(113, 36);
             this.cb_LogStart.TabIndex = 19;
@@ -717,58 +737,40 @@
             // 
             this.timerMapUpdate.Tick += new System.EventHandler(this.timerMapUpdate_Tick);
             // 
-            // tb_Dir_REPlot
+            // groupBox5
             // 
-            this.tb_Dir_REPlot.Location = new System.Drawing.Point(197, 88);
-            this.tb_Dir_REPlot.Name = "tb_Dir_REPlot";
-            this.tb_Dir_REPlot.ReadOnly = true;
-            this.tb_Dir_REPlot.Size = new System.Drawing.Size(71, 23);
-            this.tb_Dir_REPlot.TabIndex = 10;
-            this.tb_Dir_REPlot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.groupBox5.Controls.Add(this.cb_Lrf);
+            this.groupBox5.Controls.Add(this.tb_LrfPort);
+            this.groupBox5.Controls.Add(this.tb_LrfIP);
+            this.groupBox5.Location = new System.Drawing.Point(320, 86);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(302, 47);
+            this.groupBox5.TabIndex = 20;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "LRF";
             // 
-            // label1
+            // groupBox6
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(161, 91);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 16);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "Dir:";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(110, 132);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(81, 16);
-            this.label9.TabIndex = 12;
-            this.label9.Text = "compusDir:";
-            // 
-            // tb_compus_Dir
-            // 
-            this.tb_compus_Dir.Location = new System.Drawing.Point(200, 129);
-            this.tb_compus_Dir.Name = "tb_compus_Dir";
-            this.tb_compus_Dir.ReadOnly = true;
-            this.tb_compus_Dir.Size = new System.Drawing.Size(71, 23);
-            this.tb_compus_Dir.TabIndex = 13;
-            this.tb_compus_Dir.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.groupBox6.Controls.Add(this.textBox_ChangeIPAdress);
+            this.groupBox6.Controls.Add(this.button_Connect);
+            this.groupBox6.Controls.Add(this.textBox_port);
+            this.groupBox6.Location = new System.Drawing.Point(12, 86);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(302, 47);
+            this.groupBox6.TabIndex = 21;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "BServer";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(888, 637);
+            this.Controls.Add(this.groupBox6);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.cb_LogStart);
-            this.Controls.Add(this.label8);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.cb_Lrf);
-            this.Controls.Add(this.tb_LrfPort);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.tb_LrfIP);
-            this.Controls.Add(this.textBox_ChangeIPAdress);
-            this.Controls.Add(this.button_Connect);
-            this.Controls.Add(this.textBox_port);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "MainForm";
             this.Text = "TcpLogger Ver0.60";
@@ -785,13 +787,16 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabControl.ResumeLayout(false);
-            this.tabPage_TextLog.ResumeLayout(false);
             this.tabPage_MapLog.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRFMap)).EndInit();
+            this.tabPage_TextLog.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -819,7 +824,6 @@
         private System.Windows.Forms.CheckBox cb_AutoREncoder;
         private System.Windows.Forms.CheckBox cb_AutoAll;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tb_LoginPW;
         private System.Windows.Forms.TextBox tb_LoginID;
         private System.Windows.Forms.CheckBox checkBox2;
@@ -849,13 +853,14 @@
         private System.Windows.Forms.TextBox tb_PosY_Gps;
         private System.Windows.Forms.TextBox tb_PosX_Gps;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox cb_LogStart;
         private System.Windows.Forms.Timer timerMapUpdate;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tb_Dir_REPlot;
         private System.Windows.Forms.TextBox tb_compus_Dir;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox6;
     }
 }
 

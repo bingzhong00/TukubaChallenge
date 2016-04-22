@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define EMURATE_MODE    
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -58,6 +60,13 @@ namespace TCPLogger
                 g.Dispose();
             }
             picbox_LRFMap.Image = autoMapBmp;
+
+
+#if EMURATE_MODE
+            // エミュレーションモード用アドレス
+            textBox_ChangeIPAdress.Text = "127.0.0.1";
+            tb_LrfIP.Text = "127.0.0.10";
+#endif
         }
 
         /// <summary>
@@ -73,7 +82,7 @@ namespace TCPLogger
                 urgLRF.setSaveLogFile(logFname);
             }
 
-            LRF_IPConnectFlg = urgLRF.IpOpen();
+            LRF_IPConnectFlg = urgLRF.IpOpen(tb_LrfIP.Text, Int16.Parse(tb_LrfPort.Text) );
             return LRF_IPConnectFlg;
         }
 
@@ -363,6 +372,11 @@ namespace TCPLogger
 
         }
 
+        /// <summary>
+        /// Mapログファイル選択
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_MapLogFileDir_Click(object sender, EventArgs e)
         {
             SaveFileDialog SvDlg = new SaveFileDialog();
@@ -378,35 +392,61 @@ namespace TCPLogger
             }
         }
 
+        /// <summary>
+        /// LRFへの接続
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_Lrf_CheckedChanged(object sender, EventArgs e)
         {
             // Connecting...
-            tb_LrfIP.BackColor = Color.Yellow;
-            tb_LrfPort.BackColor = Color.Yellow;
-
-            string saveLrfLogFname = null;
-
-            if (cb_MapLogFile.Checked)
+            if (cb_Lrf.Checked)
             {
-                saveLrfLogFname = tb_MapLogFile.Text;
-            }
+                // 元のカーソルを保持
+                Cursor preCursor = Cursor.Current;
+                // カーソルを待機カーソルに変更
+                Cursor.Current = Cursors.WaitCursor;
 
-            if (ConnectLRF(saveLrfLogFname))
-            {
-                // 接続ＯＫ
-                saveLogFname = tb_LogFile.Text;
+                // 接続中カラー
+                tb_LrfIP.BackColor = Color.Yellow;
+                tb_LrfPort.BackColor = Color.Yellow;
+                Application.DoEvents();
 
-                tb_LrfIP.BackColor = Color.Lime;
-                tb_LrfPort.BackColor = Color.Lime;
-            }
-            else
-            {
-                tb_LrfIP.BackColor = Color.Red;
-                tb_LrfPort.BackColor = Color.Red;
+                string saveLrfLogFname = null;
+
+                if (cb_LogFile.Checked)
+                {
+                    // LRF ログファイル名生成
+                    saveLrfLogFname = Path.GetDirectoryName(tb_LogFile.Text) + "\\" + GetNowTimeStampFileName("urgLog", ".log");
+                }
+
+                if (ConnectLRF(saveLrfLogFname))
+                {
+                    // 接続ＯＫ
+                    saveLogFname = tb_LogFile.Text;
+
+                    tb_LrfIP.BackColor = Color.Lime;
+                    tb_LrfPort.BackColor = Color.Lime;
+                }
+                else
+                {
+                    // 接続NG
+                    tb_LrfIP.BackColor = Color.Red;
+                    tb_LrfPort.BackColor = Color.Red;
+                    cb_Lrf.Checked = false;
+                }
+
+                // カーソルを元に戻す
+                Cursor.Current = preCursor;
             }
 
         }
 
+        /// <summary>
+        /// ログ開始
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_LogStart_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_LogStart.Checked)
