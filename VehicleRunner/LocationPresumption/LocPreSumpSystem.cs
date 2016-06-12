@@ -12,30 +12,28 @@ using SCIP_library;
 using Axiom.Math;
 
 /* Todo
- * 
+ * LRF管理クラスと分離  LRF_Ctrl.cs
  *
  */
+
+// 角度表記区別
+// Dir / Theta..角度(度数) -180 ～ 180
+// Ang / Rad ..ラディアン -Pi ～ Pi
+
+
 
 namespace LocationPresumption
 {
     /// <summary>
-    /// 自己位置推定計算　クラス
+    /// 自己位置推定 マップ座標変換計算　クラス
     /// </summary>
     public class LocPreSumpSystem
     {
-        // LRF
-        public URG_LRF urgLRF = null;               // nullで仮想MAPモード
-        public double[] LRF_Data = null;
+        // LRF管理
+        public LRF_Ctrl LRF = new LRF_Ctrl();
 
         public double RealToMapSclae;                // マップサイズから メートル変換
-        public double LRFmaxRange = 30.0 * 1000.0;   // LRFの有効範囲(単位 mm)
 
-        // LRFノイズリダクション
-        public double[] LRF_UntiNoiseData;
-        private const int maxLrfDir = 270;
-
-        /// <summary>LRFノイズリダクション係数 (1.0...ノイズ高め　/ 0.0...ノイズ低め　ただし反応がにぶい)</summary>
-        double LRF_noiseRate = 0.40;//0.50;
 
         // エリアマップ管理
         /// <summary>全体マップ</summary>
@@ -58,6 +56,9 @@ namespace LocationPresumption
         public MarkPoint E1;
         /// <summary>REplot差分計算</summary>
         public MarkPoint oldE1;
+        /// <summary>REplot座標基点</summary>
+        public MarkPoint E1_Pivot;
+
         /// <summary>PF想定ロボット位置</summary>
         public MarkPoint V1;
 
@@ -77,14 +78,15 @@ namespace LocationPresumption
 
 
         // REの絶対座標(差分計算用)
+        /*
         double nowREX;
         double nowREY;
         double nowRETheta;
-
+        */
 
         // 左回転が+　右が-
         public const int ParticleSize = 100;        // パーティクル数
-        private ParticleFilter Filter;              // サンプリング数、パーティクルのレンジ
+        private ParticleFilter ParticleFilter;              // サンプリング数、パーティクルのレンジ
         private List<Particle> Particles;           // パーティクルリスト
 
         // ログ
@@ -95,10 +97,6 @@ namespace LocationPresumption
 
         const int LogLine_maxDrawNum = 300; // 描画数上限
 
-
-        // 
-        float[] SinTbl = new float[360];
-        float[] CosTbl = new float[360];
 
         /// <summary>
         /// コンパスの情報があるか？
@@ -116,38 +114,64 @@ namespace LocationPresumption
         /// </summary>
         public static bool bEnableGPS = false;
 
-        /// <summary>
-        /// GPSがスタート時から更新されて信頼できる
-        /// </summary>
-        public static bool bTrustGPS = false;
-
         // GPSからMap変換時の(手で合わせた)スケール（計算上は必要ないはず。。）
-        const double GPStoMapScale = 60.0;
+        //const double GPStoMapScale = 60.0;
 
         // 1分の距離[mm] 1.85225Km
-        const double GPSScale = 1.85225 * 1000.0 * 1000.0 * GPStoMapScale;
+        const double GPSScale = 1.85225 * 1000.0 * 1000.0;
 
 
+        #region 設定パラメータ クラス
         /// <summary>
-        /// GPSの値を使って補正する
+        /// 設定フラグ
         /// </summary>
-        public static bool bRivisonGPS = false;
+        public class SettingParam
+        {
+            // 移動元センサー
+
+            /// <summary>
+            /// ロータリーエンコーダ　プロット座標
+            /// </summary>
+            public bool bMoveSrcRePlot;
+
+            /// <summary>
+            /// ＳＶＯ座標
+            /// </summary>
+            public bool bMoveSrcSVO;
+
+            /// <summary>
+            /// ＧＰＳ座標
+            /// </summary>
+            public bool bMoveSrcGPS;
+
+            // 向き
+
+            /// <summary>
+            /// ロータリーエンコーダ　プロット
+            /// </summary>
+            public bool bDirSrcRePlot;
+
+            /// <summary>
+            /// ＳＶＯ
+            /// </summary>
+            public bool bDirSrcSVO;
+
+            /// <summary>
+            /// ＧＰＳ
+            /// </summary>
+            public bool bDirSrcGPS;
+
+            /// <summary>
+            /// 地磁気
+            /// </summary>
+            public bool bDirSrcCompus;
+        }
+        #endregion
 
         /// <summary>
-        /// GPSで自己位置を更新する
-        /// True..GPS, False...RE
+        /// 設定パラメータ
         /// </summary>
-        public static bool bMoveUpdateGPS = false;
-        
-        /// <summary>
-        /// ParticleFilterをつかって補正する
-        /// </summary>
-        public static bool bRivisonPF = false;
-
-        /// <summary>
-        /// 一定時間で補正
-        /// </summary>
-        public static bool bTimeRivision = false;
+        public SettingParam Setting = new SettingParam();
 
         // -------------------------------------------------------------------------------------------------
         //
@@ -157,47 +181,14 @@ namespace LocationPresumption
         /// </summary>
         public LocPreSumpSystem()
         {
-            for(int i=0;i<360;i++)
-            {
-                SinTbl[i] = (float)Math.Sin((double)i * Math.PI / 180.0);
-                CosTbl[i] = (float)Math.Cos((double)i * Math.PI / 180.0);
-            }
-
-            LRF_UntiNoiseData = new double[maxLrfDir];
-
-            // いきなり接触状態にならないように初期化
-            for (int i = 0; i < LRF_UntiNoiseData.Length; i++)
-            {
-                LRF_UntiNoiseData[i] = LRFmaxRange;
-            }
         }
 
-        public int iAbs( int _v )
-        {
-            return (_v<0) ? -(_v) : (_v);
-        }
-
-
-
-        public float fSin( int ang )
-        {
-            int ln = (iAbs(ang) / 360) + 1;
-            ang = (ang + (360 * ln)) % 360;
-
-            return SinTbl[ang];
-        }
-
-        public float fCos(int ang)
-        {
-            int ln = (iAbs(ang) / 360) + 1;
-            ang = (ang + (360 * ln)) % 360;
-
-            return CosTbl[ang];
-        }
-
+        /// <summary>
+        /// クローズ
+        /// </summary>
         public void Close()
         {
-            CloseURG();
+            LRF.Close();
         }
 
         /// <summary>
@@ -215,7 +206,7 @@ namespace LocationPresumption
 
             // エリア初期化
             // エリアサイズ策定 LRF最大距離をエリアのピクセル数とする
-            int areaGridSize = (int)(LRFmaxRange / RealToMapSclae);
+            int areaGridSize = (int)(LRF_Ctrl.LRFmaxRange_mm / RealToMapSclae);
             worldMap.InitArea(areaGridSize, areaGridSize);
 
             AreaOverlayBmp = new Bitmap(OverlayBmpSize, OverlayBmpSize);
@@ -228,53 +219,14 @@ namespace LocationPresumption
         }
 
         /// <summary>
-        /// LRF初期化　ログデータモード
-        /// </summary>
-        /// <param name="logFilename"></param>
-        public void InitURG(string logFilename)
-        {
-            urgLRF = new URG_LRF();
-            urgLRF.LogFileOpen(logFilename);
-        }
-
-        /// <summary>
-        /// LRF初期化 ＬＡＮモード
-        /// </summary>
-        /// <param name="IPAddr"></param>
-        /// <param name="IPPort"></param>
-        public void InitURG(string IPAddr, int IPPort)
-        {
-            urgLRF = new URG_LRF();
-            urgLRF.IpOpen(IPAddr, IPPort);
-        }
-
-        /// <summary>
-        /// LRF初期化　エミュレーションモード
-        /// </summary>
-        public void InitURG()
-        {
-            urgLRF = null;
-        }
-
-        /// <summary>
-        /// LRFクローズ
-        /// </summary>
-        public void CloseURG()
-        {
-            if (null != urgLRF)
-            {
-                urgLRF.Close();
-            }
-        }
-
-        /// <summary>
         /// 自己位置推定  開始位置セット
         /// </summary>
-        /// <param name="stWldX"></param>
-        /// <param name="stWldY"></param>
+        /// <param name="stWldX">マップ座標X</param>
+        /// <param name="stWldY">マップ座標Y</param>
+        /// <param name="stDir">角度</param>
         public void SetStartPostion(int stWldX, int stWldY, double stDir)
         {
-            MRF = new MapRangeFinder(LRFmaxRange / RealToMapSclae);    // 仮想Map用 LRFクラス
+            MRF = new MapRangeFinder(LRF_Ctrl.LRFmaxRange_mm / RealToMapSclae);    // 仮想Map用 LRFクラス
 
             worldMap.UpdateAreaCenter(stWldX, stWldY);
             AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
@@ -286,6 +238,7 @@ namespace LocationPresumption
 
             E1 = new MarkPoint(stWldX, stWldY, stDir);        // R.Encoderの位置
             oldE1 = new MarkPoint(stWldX, stWldY, stDir);     // 
+            E1_Pivot = new MarkPoint(stWldX, stWldY, stDir);
 
             V1 = new MarkPoint(stWldX, stWldY, stDir);        // 推定位置ロボット
             C1 = new MarkPoint(0, 0, stDir);
@@ -297,7 +250,7 @@ namespace LocationPresumption
                 // サンプル数(ParticleSizeと同じで、すべてのパーティクルを対象とする)
                 // LRFの有効距離を半径に変換(/2.0)、20%の距離で散らばる
                 // +-5度の範囲
-                Filter = new ParticleFilter(ParticleSize*3/4, (((LRFmaxRange/2.0) * 0.20) / RealToMapSclae), 5.0 );        // サンプリング数、パーティクルのレンジ
+                ParticleFilter = new ParticleFilter(ParticleSize*3/4, (((LRF_Ctrl.LRFmaxRange_mm / 2.0) * 0.20) / RealToMapSclae), 5.0 );        // サンプリング数、パーティクルのレンジ
 
                 Particles = new List<Particle>();
                 for (int i = 0; i < ParticleSize; ++i)
@@ -309,11 +262,6 @@ namespace LocationPresumption
 
             // ローパスフィルター初期化
             ResetLPF_V1(V1);
-
-            // RE更新差分計算用リセット
-            nowREX = 0.0;
-            nowREY = 0.0;
-            nowRETheta = 0.0;
         }
 
 
@@ -346,76 +294,46 @@ namespace LocationPresumption
             }
         }
 
-
         /// <summary>
-        /// LRFデータ取得
-        /// </summary>
-        /// <returns></returns>
-        public bool LRF_Update()
-        {
-            bool rt = false;
-
-            if (null != urgLRF)
-            {
-                // LRFからデータ取得 (実データ or ログファイル)
-                double[] newLRFData = urgLRF.getScanData();
-
-                // データがあるか？
-                if (null != newLRFData && newLRFData.Count() > 0)
-                {
-                    LRF_Data = newLRFData;
-                    rt = true;
-                }
-            }
-            else
-            {
-                // マップから生成 (LRFエミュレーションモード)
-                LRF_Data = MRF.Sense( new MarkPoint( worldMap.GetAreaX(R1.X), worldMap.GetAreaY(R1.Y), R1.Theta ) );
-            }
-
-            // lrfノイズ リダクション
-            for (int i = 0; i < LRF_Data.Length; i++)
-            {
-                LRF_UntiNoiseData[i] = (LRF_UntiNoiseData[i] * (1.0 - LRF_noiseRate)) + (LRF_Data[i] * LRF_noiseRate);
-            }
-
-            return rt;
-        }
-
-        /// <summary>
-        /// LRF接続状態取得
-        /// </summary>
-        /// <returns></returns>
-        public bool IsLRFConnect()
-        {
-            if (null != urgLRF) return true;
-            return false;
-        }
-
-        /// <summary>
-        /// ロータリーエンコーダ値取得
+        /// マーカーに、ロータリーエンコーダPlot座標　反映
         /// </summary>
         /// <param name="reX">絶対座標X(mm)</param>
         /// <param name="reY">絶対座標Y(mm)</param>
         /// <param name="reTheta">角度（度）</param>
         /// <returns></returns>
-        public bool SetRotaryEncoderData(double reX, double reY,double reTheta)
+        public bool Input_RotaryEncoder(double reX, double reY,double reTheta)
         {
             // 単位変換
             reX = reX / RealToMapSclae;
             reY = reY / RealToMapSclae;
 
-            // 前回値との差分で更新
-            // (スタート位置、向きを反映)
-            E1.X += (reX - nowREX);
-            E1.Y += (reY - nowREY);
+            // ※リセット時点での向きで回転計算し
+            // スタート位置を加算することで、マップ上の座標に変換する
+            // E1.X = E1_Pivot.X + (E1_Pivot.Theta * (reX, reY)).X
+            // E1.Y = E1_Pivot.Y + (E1_Pivot.Theta * (reX, reY)).Y
+
+            E1.X = reX;
+            E1.Y = reY;
             E1.Theta = reTheta;
 
-            nowREX = reX;
-            nowREY = reY;
-            nowRETheta = reTheta;
-
             return true;
+        }
+
+        /// <summary>
+        /// ロータリーエンコーダ　マーカーリセット
+        /// </summary>
+        /// <param name="reX">mm</param>
+        /// <param name="reY">mm</param>
+        /// <param name="reTheta"></param>
+        public void Reset_RotaryEncoder_Maker(double reX, double reY, double reTheta)
+        {
+            // 単位変換
+            reX = reX / RealToMapSclae;
+            reY = reY / RealToMapSclae;
+             
+            oldE1.X = E1.X = reX;
+            oldE1.Y = E1.Y = reY;
+            oldE1.Theta = E1.Theta = reTheta;
         }
 
         /// <summary>
@@ -423,7 +341,7 @@ namespace LocationPresumption
         /// </summary>
         /// <param name="reTheta"></param>
         /// <returns></returns>
-        public bool SetCompassData(double reTheta)
+        public bool Input_Compass(double reTheta)
         {
             bActiveCompass = true;
             C1.Theta = reTheta;
@@ -437,7 +355,7 @@ namespace LocationPresumption
         /// <param name="landX"></param>
         /// <param name="landY"></param>
         /// <returns></returns>
-        public bool SetGPSData(double landX, double landY, double moveDir )
+        public bool Input_GPSData(double landX, double landY, double moveDir )
         {
             if (!bEnableGPS) return false;
 
@@ -463,8 +381,10 @@ namespace LocationPresumption
         /// </summary>
         /// <param name="landX"></param>
         /// <param name="landY"></param>
-        /// <returns></returns>
-        public static void SetStartGPS(double landX, double landY, int mapX, int mapY, bool bTrustFlg )
+        /// <param name="mapX">マップ上の座標</param>
+        /// <param name="mapY"></param>
+        /// <param name="bTrustFlg">信頼性(スタート地点からのセットならば True)</param>
+        public static void Set_GPSStart(double landX, double landY, int mapX, int mapY )
         {
             double ido = (int)landY;
             double kdo = (int)landX;
@@ -477,13 +397,11 @@ namespace LocationPresumption
             startPosGPS_MapY = mapY;
 
             bEnableGPS = true;
-            bTrustGPS = bTrustFlg;
         }
 
 
 
-        long upDateCnt = 0;
-        // 処理カウンタ
+        // 処理速度計測カウンタ
         public static System.Diagnostics.Stopwatch swCNT_Update = new System.Diagnostics.Stopwatch();
         public static System.Diagnostics.Stopwatch swCNT_MRF = new System.Diagnostics.Stopwatch();
 
@@ -506,7 +424,7 @@ namespace LocationPresumption
                 {
                     MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(mkp.X), worldMap.GetAreaY(mkp.Y), mkp.Theta);
 
-                    Filter.Localize(LRF_Data, MRF, locMkp, Particles);
+                    ParticleFilter.Localize(LRF.getData(), MRF, locMkp, Particles);
 
                     locMkp.X = worldMap.GetWorldX(locMkp.X);
                     locMkp.Y = worldMap.GetWorldY(locMkp.Y);
@@ -536,7 +454,7 @@ namespace LocationPresumption
             }
             else
             {
-                Filter.Localize(LRF_Data, MRF, mkp, Particles);
+                ParticleFilter.Localize(LRF.getData(), MRF, mkp, Particles);
             }
         }
 
@@ -551,7 +469,7 @@ namespace LocationPresumption
             MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(V1.X), worldMap.GetAreaY(V1.Y), V1.Theta);
 
             // パーティクルフィルター演算
-            Filter.Localize(LRF_Data, MRF, locMkp, Particles);
+            ParticleFilter.Localize(LRF.getData(), MRF, locMkp, Particles);
 
             if (useLPF)
             {
@@ -573,14 +491,10 @@ namespace LocationPresumption
         /// </summary>
         /// <param name="useAlwaysPF">毎回パーティクルフィルターを計算する</param>
         /// <returns>true...補正した, false..補正不要</returns>
-        public bool Update(bool useAlwaysPF)
+        public bool ParticleFilter_Update()
         {
             bool bResult = false;   // 補正したか？
 
-            // 自己位置推定位置がエリア内になるようにチェック
-            MoveAreaCheck();
-
-            if( useAlwaysPF)
             {
                 // 処理時間計測
                 swCNT_Update.Start();
@@ -592,55 +506,108 @@ namespace LocationPresumption
                 swCNT_Update.Stop();
             }
 
-            upDateCnt++;
+            return bResult;
+        }
+
+        /// <summary>
+        /// マップ座標更新
+        /// </summary>
+        /// <returns>false..MAP外(未実装)</returns>
+        public bool MapArea_Update()
+        {
+            bool bResult = true;   // マップ内か？
+
+            // 自己位置推定位置がエリア内になるようにチェック
+            MoveAreaCheck();
 
             return bResult;
         }
 
-
         /// <summary>
-        /// ロータリーエンコーダの移動量を元に自己位置更新
+        /// 現在位置更新
         /// </summary>
-        public void R1update_FromREPlot()
+        public void update_NowLocation()
         {
-            // 自己位置更新
-            // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
-            double diffREX = (E1.X - oldE1.X);
-            double diffREY = (E1.Y - oldE1.Y);
+            MarkPoint RePlotMkp = updateMkp_FromREPlot();
+            MarkPoint GpsMkp = updateMkp_FromGPS();
 
-            // 現在位置更新
-            R1.X += diffREX;
-            R1.Y += diffREY;
-            R1.Theta = E1.Theta; //  REの向き
+            // 移動情報 更新
+            if (Setting.bMoveSrcRePlot)
+            {
+                // R.E Plot
+                R1.X = RePlotMkp.X;
+                R1.Y = RePlotMkp.Y;
+            }
+            else if (Setting.bMoveSrcGPS)
+            {
+                // GPS
+                R1.X = GpsMkp.X;
+                R1.Y = GpsMkp.Y;
+            }
+            else if (Setting.bMoveSrcSVO)
+            {
+                // Semi-direct Monocular Visual Odometry
+                // ※未実装
+            }
 
-            // PF現在位置更新
-            V1.X += diffREX;
-            V1.Y += diffREY;
-            if (bActiveCompass) V1.Theta = C1.Theta; //  Compass
-            else V1.Theta = E1.Theta; //  REの向き
+            // 向き情報 更新
+            if (Setting.bDirSrcRePlot)
+            {
+                R1.Theta = RePlotMkp.Theta;
+            }
+            else if (Setting.bDirSrcGPS)
+            {
+                R1.Theta = GpsMkp.Theta;
+            }
+            else if (Setting.bDirSrcSVO)
+            {
+                // Semi-direct Monocular Visual Odometry
+                // ※未実装
+            }
+            else if (Setting.bDirSrcCompus)
+            {
+                if (bActiveCompass)
+                {
+                    R1.Theta = C1.Theta;
+                }
+            }
 
-            oldE1.Set(E1);
         }
 
         /// <summary>
-        /// GPSの移動量を元に自己位置更新
+        /// ロータリーエンコーダ  現在位置取得
+        /// 差分を計算し現在位置更新
         /// </summary>
-        public void R1update_FromGPS()
+        private MarkPoint updateMkp_FromREPlot()
         {
+            MarkPoint resMkp = new MarkPoint(R1);
+
             // 自己位置更新
             // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
-            double diffREX = (G1.X - oldG1.X);
-            double diffREY = (G1.Y - oldG1.Y);
-            R1.X += diffREX;
-            R1.Y += diffREY;
-            R1.Theta = C1.Theta; //  REの向き
+            resMkp.X += (E1.X - oldE1.X);
+            resMkp.Y += (E1.Y - oldE1.Y);
+            resMkp.Theta = E1.Theta; //  REの向き
+            oldE1.Set(E1);
 
-            V1.X += diffREX;
-            V1.Y += diffREY;
-            if (bActiveCompass) V1.Theta = C1.Theta; //  Compass
-            else V1.Theta = G1.Theta; //  REの向き
+            return resMkp;
+        }
 
+        /// <summary>
+        /// GPS 現在位置取得
+        /// 差分を計算し現在位置更新
+        /// </summary>
+        private MarkPoint updateMkp_FromGPS()
+        {
+            MarkPoint resMkp = new MarkPoint(R1);
+
+            // 自己位置更新
+            // ロータリーエンコーダの移動量差分を加えて、自己位置を更新
+            resMkp.X += (G1.X - oldG1.X);
+            resMkp.Y += (G1.Y - oldG1.Y);
+            resMkp.Theta = G1.Theta; //  REの向き
             oldG1.Set(G1);
+
+            return resMkp;
         }
 
         /// <summary>
@@ -754,7 +721,7 @@ namespace LocationPresumption
 
         // --------------------------------------------------------------------------------------------------------------------------------
         // 描画系
-
+        #region "LogMap描画"
         // 処理カウンタ
         public System.Diagnostics.Stopwatch swCNT_Draw = new System.Diagnostics.Stopwatch();
 
@@ -786,7 +753,7 @@ namespace LocationPresumption
                 //for (int i = 0; i < Particles.Count; i++)
                 {
                     var p = Particles[i];
-                    DrawMakerFast_Area(g, olScale, p.Location, Brushes.Blue, 5);
+                    DrawMaker_Area(g, olScale, p.Location, Brushes.Blue, 5);
                 }
             }
 
@@ -851,33 +818,6 @@ namespace LocationPresumption
             var P3 = new PointF(
                 (float)(mkX + size * Math.Cos((mkDir + 150) * Math.PI / 180.0)),
                 (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
-
-            g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
-        }
-
-        /// <summary>
-        /// マーカー描画　高速版
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="fScale"></param>
-        /// <param name="robot"></param>
-        /// <param name="brush"></param>
-        /// <param name="size"></param>
-        private void DrawMakerFast_Area(Graphics g, float fScale, MarkPoint robot, Brush brush, int size)
-        {
-            float mkX = (float)(worldMap.GetAreaX(robot.X) * fScale);
-            float mkY = (float)(worldMap.GetAreaY(robot.Y) * fScale);
-            int mkDir = (int)(robot.Theta - 90.0);
-
-            var P1 = new PointF(
-                mkX + size * fCos(mkDir),
-                mkY + size * fSin(mkDir));
-            var P2 = new PointF(
-                mkX + size * fCos(mkDir - 150),
-                mkY + size * fSin(mkDir - 150));
-            var P3 = new PointF(
-                mkX + size * fCos(mkDir + 150),
-                mkY + size * fSin(mkDir + 150));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
         }
@@ -1016,7 +956,7 @@ namespace LocationPresumption
             g.Dispose();
             return logBmp;
         }
-
+        #endregion
 
     }
 }

@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NO_LRF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -63,6 +63,7 @@
     <Compile Include="GridMap.cs" />
     <Compile Include="KalmanFilter.cs" />
     <Compile Include="LocPreSumpSystem.cs" />
+    <Compile Include="LRF_Ctrl.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

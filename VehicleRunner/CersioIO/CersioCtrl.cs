@@ -1,4 +1,4 @@
-﻿#define EMULATOR_MODE  // エミュレーション
+﻿#define EMULATOR_MODE  // bServer エミュレーション起動
 
 
 using System;
@@ -10,30 +10,31 @@ using System.IO;
 
 using LocationPresumption;
 using SCIP_library;
+using System.Diagnostics;
 
 
 namespace CersioIO
 {
     public class CersioCtrl
     {
-        // ブレイン
-        public Brain BrainCtrl;
-
-        // SH2直結時のアクセル、ハンドルコントロール
-        public DriveIOport UsbSH2IO;
-
-        // BOXPC通信用
+        // BOXPC(bServer)通信クラス
 #if EMULATOR_MODE
+        // エミュレータ接続先
         TCPClient objTCPSC = new TCPClient("127.0.0.1", 50001);
+
+        // エミュレータ用プロセス
+        Process processEmuSim = null;
+
+        public bool bServerEmu = true;
 #else
         TCPClient objTCPSC = new TCPClient("192.168.1.1", 50001);
+        public bool bServerEmu = false;
 #endif
 
+        // モータードライバー直結時
+        // アクセル、ハンドルコントローラ
+        public DriveIOport UsbMotorDriveIO;
 
-        // エミュレーション用　パッド操作
-        static public bool LeftBtn = false;
-        static public bool RightBtn = false;
-        static public bool FwdBtn = false;
 
         // 最近　送信したハンドル、アクセル
         static public double nowSendHandleValue;
@@ -48,9 +49,6 @@ namespace CersioIO
         public const double HandleControlPow = 0.125; // 0.15;
         public const double AccControlPowUP = 0.100; // 0.15;   // 加速時は緩やかに
         public const double AccControlPowDOWN = 0.150;
-
-        // ゴール到達フラグ
-        public bool goalFlg = false;
 
         // HW
         public int hwCompass = 0;
@@ -67,6 +65,10 @@ namespace CersioIO
 
         public double hwGPS_LandX = 0.0;
         public double hwGPS_LandY = 0.0;
+        /// <summary>
+        /// GPS移動情報からの向き
+        /// 比較的遅れる
+        /// </summary>
         public double hwGPS_MoveDir = 0.0;  // 0 ～ 359度
         public bool bhwGPS = false;
 
@@ -74,14 +76,14 @@ namespace CersioIO
         public string hwResiveStr;
         public string hwSendStr;
 
-
+        /// <summary>
+        /// USB GPS取得データ
+        /// </summary>
         public List<string> usbGPSResive = new List<string>();
 
         // --------------------------------------------------------------------------------------------------
         public CersioCtrl()
         {
-            BrainCtrl = new Brain(this);
-            goalFlg = false;
         }
 
         /// <summary>
@@ -89,8 +91,13 @@ namespace CersioIO
         /// </summary>
         public void Start()
         {
-            BrainCtrl.Reset();
-            goalFlg = false;
+#if EMULATOR_MODE
+            // セルシオ　エミュレータ起動
+            processEmuSim = Process.Start(@"..\..\..\CersioSim\bin\CersioSim.exe");
+
+            //アイドル状態になるまで待機
+            //processEmuSim.WaitForInputIdle();
+#endif
         }
 
         /// <summary>
@@ -108,12 +115,20 @@ namespace CersioIO
                 System.Threading.Thread.Sleep(50);
             }
 
-            if (null != UsbSH2IO)
+            if (null != UsbMotorDriveIO)
             {
-                UsbSH2IO.Close();
+                UsbMotorDriveIO.Close();
             }
 
             objTCPSC.Dispose();
+
+#if EMULATOR_MODE
+            // エミュレータ終了
+            if (null != processEmuSim)
+            {
+                processEmuSim.Kill();
+            }
+#endif
         }
 
         /// <summary>
@@ -139,21 +154,26 @@ namespace CersioIO
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="dir"></param>
-        public void RE_Reset(double x, double y, double dir)
+        public void SendCommand_RE_Reset(double x, double y, double dir)
         {
+            // 現在座標をセット
             SendCommand("AD," + ((float)x).ToString("f") + "," + ((float)y).ToString("f") + "\n");
-            //SendCommand("AD,0.0,0.0\n");
 
             // 角度をパイに、回転の+-を調整
             double rad = -dir * Math.PI / 180.0;
             SendCommand("AR," + rad.ToString("f") + "\n");
+        }
+
+        public void SendCommand_RE_Reset()
+        {
+            SendCommand_RE_Reset(0.0, 0.0, 0.0);
         }
 
         /// <summary>
         /// RE回転のみリセット
         /// </summary>
         /// <param name="dir"></param>
-        public void RE_Reset(double dir)
+        public void SendCommand_RE_Reset(double dir)
         {
             // 角度をパイに、回転の+-を調整
             double rad = -dir * Math.PI / 180.0;
@@ -161,102 +181,18 @@ namespace CersioIO
         }
 
 
-        // =====================================================================================
-
-        /// <summary>
-        /// 自己更新
-        /// </summary>
-        /// <param name="LocSys"></param>
-        /// <param name="useEBS"></param>
-        /// <returns></returns>
-        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF )
-        {
-            //
-            bool untiEBS = false;
-
- 
-            LeftBtn = RightBtn = FwdBtn = false;
-
-            if (!goalFlg)
-            {
-                // 自走処理
-                untiEBS = BrainCtrl.Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF);
-            }
-            
-#if DEBUG
-            // 直進用　常にスタート時の方位を向いてることにする。
-            //RE_Reset(RootingData.startDir);
-#endif
-
-            if ((Brain.EmgBrk && useEBS && !untiEBS) || goalFlg)
-            {
-                // 強制停止状態
-
-                // エマージェンシー ブレーキ
-                //handleValue = 0.0;
-                nowSendAccValue = 0.0;
-
-                if (TCP_IsConnected())
-                {
-                    // 停止情報送信
-                    SetCommandAC(0.0, 0.0);
-
-                    // 個々の取得コマンド
-                    // REncoder
-                    if (goalFlg)
-                    {
-                        // ゴールならスマイル
-                        SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.SMILE);
-                    }
-                    else
-                    {
-                        // 赤
-                        SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.RED, true);
-                    }
-                }
-            }
-            else
-            {
-                // 走行可能状態
-
-                // ルート計算から、目標ハンドル、目標アクセル値をもらう。
-                // 上限値をかける
-                double handleTgt = BrainCtrl.getHandleValue() * HandleRate;
-                double accTgt = BrainCtrl.getAccelValue() * AccRate;
-                double diffAcc = (accTgt - nowSendAccValue);
-
-                // ハンドル、アクセル操作を徐々に目的値に変更する
-                nowSendHandleValue += (handleTgt - nowSendHandleValue) * HandleControlPow;
-                nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));   
-
-
-                // 送信
-                SetCommandAC(nowSendHandleValue, nowSendAccValue);
-            }
-
-            goalFlg = BrainCtrl.RTS.getGoalFlg();
-            return goalFlg;
-        }
-
-        // =====================================================================================
         /// <summary>
         /// ハードウェアステータス取得
         /// </summary>
-        /// <param name="useUsbGPS">USBのＧＰＳを使っている</param>
+        /// <param name="useUsbGPS">USB接続のGPSを使う</param>
         public void GetHWStatus( bool useUsbGPS )
         {
-            /*
-            hwGPS_LandX = emuGPSX;
-            hwGPS_LandY = emuGPSY;
-            bhwGPS = true;
-
-            emuGPSX += 0.00001;//2cm
-            */
-
             if (TCP_IsConnected())
             {
+                // 受信コマンド解析
                 TCP_ReciveCommand();
 
+                // センサーデータ要求コマンド送信
                 // ロータリーエンコーダ値(回転累計)
                 SendCommand("A1" + "\n");
 
@@ -264,6 +200,7 @@ namespace CersioIO
                 SendCommand("A2" + "\n");
 
                 // GPS取得
+                // usbGPSを使う場合は、bServerのGPS情報を取得しない。
                 if (!useUsbGPS)
                 {
                     SendCommand("A3" + "\n");
@@ -277,7 +214,7 @@ namespace CersioIO
                 //TCP_SendCommand("AR," + rad.ToString("f") + "\n");
             }
 
-            //usbGPS取得
+            // USB GPS情報取得
             if( useUsbGPS ) AnalizeUsbGPS();
 
             // カウンタ更新
@@ -297,14 +234,38 @@ namespace CersioIO
                 // LAN接続
                 SendCommand("AC," + sendHandle.ToString("f2") + "," + sendAcc.ToString("f2") + "\n");
             }
-            else if (null != UsbSH2IO)
+            else if (null != UsbMotorDriveIO)
             {
                 // USB接続時
-                if (UsbSH2IO.IsConnect())
+                if (UsbMotorDriveIO.IsConnect())
                 {
-                    UsbSH2IO.Send_AC_Command(sendHandle, sendAcc);
+                    UsbMotorDriveIO.Send_AC_Command(sendHandle, sendAcc);
                 }
             }
+        }
+
+        /// <summary>
+        /// 現在値でコマンド発行
+        /// </summary>
+        public void SetCommandAC()
+        {
+            SetCommandAC(nowSendHandleValue, nowSendAccValue);
+        }
+
+        /// <summary>
+        /// 滑らかに動くハンドル、アクセルワークを計算する
+        /// </summary>
+        /// <param name="targetHandleVal"></param>
+        /// <param name="targetAccelVal"></param>
+        public void CalcHandleAccelControl(double targetHandleVal, double targetAccelVal )
+        {
+            double handleTgt = targetHandleVal * CersioCtrl.HandleRate;
+            double accTgt = targetAccelVal * CersioCtrl.AccRate;
+            double diffAcc = (accTgt - CersioCtrl.nowSendAccValue);
+
+            // ハンドル、アクセル操作を徐々に目的値に変更する
+            CersioCtrl.nowSendHandleValue += (handleTgt - CersioCtrl.nowSendHandleValue) * CersioCtrl.HandleControlPow;
+            CersioCtrl.nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * CersioCtrl.AccControlPowUP) : (diffAcc * CersioCtrl.AccControlPowDOWN));
         }
 
         // =====================================================================================
@@ -343,6 +304,9 @@ namespace CersioIO
         /// <returns>変更したor済み..True</returns>
         public bool SetHeadMarkLED(int setPattern, bool bForce=false )
         {
+            if (!TCP_IsConnected()) return false;
+
+
             if (bForce || (ptnHeadLED != setPattern && cntHeadLED == 0))
             {
                 SendCommand("AL," + setPattern.ToString() + ",\n");
@@ -388,7 +352,8 @@ namespace CersioIO
                 if (SendCommandList.Count > 100)
                 {
                     SendCommandList.Clear();
-                    Brain.addLogMsg += "SendCommandTick: OverFlow!\n";
+                    // ※ログ出力先　再検討
+                    //Brain.addLogMsg += "SendCommandTick: OverFlow!\n";
                 }
             }
             else
@@ -425,7 +390,8 @@ namespace CersioIO
                 catch (Exception e)
                 {
                     // 接続エラー
-                    Brain.addLogMsg += "TCP_SendCommand:Error "+e.Message+"\n";
+                    // ※ログ出力先　再検討
+                    //Brain.addLogMsg += "TCP_SendCommand:Error "+e.Message+"\n";
 
                     objTCPSC.DisConnect();
                 }
@@ -435,6 +401,10 @@ namespace CersioIO
         }
 
 
+
+        // -----------------------------------------------------------------------------------------
+        //
+        //
         public static int SpeedMH = 0;   // 速度　mm/Sec
         double oldResiveMS;         // 速度計測用 受信時間差分
         double oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
@@ -442,6 +412,10 @@ namespace CersioIO
         public double emuGPSX = 134.0000;
         public double emuGPSY = 35.0000;
 
+        /// <summary>
+        /// 受信コマンド解析
+        /// </summary>
+        /// <returns></returns>
         public string TCP_ReciveCommand()
         {
             System.Net.Sockets.TcpClient objSck = objTCPSC.SckProperty;
@@ -535,7 +509,7 @@ namespace CersioIO
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A4,")
                             {
-                                // ロータリーエンコーダ　絶対値
+                                // ロータリーエンコーダ  プロット座標
                                 // 開始時　真北基準
                                 /*
                                  * コマンド
@@ -556,11 +530,11 @@ namespace CersioIO
 
                                 string[] splStr = rsvCmd[i].Split(',');
 
-                                // splStr[0] "A2"
+                                // splStr[0] "A4"
                                 // ミリ秒取得
                                 double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
-                                double.TryParse(splStr[2], out ResiveX);  // 雑体座標X mm
-                                double.TryParse(splStr[3], out ResiveY);  // 雑体座標Y mm
+                                double.TryParse(splStr[2], out ResiveX);  // 絶対座標X mm
+                                double.TryParse(splStr[3], out ResiveY);  // 絶対座標Y mm
                                 double.TryParse(splStr[4], out ResiveRad);  // 向き -2PI 2PI
 
                                 // 座標系変換
@@ -569,7 +543,7 @@ namespace CersioIO
                                 // ※リセットした時点での電子コンパスの向きを元にマップ座標へ変換する必要がある。
                                 // 現在、真南に向けた状態であうように符号調整で対応されている状態
                                 hwREX = ResiveX;
-                                hwREY = -ResiveY;
+                                hwREY = ResiveY;
                                 hwREDir = -ResiveRad * 180.0 / Math.PI;
 
                                 bhwREPlot = true;
@@ -606,6 +580,10 @@ namespace CersioIO
         //const double GPSScaleX = 1.51985 * 1000.0 * 1000.0;    // 経度係数  35度時
         //const double GPSScaleY = 1.85225 * 1000.0 * 1000.0;    // 緯度係数
 
+        /// <summary>
+        /// USB GPSデータ解析
+        /// </summary>
+        /// <returns></returns>
         private bool AnalizeUsbGPS()
         {
             if (usbGPSResive.Count <= 10) return false;

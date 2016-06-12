@@ -7,6 +7,9 @@ using System.IO.Ports;
 
 namespace CersioIO
 {
+    /// <summary>
+    /// USBシリアルデータ、送受信
+    /// </summary>
     public class UsbIOport
     {
         protected SerialPort serialPort = null;

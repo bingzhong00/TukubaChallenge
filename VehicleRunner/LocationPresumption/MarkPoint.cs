@@ -55,6 +55,10 @@ namespace LocationPresumption
             Theta = theta;
         }
 
+        public MarkPoint(MarkPoint mkp) : this(mkp.X, mkp.Y, mkp.Theta)
+        {
+        }
+
         /// <summary>
         /// 他のマーカとの距離を返す
         /// </summary>

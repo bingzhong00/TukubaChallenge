@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Axiom.Math;
 
-namespace CersioIO
+namespace Navigation
 {
     public class RootingData
     {
