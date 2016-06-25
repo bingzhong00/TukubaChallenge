@@ -44,13 +44,47 @@
             this.cb_TraceView = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage_Status = new System.Windows.Forms.TabPage();
-            this.tabPage_Sencer1 = new System.Windows.Forms.TabPage();
-            this.tabPage_Sencer2 = new System.Windows.Forms.TabPage();
+            this.grp_Control = new System.Windows.Forms.GroupBox();
+            this.lbl_CtrlHandle = new System.Windows.Forms.Label();
+            this.lbl_CtrlAcc = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.lbl_LEDNo = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.lbl_GPSGrandY = new System.Windows.Forms.Label();
+            this.lbl_GPSGrandX = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.lblCompus = new System.Windows.Forms.Label();
+            this.grp_RePlot = new System.Windows.Forms.GroupBox();
+            this.lbl_ReL = new System.Windows.Forms.Label();
+            this.lbl_ReR = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lbl_RePlotAng = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lbl_RePlotY = new System.Windows.Forms.Label();
+            this.lbl_RePlotX = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tabPage_CarStatus = new System.Windows.Forms.TabPage();
+            this.lbl_PosRR = new System.Windows.Forms.Label();
+            this.lbl_PosRL = new System.Windows.Forms.Label();
+            this.lbl_PosRear = new System.Windows.Forms.Label();
+            this.lbl_PosFR = new System.Windows.Forms.Label();
+            this.lbl_PosFront = new System.Windows.Forms.Label();
+            this.lbl_PosFL = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cb_LRFForm = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarScale)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage_Status.SuspendLayout();
+            this.grp_Control.SuspendLayout();
+            this.grp_RePlot.SuspendLayout();
+            this.tabPage_CarStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_SimArea
@@ -91,7 +125,7 @@
             // lbl_CarX
             // 
             this.lbl_CarX.AutoSize = true;
-            this.lbl_CarX.Location = new System.Drawing.Point(17, 17);
+            this.lbl_CarX.Location = new System.Drawing.Point(17, 11);
             this.lbl_CarX.Name = "lbl_CarX";
             this.lbl_CarX.Size = new System.Drawing.Size(46, 12);
             this.lbl_CarX.TabIndex = 5;
@@ -100,7 +134,7 @@
             // lbl_CarY
             // 
             this.lbl_CarY.AutoSize = true;
-            this.lbl_CarY.Location = new System.Drawing.Point(17, 41);
+            this.lbl_CarY.Location = new System.Drawing.Point(17, 30);
             this.lbl_CarY.Name = "lbl_CarY";
             this.lbl_CarY.Size = new System.Drawing.Size(46, 12);
             this.lbl_CarY.TabIndex = 6;
@@ -167,7 +201,7 @@
             this.cb_TraceView.AutoSize = true;
             this.cb_TraceView.Checked = true;
             this.cb_TraceView.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_TraceView.Location = new System.Drawing.Point(579, 504);
+            this.cb_TraceView.Location = new System.Drawing.Point(472, 504);
             this.cb_TraceView.Name = "cb_TraceView";
             this.cb_TraceView.Size = new System.Drawing.Size(73, 16);
             this.cb_TraceView.TabIndex = 14;
@@ -177,8 +211,7 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage_Status);
-            this.tabControl1.Controls.Add(this.tabPage_Sencer1);
-            this.tabControl1.Controls.Add(this.tabPage_Sencer2);
+            this.tabControl1.Controls.Add(this.tabPage_CarStatus);
             this.tabControl1.Location = new System.Drawing.Point(662, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -187,6 +220,14 @@
             // 
             // tabPage_Status
             // 
+            this.tabPage_Status.Controls.Add(this.grp_Control);
+            this.tabPage_Status.Controls.Add(this.lbl_GPSGrandY);
+            this.tabPage_Status.Controls.Add(this.lbl_GPSGrandX);
+            this.tabPage_Status.Controls.Add(this.label8);
+            this.tabPage_Status.Controls.Add(this.label7);
+            this.tabPage_Status.Controls.Add(this.lblCompus);
+            this.tabPage_Status.Controls.Add(this.grp_RePlot);
+            this.tabPage_Status.Controls.Add(this.label6);
             this.tabPage_Status.Controls.Add(this.lbl_CarX);
             this.tabPage_Status.Controls.Add(this.lbl_CarY);
             this.tabPage_Status.Location = new System.Drawing.Point(4, 22);
@@ -194,33 +235,337 @@
             this.tabPage_Status.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_Status.Size = new System.Drawing.Size(213, 322);
             this.tabPage_Status.TabIndex = 0;
-            this.tabPage_Status.Text = "ステータス";
+            this.tabPage_Status.Text = "センサー情報";
             this.tabPage_Status.UseVisualStyleBackColor = true;
             // 
-            // tabPage_Sencer1
+            // grp_Control
             // 
-            this.tabPage_Sencer1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_Sencer1.Name = "tabPage_Sencer1";
-            this.tabPage_Sencer1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Sencer1.Size = new System.Drawing.Size(213, 322);
-            this.tabPage_Sencer1.TabIndex = 1;
-            this.tabPage_Sencer1.Text = "センサー1";
-            this.tabPage_Sencer1.UseVisualStyleBackColor = true;
+            this.grp_Control.Controls.Add(this.lbl_CtrlHandle);
+            this.grp_Control.Controls.Add(this.lbl_CtrlAcc);
+            this.grp_Control.Controls.Add(this.label13);
+            this.grp_Control.Controls.Add(this.label12);
+            this.grp_Control.Controls.Add(this.lbl_LEDNo);
+            this.grp_Control.Controls.Add(this.label11);
+            this.grp_Control.Location = new System.Drawing.Point(9, 265);
+            this.grp_Control.Name = "grp_Control";
+            this.grp_Control.Size = new System.Drawing.Size(192, 49);
+            this.grp_Control.TabIndex = 19;
+            this.grp_Control.TabStop = false;
+            this.grp_Control.Text = "コントロール";
             // 
-            // tabPage_Sencer2
+            // lbl_CtrlHandle
             // 
-            this.tabPage_Sencer2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_Sencer2.Name = "tabPage_Sencer2";
-            this.tabPage_Sencer2.Size = new System.Drawing.Size(213, 322);
-            this.tabPage_Sencer2.TabIndex = 2;
-            this.tabPage_Sencer2.Text = "センサー2";
-            this.tabPage_Sencer2.UseVisualStyleBackColor = true;
+            this.lbl_CtrlHandle.AutoSize = true;
+            this.lbl_CtrlHandle.Location = new System.Drawing.Point(68, 30);
+            this.lbl_CtrlHandle.Name = "lbl_CtrlHandle";
+            this.lbl_CtrlHandle.Size = new System.Drawing.Size(22, 12);
+            this.lbl_CtrlHandle.TabIndex = 22;
+            this.lbl_CtrlHandle.Text = "Hdl";
+            // 
+            // lbl_CtrlAcc
+            // 
+            this.lbl_CtrlAcc.AutoSize = true;
+            this.lbl_CtrlAcc.Location = new System.Drawing.Point(68, 15);
+            this.lbl_CtrlAcc.Name = "lbl_CtrlAcc";
+            this.lbl_CtrlAcc.Size = new System.Drawing.Size(25, 12);
+            this.lbl_CtrlAcc.TabIndex = 21;
+            this.lbl_CtrlAcc.Text = "Acc";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(19, 30);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(43, 12);
+            this.label13.TabIndex = 20;
+            this.label13.Text = "ハンドル";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(19, 15);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(42, 12);
+            this.label12.TabIndex = 19;
+            this.label12.Text = "アクセル";
+            // 
+            // lbl_LEDNo
+            // 
+            this.lbl_LEDNo.AutoSize = true;
+            this.lbl_LEDNo.Location = new System.Drawing.Point(147, 15);
+            this.lbl_LEDNo.Name = "lbl_LEDNo";
+            this.lbl_LEDNo.Size = new System.Drawing.Size(26, 12);
+            this.lbl_LEDNo.TabIndex = 18;
+            this.lbl_LEDNo.Text = "LED";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(111, 15);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(26, 12);
+            this.label11.TabIndex = 17;
+            this.label11.Text = "LED";
+            // 
+            // lbl_GPSGrandY
+            // 
+            this.lbl_GPSGrandY.AutoSize = true;
+            this.lbl_GPSGrandY.Location = new System.Drawing.Point(88, 249);
+            this.lbl_GPSGrandY.Name = "lbl_GPSGrandY";
+            this.lbl_GPSGrandY.Size = new System.Drawing.Size(64, 12);
+            this.lbl_GPSGrandY.TabIndex = 16;
+            this.lbl_GPSGrandY.Text = "GPSGrandY";
+            // 
+            // lbl_GPSGrandX
+            // 
+            this.lbl_GPSGrandX.AutoSize = true;
+            this.lbl_GPSGrandX.Location = new System.Drawing.Point(88, 228);
+            this.lbl_GPSGrandX.Name = "lbl_GPSGrandX";
+            this.lbl_GPSGrandX.Size = new System.Drawing.Size(64, 12);
+            this.lbl_GPSGrandX.TabIndex = 15;
+            this.lbl_GPSGrandX.Text = "GPSGrandX";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(17, 249);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(51, 12);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "GPS緯度";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(17, 228);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(51, 12);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "GPS経度";
+            // 
+            // lblCompus
+            // 
+            this.lblCompus.AutoSize = true;
+            this.lblCompus.Location = new System.Drawing.Point(88, 204);
+            this.lblCompus.Name = "lblCompus";
+            this.lblCompus.Size = new System.Drawing.Size(54, 12);
+            this.lblCompus.TabIndex = 12;
+            this.lblCompus.Text = "CompAng";
+            // 
+            // grp_RePlot
+            // 
+            this.grp_RePlot.Controls.Add(this.lbl_ReL);
+            this.grp_RePlot.Controls.Add(this.lbl_ReR);
+            this.grp_RePlot.Controls.Add(this.label10);
+            this.grp_RePlot.Controls.Add(this.label9);
+            this.grp_RePlot.Controls.Add(this.label5);
+            this.grp_RePlot.Controls.Add(this.lbl_RePlotAng);
+            this.grp_RePlot.Controls.Add(this.label3);
+            this.grp_RePlot.Controls.Add(this.label4);
+            this.grp_RePlot.Controls.Add(this.lbl_RePlotY);
+            this.grp_RePlot.Controls.Add(this.lbl_RePlotX);
+            this.grp_RePlot.Location = new System.Drawing.Point(9, 60);
+            this.grp_RePlot.Name = "grp_RePlot";
+            this.grp_RePlot.Size = new System.Drawing.Size(188, 129);
+            this.grp_RePlot.TabIndex = 11;
+            this.grp_RePlot.TabStop = false;
+            this.grp_RePlot.Text = "ロータリーエンコーダ";
+            // 
+            // lbl_ReL
+            // 
+            this.lbl_ReL.AutoSize = true;
+            this.lbl_ReL.Location = new System.Drawing.Point(68, 105);
+            this.lbl_ReL.Name = "lbl_ReL";
+            this.lbl_ReL.Size = new System.Drawing.Size(25, 12);
+            this.lbl_ReL.TabIndex = 18;
+            this.lbl_ReL.Text = "ReL";
+            // 
+            // lbl_ReR
+            // 
+            this.lbl_ReR.AutoSize = true;
+            this.lbl_ReR.Location = new System.Drawing.Point(68, 88);
+            this.lbl_ReR.Name = "lbl_ReR";
+            this.lbl_ReR.Size = new System.Drawing.Size(27, 12);
+            this.lbl_ReR.TabIndex = 17;
+            this.lbl_ReR.Text = "ReR";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(19, 105);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(42, 12);
+            this.label10.TabIndex = 16;
+            this.label10.Text = "REnc L";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(19, 88);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(44, 12);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "REnc R";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(19, 65);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(26, 12);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "向き";
+            // 
+            // lbl_RePlotAng
+            // 
+            this.lbl_RePlotAng.AutoSize = true;
+            this.lbl_RePlotAng.Location = new System.Drawing.Point(59, 65);
+            this.lbl_RePlotAng.Name = "lbl_RePlotAng";
+            this.lbl_RePlotAng.Size = new System.Drawing.Size(75, 12);
+            this.lbl_RePlotAng.TabIndex = 9;
+            this.lbl_RePlotAng.Text = "lbl_RePlotAng";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 23);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(32, 12);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "PlotX";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(19, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(32, 12);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "PlotY";
+            // 
+            // lbl_RePlotY
+            // 
+            this.lbl_RePlotY.AutoSize = true;
+            this.lbl_RePlotY.Location = new System.Drawing.Point(59, 44);
+            this.lbl_RePlotY.Name = "lbl_RePlotY";
+            this.lbl_RePlotY.Size = new System.Drawing.Size(62, 12);
+            this.lbl_RePlotY.TabIndex = 8;
+            this.lbl_RePlotY.Text = "lbl_RePlotY";
+            // 
+            // lbl_RePlotX
+            // 
+            this.lbl_RePlotX.AutoSize = true;
+            this.lbl_RePlotX.Location = new System.Drawing.Point(59, 23);
+            this.lbl_RePlotX.Name = "lbl_RePlotX";
+            this.lbl_RePlotX.Size = new System.Drawing.Size(62, 12);
+            this.lbl_RePlotX.TabIndex = 7;
+            this.lbl_RePlotX.Text = "lbl_RePlotX";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(17, 205);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(65, 12);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "電子コンパス";
+            // 
+            // tabPage_CarStatus
+            // 
+            this.tabPage_CarStatus.Controls.Add(this.lbl_PosRR);
+            this.tabPage_CarStatus.Controls.Add(this.lbl_PosRL);
+            this.tabPage_CarStatus.Controls.Add(this.lbl_PosRear);
+            this.tabPage_CarStatus.Controls.Add(this.lbl_PosFR);
+            this.tabPage_CarStatus.Controls.Add(this.lbl_PosFront);
+            this.tabPage_CarStatus.Controls.Add(this.lbl_PosFL);
+            this.tabPage_CarStatus.Controls.Add(this.label14);
+            this.tabPage_CarStatus.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_CarStatus.Name = "tabPage_CarStatus";
+            this.tabPage_CarStatus.Size = new System.Drawing.Size(213, 322);
+            this.tabPage_CarStatus.TabIndex = 1;
+            this.tabPage_CarStatus.Text = "車体情報";
+            this.tabPage_CarStatus.UseVisualStyleBackColor = true;
+            // 
+            // lbl_PosRR
+            // 
+            this.lbl_PosRR.AutoSize = true;
+            this.lbl_PosRR.Location = new System.Drawing.Point(102, 168);
+            this.lbl_PosRR.Name = "lbl_PosRR";
+            this.lbl_PosRR.Size = new System.Drawing.Size(41, 12);
+            this.lbl_PosRR.TabIndex = 6;
+            this.lbl_PosRR.Text = "label20";
+            // 
+            // lbl_PosRL
+            // 
+            this.lbl_PosRL.AutoSize = true;
+            this.lbl_PosRL.Location = new System.Drawing.Point(3, 168);
+            this.lbl_PosRL.Name = "lbl_PosRL";
+            this.lbl_PosRL.Size = new System.Drawing.Size(41, 12);
+            this.lbl_PosRL.TabIndex = 5;
+            this.lbl_PosRL.Text = "label19";
+            // 
+            // lbl_PosRear
+            // 
+            this.lbl_PosRear.AutoSize = true;
+            this.lbl_PosRear.Location = new System.Drawing.Point(29, 123);
+            this.lbl_PosRear.Name = "lbl_PosRear";
+            this.lbl_PosRear.Size = new System.Drawing.Size(41, 12);
+            this.lbl_PosRear.TabIndex = 4;
+            this.lbl_PosRear.Text = "label18";
+            // 
+            // lbl_PosFR
+            // 
+            this.lbl_PosFR.AutoSize = true;
+            this.lbl_PosFR.Location = new System.Drawing.Point(102, 51);
+            this.lbl_PosFR.Name = "lbl_PosFR";
+            this.lbl_PosFR.Size = new System.Drawing.Size(41, 12);
+            this.lbl_PosFR.TabIndex = 3;
+            this.lbl_PosFR.Text = "label17";
+            // 
+            // lbl_PosFront
+            // 
+            this.lbl_PosFront.AutoSize = true;
+            this.lbl_PosFront.Location = new System.Drawing.Point(29, 86);
+            this.lbl_PosFront.Name = "lbl_PosFront";
+            this.lbl_PosFront.Size = new System.Drawing.Size(41, 12);
+            this.lbl_PosFront.TabIndex = 2;
+            this.lbl_PosFront.Text = "label16";
+            // 
+            // lbl_PosFL
+            // 
+            this.lbl_PosFL.AutoSize = true;
+            this.lbl_PosFL.Location = new System.Drawing.Point(3, 51);
+            this.lbl_PosFL.Name = "lbl_PosFL";
+            this.lbl_PosFL.Size = new System.Drawing.Size(41, 12);
+            this.lbl_PosFL.TabIndex = 1;
+            this.lbl_PosFL.Text = "label15";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(72, 17);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(53, 12);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "車体座標";
+            // 
+            // cb_LRFForm
+            // 
+            this.cb_LRFForm.AutoSize = true;
+            this.cb_LRFForm.Location = new System.Drawing.Point(577, 504);
+            this.cb_LRFForm.Name = "cb_LRFForm";
+            this.cb_LRFForm.Size = new System.Drawing.Size(75, 16);
+            this.cb_LRFForm.TabIndex = 16;
+            this.cb_LRFForm.Text = "LRF Form";
+            this.cb_LRFForm.UseVisualStyleBackColor = true;
+            this.cb_LRFForm.CheckedChanged += new System.EventHandler(this.cb_LRFForm_CheckedChanged);
             // 
             // CersioSimForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(895, 543);
+            this.Controls.Add(this.cb_LRFForm);
             this.Controls.Add(this.lbl_Speed);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cb_TraceView);
@@ -241,6 +586,12 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage_Status.ResumeLayout(false);
             this.tabPage_Status.PerformLayout();
+            this.grp_Control.ResumeLayout(false);
+            this.grp_Control.PerformLayout();
+            this.grp_RePlot.ResumeLayout(false);
+            this.grp_RePlot.PerformLayout();
+            this.tabPage_CarStatus.ResumeLayout(false);
+            this.tabPage_CarStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -263,8 +614,39 @@
         private System.Windows.Forms.CheckBox cb_TraceView;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage_Status;
-        private System.Windows.Forms.TabPage tabPage_Sencer1;
-        private System.Windows.Forms.TabPage tabPage_Sencer2;
+        private System.Windows.Forms.Label lblCompus;
+        private System.Windows.Forms.GroupBox grp_RePlot;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lbl_RePlotAng;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lbl_RePlotY;
+        private System.Windows.Forms.Label lbl_RePlotX;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lbl_LEDNo;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label lbl_GPSGrandY;
+        private System.Windows.Forms.Label lbl_GPSGrandX;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label lbl_ReL;
+        private System.Windows.Forms.Label lbl_ReR;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.GroupBox grp_Control;
+        private System.Windows.Forms.Label lbl_CtrlHandle;
+        private System.Windows.Forms.Label lbl_CtrlAcc;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TabPage tabPage_CarStatus;
+        private System.Windows.Forms.Label lbl_PosRR;
+        private System.Windows.Forms.Label lbl_PosRL;
+        private System.Windows.Forms.Label lbl_PosRear;
+        private System.Windows.Forms.Label lbl_PosFR;
+        private System.Windows.Forms.Label lbl_PosFront;
+        private System.Windows.Forms.Label lbl_PosFL;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox cb_LRFForm;
     }
 }
 

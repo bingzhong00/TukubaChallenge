@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using System.Diagnostics;
@@ -71,14 +70,15 @@ namespace CersioSim
             SetView_CarCenter();
 
             // マップファイル読み込み
-            MapBmp = new Bitmap(MapFileName);
+            string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+            MapBmp = new Bitmap(path + "\\" + MapFileName);
 
             // シムカー生成
             carPos = new MarkPoint(carInitPos.X, carInitPos.Y, carInitPos.Theta );
             carSim.CarInit(carInitPos);
-            carSim.MapInit(MapFileName);
+            carSim.MapInit(MapBmp);
 
-            if( useSlamForm )
+            if( useSlamForm || cb_LRFForm.Checked)
             {
                 slamForm = new LRFMapForm(carSim, 1200, 1300, ScaleRealToPixel);
                 slamForm.Show();
@@ -126,28 +126,6 @@ namespace CersioSim
         /// <param name="e"></param>
         private void tmr_Update_Tick(object sender, EventArgs e)
         {
-            // bServer受信　メッセージ処理
-            if (bSrv.readMessage())
-            {
-                carSim.carHandleAng = bSrv.ctrHandle * 30.0;
-                carSim.carAccVal = bSrv.ctrAccel;
-
-                // ※リセット時に自分の向きに対して前をY+方向の座標としてX,Y座標、向きをかえす
-                // 暫定的に真南を向いた状態で合うように調整
-                // ↑ Y+
-                //  → X+
-                bSrv.senRePlotX = (carSim.mkp.X - carInitPos.X);
-                bSrv.senRePlotY = -(carSim.mkp.Y - carInitPos.Y);
-                //bSrv.senReAng = -((carSim.mkp.Theta - carInitPos.Theta) * Math.PI / 180.0);
-                bSrv.senReAng = -(carSim.mkp.Theta * Math.PI / 180.0);
-                bSrv.senCompusDir = carSim.mkp.Theta;
-            }
-
-            // URG受信
-            if (UrgSim.readMessage())
-            {
-            }
-
             // ハンドル上限、下限
             if (carSim.carHandleAng > carSim.carHandleAngMax) carSim.carHandleAng = carSim.carHandleAngMax;
             if (carSim.carHandleAng < -carSim.carHandleAngMax) carSim.carHandleAng = -carSim.carHandleAngMax;
@@ -169,8 +147,28 @@ namespace CersioSim
             // センサー情報更新
             carSim.SenserUpdate();
 
-            //carPos.X = (double)carSim.wdCarF.x;
-            //carPos.Y = (double)carSim.wdCarF.y;
+
+            // 車輪位置
+            {
+                lbl_PosFront.Text = "Front: " + ((double)carSim.wdCarF.x * ScaleRealToPixel).ToString("F2") + "/ "
+                                              + ((double)carSim.wdCarF.y * ScaleRealToPixel).ToString("F2");
+
+                lbl_PosRear.Text = "Rear: " + ((double)carSim.wdCarR.x * ScaleRealToPixel).ToString("F2") + "/ "
+                                            + ((double)carSim.wdCarR.y * ScaleRealToPixel).ToString("F2");
+
+                lbl_PosFL.Text = "FL: " + ((double)carSim.wdFL.x * ScaleRealToPixel).ToString("F2") + "/ "
+                                        + ((double)carSim.wdFL.y * ScaleRealToPixel).ToString("F2");
+
+                lbl_PosFR.Text = "FR: " + ((double)carSim.wdFR.x * ScaleRealToPixel).ToString("F2") + "/ "
+                                        + ((double)carSim.wdFR.y * ScaleRealToPixel).ToString("F2");
+
+                lbl_PosRL.Text = "RL: " + ((double)carSim.wdRL.x * ScaleRealToPixel).ToString("F2") + "/ "
+                                        + ((double)carSim.wdRL.y * ScaleRealToPixel).ToString("F2");
+
+                lbl_PosRR.Text = "RR: " + ((double)carSim.wdRR.x * ScaleRealToPixel).ToString("F2") + "/ "
+                                        + ((double)carSim.wdRR.y * ScaleRealToPixel).ToString("F2");
+            }
+
 
             // 画面移動
             if (cb_TraceView.Checked == true)
@@ -186,6 +184,138 @@ namespace CersioSim
             if (null != slamForm)
             {
                 slamForm.tmr_Update_Tick(sender, e);
+            }
+
+            // bServer受信処理　メッセージ処理
+            if (bSrv.readMessage())
+            {
+                // 受信コントロール情報
+                // アクセル、ハンドル値 セット
+                carSim.carHandleAng = -bSrv.ctrHandle * 30.0;
+                /*
+                 * ステアリングの遅れをシミュレーション
+                {
+                    const double stearingSpeed = 2.0;
+                    double tgtHandle = -bSrv.ctrHandle * 30.0;
+
+                    if (carSim.carHandleAng < tgtHandle) carSim.carHandleAng += stearingSpeed;
+                    else carSim.carHandleAng -= stearingSpeed;
+
+                    if (Math.Abs(carSim.carHandleAng - tgtHandle) < stearingSpeed)
+                    {
+                        carSim.carHandleAng = tgtHandle;
+                    }
+                }
+                */
+
+                carSim.carAccVal = bSrv.ctrAccel;
+            }
+
+            {
+                // 返却センサーデータ セット
+
+                // ロータリーエンコーダ　パルス値
+                if (bSrv.bResetRE)
+                {
+                    carSim.wheelPulseR = 0.0;
+                    carSim.wheelPulseL = 0.0;
+                    bSrv.senReR = 0;
+                    bSrv.senReL = 0;
+                    bSrv.bResetRE = false;
+                }
+
+                {
+                    // ロータリーエンコーダ　Plot
+                    // リセットされた時点ですべて0,0,0(X,Y,Dir)として、タイヤの回転値から移動量、向きを加算
+                    // ↑ Y-
+                    //  → X+
+                    /*
+                    bSrv.senRePlotX = (carSim.mkp.X - carInitPos.X);
+                    bSrv.senRePlotY = (carSim.mkp.Y - carInitPos.Y);
+                    bSrv.senReAng = -(carSim.mkp.Theta * Math.PI / 180.0);
+                    */
+
+                    // パルス値 前回保存
+                    bSrv.senReR_ = bSrv.senReR;
+                    bSrv.senReL_ = bSrv.senReL;
+
+                    bSrv.senReR = (long)carSim.wheelPulseR;
+                    bSrv.senReL = (long)carSim.wheelPulseL;
+
+                    // パルス値の差分から移動座標を計算
+                    REncoderToMap.CalcWheelPlotXY(ref bSrv.plotWheelR, ref bSrv.plotWheelL, ref bSrv.senReAng_Out,
+                                                  bSrv.senReR, bSrv.senReL,
+                                                  bSrv.senReR_, bSrv.senReL_);
+
+                    // 現在位置を両輪の中心点で計算
+                    bSrv.senRePlotX_Out = ((bSrv.plotWheelR.X + bSrv.plotWheelL.X) * 0.5);
+                    bSrv.senRePlotY_Out = ((bSrv.plotWheelR.Y + bSrv.plotWheelL.Y) * 0.5);
+                }
+
+                // 電子コンパス
+                {
+                    bSrv.senCompusDir = ((int)carSim.mkp.Theta) % 360;
+                    if (bSrv.senCompusDir < 0) bSrv.senCompusDir += 360;
+                }
+
+                // GPS
+                {
+                    // GPSからMap変換時の(手で合わせた)スケール（計算上は必要ないはずなんだが・・）
+                    //const double GPStoMapScale = 60.0;
+
+                    // 1分の距離[mm] 1.85225Km
+                    const double GPSScale = 1.85225 * 1000.0 * 1000.0;
+
+                    /*
+                    // GPS 緯度(Y)、経度(X)
+                    double ido = (int)landY;
+                    double kdo = (int)landX;
+
+                    double mapY = (ido * 60.0 + (landY - ido)) * GPSScale;
+                    double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
+                    */
+                    double ido = carSim.mkp.Y / GPSScale;
+                    double kdo = carSim.mkp.X / (GPSScale * Math.Cos(ido * Math.PI / 180.0));
+
+                    bSrv.senGpsLandY = -ido;
+                    bSrv.senGpsLandX = kdo;
+                }
+            }
+
+            // 画面表示　ラベル
+            {
+                // R.Enc
+                lbl_RePlotX.Text = bSrv.senRePlotX_Out.ToString("f3");
+                lbl_RePlotY.Text = bSrv.senRePlotY_Out.ToString("f3");
+                lbl_RePlotAng.Text = bSrv.senReAng_Out.ToString("f3") + " /度 " + (bSrv.senReAng_Out*180.0/Math.PI).ToString("f3");
+                lbl_ReR.Text = bSrv.senReR.ToString();
+                lbl_ReL.Text = bSrv.senReL.ToString();
+
+                // 地磁気
+                lblCompus.Text = bSrv.senCompusDir.ToString("f2");
+
+                // GPS
+                lbl_GPSGrandX.Text = bSrv.senGpsLandX.ToString("f8");
+                lbl_GPSGrandY.Text = bSrv.senGpsLandY.ToString("f8");
+
+                // コントロール
+                lbl_LEDNo.Text = bSrv.ctrLedPattern.ToString();
+                lbl_CtrlAcc.Text = bSrv.ctrAccel.ToString();
+                lbl_CtrlHandle.Text = bSrv.ctrHandle.ToString();
+            }
+
+
+            // LRFセンサー情報取得
+            for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
+            {
+                UrgSim.lrfData[i] = (short)carSim.mkp.LRFdata[i];
+            }
+            UrgSim.numLrfData = carSim.mkp.LRFdata.Length;
+
+            
+            // URGコマンド受信処理
+            if (UrgSim.readMessage())
+            {
             }
         }
 
@@ -385,6 +515,23 @@ namespace CersioSim
 
                 carSim.carHandleAng = ((double)difX / (picbox_MsController.Width / 2.0)) * 30.0;
                 carSim.carAccVal = (double)-difY / (picbox_MsController.Height / 2.0);
+            }
+        }
+
+        private void cb_LRFForm_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_LRFForm.Checked)
+            {
+                slamForm = new LRFMapForm(carSim, 1200, 1300, ScaleRealToPixel);
+                slamForm.Show();
+            }
+            else
+            {
+                if (null != slamForm)
+                {
+                    slamForm.Close();
+                    slamForm = null;
+                }
             }
         }
 

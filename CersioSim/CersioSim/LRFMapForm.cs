@@ -24,7 +24,7 @@ namespace CersioSim
         /// <summary>
         /// 自動マップ描画　最大レンジ（30m以上はつきぬけなので、描画しない）
         /// </summary>
-        const double MAP_DRAW_MAX_RANGE = 25 * 1000;
+        const double MAP_DRAW_MAX_RANGE = 99 * 1000;///25 * 1000;
 
         public LRFMapForm(CarSim _carSim,int mapWidth, int mapHeight,double _ScaleToPixel )
         {

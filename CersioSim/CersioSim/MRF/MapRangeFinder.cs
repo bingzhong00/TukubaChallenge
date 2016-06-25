@@ -103,6 +103,13 @@ namespace LocationPresumption
             Map = new GridMap(bmpMap);
         }
 
+        public MapRangeFinder(double rangeMax, double pixelScale, Bitmap srcBmpMap)
+            : this(rangeMax, pixelScale)
+        {
+            Bitmap bmpMap = new Bitmap(srcBmpMap);
+            Map = new GridMap(bmpMap);
+        }
+
         public void SetMap(GridMap map)
         {
             Map = map;

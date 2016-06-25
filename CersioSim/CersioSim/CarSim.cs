@@ -18,14 +18,14 @@ namespace CersioSim
         // センサー系シミュレート変数
         // car senser emu
         public MapRangeFinder mrf;
-        public MarkPoint mkp = new MarkPoint(0,0,0);
+        public MarkPoint mkp = new MarkPoint(0, 0, 0);
         public double PixelScale = 100.0;
 
 
         // 走行系シミュレート変数
         // car drive emu
         const double carWidth = 450.0;     // 左右のタイヤ間の距離 mm
-        const double carWidthHf = carWidth/2.0;
+        const double carWidthHf = carWidth / 2.0;
         const double carHeight = 450.0;    // ホイールベース
 
         const double carTireSize = 120.0 * 2.0;    // タイヤ直径 見やすく2倍
@@ -33,10 +33,13 @@ namespace CersioSim
 
         // 
         // 各タイヤの初期位置
-        private Vector3 wdFL = new Vector3();
-        private Vector3 wdFR = new Vector3();
-        private Vector3 wdRL = new Vector3();
-        private Vector3 wdRR = new Vector3();
+        public Vector3 wdFL = new Vector3();
+        public Vector3 wdFR = new Vector3();
+        public Vector3 wdRL = new Vector3();
+        public Vector3 wdRR = new Vector3();
+
+        public Vector3 wdRLOld = new Vector3();
+        public Vector3 wdRROld = new Vector3();
 
         // クルマの中心点
         // 車の基準点を前輪軸の真ん中とする
@@ -53,10 +56,14 @@ namespace CersioSim
         // +で前進
         public double carAccVal = 0.0;
 
+        // ロータリーエンコーダ パルス値
+        public double wheelPulseR = 0.0;
+        public double wheelPulseL = 0.0;
+
         /// <summary>
         /// クルマ初期化
         /// </summary>
-        public void CarInit(double posx,double posy,double ang)
+        public void CarInit(double posx, double posy, double ang)
         {
             carHandleAng = 0.0;
             carAccVal = 0.0;
@@ -85,6 +92,12 @@ namespace CersioSim
             oldMS = DateTime.Now.Millisecond;
 
             calcTirePos(0);
+
+            wdRLOld = new Vector3(wdRL.x, wdRL.y, wdRL.z);
+            wdRROld = new Vector3(wdRR.x, wdRR.y, wdRR.z);
+
+            wheelPulseR = 0.0;
+            wheelPulseL = 0.0;
         }
 
         public void CarInit(MarkPoint _mkp)
@@ -93,20 +106,27 @@ namespace CersioSim
             mkp.Set(_mkp);
         }
 
+        /// <summary>
+        /// センサー情報更新
+        /// </summary>
         public void SenserUpdate()
         {
+            // LRF
             // マップ座標に変換
             mkp.LRFdata = mrf.Sense(new MarkPoint(mkp.X, mkp.Y, mkp.Theta));
+
+            // R.E.
+            CalcWheelPosToREPulse();
         }
 
         /// <summary>
         /// MAP初期化
         /// </summary>
         /// <param name="fname"></param>
-        public void MapInit(string fname)
+        public void MapInit(Bitmap mapBmp)
         {
             // 30m
-            mrf = new MapRangeFinder((30 * 1000),PixelScale, fname);
+            mrf = new MapRangeFinder((30 * 1000), PixelScale, mapBmp);
         }
 
         /// <summary>
@@ -137,16 +157,19 @@ namespace CersioSim
         }
 
         long oldMS;
+
         /// <summary>
-        ///  タイヤ位置計算
+        /// タイヤ位置計算
         /// </summary>
-        public void calcTirePos( long timeTick )
+        /// <param name="timeTick"></param>
+        public void calcTirePos(long timeTick)
         {
             long difMS = timeTick; //DateTime.Now.Millisecond - oldMS;
             //double moveRad = (wdCarAng + carHandleAng) * Math.PI / 180.0;
 
             double moveLength = ((double)((4 * 1000 * 1000) / 60 / 60) / 1000.0);      // 単位時間内の移動量 時速4Km計算
 
+            // 時間辺りの移動量を求める
             moveLength = moveLength * -carAccVal * (double)difMS;
 
             oldMS = DateTime.Now.Millisecond;
@@ -159,7 +182,7 @@ namespace CersioSim
                 moveVec.y = moveLength;
                 moveVec = rotQt.ToRotationMatrix() * moveVec;
 
-                // クルマの向きを求める
+                // ハンドリングの影響を加えて、クルマの向きを求める
 #if true
                 {
                     Vector3 carVec = new Vector3();
@@ -189,6 +212,7 @@ namespace CersioSim
                 moveVec.y = moveLength;
                 moveVec = rotQt.ToRotationMatrix() * moveVec;
 
+                // フロント中心軸を移動量分加算
                 wdCarF += moveVec;
 
                 // mkpへ反映
@@ -198,6 +222,47 @@ namespace CersioSim
                     mkp.Theta = wdCarAng;
                 }
                 //Debug.WriteLine(wdCarF);
+
+                // 差分ように更新前の値を保存
+                wdRLOld = new Vector3(wdRL.x, wdRL.y, wdRL.z);
+                wdRROld = new Vector3(wdRR.x, wdRR.y, wdRR.z);
+
+                // 各車輪の位置座標計算
+                Vector3 shaftVec = new Vector3();
+                Vector3 wheelFRvec = new Vector3();
+                Vector3 wheelFLvec = new Vector3();
+                Vector3 wheelRvec = new Vector3();
+                Vector3 wheelLvec = new Vector3();
+
+                // 前輪位置 算出
+                wheelFRvec.x = carWidthHf;
+                wheelFLvec.x = -carWidthHf;
+
+                wheelFRvec = rotQt.ToRotationMatrix() * wheelFRvec;
+                wheelFLvec = rotQt.ToRotationMatrix() * wheelFLvec;
+
+                wdFR = wheelFRvec + wdCarF;
+                wdFL = wheelFLvec + wdCarF;
+
+                // バック側　中心位置
+                shaftVec.y = carHeight;
+                shaftVec = rotQt.ToRotationMatrix() * shaftVec;
+                shaftVec += wdCarF;
+
+                wdCarR = shaftVec;
+
+                // 後輪位置算出
+                wheelRvec.y = carHeight;
+                wheelRvec.x = carWidthHf;
+
+                wheelLvec.y = carHeight;
+                wheelLvec.x = -carWidthHf;
+
+                wheelRvec = rotQt.ToRotationMatrix() * wheelRvec;
+                wheelLvec = rotQt.ToRotationMatrix() * wheelLvec;
+
+                wdRR = wheelRvec + wdCarF;
+                wdRL = wheelLvec + wdCarF;
             }
 
             // フロント軸位置とクルマの向きを元に、車輪の位置を求める
@@ -207,6 +272,43 @@ namespace CersioSim
         }
 
 
+
+
+        /// <summary>
+        /// ホイールの移動量から
+        /// ロータリーエンコーダ　回転パルス値を計算
+        /// </summary>
+        public void CalcWheelPosToREPulse()
+        {
+            const double WheelSize = 175;//172;    // ホイール直径
+            const double OneRotValue = 240;   // １回転分の分解能
+
+
+            // 移動差分から、移動量を求める
+            Vector3 wheelLmov = new Vector3(wdRL.x - wdRLOld.x,
+                                             wdRL.y - wdRLOld.y,
+                                             wdRL.z - wdRLOld.z);
+
+            Vector3 wheelRmov = new Vector3(wdRR.x - wdRROld.x,
+                                             wdRR.y - wdRROld.y,
+                                             wdRR.z - wdRROld.z);
+
+            // 移動量(長さ) / ホイール１回転の長さ * １回転のパルス数
+            wheelPulseL += wheelLmov.Length / (WheelSize * Math.PI) * OneRotValue;
+            wheelPulseR += wheelRmov.Length / (WheelSize * Math.PI) * OneRotValue;
+
+        }
+
+
+
+        /// <summary>
+        /// クルマ描画
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="ScaleRealToPixel"></param>
+        /// <param name="ViewScale"></param>
+        /// <param name="viewX"></param>
+        /// <param name="viewY"></param>
         public void DrawCar(Graphics g, double ScaleRealToPixel, double ViewScale, double viewX, double viewY)
         {
             // 左右車輪間のライン、前後車軸間のライン

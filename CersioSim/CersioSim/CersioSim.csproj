@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Axiom, Version=0.8.3376.12322, Culture=neutral, processorArchitecture=x86">
@@ -73,6 +74,7 @@
     <Compile Include="MRF\MarkPoint.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="REncoderToMap.cs" />
     <Compile Include="SCIPsim.cs" />
     <EmbeddedResource Include="LRFMapForm.resx">
       <DependentUpon>LRFMapForm.cs</DependentUpon>

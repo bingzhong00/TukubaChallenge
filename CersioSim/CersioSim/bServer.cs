@@ -12,11 +12,32 @@ namespace CersioSim
         // ロータリーエンコーダ
         // パルス数
         public long senReR, senReL;
+
+        // Plot計算用
+        public long senReR_, senReL_;
+        public PointD plotWheelR = new PointD();
+        public PointD plotWheelL = new PointD();
+
+        public bool bResetRE = false;
+
         // PlotX,Y
         public double senRePlotX, senRePlotY;
         // Angle
         public double senReAng;
 
+        // リセット、補正値
+        public double senRePlotX_Rst = 0.0;
+        public double senRePlotY_Rst = 0.0;
+        public double senReAng_Rst = 0.0;
+
+        public double senRePlotX_RstAdd = 0.0;
+        public double senRePlotY_RstAdd = 0.0;
+        public double senReAng_RstAdd = 0.0;
+
+        // 出力値
+        public double senRePlotX_Out, senRePlotY_Out;
+        // Angle
+        public double senReAng_Out;
 
         // 地磁気
         // 0～360度
@@ -197,20 +218,20 @@ namespace CersioSim
                 {
                     // REパルス数
                     // A1,ms,R,L
-                    sendStr = string.Format("A1,{0},{1},{2}$", nowMs, senReR, senReL);
+                    //sendStr += string.Format("A1,{0},{1},{2}$", nowMs, senReR, senReL);
                 }
                 else if (commandStr == "A2")
                 {
                     // コンパス情報
                     // A2,22.5068,210$
-                    //sendStr = string.Format("A2,{0},{1}$", nowMs, (int)senCompusDir%360 );
+                    sendStr += string.Format("A2,{0},{1}$", nowMs, (int)senCompusDir%360 );
                 }
                 else if (commandStr == "A3")
                 {
                     // GPS情報
                     //              経度、緯度
                     // $A3,38.266,36.8002,140.11559$
-                    sendStr = string.Format("A3,{0},{1},{2}$", nowMs, senGpsLandX, senGpsLandY);
+                    sendStr += string.Format("A3,{0},{1},{2}$", nowMs, senGpsLandX, senGpsLandY);
                 }
                 else if (commandStr == "A4")
                 {
@@ -228,10 +249,36 @@ namespace CersioSim
                         絶対座標上での向き[rad]　-2π～2π
                         浮動小数点です。
                         */
-                    sendStr = string.Format("A4,{0},{1},{2},{3}$", nowMs, senRePlotX, senRePlotY, senReAng );
+                    /*
+                    senRePlotX_Out = (senRePlotX - senRePlotX_Rst + senRePlotX_RstAdd);
+                    senRePlotY_Out = (senRePlotY - senRePlotY_Rst + senRePlotY_RstAdd);
+                    senReAng_Out = (senReAng - senReAng_Rst + senReAng_RstAdd);
+                    */
+                    /*
+                    {
+                        double resAng = 0.0;
+
+
+                        // ※ここではなくMainFormで計算すべきか
+                        // 結果をFromに表示も必要
+                        REncoderToMap.CalcWheelPlotXY(ref plotWheelR, ref plotWheelL, ref resAng,
+                                                      senReR, senReL,
+                                                      senReR_, senReL_);
+
+                        senRePlotX_Out = ((plotWheelR.X + plotWheelL.X) * 0.5) + senRePlotX_RstAdd;
+                        senRePlotY_Out = ((plotWheelR.Y + plotWheelL.Y) * 0.5) + senRePlotY_RstAdd;
+                        senReAng_Out = resAng + senReAng_RstAdd;
+                    }
+                    */
+
+                    sendStr += string.Format("A4,{0},{1},{2},{3}$", nowMs,
+                                              senRePlotX_Out + senRePlotX_RstAdd,
+                                              senRePlotY_Out + senRePlotY_RstAdd,
+                                              senReAng_Out + senReAng_RstAdd);
                 }
                 else if (commandStr == "AC")
                 {
+                    // ハンドル、アクセル値 取得
                     string[] splStr = rsvCmd[i].Split(',');
 
                     double.TryParse(splStr[1], out ctrHandle);  // ハンドル -1.0～1.0 
@@ -239,9 +286,37 @@ namespace CersioSim
                 }
                 else if (rsvCmd[i].Substring(0, 3) == "AL,")
                 {
+                    // LEDパターン
                     string[] splStr = rsvCmd[i].Split(',');
 
                     int.TryParse(splStr[1], out ctrLedPattern);  // LEDパターン
+                }
+                else if (rsvCmd[i].Substring(0, 3) == "AD,")
+                {
+                    // RePlot 向きリセット
+                    string[] splStr = rsvCmd[i].Split(',');
+
+                    senRePlotX_Rst = senRePlotX;
+                    senRePlotY_Rst = senRePlotY;
+
+                    double.TryParse(splStr[1], out senRePlotX_RstAdd);
+                    double.TryParse(splStr[2], out senRePlotY_RstAdd);
+
+                    //
+                    plotWheelR.X = 250.0;
+                    plotWheelR.Y = 0.0;
+                    plotWheelL.X = -250.0;
+                    plotWheelL.Y = 0.0;
+
+                    bResetRE = true;
+                }
+                else if (rsvCmd[i].Substring(0, 3) == "AR,")
+                {
+                    // RePlot 向きリセット
+                    string[] splStr = rsvCmd[i].Split(',');
+
+                    senReAng_Rst = senReAng;
+                    double.TryParse(splStr[1], out senReAng_RstAdd);
                 }
 
             }
