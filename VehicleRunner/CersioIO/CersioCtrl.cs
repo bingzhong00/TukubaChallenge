@@ -57,6 +57,10 @@ namespace CersioIO
         public double hwREX = 0.0;
         public double hwREY = 0.0;
         public double hwREDir = 0.0;
+
+        public double hwREStartX = 0.0;
+        public double hwREStartY = 0.0;
+        public double hwREStartDir = 0.0;   // 向きをリセットした値
         public bool bhwREPlot = false;
 
         public double hwRErotR = 0.0;
@@ -71,6 +75,7 @@ namespace CersioIO
         /// </summary>
         public double hwGPS_MoveDir = 0.0;  // 0 ～ 359度
         public bool bhwGPS = false;
+        public bool bhwUsbGPS = false;
 
         // 受信文字
         public string hwResiveStr;
@@ -80,6 +85,11 @@ namespace CersioIO
         /// USB GPS取得データ
         /// </summary>
         public List<string> usbGPSResive = new List<string>();
+
+        /// <summary>
+        /// ROS中継　通信オブジェクト
+        /// </summary>
+        private IpcServer ipc = new IpcServer();
 
         // --------------------------------------------------------------------------------------------------
         public CersioCtrl()
@@ -124,7 +134,7 @@ namespace CersioIO
 
 #if EMULATOR_MODE
             // エミュレータ終了
-            if (null != processEmuSim)
+            if (null != processEmuSim && !processEmuSim.HasExited)
             {
                 processEmuSim.Kill();
             }
@@ -159,9 +169,8 @@ namespace CersioIO
             // 現在座標をセット
             SendCommand("AD," + ((float)x).ToString("f") + "," + ((float)y).ToString("f") + "\n");
 
-            // 角度をパイに、回転の+-を調整
-            double rad = -dir * Math.PI / 180.0;
-            SendCommand("AR," + rad.ToString("f") + "\n");
+            // 角度をリセット
+            SendCommand_RE_Reset(dir);
         }
 
         public void SendCommand_RE_Reset()
@@ -180,12 +189,19 @@ namespace CersioIO
             SendCommand("AR," + rad.ToString("f") + "\n");
         }
 
+        public void setREPlot_Start(double mmX, double mmY, double dir)
+        {
+            hwREStartX = mmX;
+            hwREStartY = mmY;
+            hwREStartDir = dir;
+        }
 
-        /// <summary>
-        /// ハードウェアステータス取得
-        /// </summary>
-        /// <param name="useUsbGPS">USB接続のGPSを使う</param>
-        public void GetHWStatus( bool useUsbGPS )
+
+    /// <summary>
+    /// ハードウェアステータス取得
+    /// </summary>
+    /// <param name="useUsbGPS">USB接続のGPSを使う</param>
+    public void GetHWStatus( bool useUsbGPS )
         {
             if (TCP_IsConnected())
             {
@@ -344,8 +360,16 @@ namespace CersioIO
                 // 先頭から順に送信
                 if (SendCommandList.Count > 0)
                 {
-                    TCP_SendCommand(SendCommandList[0]);
-                    SendCommandList.RemoveAt(0);
+                    string sendMsg = "";
+                    for (int i = 0; i < 10; i++)
+                    {
+                        sendMsg += SendCommandList[0];
+                        SendCommandList.RemoveAt(0);
+
+                        if (SendCommandList.Count <= 0) break;
+                    }
+
+                    TCP_SendCommand(sendMsg);
                 }
 
                 // もし、たまりすぎたら捨てる
@@ -506,6 +530,7 @@ namespace CersioIO
                                 hwGPS_LandX = ResiveLandX;
                                 hwGPS_LandY = ResiveLandY;
                                 bhwGPS = true;
+                                bhwUsbGPS = false;
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A4,")
                             {
@@ -540,11 +565,16 @@ namespace CersioIO
                                 // 座標系変換
                                 // 右上から右下へ
 
-                                // ※リセットした時点での電子コンパスの向きを元にマップ座標へ変換する必要がある。
-                                // 現在、真南に向けた状態であうように符号調整で対応されている状態
-                                hwREX = ResiveX;
-                                hwREY = ResiveY;
-                                hwREDir = -ResiveRad * 180.0 / Math.PI;
+                                // リセットした時点での電子コンパスの向きを元にマップ座標へ変換する
+                                // x*cos - y*sin
+                                // x*sin + y*cos
+                                {
+                                    hwREDir = ((-ResiveRad * 180.0) / Math.PI) + hwREStartDir;
+
+                                    double theta = hwREStartDir / 180.0 * Math.PI;
+                                    hwREX = (ResiveX * Math.Cos(theta) - ResiveY * Math.Sin(theta)) + hwREStartX;
+                                    hwREY = (ResiveX * Math.Sin(theta) + ResiveY * Math.Cos(theta)) + hwREStartY;
+                                }
 
                                 bhwREPlot = true;
                             }
@@ -661,6 +691,7 @@ namespace CersioIO
                                 // dataWord[12] モード, N = データなし, A = Autonomous（自律方式）, D = Differential（干渉測位方式）, E = Estimated（推定）* チェックサム
 
                                 bhwGPS = true;
+                                bhwUsbGPS = true;
                             }
                             catch
                             {

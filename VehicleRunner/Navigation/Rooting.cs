@@ -122,7 +122,7 @@ namespace Navigation
         // 目標の座標取得
         public void getNowTarget(ref int posX, ref int posY)
         {
-            if (!goalFlg)
+            if (!goalFlg && seqIdx < RootingData.checkPoint.Length)
             {
                 posX = (int)RootingData.checkPoint[seqIdx].x;
                 posY = (int)RootingData.checkPoint[seqIdx].y;

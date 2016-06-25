@@ -1,5 +1,6 @@
 ﻿
 // 動作フラグ
+#define EMULATOR_MODE  // LRF エミュレーション起動
 
 #define LOGWRITE_MODE   // ログファイル出力
 
@@ -133,6 +134,10 @@ namespace VehicleRunner
             // スタート位置をセット
             btn_PositionReset_Click(null, null);
 
+            // 初期ボタン設定セット
+            rb_Move_CheckedChanged(null, null);
+            rb_Dir_CheckedChanged(null, null);
+
             // マップウィンドウサイズのbmp作成
             formDraw.MakePictureBoxWorldMap(LocSys.worldMap.mapBmp, picbox_AreaMap);
 
@@ -147,6 +152,12 @@ namespace VehicleRunner
 
             // 位置管理定期処理タイマー起動
             tm_LocUpdate.Enabled = true;
+
+#if EMULATOR_MODE
+            // LRF エミュレーション
+            tb_LRFIpAddr.Text = "127.0.0.10";
+#endif
+
         }
 
         /// <summary>
@@ -162,16 +173,19 @@ namespace VehicleRunner
             {
                 // すべてのシリアル・ポート名を取得する
                 string[] ports = System.IO.Ports.SerialPort.GetPortNames();
+                string[] portsName = UsbIOport.GetDeviceNames();
 
                 // シリアルポートを毎回取得して表示するために表示の度にリストをクリアする
                 cb_UsbSirial.Items.Clear();
                 cmbbox_UsbSH2Connect.Items.Clear();
 
+                int i = 0;
                 foreach (string port in ports)
                 {
                     // 取得したシリアル・ポート名を出力する
-                    cb_UsbSirial.Items.Add(port);
-                    cmbbox_UsbSH2Connect.Items.Add(port);
+                    cb_UsbSirial.Items.Add(port + ":" + portsName[i]);
+                    cmbbox_UsbSH2Connect.Items.Add(port + ":" + portsName[i]);
+                    i++;
                 }
 
                 if (cb_UsbSirial.Items.Count > 0)
@@ -439,11 +453,15 @@ namespace VehicleRunner
         {
             // スタート位置をセット
             LocSys.SetStartPostion((int)RootingData.startPosition.x,
-                                    (int)RootingData.startPosition.y,
-                                    RootingData.startDir);
+                                   (int)RootingData.startPosition.y,
+                                   RootingData.startDir);
 
             // REをリセット
             CersioCt.SendCommand_RE_Reset();
+
+            CersioCt.setREPlot_Start(RootingData.startPosition.x * LocSys.RealToMapSclae,
+                                     RootingData.startPosition.y * LocSys.RealToMapSclae,
+                                     RootingData.startDir);
 
             PictureUpdate();
         }
@@ -541,7 +559,16 @@ namespace VehicleRunner
                 }
 
                 // 自己位置推定に渡す
-                LocSys.Input_GPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY, CersioCt.hwGPS_MoveDir);
+                if (CersioCt.bhwUsbGPS)
+                {
+                    // 角度情報あり
+                    LocSys.Input_GPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY, CersioCt.hwGPS_MoveDir);
+                }
+                else
+                {
+                    // 角度情報なし
+                    LocSys.Input_GPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
+                }
 
                 // 画面表示
                 lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
@@ -772,7 +799,9 @@ namespace VehicleRunner
             {
                 // USB GPS接続
                 usbGPS = new UsbIOport();
-                if (usbGPS.Open(cb_UsbSirial.Text, 4800))
+                string[] portSlipt = cb_UsbSirial.Text.Split(':');
+
+                if (usbGPS.Open(portSlipt[0], 4800))
                 {
                     // 接続成功
                     tb_SirialResive.BackColor = Color.Lime;
@@ -811,7 +840,9 @@ namespace VehicleRunner
             {
                 // 接続
                 CersioCt.UsbMotorDriveIO = new DriveIOport();
-                if (CersioCt.UsbMotorDriveIO.Open(cmbbox_UsbSH2Connect.Text, 57600))
+                string[] portSlipt = cmbbox_UsbSH2Connect.Text.Split(':');
+
+                if (CersioCt.UsbMotorDriveIO.Open(portSlipt[0], 57600))
                 {
                     // 接続成功
                     cmbbox_UsbSH2Connect.BackColor = Color.Lime;
@@ -839,10 +870,11 @@ namespace VehicleRunner
         private void rb_Move_CheckedChanged(object sender, EventArgs e)
         {
             // 移動入力元　センサー切り替え
-            LocSys.Setting.bMoveSrcRePlot = false;
-            LocSys.Setting.bMoveSrcGPS  = false;
-            LocSys.Setting.bMoveSrcSVO  = false;
+            LocSys.Setting.bMoveSrcRePlot = rb_MoveREPlot.Checked;
+            LocSys.Setting.bMoveSrcGPS  = rb_MoveGPS.Checked;
+            LocSys.Setting.bMoveSrcSVO  = rb_MoveSVO.Checked;
 
+            /*
             if (sender == rb_MoveREPlot)
             {
                 LocSys.Setting.bMoveSrcRePlot = true;
@@ -855,6 +887,7 @@ namespace VehicleRunner
             {
                 LocSys.Setting.bMoveSrcSVO = true;
             }
+            */
         }
         /// <summary>
         /// 向き入力元変更
@@ -865,11 +898,12 @@ namespace VehicleRunner
         private void rb_Dir_CheckedChanged(object sender, EventArgs e)
         {
             // 向き入力元　センサー切り替え
-            LocSys.Setting.bDirSrcRePlot = false;
-            LocSys.Setting.bDirSrcGPS = false;
-            LocSys.Setting.bDirSrcSVO  = false;
-            LocSys.Setting.bDirSrcCompus = false;
+            LocSys.Setting.bDirSrcRePlot = rb_DirREPlot.Checked;
+            LocSys.Setting.bDirSrcGPS = rb_DirGPS.Checked;
+            LocSys.Setting.bDirSrcSVO  = rb_DirSVO.Checked;
+            LocSys.Setting.bDirSrcCompus = rb_DirCompus.Checked;
 
+            /*
             if (sender == rb_DirREPlot)
             {
                 LocSys.Setting.bDirSrcRePlot = true;
@@ -885,7 +919,7 @@ namespace VehicleRunner
             else if (sender == rb_DirCompus)
             {
                 LocSys.Setting.bDirSrcCompus = true;
-            }
+            }*/
         }
 
         /// <summary>
@@ -929,10 +963,12 @@ namespace VehicleRunner
                 }
 
                 bRunAutonomous = true;
+                cb_StartAutonomous.BackColor = Color.LimeGreen;
             }
             else
             {
                 bRunAutonomous = false;
+                cb_StartAutonomous.BackColor = SystemColors.Window;
             }
         }
 
@@ -943,7 +979,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void cb_StartLogMapping_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_StartAutonomous.Checked)
+            if (cb_StartLogMapping.Checked)
             {
                 formLog.init();
                 bRunMappingAndLogging = true;

@@ -52,6 +52,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage_Sensor = new System.Windows.Forms.TabPage();
+            this.lbl_bServerEmu = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.rb_DirCompus = new System.Windows.Forms.RadioButton();
             this.rb_DirSVO = new System.Windows.Forms.RadioButton();
@@ -120,7 +121,6 @@
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.cb_StartLogMapping = new System.Windows.Forms.CheckBox();
-            this.lbl_bServerEmu = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -427,6 +427,16 @@
             this.tabPage_Sensor.Size = new System.Drawing.Size(279, 342);
             this.tabPage_Sensor.TabIndex = 2;
             this.tabPage_Sensor.Text = "センサー入力";
+            // 
+            // lbl_bServerEmu
+            // 
+            this.lbl_bServerEmu.AutoSize = true;
+            this.lbl_bServerEmu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.lbl_bServerEmu.Location = new System.Drawing.Point(67, 249);
+            this.lbl_bServerEmu.Name = "lbl_bServerEmu";
+            this.lbl_bServerEmu.Size = new System.Drawing.Size(190, 16);
+            this.lbl_bServerEmu.TabIndex = 30;
+            this.lbl_bServerEmu.Text = "bServerエミュレーションモード";
             // 
             // groupBox10
             // 
@@ -901,7 +911,7 @@
             this.groupBox4.Controls.Add(this.label15);
             this.groupBox4.Controls.Add(this.label14);
             this.groupBox4.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.groupBox4.Location = new System.Drawing.Point(3, 133);
+            this.groupBox4.Location = new System.Drawing.Point(3, 134);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(231, 130);
             this.groupBox4.TabIndex = 29;
@@ -1086,7 +1096,7 @@
             // 
             this.lbl_LED.AutoSize = true;
             this.lbl_LED.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_LED.Location = new System.Drawing.Point(206, 20);
+            this.lbl_LED.Location = new System.Drawing.Point(166, 275);
             this.lbl_LED.Name = "lbl_LED";
             this.lbl_LED.Size = new System.Drawing.Size(28, 16);
             this.lbl_LED.TabIndex = 5;
@@ -1096,7 +1106,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label10.Location = new System.Drawing.Point(161, 20);
+            this.label10.Location = new System.Drawing.Point(121, 275);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(39, 16);
             this.label10.TabIndex = 0;
@@ -1230,16 +1240,6 @@
             this.cb_StartLogMapping.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_StartLogMapping.UseVisualStyleBackColor = true;
             this.cb_StartLogMapping.CheckedChanged += new System.EventHandler(this.cb_StartLogMapping_CheckedChanged);
-            // 
-            // lbl_bServerEmu
-            // 
-            this.lbl_bServerEmu.AutoSize = true;
-            this.lbl_bServerEmu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.lbl_bServerEmu.Location = new System.Drawing.Point(67, 249);
-            this.lbl_bServerEmu.Name = "lbl_bServerEmu";
-            this.lbl_bServerEmu.Size = new System.Drawing.Size(190, 16);
-            this.lbl_bServerEmu.TabIndex = 30;
-            this.lbl_bServerEmu.Text = "bServerエミュレーションモード";
             // 
             // VehicleRunnerForm
             // 

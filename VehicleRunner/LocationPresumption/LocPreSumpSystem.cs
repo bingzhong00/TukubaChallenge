@@ -113,6 +113,8 @@ namespace LocationPresumption
         /// GPSが受信して使える状態になっている
         /// </summary>
         public static bool bEnableGPS = false;
+        // 角度あり GPS
+        private bool bEnableDirGPS = false;
 
         // GPSからMap変換時の(手で合わせた)スケール（計算上は必要ないはず。。）
         //const double GPStoMapScale = 60.0;
@@ -372,6 +374,29 @@ namespace LocationPresumption
             G1.X = mapX + startPosGPS_MapX;
             G1.Y = mapY + startPosGPS_MapY;
             G1.Theta = moveDir;
+            bEnableDirGPS = true;
+
+            return true;
+        }
+
+        public bool Input_GPSData(double landX, double landY)
+        {
+            if (!bEnableGPS) return false;
+
+            double ido = (int)landY;
+            double kdo = (int)landX;
+
+            double mapY = (ido * 60.0 + (landY - ido)) * GPSScale;
+            double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
+
+            // 単位変換
+            mapX = (mapX - startPosGPSX) / RealToMapSclae;
+            mapY = -(mapY - startPosGPSY) / RealToMapSclae;
+
+            G1.X = mapX + startPosGPS_MapX;
+            G1.Y = mapY + startPosGPS_MapY;
+            G1.Theta = 0.0;
+            bEnableDirGPS = false;
 
             return true;
         }
@@ -785,7 +810,14 @@ namespace LocationPresumption
                         break;
                     case 3:
                         // GPS位置描画
-                        DrawMaker_Area(g, olScale, G1, Brushes.Green, size);
+                        if (bEnableDirGPS)
+                        {
+                            DrawMaker_Area(g, olScale, G1, Brushes.Green, size);
+                        }
+                        else
+                        {
+                            DrawMakerND_Area(g, olScale, G1, Brushes.Green, size);
+                        }
                         break;
                 }
             }
@@ -820,6 +852,29 @@ namespace LocationPresumption
                 (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
+        }
+
+        private void DrawMakerND_Area(Graphics g, float fScale, MarkPoint robot, Brush brush, int size)
+        {
+            double mkX = worldMap.GetAreaX(robot.X) * fScale;
+            double mkY = worldMap.GetAreaY(robot.Y) * fScale;
+            double mkDir = 0.0;
+
+            size /= 2;
+            var P1 = new PointF(
+                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
+                (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
+            var P2 = new PointF(
+                (float)(mkX + size * Math.Cos((mkDir + 90) * Math.PI / 180.0)),
+                (float)(mkY + size * Math.Sin((mkDir + 90) * Math.PI / 180.0)));
+            var P3 = new PointF(
+                (float)(mkX + size * Math.Cos((mkDir + 180) * Math.PI / 180.0)),
+                (float)(mkY + size * Math.Sin((mkDir + 180) * Math.PI / 180.0)));
+            var P4 = new PointF(
+                (float)(mkX + size * Math.Cos((mkDir + 270) * Math.PI / 180.0)),
+                (float)(mkY + size * Math.Sin((mkDir + 270) * Math.PI / 180.0)));
+
+            g.FillPolygon(brush, new PointF[] { P1, P2, P3, P4 });
         }
 
         /// <summary>

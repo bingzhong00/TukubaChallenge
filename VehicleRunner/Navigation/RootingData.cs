@@ -32,11 +32,13 @@ namespace Navigation
             new Vector3(817,870,0),     // 南東
             new Vector3(746,895,0),
             new Vector3(613,920,0),
-            new Vector3(425,890,0),     // 南西
+            new Vector3(425,980,0),     // 南西
             new Vector3(380,870,0),     
             new Vector3(316,654,0),
             new Vector3(287,569,0),     // 北西
             new Vector3(358,535,0),
+            new Vector3(476,500,0),
+            new Vector3(666,445,0),
             new Vector3(756,470,0),
             new Vector3(714,425,0),     // ゴール
         };
