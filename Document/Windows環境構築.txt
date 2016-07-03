@@ -1,0 +1,10 @@
+
+◆VisualStudio 2015 Community
+https://www.visualstudio.com/downloads/download-visual-studio-vs?wt.mc_id=o~msft~mscom~jpvs2015
+
+画面左の「Communityを無料ダウンロード」のボタンを選択
+
+ダウンロードファイルをインストールすればOK
+
+
+

@@ -1,0 +1,52 @@
+◆◆◆　ROSTips、気がついたことメモ　◆◆◆
+
+設置者：寺坂
+途中、メモ書きOK
+
+
+◆2015 Cersioシステム内 IP割り振り
+
+SubNetMask: 255.255.255.0
+IpAddr:port
+  192.168.1.1:50001     BoxPC bServer
+  192.168.1.?           Arduino[LED,Compus]
+  192.168.1.?           LetsNote
+  
+  192.168.1.10:10940    UTM-30LX-EW (LRF)
+
+
+
+◆2016 Benzシステム内 IP割り振り（現状）
+
+SubNetMask: 255.255.255.0
+IpAddr:port
+  192.168.1.1:50001     RaspberryPi2 bServer
+  192.168.1.?           Arduino[LED,Compus]
+  192.168.1.?           LetsNote
+  
+  192.168.1.10:10940    UTM-30LX-EW (LRF)
+  
+  192.168.1.20          ROS MainPC [roscore & V-Slam]
+  
+  192.168.1.32          TerasakaPC [ROS Debug]
+
+
+
+
+◆分散処理時の
+roscore実行側で環境変数「ROS_IP」に自身のIPアドレス登録が必要
+
+例：
+export ROS_IP=192.168.1.20
+
+
+
+
+
+◆
+default_mapping.launch
+ <arg name="scan_topic" default="scan"/>
+を
+ <arg name="scan_topic" default="last"/>
+（urg_nodeの出力仕様が変更されたようだ。）
+
