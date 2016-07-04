@@ -1,0 +1,21 @@
+
+
+インストール手順
+http://tracpath.com/bootcamp/learning_tortoisegit.html
+
+msysgit Download
+https://git-for-windows.github.io/
+
+tortoisegit download
+https://tortoisegit.org/download/
+
+
+
+
+サルでもわかる　クローンから
+http://www.backlog.jp/git-guide/intro/intro4_3.html
+
+
+リポジトリ
+https://github.com/terakenxx/TukubaChallenge.git
+
