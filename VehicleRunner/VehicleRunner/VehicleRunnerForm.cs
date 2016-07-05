@@ -333,7 +333,7 @@ namespace VehicleRunner
                         // LRF描画
                         if (LocSys.LRF.getData() != null)
                         {
-                            formDraw.LRF_Draw_Point(g, LocSys.LRF.getData(), ctrX, ctrY, (LRFViewScale / 1000.0f)*scale);
+                            formDraw.LRF_Draw_Point(g, Brushes.Yellow, LocSys.LRF.getData(), ctrX, ctrY, (LRFViewScale / 1000.0f)*scale);
                         }
 
                         {

@@ -46,7 +46,7 @@ namespace LocationPresumption
         /// <param name="lrf">ＬＲＦ</param>
         /// <param name="x">座標x</param>
         /// <param name="y">座標y</param>
-        /// <param name="theta">向き？角度</param>
+        /// <param name="theta">向き角度</param>
         //public MarkPoint(MapRangeFinder mrf,  double x, double y, double theta)
         public MarkPoint( double x, double y, double theta)
         {

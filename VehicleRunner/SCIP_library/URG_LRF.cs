@@ -112,27 +112,15 @@ namespace SCIP_library
             return LRF_Scale;
         }
 
+        /// <summary>
+        /// URGデータ取得
+        /// </summary>
+        /// <returns></returns>
         public double[] getScanData()
         {
             if (null != stream)
             {
-                //return getScanDataIP();
-
-                // 左右反転
-                {
-                    double[] data = getScanDataIP();
-                    if( data.Length == 0) return new double[0];
- 
-                    double[] modData = new double[data.Length-1];
-                    int modIdx = 0;
-                    for (int i = 0; i < data.Length-1; i++)
-                    {
-                        modData[modIdx] = data[data.Length-(i+1)];
-                        modIdx++;
-                    }
-
-                    return modData;
-                }
+                return getScanDataIP();
             }
             else
             {
@@ -180,7 +168,7 @@ namespace SCIP_library
                 write(stream, SCIP_Writer.SCIP2());
                 read_line(stream); // ignore echo back
                 write(stream, SCIP_Writer.MD(start_step, end_step,4));  //   270=度のParticleFilterの仕様にあわせる
-                read_line(stream);  // ignore echo back
+                //read_line(stream);  // ignore echo back
 
                 List<double> distances = new List<double>();
                 long time_stamp = 0;
