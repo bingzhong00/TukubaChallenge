@@ -135,7 +135,7 @@ namespace LocationPresumption
             {
                 for (i = -angRng; i < angRng; ++i)
                 {
-                    int theta = (iroboTheta + i + 360 * 2) % 360;
+                    int theta = (iroboTheta + -i + 360 * 2) % 360;
 
                     // 障害物までの距離を取得
                     result[i + angRng] = map.MeasureDist( posX / PixelScale,

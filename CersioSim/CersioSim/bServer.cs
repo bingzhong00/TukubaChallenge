@@ -1,8 +1,12 @@
-﻿using System;
+﻿#define LogQuiet  
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+
 
 namespace CersioSim
 {
@@ -163,7 +167,9 @@ namespace CersioSim
 
             //末尾の\nを削除
             resMsg = resMsg.TrimEnd('\n');
+#if !LogQuiet
             Console.WriteLine("receive:" + resMsg);
+#endif
 
             if (!disconnected)
             {
@@ -187,7 +193,9 @@ namespace CersioSim
                     byte[] sendBytes = enc.GetBytes(sendMsg + '\n');
 
                     ns.Write(sendBytes, 0, sendBytes.Length);
+#if !LogQuiet
                     Console.WriteLine("send:" + sendMsg);
+#endif
                 }
 
             }

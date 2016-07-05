@@ -99,6 +99,12 @@ namespace CersioSim
             ns.ReadTimeout = 10000;
             ns.WriteTimeout = 10000;
 
+            if (!listener.Server.Connected)
+            {
+                int i = 0;
+                i++;
+            }
+
             // データがない
             if (!ns.DataAvailable) return false;
 
@@ -134,36 +140,25 @@ namespace CersioSim
 
             //末尾の\nを削除
             resMsg = resMsg.TrimEnd('\n');
+#if DEBUG
             Console.WriteLine("receive:" + resMsg);
+#endif
 
             if (!disconnected)
             {
                 //クライアントにデータを送信する
                 //クライアントに送信する文字列を作成
 
+                string sendMsg = AnalizeMessage(resMsg);
 
-                // エコーバック
-                /*
+                if (!string.IsNullOrEmpty(sendMsg))
                 {
-                    //文字列をByte型配列に変換
-                    byte[] sendBytes = enc.GetBytes(resMsg + '\n' + '\n');
+                    byte[] sendBytes = enc.GetBytes(sendMsg);
 
-                    //データを送信する
                     ns.Write(sendBytes, 0, sendBytes.Length);
-                    //Console.WriteLine("send:" + resMsg);
-                }
-                */
-
-                {
-                    string sendMsg = AnalizeMessage(resMsg);
-
-                    if (!string.IsNullOrEmpty(sendMsg))
-                    {
-                        byte[] sendBytes = enc.GetBytes(sendMsg + "\n\n");
-
-                        ns.Write(sendBytes, 0, sendBytes.Length);
-                        //Console.WriteLine("send:" + sendMsg);
-                    }
+#if DEBUG
+                    Console.WriteLine("send:" + sendMsg);
+#endif
                 }
             }
 
@@ -325,6 +320,8 @@ namespace CersioSim
                             // チェックサム付与、改行
                             sendStr += dataStr + ChackSum(dataStr) + "\n";
                         }
+                        // 終端
+                        sendStr += "\n";
                     }
                 }
                 // レーザの消灯、計測停止
@@ -334,6 +331,8 @@ namespace CersioSim
                     sendStr += rsvCmd[iCmd] + "\n";
                     // ステータス 00 or 99 以外はNG
                     sendStr += "00P" + "\n";
+                    // 終端
+                    sendStr += "\n";
                 }
                 // ステータス
                 else if (commandStr == "PP")
@@ -381,7 +380,8 @@ namespace CersioSim
                     // 標準操作角速度[rpm]
                     dataStr = "SCAN:2400";
                     sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
-
+                    // 終端
+                    sendStr += "\n";
                 }
                 // RS-232C要求
                 else if (commandStr == "SS")
@@ -390,20 +390,74 @@ namespace CersioSim
 
                     // エコーバック
                     sendStr += rsvCmd[iCmd] + "\n";
+
                     // ステータス 00 or 99 以外はNG
                     sendStr += dataStr + ChackSum(dataStr) + "\n";
+                    // 終端
+                    sendStr += "\n";
                 }
                 // SCIPコマンド
                 else if (rsvCmd[iCmd] == "SCIP2.0")
                 {
                     // 
                     sendStr += rsvCmd[iCmd] + "\n";
+                    // 終端
+                    sendStr += "\n";
+                }
+                else if (rsvCmd[iCmd] == "VV")
+                {
+                    /*
+                        VEND:Hokuyo Automatic Co., Ltd.;[ [LF] 
+                        PROD:SOKUIKI Sensor URG-04LX;[ [LF] 
+                        FIRM: 3.2.00(28/Aug./2007);f[LF] 
+                        PROT:SCIP 2.0;N[LF] 
+                        SERI: H0508486;T[LF][LF] 
+                     */
+                    string dataStr = "";
+
+                    // エコーバック
+                    sendStr += rsvCmd[iCmd] + "\n";
+                    // ステータス 00 or 99 以外はNG
+                    sendStr += "00P" + "\n";
+
+                    //
+                    dataStr = "VEND:Hokuyo Automatic Co., Ltd.";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    // 
+                    dataStr = "PROD:SOKUIKI Sensor URG-04LX";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "FIRM: 3.2.00(28/Aug./2007)";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    // 
+                    dataStr = "PROT:SCIP 2.0";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    // 
+                    dataStr = "SERI: H0508486";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    // 終端
+                    sendStr += "\n";
+                }
+                else if (rsvCmd[iCmd] == "II")
+                {
+                    /*
+                    II [L F ] 0 0 P[L F ] 
+                    MODL:URG-04LX(Hokuyo Automatic Co.,Ltd.);N  [L F ] 
+                    LASR:OFF;7  [L F ] 
+                    SCSP:Initial(600[rpm]) <-Default setting by user;A              [L F ] 
+                    MESM:Measuring by Sensitive Mode;A             [L F ] 
+                    SBPS:19200[bps] <-Default setting by user;A           [L F ] 
+                    TIME:002AA9;f             [L F ] 
+                    STAT: Sensor works well.;8   [N L2 ] 
+                     */
                 }
                 else
                 {
                     // わからないのは、エコーバックして00をかえす
                     sendStr += rsvCmd[iCmd] + "\n";
                     sendStr += "00P" + "\n";
+                    // 終端
+                    sendStr += "\n";
                 }
             }
 

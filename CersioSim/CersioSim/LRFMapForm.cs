@@ -67,9 +67,9 @@ namespace CersioSim
                     if (carSim.mkp.LRFdata[i] < MAP_DRAW_MAX_RANGE)
                     {
                         double val = carSim.mkp.LRFdata[i] * picScale;
-                        double rad = (((i - MapRangeFinder.AngleRangeHalf) - 90) + carSim.mkp.Theta) * rPI;
+                        double rad = (((-i + MapRangeFinder.AngleRangeHalf) - 90) + carSim.mkp.Theta) * rPI;
 
-                        // LRFは左下から右回り
+                        // LRFは右下から左回り
                         float x = (float)(ctrX + val * Math.Cos(rad));
                         float y = (float)(ctrY + val * Math.Sin(rad));
 
@@ -114,9 +114,9 @@ namespace CersioSim
                 for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
                 {
                     double val = carSim.mkp.LRFdata[i] * picScale;// *rScale;
-                    double rad = (i - MapRangeFinder.AngleRangeHalf - 90) * rPI;
+                    double rad = (-i + MapRangeFinder.AngleRangeHalf - 90) * rPI;
 
-                    // LRFは左下から右回り
+                    // LRFは右下から左回り
                     float x = (float)(ctrX + val * Math.Cos(rad));
                     float y = (float)(ctrY + val * Math.Sin(rad));
 
