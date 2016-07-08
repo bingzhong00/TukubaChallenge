@@ -42,7 +42,13 @@ namespace SCIP_library
                 urg.Connect(LRFip, LRFport);
                 stream = urg.GetStream();
 
-                if (null != stream) return true;
+                if (null != stream)
+                {
+                    write(stream, SCIP_Writer.SCIP2());
+                    read_line(stream); // ignore echo back
+
+                    return true;
+                }
                 return false;
             }
             catch
@@ -152,6 +158,7 @@ namespace SCIP_library
             try
             {
                 // 送信要求コマンド
+                /*
                 {
                     string sendCom1 = SCIP_Writer.SCIP2();
                     string sendCom2 = SCIP_Writer.MD(start_step, end_step, 4);   //   270=度のParticleFilterの仕様にあわせる
@@ -175,7 +182,7 @@ namespace SCIP_library
                         sw.Close();
                     }
                 }
-
+                */
 
                 List<double> distances = new List<double>();
                 {
@@ -184,6 +191,10 @@ namespace SCIP_library
 
                     while (retryFlg)
                     {
+                        // 送信要求コマンド
+                        string sendCom2 = SCIP_Writer.MD(start_step, end_step, 4);   //   270=度のParticleFilterの仕様にあわせる
+                        write(stream, sendCom2);
+
                         string receive_data = read_line(stream);
 
                         if (!string.IsNullOrEmpty(saveLogFname))
@@ -191,15 +202,19 @@ namespace SCIP_library
                             System.IO.StreamWriter sw = new System.IO.StreamWriter(saveLogFname, true, System.Text.Encoding.GetEncoding("shift_jis"));
                             if (null != sw)
                             {
+                                //sw.Write(sendCom2 + System.Environment.NewLine);
                                 sw.Write(receive_data + System.Environment.NewLine);
                             }
                             sw.Close();
                         }
 
-                        if (!SCIP_Reader.MD(receive_data, ref time_stamp, ref distances))
+                        if (receive_data.Length > "00P".Length)
                         {
-                            //Console.WriteLine(receive_data);
-                            break;
+                            if (!SCIP_Reader.MD(receive_data, ref time_stamp, ref distances))
+                            {
+                                //Console.WriteLine(receive_data);
+                                break;
+                            }
                         }
 
                         if (distances.Count == 0)

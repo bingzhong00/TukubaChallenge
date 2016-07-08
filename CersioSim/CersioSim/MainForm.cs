@@ -84,10 +84,11 @@ namespace CersioSim
                 slamForm.Show();
             }
 
-            // bServer Open
+            // bServer Listen Open
             bSrv.Open();
 
-            UrgSim.Open();
+            // URG Listen
+            UrgSim.Open("192.168.1.4");
 
             tmr_Update.Enabled = true;
         }

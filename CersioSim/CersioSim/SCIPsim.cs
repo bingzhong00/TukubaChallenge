@@ -450,15 +450,72 @@ namespace CersioSim
                     TIME:002AA9;f             [L F ] 
                     STAT: Sensor works well.;8   [N L2 ] 
                      */
-                }
-                else
-                {
-                    // わからないのは、エコーバックして00をかえす
+                    string dataStr = "";
+
+                    // エコーバック
                     sendStr += rsvCmd[iCmd] + "\n";
+                    // ステータス 00 or 99 以外はNG
                     sendStr += "00P" + "\n";
+
+                    //
+                    dataStr = "MODL:URG-04LX(Hokuyo Automatic Co.,Ltd.)";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "LASR:OFF";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "SCSP:Initial(600[rpm]) <-Default setting by user";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "MESM:Measuring by Sensitive Mode";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "SBPS:19200[bps] <-Default setting by user";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "TIME:" + encode(nowMs, 4) + "0";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
+                    //
+                    dataStr = "STAT: Sensor works well.";
+                    sendStr += dataStr + ";" + ChackSum(dataStr) + "\n";
                     // 終端
                     sendStr += "\n";
                 }
+                else
+                {
+                    string dataStr = "";
+
+                    // わからないコマンドは　未定義コマンドとして返す
+                    sendStr += rsvCmd[iCmd] + "\n";
+                    dataStr = "0D";
+                    sendStr += dataStr + ChackSum(dataStr) + "\n";
+                    // 終端
+                    sendStr += "\n";
+
+                    /*
+                    ◆  不良電文応答  ◆ 
+                    未定義コマンド、欠落コマンド、規定したバイト数と一致しないコマンドを受けた場合などは、そのコ
+                    マンド文字列のエコーバックと共にエラーステータスを返します 
+ 
+                      ＊エラーステータス  ：  “0A”  …  内部送信電文作成エラー
+                      “0B”  …  処理済コマンドの再受信、または、送信バッファ不足
+                      “0C”  …  欠落コマンド１
+                      “0D”  …  未定義コマンド１
+                      “0E”  …  未定義コマンド２
+                      “0F”  …  欠落コマンド２
+                      “0G”  …  文字列が 17 文字以上存在
+                      “0H”  …  文字列中に指定外文字が存在
+                      “0 I”～  …  センサがF / Wアップデートモードにあるため処理不能
+                      */
+                    Console.WriteLine("UnKnown Command:" + rsvCmd[iCmd] );
+                }
+
+                /*
+                 * hector slam urg_nodeからの通信
+                receive:ME0000108001000
+
+                receive:ND0000108001000
+                */
             }
 
 

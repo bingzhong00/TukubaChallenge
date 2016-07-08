@@ -200,7 +200,7 @@ namespace TCPLogger
         {
             System.Net.Sockets.NetworkStream objStm = objTCPSC.MyProperty;
 
-            if (objStm != null)
+            if (objStm != null && objTCPSC.SckProperty.Connected )
             {
                 Byte[] dat = System.Text.Encoding.GetEncoding("SHIFT-JIS").GetBytes(comStr);
                 objStm.Write(dat, 0, dat.GetLength(0));
@@ -497,16 +497,18 @@ namespace TCPLogger
                 // LRFの値を描画
                 for (int i = 0; i < LRF_Data.Length; i++)
                 {
-                    if (LRF_Data[i] > 100 && LRF_Data[i] < 20 * 1000)
+                    // ノイズと思われる値でなければ描画
+                    if (LRF_Data[i] > 100 && LRF_Data[i] < 30 * 1000)
                     {
                         double val = LRF_Data[i] * picScale;
-                        //double rad = (((-i + AngleRangeHalf - 90)+(float)(bsReder.hwREDir)) * rPI);
-                        double rad = (((-i + AngleRangeHalf - 90) + (float)(bsReder.hwCompass)) * rPI);
+                        double rad = (((i - AngleRangeHalf - 90)+(float)(-bsReder.hwREDir)) * rPI);
+                        //double rad = (((-i + AngleRangeHalf - 90) + (float)(bsReder.hwCompass)) * rPI);
 
                         // LRFは左下から右回り
                         float x = (float)(ctrX + val * Math.Cos(rad));
                         float y = (float)(ctrY + val * Math.Sin(rad));
                         g.DrawLine(Pens.White, ctrX, ctrY, x, y);
+                        g.FillRectangle(Brushes.Black, x, y, pixelSize, pixelSize);
                     }
                 }
                 // 自分の位置描画
