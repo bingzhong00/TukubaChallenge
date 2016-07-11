@@ -1,0 +1,3592 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RosSharp</name>
+    </assembly>
+    <members>
+        <member name="T:RosSharp.ConfigurationSection">
+            <summary>
+            The ConfigurationSection Configuration Section.
+            </summary>
+        </member>
+        <member name="F:RosSharp.ConfigurationSection.ConfigurationSectionSectionName">
+            <summary>
+            The XML name of the ConfigurationSection Configuration Section.
+            </summary>
+        </member>
+        <member name="F:RosSharp.ConfigurationSection.XmlnsPropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.ConfigurationSection.Xmlns"/> property.
+            </summary>
+        </member>
+        <member name="F:RosSharp.ConfigurationSection.MasterUriPropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.ConfigurationSection.MasterUri"/> property.
+            </summary>
+        </member>
+        <member name="F:RosSharp.ConfigurationSection.HostNamePropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.ConfigurationSection.HostName"/> property.
+            </summary>
+        </member>
+        <member name="F:RosSharp.ConfigurationSection.XmlRpcTimeoutPropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.ConfigurationSection.XmlRpcTimeout"/> property.
+            </summary>
+        </member>
+        <member name="F:RosSharp.ConfigurationSection.TopicTimeoutPropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.ConfigurationSection.TopicTimeout"/> property.
+            </summary>
+        </member>
+        <member name="M:RosSharp.ConfigurationSection.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the element is read-only.
+            </summary>
+        </member>
+        <member name="P:RosSharp.ConfigurationSection.Instance">
+            <summary>
+            Gets the ConfigurationSection instance.
+            </summary>
+        </member>
+        <member name="P:RosSharp.ConfigurationSection.Xmlns">
+            <summary>
+            Gets the XML namespace of this Configuration Section.
+            </summary>
+            <remarks>
+            This property makes sure that if the configuration file contains the XML namespace,
+            the parser doesn't throw an exception because it encounters the unknown "xmlns" attribute.
+            </remarks>
+        </member>
+        <member name="P:RosSharp.ConfigurationSection.MasterUri">
+            <summary>
+            Gets or sets the MasterUri.
+            </summary>
+        </member>
+        <member name="P:RosSharp.ConfigurationSection.HostName">
+            <summary>
+            Gets or sets the HostName.
+            </summary>
+        </member>
+        <member name="P:RosSharp.ConfigurationSection.XmlRpcTimeout">
+            <summary>
+            Gets or sets the XmlRpcTimeout.
+            </summary>
+        </member>
+        <member name="P:RosSharp.ConfigurationSection.TopicTimeout">
+            <summary>
+            Gets or sets the TopicTimeout.
+            </summary>
+        </member>
+        <member name="T:RosSharp.RosHostName">
+            <summary>
+            The RosHostName Configuration Element.
+            </summary>
+        </member>
+        <member name="F:RosSharp.RosHostName.ValuePropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.RosHostName.Value"/> property.
+            </summary>
+        </member>
+        <member name="M:RosSharp.RosHostName.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the element is read-only.
+            </summary>
+        </member>
+        <member name="P:RosSharp.RosHostName.Value">
+            <summary>
+            Gets or sets the Value.
+            </summary>
+        </member>
+        <member name="T:RosSharp.RosMasterUri">
+            <summary>
+            The RosMasterUri Configuration Element.
+            </summary>
+        </member>
+        <member name="F:RosSharp.RosMasterUri.ValuePropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.RosMasterUri.Value"/> property.
+            </summary>
+        </member>
+        <member name="M:RosSharp.RosMasterUri.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the element is read-only.
+            </summary>
+        </member>
+        <member name="P:RosSharp.RosMasterUri.Value">
+            <summary>
+            Gets or sets the Value.
+            </summary>
+        </member>
+        <member name="T:RosSharp.XmlRpcTimeout">
+            <summary>
+            The XmlRpcTimeout Configuration Element.
+            </summary>
+        </member>
+        <member name="F:RosSharp.XmlRpcTimeout.ValuePropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.XmlRpcTimeout.Value"/> property.
+            </summary>
+        </member>
+        <member name="M:RosSharp.XmlRpcTimeout.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the element is read-only.
+            </summary>
+        </member>
+        <member name="P:RosSharp.XmlRpcTimeout.Value">
+            <summary>
+            Gets or sets the Value.
+            </summary>
+        </member>
+        <member name="T:RosSharp.TopicTimeout">
+            <summary>
+            The TopicTimeout Configuration Element.
+            </summary>
+        </member>
+        <member name="F:RosSharp.TopicTimeout.ValuePropertyName">
+            <summary>
+            The XML name of the <see cref="P:RosSharp.TopicTimeout.Value"/> property.
+            </summary>
+        </member>
+        <member name="M:RosSharp.TopicTimeout.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the element is read-only.
+            </summary>
+        </member>
+        <member name="P:RosSharp.TopicTimeout.Value">
+            <summary>
+            Gets or sets the Value.
+            </summary>
+        </member>
+        <member name="T:RosSharp.roscpp.Logger">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.Message.IMessage">
+            <summary>
+              Defines interface for Topic Message
+            </summary>
+        </member>
+        <member name="M:RosSharp.Message.IMessage.Serialize(System.IO.BinaryWriter)">
+            <summary>
+            Serialize Message
+            </summary>
+            <param name="stream">Serialized Binary Data</param>
+        </member>
+        <member name="M:RosSharp.Message.IMessage.Deserialize(System.IO.BinaryReader)">
+            <summary>
+            Deserialize Message
+            </summary>
+            <param name="stream">Binary Data for Desirialize</param>
+        </member>
+        <member name="P:RosSharp.Message.IMessage.MessageType">
+            <summary>
+            Message Type Name
+            </summary>
+        </member>
+        <member name="P:RosSharp.Message.IMessage.Md5Sum">
+            <summary>
+            MD5 Sum of this Message
+            </summary>
+        </member>
+        <member name="P:RosSharp.Message.IMessage.MessageDefinition">
+            <summary>
+            Raw Message Definition
+            </summary>
+        </member>
+        <member name="P:RosSharp.Message.IMessage.HasHeader">
+            <summary>
+            Has Header
+            </summary>
+        </member>
+        <member name="P:RosSharp.Message.IMessage.SerializeLength">
+            <summary>
+            Message Length for Serialize
+            </summary>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.Equals(RosSharp.roscpp.Logger)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Logger.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.name">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.level">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Logger.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.rosgraph_msgs.Log">
+            <exclude/>
+        </member>
+        <member name="F:RosSharp.rosgraph_msgs.Log.DEBUG">
+            <exclude/>
+        </member>
+        <member name="F:RosSharp.rosgraph_msgs.Log.INFO">
+            <exclude/>
+        </member>
+        <member name="F:RosSharp.rosgraph_msgs.Log.WARN">
+            <exclude/>
+        </member>
+        <member name="F:RosSharp.rosgraph_msgs.Log.ERROR">
+            <exclude/>
+        </member>
+        <member name="F:RosSharp.rosgraph_msgs.Log.FATAL">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.Equals(RosSharp.rosgraph_msgs.Log)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.rosgraph_msgs.Log.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.header">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.level">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.name">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.msg">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.file">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.function">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.line">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.topics">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.rosgraph_msgs.Log.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Bool">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.Equals(RosSharp.std_msgs.Bool)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Bool.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Bool.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Bool.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Bool.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Bool.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Bool.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Bool.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Byte">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.Equals(RosSharp.std_msgs.Byte)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Byte.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Byte.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Byte.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Byte.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Byte.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Byte.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Byte.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.ByteMultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.Equals(RosSharp.std_msgs.ByteMultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ByteMultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ByteMultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Char">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.Equals(RosSharp.std_msgs.Char)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Char.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Char.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Char.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Char.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Char.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Char.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Char.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.ColorRGBA">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.Equals(RosSharp.std_msgs.ColorRGBA)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.ColorRGBA.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.r">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.g">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.b">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.a">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.ColorRGBA.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Duration">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.Equals(RosSharp.std_msgs.Duration)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Duration.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Duration.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Duration.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Duration.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Duration.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Duration.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Duration.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Empty">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.Equals(RosSharp.std_msgs.Empty)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Empty.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Empty.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Empty.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Empty.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Empty.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Empty.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Float32">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.Equals(RosSharp.std_msgs.Float32)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Float32MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.Equals(RosSharp.std_msgs.Float32MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float32MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float32MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Float64">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.Equals(RosSharp.std_msgs.Float64)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Float64MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.Equals(RosSharp.std_msgs.Float64MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Float64MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Float64MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Header">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.Equals(RosSharp.std_msgs.Header)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Header.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.seq">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.stamp">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.frame_id">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Header.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int16">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.Equals(RosSharp.std_msgs.Int16)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int16MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.Equals(RosSharp.std_msgs.Int16MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int16MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int16MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int32">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.Equals(RosSharp.std_msgs.Int32)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int32MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.Equals(RosSharp.std_msgs.Int32MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int32MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int32MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int64">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.Equals(RosSharp.std_msgs.Int64)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int64MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.Equals(RosSharp.std_msgs.Int64MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int64MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int64MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int8">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.Equals(RosSharp.std_msgs.Int8)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Int8MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.Equals(RosSharp.std_msgs.Int8MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Int8MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Int8MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.MultiArrayDimension">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.Equals(RosSharp.std_msgs.MultiArrayDimension)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayDimension.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.label">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.size">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.stride">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayDimension.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.MultiArrayLayout">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.Equals(RosSharp.std_msgs.MultiArrayLayout)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.MultiArrayLayout.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.dim">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.data_offset">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.MultiArrayLayout.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.String">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.Equals(RosSharp.std_msgs.String)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.String.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.String.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.String.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.String.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.String.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.String.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.String.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.Time">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.Equals(RosSharp.std_msgs.Time)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.Time.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Time.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Time.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Time.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Time.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Time.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.Time.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt16">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.Equals(RosSharp.std_msgs.UInt16)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt16MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.Equals(RosSharp.std_msgs.UInt16MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt16MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt16MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt32">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.Equals(RosSharp.std_msgs.UInt32)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt32MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.Equals(RosSharp.std_msgs.UInt32MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt32MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt32MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt64">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.Equals(RosSharp.std_msgs.UInt64)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt64MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.Equals(RosSharp.std_msgs.UInt64MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt64MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt64MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt8">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.Equals(RosSharp.std_msgs.UInt8)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_msgs.UInt8MultiArray">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.Equals(RosSharp.std_msgs.UInt8MultiArray)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_msgs.UInt8MultiArray.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.layout">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.data">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_msgs.UInt8MultiArray.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.Empty">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.Service.ITypedService`2">
+            <summary>
+              Defines strong typed interface for ROS Service
+            </summary>
+        </member>
+        <member name="T:RosSharp.Service.IService">
+            <summary>
+              Defines interface for ROS Service
+            </summary>
+        </member>
+        <member name="M:RosSharp.IAsyncDisposable.DisposeAsync">
+            <summary>
+            Asynchronous Dispose
+            </summary>
+            <returns>task object for asynchronous operation</returns>
+        </member>
+        <member name="M:RosSharp.Service.IService.CreateRequest">
+            <summary>
+            Create default Request instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RosSharp.Service.IService.CreateResponse">
+            <summary>
+            Create default Response instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RosSharp.Service.IService.Invoke(RosSharp.Message.IMessage)">
+            <summary>
+            Invoke Service
+            </summary>
+            <param name="req">Request</param>
+            <returns>Response</returns>
+        </member>
+        <member name="M:RosSharp.Service.IService.SetAction(System.Func{RosSharp.Message.IMessage,RosSharp.Message.IMessage})">
+            <summary>
+            Set Service Action
+            </summary>
+            <param name="action">Service Action</param>
+        </member>
+        <member name="P:RosSharp.Service.IService.ServiceType">
+            <summary>
+            Service Type Name
+            </summary>
+        </member>
+        <member name="P:RosSharp.Service.IService.Md5Sum">
+            <summary>
+            MD5 Sum of this Service
+            </summary>
+        </member>
+        <member name="P:RosSharp.Service.IService.ServiceDefinition">
+            <summary>
+            Raw Service Definition
+            </summary>
+        </member>
+        <member name="M:RosSharp.Service.ITypedService`2.Invoke(`0)">
+            <summary>
+            Invoke Service
+            </summary>
+            <param name="req">Request</param>
+            <returns>Response</returns>
+        </member>
+        <member name="M:RosSharp.Service.ITypedService`2.InvokeAsync(`0)">
+            <summary>
+            Asynchronous invoke Service
+            </summary>
+            <param name="req">Request</param>
+            <returns>Response</returns>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.#ctor(System.Func{RosSharp.roscpp.Empty.Request,RosSharp.roscpp.Empty.Response})">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.ServiceType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.ServiceDefinition">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.Empty.Request">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.Equals(RosSharp.roscpp.Empty.Request)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Request.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Request.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Request.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Request.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Request.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Request.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.Empty.Response">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.Equals(RosSharp.roscpp.Empty.Response)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.Empty.Response.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Response.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Response.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Response.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Response.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.Empty.Response.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.GetLoggers">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.#ctor(System.Func{RosSharp.roscpp.GetLoggers.Request,RosSharp.roscpp.GetLoggers.Response})">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.ServiceType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.ServiceDefinition">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.GetLoggers.Request">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.Equals(RosSharp.roscpp.GetLoggers.Request)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Request.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Request.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Request.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Request.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Request.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Request.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.GetLoggers.Response">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.Equals(RosSharp.roscpp.GetLoggers.Response)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.GetLoggers.Response.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Response.loggers">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Response.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Response.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Response.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Response.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.GetLoggers.Response.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.SetLoggerLevel">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.#ctor(System.Func{RosSharp.roscpp.SetLoggerLevel.Request,RosSharp.roscpp.SetLoggerLevel.Response})">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.ServiceType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.ServiceDefinition">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.SetLoggerLevel.Request">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.Equals(RosSharp.roscpp.SetLoggerLevel.Request)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Request.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.logger">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.level">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Request.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.roscpp.SetLoggerLevel.Response">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.Equals(RosSharp.roscpp.SetLoggerLevel.Response)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.roscpp.SetLoggerLevel.Response.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Response.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Response.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Response.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Response.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.roscpp.SetLoggerLevel.Response.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.AddTwoInts">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.#ctor(System.Func{RosSharp.AddTwoInts.Request,RosSharp.AddTwoInts.Response})">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.ServiceType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.ServiceDefinition">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.AddTwoInts.Request">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.Equals(RosSharp.AddTwoInts.Request)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Request.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.a">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.b">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Request.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.AddTwoInts.Response">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.Equals(RosSharp.AddTwoInts.Response)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.AddTwoInts.Response.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Response.sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Response.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Response.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Response.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Response.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.AddTwoInts.Response.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_srvs.Empty">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.#ctor(System.Func{RosSharp.std_srvs.Empty.Request,RosSharp.std_srvs.Empty.Response})">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.ServiceType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.ServiceDefinition">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_srvs.Empty.Request">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.Equals(RosSharp.std_srvs.Empty.Request)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Request.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Request.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Request.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Request.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Request.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Request.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.std_srvs.Empty.Response">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.#ctor">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.#ctor(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.Serialize(System.IO.BinaryWriter)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.Deserialize(System.IO.BinaryReader)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.Equals(RosSharp.std_srvs.Empty.Response)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.Equals(System.Object)">
+            <exclude/>
+        </member>
+        <member name="M:RosSharp.std_srvs.Empty.Response.GetHashCode">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Response.MessageType">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Response.Md5Sum">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Response.MessageDefinition">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Response.HasHeader">
+            <exclude/>
+        </member>
+        <member name="P:RosSharp.std_srvs.Empty.Response.SerializeLength">
+            <exclude/>
+        </member>
+        <member name="T:RosSharp.Parameter.Parameter`1">
+            <summary>
+            Base class for Ros Parameter Management
+            </summary>
+            <typeparam name="TParam">Parameter Type. </typeparam>
+        </member>
+        <member name="P:RosSharp.Parameter.Parameter`1.Value">
+            <summary>
+            
+            Timeout Exception
+            </summary>
+        </member>
+        <member name="T:RosSharp.Topic.ITopic">
+            <summary>
+              Defines interface for ROS Topic
+            </summary>
+        </member>
+        <member name="P:RosSharp.Topic.ITopic.TopicName">
+            <summary>
+            ROS Topic Name
+            </summary>
+        </member>
+        <member name="P:RosSharp.Topic.ITopic.MessageType">
+            <summary>
+            ROS Topic Message Type
+            </summary>
+        </member>
+        <member name="T:RosSharp.Master.IMaster">
+            <summary>
+              Defines interface for Master API
+            </summary>
+            <remarks>
+              http://www.ros.org/wiki/ROS/Master_API
+            </remarks>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.RegisterService(System.String,System.String,System.String,System.String)">
+            <summary>
+              Register the caller as a provider of the specified service.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <param name="serviceApi"> ROSRPC Service URI </param>
+            <param name="callerApi"> XML-RPC URI of caller node </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.UnregisterService(System.String,System.String,System.String)">
+            <summary>
+              Unregister the caller as a provider of the specified service.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <param name="serviceApi"> API URI of service to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: Number of Unregistrations
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.RegisterSubscriber(System.String,System.String,System.String,System.String)">
+            <summary>
+              Subscribe the caller to the specified topic. <br/>
+              In addition to receiving a list of current publishers, the subscriber will also receive notifications of new publishers via the publisherUpdate API.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic. </param>
+            <param name="topicType"> Datatype for topic. Must be a package-resource name, i.e. the .msg name. </param>
+            <param name="callerApi"> API URI of subscriber to register. Will be used for new publisher notifications. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str[]: list of XMLRPC API URIs for nodes currently publishing the specified topic. 
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.UnregisterSubscriber(System.String,System.String,System.String)">
+            <summary>
+              Unregister the caller as a publisher of the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic. </param>
+            <param name="callerApi"> API URI of service to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: Number of Unsubscribed
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.RegisterPublisher(System.String,System.String,System.String,System.String)">
+            <summary>
+              Register the caller as a publisher the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic to register. </param>
+            <param name="topicType"> Datatype for topic. Must be a package-resource name, i.e. the .msg name. </param>
+            <param name="callerApi"> API URI of publisher to register. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str[]: List of current subscribers of topic in the form of XMLRPC URIs.
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.UnregisterPublisher(System.String,System.String,System.String)">
+            <summary>
+              Unregister the caller as a publisher of the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic to unregister. </param>
+            <param name="callerApi"> API URI of publisher to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: Number of Unregistered
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.LookupNode(System.String,System.String)">
+            <summary>
+              Get the XML-RPC URI of the node with the associated name/caller_id. <br/>
+              This API is for looking information about publishers and subscribers. Use lookupService instead to lookup ROS-RPC URIs.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="nodeName"> Name of node to lookup </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: URI of the Node
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.GetPublisherTopics(System.String,System.String)">
+            <summary>
+              Get list of topics that can be subscribed to. This does not return topics that have no publishers. See getSystemState() to get more comprehensive list.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="subgraph"> Restrict topic names to match within the specified subgraph. Subgraph namespace is resolved relative to the caller's namespace. Use emptry string to specify all names. </param>
+            <returns>
+            [0] = int: code
+            [1] = str: status message
+            [2] = str[][]: [topic1, type1]...[topicN, typeN]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.GetSystemState(System.String)">
+            <summary>
+              Retrieve list representation of system state (i.e. publishers, subscribers, and services).
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <returns>
+            [0] = int: code
+            [1] = str: status message
+            [2] = System state is in list representation [publishers, subscribers, services] <br/>
+              publishers: [ [topic1, [topic1Publisher1...topic1PublisherN]] ... ] <br/>
+              subscribers: [ [topic1, [topic1Subscriber1...topic1SubscriberN]] ... ] <br/>
+              services: [ [service1, [service1Provider1...service1ProviderN]] ... ]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.GetUri(System.String)">
+            <summary>
+              Get the URI of the the master.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: URI of the master
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.LookupService(System.String,System.String)">
+            <summary>
+              Lookup all provider of a particular service.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: URI of the service
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.Shutdown(System.String,System.String)">
+            <summary>
+              Stop this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="msg"> A message describing why the node is being shutdown. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.IMaster.GetPid(System.String)">
+            <summary>
+              Get the PID of this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: server process pid
+            </returns>
+        </member>
+        <member name="T:RosSharp.Parameter.IParameterServer">
+            <summary>
+              Defines interface for ParameterServer API
+            </summary>
+            <remarks>
+              http://www.ros.org/wiki/ROS/Parameter%20Server%20API
+            </remarks>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.DeleteParam(System.String,System.String)">
+            <summary>
+              Delete parameter
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.SetParam(System.String,System.String,System.Object)">
+            <summary>
+              Set parameter.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. </param>
+            <param name="value"> Parameter value. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.GetParam(System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. If key is a namespace, getParam() will return a parameter tree. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = parameterValue
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.SearchParam(System.String,System.String)">
+            <summary>
+              Search for parameter key on the Parameter Server.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name to search for. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: foundKey
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.SubscribeParam(System.String,System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server and subscribe to updates to that param. See paramUpdate() in the Node API.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="callerApi"> Node API URI of subscriber for paramUpdate callbacks. </param>
+            <param name="key"> Parameter name </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = parameterValue
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.UnsubscribeParam(System.String,System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server and subscribe to updates to that param. See paramUpdate() in the Node API.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="callerApi"> Node API URI of subscriber. </param>
+            <param name="key"> Parameter name. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: number of unsubscribed
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.HasParam(System.String,System.String)">
+            <summary>
+              Check if parameter is stored on server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="key"> Parameter name. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = bool: hasParam
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.IParameterServer.GetParamNames(System.String)">
+            <summary>
+              Get list of all parameter names stored on this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str[]: parameter name list
+            </returns>
+        </member>
+        <member name="T:RosSharp.Slave.ISlave">
+            <summary>
+              Defines interface for Slave API
+            </summary>
+            <remarks>
+              http://www.ros.org/wiki/ROS/Slave_API
+            </remarks>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.GetBusStats(System.String)">
+            <summary>
+              Retrieve transport/topic statistics.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br />
+            [1] = str: status message <br />
+            [2] = stats: [publishStats, subscribeStats, serviceStats] <br /> 
+              publishStats: [[topicName, messageDataSent, pubConnectionData]...] <br />
+              subscribeStats: [[topicName, subConnectionData]...] <br />
+              serviceStats: (proposed) [numRequests, bytesReceived, bytesSent] <br />
+                pubConnectionData: [connectionId, bytesSent, numSent, connected]* <br />
+                subConnectionData: [connectionId, bytesReceived, numSent, dropEstimate, connected]*
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.GetBusInfo(System.String)">
+            <summary>
+              Retrieve transport/topic connection information.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message<br/>
+            [2] = businfo: [[connectionId1, destinationId1, direction1, transport1, topic1, connected1]... ] <br/>
+              connectionId is defined by the node and is opaque. <br/>
+              destinationId is the XMLRPC URI of the destination. <br/>
+              direction is one of 'i', 'o', or 'b' (in, out, both). <br/>
+              transport is the transport type (e.g. 'TCPROS'). <br/>
+              topic is the topic name. <br/>
+              connected1 indicates connection status.
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.GetMasterUri(System.String)">
+            <summary>
+              Get the URI of the master node.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/> 
+            [1] = str: status message <br/>
+            [2] = str: URI of the master 
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.Shutdown(System.String,System.String)">
+            <summary>
+              Stop this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="msg"> A message describing why the node is being shutdown. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.GetPid(System.String)">
+            <summary>
+              Get the PID of this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: server process pid
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.GetSubscriptions(System.String)">
+            <summary>
+              Retrieve a list of topics that this node subscribes to
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = topicList is a list of topics this node subscribes to and is of the form [ [topic1, topicType1]...[topicN, topicTypeN]]]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.GetPublications(System.String)">
+            <summary>
+              Retrieve a list of topics that this node publishes.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = topicList is a list of topics published by this node and is of the form [ [topic1, topicType1]...[topicN, topicTypeN]]]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.ParamUpdate(System.String,System.String,System.Object)">
+            <summary>
+              Callback from master with updated value of subscribed parameter.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="parameterKey"> Parameter name, globally resolved. </param>
+            <param name="parameterValue"> New parameter value. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.PublisherUpdate(System.String,System.String,System.String[])">
+            <summary>
+              Callback from master of current publisher list for specified topic.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="topic"> Topic name. </param>
+            <param name="publishers"> List of current publishers for topic in the form of XMLRPC URIs </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.ISlave.RequestTopic(System.String,System.String,System.Object[])">
+            <summary>
+              Publisher node API method called by a subscriber node. <br/>
+              This requests that source allocate a channel for communication. <br/>
+              Subscriber provides a list of desired protocols for communication. <br/>
+              Publisher returns the selected protocol along with any additional params required for establishing connection. <br/>
+              For example, for a TCP/IP-based connection, the source node may return a port number of TCP/IP server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="topic"> Topic name. </param>
+            <param name="protocols"> List of desired protocols for communication in order of preference. Each protocol is a list of the form [ProtocolName, ProtocolParam1, ProtocolParam2...N] </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = protocolParams may be an empty list if there are no compatible protocols. 
+            </returns>
+        </member>
+        <member name="T:RosSharp.Master.MasterClient">
+            <summary>
+              XML-RPC Client for Master API
+            </summary>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.RegisterServiceAsync(System.String,System.String,System.Uri,System.Uri)">
+            <summary>
+              Register the caller as a provider of the specified service.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <param name="serviceApi"> ROSRPC Service URI </param>
+            <param name="callerApi"> XML-RPC URI of caller node </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.UnregisterServiceAsync(System.String,System.String,System.Uri)">
+            <summary>
+              Unregister the caller as a provider of the specified service.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <param name="serviceApi"> API URI of service to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns> Number of Unregistrations </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.RegisterSubscriberAsync(System.String,System.String,System.String,System.Uri)">
+            <summary>
+              Subscribe the caller to the specified topic. In addition to receiving a list of current publishers, the subscriber will also receive notifications of new publishers via the publisherUpdate API.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic. </param>
+            <param name="topicType"> Datatype for topic. Must be a package-resource name, i.e. the .msg name. </param>
+            <param name="callerApi"> API URI of subscriber to register. Will be used for new publisher notifications. </param>
+            <returns> list of XMLRPC API URIs for nodes currently publishing the specified topic. </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.UnregisterSubscriberAsync(System.String,System.String,System.Uri)">
+            <summary>
+              Unregister the caller as a publisher of the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic. </param>
+            <param name="callerApi"> API URI of service to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns> Number of Unsubscribed </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.RegisterPublisherAsync(System.String,System.String,System.String,System.Uri)">
+            <summary>
+              Register the caller as a publisher the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic to register. </param>
+            <param name="topicType"> Datatype for topic. Must be a package-resource name, i.e. the .msg name. </param>
+            <param name="callerApi"> API URI of publisher to register. </param>
+            <returns> List of current subscribers of topic in the form of XMLRPC URIs. </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.UnregisterPublisherAsync(System.String,System.String,System.Uri)">
+            <summary>
+              Unregister the caller as a publisher of the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic to unregister. </param>
+            <param name="callerApi"> API URI of publisher to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns> Number of Unregistered </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.LookupNodeAsync(System.String,System.String)">
+            <summary>
+              Get the XML-RPC URI of the node with the associated name/caller_id. This API is for looking information about publishers and subscribers. Use lookupService instead to lookup ROS-RPC URIs.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="nodeName"> Name of node to lookup </param>
+            <returns> URI of the Node </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.GetPublisherTopicsAsync(System.String,System.String)">
+            <summary>
+              Get list of topics that can be subscribed to. This does not return topics that have no publishers. See getSystemState() to get more comprehensive list.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="subgraph"> Restrict topic names to match within the specified subgraph. Subgraph namespace is resolved relative to the caller's namespace. Use emptry string to specify all names. </param>
+            <returns> TopicInfo list </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.GetSystemStateAsync(System.String)">
+            <summary>
+              Retrieve list representation of system state (i.e. publishers, subscribers, and services).
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <returns> System state </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.GetUriAsync(System.String)">
+            <summary>
+              Get the URI of the the master.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <returns> URI of the master </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.LookupServiceAsync(System.String,System.String)">
+            <summary>
+              Lookup all provider of a particular service.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <returns> URI of the service </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.ShutdownAsync(System.String,System.String)">
+            <summary>
+              Stop this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="msg"> A message describing why the node is being shutdown. </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterClient.GetPidAsync(System.String)">
+            <summary>
+              Get the PID of this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> server process pid </returns>
+        </member>
+        <member name="T:RosSharp.Master.MasterProxy">
+            <summary>
+              Asynchronous call Proxy for Master API
+            </summary>
+        </member>
+        <member name="T:RosSharp.Master.MasterServer">
+            <summary>
+              XML-RPC Server for Master API
+            </summary>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.RegisterService(System.String,System.String,System.String,System.String)">
+            <summary>
+              Register the caller as a provider of the specified service.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <param name="serviceApi"> ROSRPC Service URI </param>
+            <param name="callerApi"> XML-RPC URI of caller node </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.UnregisterService(System.String,System.String,System.String)">
+            <summary>
+              Unregister the caller as a provider of the specified service.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <param name="serviceApi"> API URI of service to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: Number of Unregistrations
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.RegisterSubscriber(System.String,System.String,System.String,System.String)">
+            <summary>
+              Subscribe the caller to the specified topic. <br/>
+              In addition to receiving a list of current publishers, the subscriber will also receive notifications of new publishers via the publisherUpdate API.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic. </param>
+            <param name="topicType"> Datatype for topic. Must be a package-resource name, i.e. the .msg name. </param>
+            <param name="callerApi"> API URI of subscriber to register. Will be used for new publisher notifications. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str[]: list of XMLRPC API URIs for nodes currently publishing the specified topic. 
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.UnregisterSubscriber(System.String,System.String,System.String)">
+            <summary>
+              Unregister the caller as a publisher of the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic. </param>
+            <param name="callerApi"> API URI of service to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: Number of Unsubscribed
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.RegisterPublisher(System.String,System.String,System.String,System.String)">
+            <summary>
+              Register the caller as a publisher the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic to register. </param>
+            <param name="topicType"> Datatype for topic. Must be a package-resource name, i.e. the .msg name. </param>
+            <param name="callerApi"> API URI of publisher to register. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str[]: List of current subscribers of topic in the form of XMLRPC URIs.
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.UnregisterPublisher(System.String,System.String,System.String)">
+            <summary>
+              Unregister the caller as a publisher of the topic.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="topic"> Fully-qualified name of topic to unregister. </param>
+            <param name="callerApi"> API URI of publisher to unregister. Unregistration will only occur if current registration matches. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: Number of Unregistered
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.LookupNode(System.String,System.String)">
+            <summary>
+              Get the XML-RPC URI of the node with the associated name/caller_id. <br/>
+              This API is for looking information about publishers and subscribers. Use lookupService instead to lookup ROS-RPC URIs.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <param name="nodeName"> Name of node to lookup </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: URI of the Node
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.GetPublisherTopics(System.String,System.String)">
+            <summary>
+              Get list of topics that can be subscribed to. This does not return topics that have no publishers. See getSystemState() to get more comprehensive list.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="subgraph"> Restrict topic names to match within the specified subgraph. Subgraph namespace is resolved relative to the caller's namespace. Use emptry string to specify all names. </param>
+            <returns>
+            [0] = int: code
+            [1] = str: status message
+            [2] = str[][]: [topic1, type1]...[topicN, typeN]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.GetSystemState(System.String)">
+            <summary>
+              Retrieve list representation of system state (i.e. publishers, subscribers, and services).
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <returns>
+            [0] = int: code
+            [1] = str: status message
+            [2] = System state is in list representation [publishers, subscribers, services] <br/>
+              publishers: [ [topic1, [topic1Publisher1...topic1PublisherN]] ... ] <br/>
+              subscribers: [ [topic1, [topic1Subscriber1...topic1SubscriberN]] ... ] <br/>
+              services: [ [service1, [service1Provider1...service1ProviderN]] ... ]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.GetUri(System.String)">
+            <summary>
+              Get the URI of the the master.
+            </summary>
+            <param name="callerId"> ROS Caller ID </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: URI of the master
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.LookupService(System.String,System.String)">
+            <summary>
+              Lookup all provider of a particular service.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="service"> Fully-qualified name of service </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: URI of the service
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.Shutdown(System.String,System.String)">
+            <summary>
+              Stop this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="msg"> A message describing why the node is being shutdown. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Master.MasterServer.GetPid(System.String)">
+            <summary>
+              Get the PID of this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: server process pid
+            </returns>
+        </member>
+        <member name="T:RosSharp.Parameter.ParameterServer">
+            <summary>
+              XML-RPC Server for ParameterServer API
+            </summary>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.DeleteParam(System.String,System.String)">
+            <summary>
+              Delete parameter
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.SetParam(System.String,System.String,System.Object)">
+            <summary>
+              Set parameter.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. </param>
+            <param name="value"> Parameter value. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.GetParam(System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. If key is a namespace, getParam() will return a parameter tree. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = parameterValue
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.SearchParam(System.String,System.String)">
+            <summary>
+              Search for parameter key on the Parameter Server.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name to search for. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str: foundKey
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.SubscribeParam(System.String,System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server and subscribe to updates to that param. See paramUpdate() in the Node API.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="callerApi"> Node API URI of subscriber for paramUpdate callbacks. </param>
+            <param name="key"> Parameter name </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = parameterValue
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.UnsubscribeParam(System.String,System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server and subscribe to updates to that param. See paramUpdate() in the Node API.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="callerApi"> Node API URI of subscriber. </param>
+            <param name="key"> Parameter name. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: number of unsubscribed
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.HasParam(System.String,System.String)">
+            <summary>
+              Check if parameter is stored on server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="key"> Parameter name. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = bool: hasParam
+            </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServer.GetParamNames(System.String)">
+            <summary>
+              Get list of all parameter names stored on this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = str[]: parameter name list
+            </returns>
+        </member>
+        <member name="T:RosSharp.Parameter.ParameterServerClient">
+            <summary>
+              XML-RPC Client for ParameterServer API
+            </summary>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.DeleteParamAsync(System.String,System.String)">
+            <summary>
+              Delete parameter
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.SetParamAsync(System.String,System.String,System.Object)">
+            <summary>
+              Set parameter.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. </param>
+            <param name="value"> Parameter value. </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.GetParamAsync(System.String,System.String)">
+            <summary>
+              Retrieve parameter value from server.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name. If key is a namespace, getParam() will return a parameter tree. </param>
+            <returns> parameterValue </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.SearchParamAsync(System.String,System.String)">
+            <summary>
+              Search for parameter key on the Parameter Server.
+            </summary>
+            <param name="callerId"> ROS caller ID </param>
+            <param name="key"> Parameter name to search for. </param>
+            <returns> foundKey </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.SubscribeParamAsync(System.String,System.Uri,System.String)">
+            <summary>
+              Retrieve parameter value from server and subscribe to updates to that param. See paramUpdate() in the Node API.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="callerApi"> Node API URI of subscriber for paramUpdate callbacks. </param>
+            <param name="key"> Parameter name </param>
+            <returns> parameterValue </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.UnsubscribeParamAsync(System.String,System.Uri,System.String)">
+            <summary>
+              Retrieve parameter value from server and subscribe to updates to that param. See paramUpdate() in the Node API.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="callerApi"> Node API URI of subscriber. </param>
+            <param name="key"> Parameter name. </param>
+            <returns> number of unsubscribed </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.HasParamAsync(System.String,System.String)">
+            <summary>
+              Check if parameter is stored on server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="key"> Parameter name. </param>
+            <returns> hasParam </returns>
+        </member>
+        <member name="M:RosSharp.Parameter.ParameterServerClient.GetParamNamesAsync(System.String)">
+            <summary>
+              Get list of all parameter names stored on this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> parameter name list </returns>
+        </member>
+        <member name="T:RosSharp.Topic.Publisher`1">
+            <summary>
+              Publishes message on a ROS Topic
+            </summary>
+            <typeparam name="TMessage"> Message Type </typeparam>
+        </member>
+        <member name="T:RosSharp.Ros">
+            <summary>
+              ROS Manager
+            </summary>
+        </member>
+        <member name="M:RosSharp.Ros.#cctor">
+            <summary>
+              Initialize Setting
+            </summary>
+        </member>
+        <member name="M:RosSharp.Ros.Dispose">
+            <summary>
+              Dispose all nodes
+            </summary>
+        </member>
+        <member name="M:RosSharp.Ros.DisposeAsync">
+            <summary>
+              Asynchronous dispose all nodes
+            </summary>
+        </member>
+        <member name="M:RosSharp.Ros.InitNodeAsync(System.String,System.Boolean,System.Boolean)">
+            <summary>
+              Create a ROS Node
+            </summary>
+            <param name="nodeName"> ROS Node name </param>
+            <param name="enableLogger"> if true, enable RosOut Logger </param>
+            <param name="anonymous"> if true, named to an anonymous name (append a random number to the node name) </param>
+            <returns> created Node </returns>
+        </member>
+        <member name="M:RosSharp.Ros.GetNodes">
+            <summary>
+              Get all nodes
+            </summary>
+            <returns> all nodes </returns>
+        </member>
+        <member name="P:RosSharp.Ros.MasterUri">
+            <summary>
+              XML-RPC URI of the Master
+            </summary>
+            <example>
+              http://192.168.1.10:11311/
+            </example>
+        </member>
+        <member name="P:RosSharp.Ros.HostName">
+            <summary>
+              local network address of a ROS Node
+            </summary>
+            <example>
+              192.168.1.10
+            </example>
+        </member>
+        <member name="P:RosSharp.Ros.XmlRpcTimeout">
+            <summary>
+              Timeout in milliseconds on a XML-RPC proxy method call
+            </summary>
+        </member>
+        <member name="P:RosSharp.Ros.TopicTimeout">
+            <summary>
+              Timeout in milliseconds on a ROS TOPIC
+            </summary>
+        </member>
+        <member name="T:RosSharp.Node">
+            <summary>
+              ROS Node
+            </summary>
+        </member>
+        <member name="M:RosSharp.Node.PrimitiveParameterAsync``1(System.String)">
+            <summary>
+              Create a Primitive Parameter
+            </summary>
+            <typeparam name="T"> Parameter Type (primitive type only)</typeparam>
+            <param name="paramName"> Parameter Name </param>
+            <returns> Parameter </returns>
+        </member>
+        <member name="M:RosSharp.Node.ListParameterAsync``1(System.String)">
+            <summary>
+              Create a List Parameter
+            </summary>
+            <typeparam name="T"> Parameter Type (primitive type only)</typeparam>
+            <param name="paramName"> Parameter Name </param>
+            <returns> Parameter </returns>
+        </member>
+        <member name="M:RosSharp.Node.DynamicParameterAsync(System.String)">
+            <summary>
+              Create a Dynamic Parameter
+            </summary>
+            <param name="paramName"> Parameter Name </param>
+            <returns> Parameter </returns>
+        </member>
+        <member name="M:RosSharp.Node.SubscriberAsync``1(System.String,System.Boolean)">
+            <summary>
+              Create a ROS Topic Subscriber
+            </summary>
+            <typeparam name="TMessage"> Topic Message Type </typeparam>
+            <param name="topicName"> Topic Name </param>
+            <param name="nodelay"> false: Socket uses the Nagle algorithm </param>
+            <returns> Subscriber </returns>
+        </member>
+        <member name="M:RosSharp.Node.PublisherAsync``1(System.String,System.Boolean)">
+            <summary>
+              Create a ROS Topic Publisher
+            </summary>
+            <typeparam name="TMessage"> Topic Message Type </typeparam>
+            <param name="topicName"> Topic Name </param>
+            <param name="latching"> true: send the latest published message when subscribed topic </param>
+            <returns> Publisher </returns>
+        </member>
+        <member name="M:RosSharp.Node.ServiceProxyAsync``1(System.String)">
+            <summary>
+              Create a Proxy Object for ROS Service
+            </summary>
+            <typeparam name="TService"> Service Type </typeparam>
+            <param name="serviceName"> Service Name </param>
+            <returns> Proxy Object </returns>
+        </member>
+        <member name="M:RosSharp.Node.AdvertiseServiceAsync``1(System.String,``0)">
+            <summary>
+              Register a ROS Service
+            </summary>
+            <typeparam name="TService"> Service Type </typeparam>
+            <param name="serviceName"> Service Name </param>
+            <param name="service"> Service Instance </param>
+            <returns> object that dispose a service </returns>
+        </member>
+        <member name="P:RosSharp.Node.NodeId">
+            <summary>
+              Node ID
+            </summary>
+        </member>
+        <member name="T:RosSharp.Slave.SlaveClient">
+            <summary>
+              XML-RPC Client for Slave API
+            </summary>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.GetBusStatsAsync(System.String)">
+            <summary>
+              Retrieve transport/topic statistics.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> stats </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.GetBusInfoAsync(System.String)">
+            <summary>
+              Retrieve transport/topic connection information.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> businfo </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.GetMasterUriAsync(System.String)">
+            <summary>
+              Get the URI of the master node.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> URI of the master </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.ShutdownAsync(System.String,System.String)">
+            <summary>
+              Stop this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="msg"> A message describing why the node is being shutdown. </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.GetPidAsync(System.String)">
+            <summary>
+              Get the PID of this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> server process pid </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.GetSubscriptionsAsync(System.String)">
+            <summary>
+              Retrieve a list of topics that this node subscribes to
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> topicList is a list of topics this node subscribes to and is of the form </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.GetPublicationsAsync(System.String)">
+            <summary>
+              Retrieve a list of topics that this node publishes.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns> topicList is a list of topics published by this node and is of the form </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.ParamUpdateAsync(System.String,System.String,System.Object)">
+            <summary>
+              Callback from master with updated value of subscribed parameter.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="parameterKey"> Parameter name, globally resolved. </param>
+            <param name="parameterValue"> New parameter value. </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.PublisherUpdateAsync(System.String,System.String,System.String[])">
+            <summary>
+              Callback from master of current publisher list for specified topic.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="topic"> Topic name. </param>
+            <param name="publishers"> List of current publishers for topic in the form of XMLRPC URIs </param>
+            <returns> ignore </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveClient.RequestTopicAsync(System.String,System.String,System.Collections.Generic.List{RosSharp.Slave.ProtocolInfo})">
+            <summary>
+              Publisher node API method called by a subscriber node. This requests that source allocate a channel for communication. Subscriber provides a list of desired protocols for communication. Publisher returns the selected protocol along with any additional params required for establishing connection. For example, for a TCP/IP-based connection, the source node may return a port number of TCP/IP server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="topic"> Topic name. </param>
+            <param name="infos"> List of desired protocols for communication in order of preference. Each protocol is a list of the form [ProtocolName, ProtocolParam1, ProtocolParam2...N] </param>
+            <returns> protocolParams may be an empty list if there are no compatible protocols. </returns>
+        </member>
+        <member name="T:RosSharp.Slave.SlaveServer">
+            <summary>
+              XML-RPC Server for Slave API
+            </summary>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.GetBusStats(System.String)">
+            <summary>
+              Retrieve transport/topic statistics.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br />
+            [1] = str: status message <br />
+            [2] = stats: [publishStats, subscribeStats, serviceStats] <br /> 
+              publishStats: [[topicName, messageDataSent, pubConnectionData]...] <br />
+              subscribeStats: [[topicName, subConnectionData]...] <br />
+              serviceStats: (proposed) [numRequests, bytesReceived, bytesSent] <br />
+                pubConnectionData: [connectionId, bytesSent, numSent, connected]* <br />
+                subConnectionData: [connectionId, bytesReceived, numSent, dropEstimate, connected]*
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.GetBusInfo(System.String)">
+            <summary>
+              Retrieve transport/topic connection information.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message<br/>
+            [2] = businfo: [[connectionId1, destinationId1, direction1, transport1, topic1, connected1]... ] <br/>
+              connectionId is defined by the node and is opaque. <br/>
+              destinationId is the XMLRPC URI of the destination. <br/>
+              direction is one of 'i', 'o', or 'b' (in, out, both). <br/>
+              transport is the transport type (e.g. 'TCPROS'). <br/>
+              topic is the topic name. <br/>
+              connected1 indicates connection status.
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.GetMasterUri(System.String)">
+            <summary>
+              Get the URI of the master node.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/> 
+            [1] = str: status message <br/>
+            [2] = str: URI of the master 
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.Shutdown(System.String,System.String)">
+            <summary>
+              Stop this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="msg"> A message describing why the node is being shutdown. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.GetPid(System.String)">
+            <summary>
+              Get the PID of this server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: server process pid
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.GetSubscriptions(System.String)">
+            <summary>
+              Retrieve a list of topics that this node subscribes to
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = topicList is a list of topics this node subscribes to and is of the form [ [topic1, topicType1]...[topicN, topicTypeN]]]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.GetPublications(System.String)">
+            <summary>
+              Retrieve a list of topics that this node publishes.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = topicList is a list of topics published by this node and is of the form [ [topic1, topicType1]...[topicN, topicTypeN]]]
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.ParamUpdate(System.String,System.String,System.Object)">
+            <summary>
+              Callback from master with updated value of subscribed parameter.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="parameterKey"> Parameter name, globally resolved. </param>
+            <param name="parameterValue"> New parameter value. </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.PublisherUpdate(System.String,System.String,System.String[])">
+            <summary>
+              Callback from master of current publisher list for specified topic.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="topic"> Topic name. </param>
+            <param name="publishers"> List of current publishers for topic in the form of XMLRPC URIs </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = int: ignore
+            </returns>
+        </member>
+        <member name="M:RosSharp.Slave.SlaveServer.RequestTopic(System.String,System.String,System.Object[])">
+            <summary>
+              Publisher node API method called by a subscriber node. <br/>
+              This requests that source allocate a channel for communication. <br/>
+              Subscriber provides a list of desired protocols for communication. <br/>
+              Publisher returns the selected protocol along with any additional params required for establishing connection. <br/>
+              For example, for a TCP/IP-based connection, the source node may return a port number of TCP/IP server.
+            </summary>
+            <param name="callerId"> ROS caller ID. </param>
+            <param name="topic"> Topic name. </param>
+            <param name="protocols"> List of desired protocols for communication in order of preference. Each protocol is a list of the form [ProtocolName, ProtocolParam1, ProtocolParam2...N] </param>
+            <returns>
+            [0] = int: code <br/>
+            [1] = str: status message <br/>
+            [2] = protocolParams may be an empty list if there are no compatible protocols. 
+            </returns>
+        </member>
+        <member name="T:RosSharp.Topic.Subscriber`1">
+            <summary>
+              Subscribes message on a ROS Topic
+            </summary>
+            <typeparam name="TMessage"> Message Type </typeparam>
+        </member>
+        <member name="T:RosSharp.Parameter.ParameterServerProxy">
+            <summary>
+              Asynchronous call Proxy for ParameterServer API
+            </summary>
+        </member>
+        <member name="T:RosSharp.Slave.SlaveProxy">
+            <summary>
+              Asynchronous call Proxy for Slave API
+            </summary>
+        </member>
+        <member name="T:RosSharp.RosOut">
+            <summary>
+            Logging ROS Node
+            </summary>
+        </member>
+        <member name="T:RosSharp.RosOutLogger">
+            <summary>
+            Logging to RosOut
+            </summary>
+        </member>
+        <member name="T:RosSharp.RosOutLoggerFactoryAdapter">
+            <summary>
+            LoggerFactoryAdapter for use of the RosOutLogger
+            </summary>
+        </member>
+    </members>
+</doc>
