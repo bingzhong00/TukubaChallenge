@@ -43,7 +43,7 @@ namespace CersioIO
 
         // ハンドル、アクセル上限値
         public const double HandleRate = 1.0;//0.8;  //<========== 調整 0.0 ～ 1.0(100%)
-        public const double AccRate =0.5;// 1.0;
+        public const double AccRate = 0.5;// 1.0;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.125; // 0.15;
@@ -197,11 +197,11 @@ namespace CersioIO
         }
 
 
-    /// <summary>
-    /// ハードウェアステータス取得
-    /// </summary>
-    /// <param name="useUsbGPS">USB接続のGPSを使う</param>
-    public void GetHWStatus( bool useUsbGPS )
+        /// <summary>
+        /// ハードウェアステータス取得
+        /// </summary>
+        /// <param name="useUsbGPS">USB接続のGPSを使う</param>
+        public void GetHWStatus(bool useUsbGPS)
         {
             if (TCP_IsConnected())
             {
@@ -228,10 +228,43 @@ namespace CersioIO
                 // ロータリーエンコーダ　ハンドル値修正
                 //double rad = (double)(-hwCompass) * Math.PI / 180.0;
                 //TCP_SendCommand("AR," + rad.ToString("f") + "\n");
+
+
+                // ROS-IFへデータ書き込み
+                {
+                    // REPlotX,Y
+                    ipc.RemoteObject.rePlotX = hwREX;
+                    ipc.RemoteObject.rePlotY = hwREY;
+                    ipc.RemoteObject.reAng = hwREDir;
+
+                    // Compus
+                    if (bhwCompass)
+                    {
+                        ipc.RemoteObject.compusDir = hwCompass;
+                    }
+
+                    // RE パルス値
+                    ipc.RemoteObject.reRpulse = hwRErotR;
+                    ipc.RemoteObject.reLpulse = hwRErotL;
+
+                    if (bhwGPS && !bhwUsbGPS)
+                    {
+                        ipc.RemoteObject.gpsGrandX = hwGPS_LandX;
+                        ipc.RemoteObject.gpsGrandY = hwGPS_LandY;
+                    }
+                }
             }
 
             // USB GPS情報取得
-            if( useUsbGPS ) AnalizeUsbGPS();
+            if (useUsbGPS)
+            {
+                AnalizeUsbGPS();
+
+                // Ros-IF
+                // GPS
+                ipc.RemoteObject.gpsGrandX = hwGPS_LandX;
+                ipc.RemoteObject.gpsGrandY = hwGPS_LandY;
+            }
 
             // カウンタ更新
             if (cntHeadLED > 0) cntHeadLED--;
