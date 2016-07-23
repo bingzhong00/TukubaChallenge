@@ -1,5 +1,0 @@
-command line expsamle 
-
-GenMsg -t msg -n geometry_msgs -i "..\msg"  "..\msg\Twist.msg"
-
-GenMsg -t msg -n visualization_msgs -i "..\msg"  -o "output_cs" "..\msg\Maker.msg"
