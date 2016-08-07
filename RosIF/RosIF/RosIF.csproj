@@ -67,10 +67,14 @@
   <ItemGroup>
     <Compile Include="IpcRemoteObj.cs" />
     <Compile Include="msgs\ColorRGBA.cs" />
+    <Compile Include="msgs\LaserScan.cs" />
     <Compile Include="msgs\Marker.cs" />
     <Compile Include="msgs\Point.cs" />
     <Compile Include="msgs\Pose.cs" />
     <Compile Include="msgs\Quaternion.cs" />
+    <Compile Include="msgs\tfMessage.cs" />
+    <Compile Include="msgs\Transform.cs" />
+    <Compile Include="msgs\TransformStamped.cs" />
     <Compile Include="msgs\Twist.cs" />
     <Compile Include="msgs\Vector3.cs" />
     <Compile Include="Program.cs" />

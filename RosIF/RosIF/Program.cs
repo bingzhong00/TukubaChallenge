@@ -21,13 +21,13 @@ namespace RosIF
 
             // パラメータ取得
             // RosIF.exe 自IP roscore側IP
-            if (args.Length > 1)
+            if (args.Length >= 1)
             {
-                myAddr = args[1];
+                myAddr = args[0];
             }
-            if (args.Length > 2)
+            if (args.Length >= 2)
             {
-                roscoreAddr = args[2];
+                roscoreAddr = args[1];
             }
 
 
@@ -89,11 +89,23 @@ namespace RosIF
                         rosifVR.vslamPlotY;
                         rosifVR.vslamAng;
 
-                        /// hector-slam
+                        /// amcl-slam
                         rosifVR.hslamPlotX;
                         rosifVR.hslamPlotY;
                         rosifVR.hslamAng;
                         */
+
+                        // URG ROS->VR SubScribe(購読)
+                        for (int i = 0; i < rosifVR.urg_scan.Length; i++) {
+                            ipc.RemoteObject.urgData[i] = rosifVR.urg_scan[i];
+                        }
+
+                        // URG VR->ROS Publish(配信)
+                        for (int i = 0; i < rosifVR.urg_scan.Length; i++)
+                        {
+                            rosifVR.urg_scan_send[i] = ipc.RemoteObject.urgDataSend[i];
+                        }
+
                     }
                 }
                 catch (Exception ex)
@@ -126,7 +138,7 @@ namespace RosIF
                 {
                     Console.WriteLine("Subscribe ----------- ");
                     Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
-                    Console.WriteLine("hslamPlotX:" + rosifVR.hslamPlotX.ToString("f2") + "/ hslamPlotY:" + rosifVR.hslamPlotY.ToString("f2") + "/ hslamAng:" + rosifVR.hslamAng.ToString("f2"));
+                    //Console.WriteLine("hslamPlotX:" + rosifVR.hslamPlotX.ToString("f2") + "/ hslamPlotY:" + rosifVR.hslamPlotY.ToString("f2") + "/ hslamAng:" + rosifVR.hslamAng.ToString("f2"));
                     Console.WriteLine("");
 
                     Console.WriteLine("Publish ------------- ");
