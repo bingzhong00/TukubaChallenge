@@ -80,8 +80,11 @@ namespace CersioSim
             }
 
             //リスナを閉じる
-            listener.Stop();
-            Console.WriteLine("Listenerを閉じました。");
+            if (null != listener)
+            {
+                listener.Stop();
+                Console.WriteLine("Listenerを閉じました。");
+            }
         }
 
         /// <summary>

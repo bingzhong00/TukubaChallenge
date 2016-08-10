@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-
+using System.Threading.Tasks;
 
 namespace LocationPresumption
 {
@@ -123,7 +123,7 @@ namespace LocationPresumption
         public double[] Sense(GridMap map, double posX, double posY, double robotTheta)
         {
             double[] result = new double[AngleRange];
-            int i;
+            //int i;
             int angRng = AngleRange / 2;
 
 
@@ -133,17 +133,19 @@ namespace LocationPresumption
             //LocPreSumpSystem.swCNT_MRF.Start();
             try
             {
-                for (i = -angRng; i < angRng; ++i)
+                Parallel.For(-angRng, angRng, i => // こう書くだけで、並行して処理が行われる
                 {
+                    //for (i = -angRng; i < angRng; ++i) {
+
                     int theta = (iroboTheta + -i + 360 * 2) % 360;
 
                     // 障害物までの距離を取得
-                    result[i + angRng] = map.MeasureDist( posX / PixelScale,
+                    result[i + angRng] = map.MeasureDist(posX / PixelScale,
                                                           posY / PixelScale,
                                                           DeltaX[theta],
                                                           DeltaY[theta],
                                                           RangeMax) * PixelScale;
-                }
+                });
             }
             catch (Exception e)
             {

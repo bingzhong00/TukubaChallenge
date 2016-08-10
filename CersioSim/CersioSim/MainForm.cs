@@ -84,13 +84,21 @@ namespace CersioSim
                 slamForm.Show();
             }
 
-            // bServer Listen Open
-            bSrv.Open();
-
-            // URG Listen
-            UrgSim.Open("192.168.1.4");
+            initAsync();
 
             tmr_Update.Enabled = true;
+        }
+
+        /// <summary>
+        /// 非同期初期化タスク
+        /// </summary>
+        private async void initAsync()
+        {
+            // bServer Listen Open
+            await bSrv.Open();
+
+            // URG Listen
+            await UrgSim.Open("192.168.1.4");
         }
 
         /// <summary>
