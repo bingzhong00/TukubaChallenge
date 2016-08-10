@@ -209,11 +209,11 @@ namespace Navigation
 #else
             // EHS設定 壁検知　ハンドル制御
             // ハンドル　－が右
-            public const int stLAng = -40;     // 左側感知角度 -35～-10度
-            public const int edLAng = -10;
+            public const int stRAng = -40;     // 右側感知角度 -35～-10度
+            public const int edRAng = -10;
 
-            public const int stRAng = 10;      // 右側感知角度 10～35度
-            public const int edRAng = 40;
+            public const int stLAng = 10;      // 左側感知角度 10～35度
+            public const int edLAng = 40;
 
             public const double MinRange = 600.0;     // 感知最小距離 [mm] 30cm
             public const double MaxRange = 3000.0;    // 感知最大距離 [mm] 150cm
@@ -265,9 +265,9 @@ namespace Navigation
 
                     // LRFの値を調べる
 
-                    // 左側
+                    // 右側
                     minDistance = maxPixRange;
-                    for (int i = (stLAng + rangeCenterAng); i < (edLAng + rangeCenterAng); i++)
+                    for (int i = (stRAng + rangeCenterAng); i < (edRAng + rangeCenterAng); i++)
                     {
                         // 範囲内なら反応
                         if (lrfData[i] > minPixRange && lrfData[i] < maxPixRange)
@@ -275,15 +275,15 @@ namespace Navigation
                             if (lrfData[i] < minDistance)
                             {
                                 minDistance = lrfData[i];
-                                LHitLength = lrfData[i];
-                                LHitDir = (double)i;
+                                RHitLength = lrfData[i];
+                                RHitDir = (double)i;
                             }
                         }
                     }
 
-                    // 右側
+                    // 左側
                     minDistance = maxPixRange;
-                    for (int i = (edRAng + rangeCenterAng); i >= (stRAng + rangeCenterAng); i--)
+                    for (int i = (edLAng + rangeCenterAng); i >= (stLAng + rangeCenterAng); i--)
                     {
                         // 以下なら反応
                         if (lrfData[i] > minPixRange && lrfData[i] < maxPixRange)
@@ -291,8 +291,8 @@ namespace Navigation
                             if (lrfData[i] < minDistance)
                             {
                                 minDistance = lrfData[i];
-                                RHitLength = lrfData[i];
-                                RHitDir = (double)i;
+                                LHitLength = lrfData[i];
+                                LHitDir = (double)i;
                             }
                         }
                     }
@@ -430,7 +430,7 @@ namespace Navigation
         /// <param name="bLocRivisionTRG"></param>
         /// <param name="useAlwaysPF"></param>
         /// <returns></returns>
-        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF)
+        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF, bool bStraightMode )
         {
             // エマージェンシーブレーキを使わないフラグ
             bool untiEBS = false;
@@ -448,7 +448,7 @@ namespace Navigation
 
 
             // 自走処理
-            bNowBackProcess = untiEBS = Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF);
+            bNowBackProcess = untiEBS = Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF, bStraightMode);
 
             if (EBS.EmgBrk && useEBS && !untiEBS)
             {
@@ -488,7 +488,7 @@ namespace Navigation
         /// <param name="useAlwaysPF">常時PF更新</param>
         /// <returns>true...バック中(緊急動作しない)</returns>
         /// 
-        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF)
+        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF, bool bStraightMode)
         {
             double[] lrfData = LocSys.LRF.getData();
 
@@ -681,6 +681,9 @@ namespace Navigation
                 double handleTgt = RTS.getHandleValue();
                 double accTgt = RTS.getAccelValue();
 
+                // 直進モード
+                if (bStraightMode) handleTgt = 0.0;
+
                 // 壁回避
                 {
                     EHS.HandleVal = EHS.CheckEHS(LocSys.LRF.getData_UntiNoise());
@@ -737,6 +740,9 @@ namespace Navigation
                 // 復帰（バック）モード
                 double handleTgt = RTS.getHandleValue();
                 //double accTgt = RTS.getAccelValue();
+
+                // 直進モード
+                if (bStraightMode) handleTgt = 0.0;
 
                 {
                     double ehsHandleVal = EHS.CheckEHS(LocSys.LRF.getData_UntiNoise());

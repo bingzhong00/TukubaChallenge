@@ -42,8 +42,8 @@ namespace CersioIO
 
 
         // ハンドル、アクセル上限値
-        public const double HandleRate = 1.0;//0.8;  //<========== 調整 0.0 ～ 1.0(100%)
-        public const double AccRate = 0.5;// 1.0;
+        static public double HandleRate = 1.0;
+        static public double AccRate = 0.5;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.125; // 0.15;
@@ -115,15 +115,7 @@ namespace CersioIO
         /// </summary>
         public void Close()
         {
-            if (TCP_IsConnected())
-            {
-                // 動力停止
-                TCP_SendCommand("AC,0.0,0.0\n");
-                System.Threading.Thread.Sleep(50);
-                // LEDを戻す
-                TCP_SendCommand("AL,0,\n");
-                System.Threading.Thread.Sleep(50);
-            }
+            SendCommand_Stop();
 
             if (null != UsbMotorDriveIO)
             {
@@ -156,6 +148,23 @@ namespace CersioIO
 
             // 回線オープン
             return objTCPSC.Start();
+        }
+
+        /// <summary>
+        /// 静止指示
+        /// </summary>
+        public void SendCommand_Stop()
+        {
+            if (TCP_IsConnected())
+            {
+                // 動力停止
+                TCP_SendCommand("AC,0.0,0.0\n");
+                System.Threading.Thread.Sleep(50);
+
+                // LEDを戻す
+                TCP_SendCommand("AL,0,\n");
+                System.Threading.Thread.Sleep(50);
+            }
         }
 
         /// <summary>
@@ -253,6 +262,9 @@ namespace CersioIO
                         ipc.RemoteObject.gpsGrandY = hwGPS_LandY;
                     }
                 }
+
+                // コマンド送信
+                SendCommandQue();
             }
 
             // USB GPS情報取得
@@ -270,6 +282,14 @@ namespace CersioIO
             if (cntHeadLED > 0) cntHeadLED--;
         }
 
+        /// <summary>
+        /// ROSのLRFデータ取得
+        /// </summary>
+        /// <returns></returns>
+        public double[] GetROS_LRFdata()
+        {
+            return ipc.RemoteObject.urgData;
+        }
 
         /// <summary>
         /// ACコマンド発行
@@ -380,19 +400,19 @@ namespace CersioIO
 
         //--------------------------------------------------------------------------------------------------------------
         // BoxPC通信
-        
+        private List<string> SendCommandList = new List<string>();
 
-        public List<string> SendCommandList = new List<string>();
         /// <summary>
         /// コマンド分割送信
         /// </summary>
-        public void SendCommandTick()
+        private void SendCommandQue()
         {
             if (TCP_IsConnected())
             {
                 // 先頭から順に送信
                 if (SendCommandList.Count > 0)
                 {
+                    // コマンド結合
                     string sendMsg = "";
                     for (int i = 0; i < 10; i++)
                     {
@@ -420,12 +440,14 @@ namespace CersioIO
             }
         }
 
+        /// <summary>
+        /// 送信コマンド受付
+        /// リストに積んでいく
+        /// </summary>
+        /// <param name="comStr"></param>
         public void SendCommand( string comStr )
         {
-            if (TCP_IsConnected())
-            {
-                SendCommandList.Add(comStr);
-            }
+            SendCommandList.Add(comStr);
         }
 
         /// <summary>

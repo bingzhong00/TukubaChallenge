@@ -19,6 +19,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
+using System.Threading.Tasks;
 
 using LocationPresumption;
 using CersioIO;
@@ -101,6 +103,10 @@ namespace VehicleRunner
         // ハードウェア用 周期の短いカウンタ
         private int updateHwCnt = 0;
 
+        /// <summary>
+        /// アプリ終了フラグ
+        /// </summary>
+        private bool appExit = false;
 
         // ================================================================================================================
 
@@ -138,6 +144,9 @@ namespace VehicleRunner
             rb_Move_CheckedChanged(null, null);
             rb_Dir_CheckedChanged(null, null);
 
+            tbar_AccRatio_Scroll(null, null);
+            tbar_HdlRatio_Scroll(null, null);
+
             // マップウィンドウサイズのbmp作成
             formDraw.MakePictureBoxWorldMap(LocSys.worldMap.mapBmp, picbox_AreaMap);
 
@@ -152,6 +161,20 @@ namespace VehicleRunner
 
             // 位置管理定期処理タイマー起動
             tm_LocUpdate.Enabled = true;
+
+            // センサー値取得 スレッド起動
+            Thread trdSensor = new Thread(new ThreadStart(ThreadSensorUpdate));
+            trdSensor.IsBackground = true;
+            trdSensor.Priority = ThreadPriority.AboveNormal;
+            trdSensor.Start();
+
+            // 位置座標更新　スレッド起動
+            /*
+            Thread trdLocalize = new Thread(new ThreadStart(ThreadLocalizationUpdate));
+            trdLocalize.IsBackground = true;
+            //trdSensor.Priority = ThreadPriority.AboveNormal;
+            trdLocalize.Start();
+            */
 
 #if EMULATOR_MODE
             // LRF エミュレーション
@@ -206,7 +229,7 @@ namespace VehicleRunner
 
             // ハードウェア更新タイマ起動
             tm_UpdateHw.Enabled = true;
-            tm_SendCom.Enabled = true;
+            //tm_SendCom.Enabled = true;
         }
 
         /// <summary>
@@ -227,8 +250,11 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void VehicleRunnerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // アプリ終了フラグ
+            appExit = true;
+
             // タイマー停止
-            tm_SendCom.Enabled = false;
+            //tm_SendCom.Enabled = false;
             tm_UpdateHw.Enabled = false;
             tm_LocUpdate.Enabled = false;
 
@@ -432,7 +458,9 @@ namespace VehicleRunner
             }
         }
 
-        // Form内のピクチャー更新
+        /// <summary>
+        /// Form内のピクチャー更新
+        /// </summary>
         private void PictureUpdate()
         {
             // 自己位置マーカー入りマップBmp描画
@@ -469,6 +497,28 @@ namespace VehicleRunner
         //--------------------------------------------------------------------------------------------------------------------
         // タイマイベント処理
 
+        /// <summary>
+        /// センサー値更新 スレッド
+        /// </summary>
+        private void ThreadSensorUpdate()
+        {
+            while (!appExit)
+            {
+#if !UnUseLRF
+                if (null != LocSys && null != LocSys.LRF)
+                {
+                    LocSys.LRF.Update();
+                }
+#endif
+                // bServer ハードウェア(センサー)情報取得
+                if (null != CersioCt)
+                {
+                    CersioCt.GetHWStatus(((usbGPS != null) ? true : false));
+                }
+
+                Thread.Sleep(20);
+            }
+        }
 
         /// <summary>
         /// ハードウェア系の更新
@@ -481,14 +531,14 @@ namespace VehicleRunner
 #if !UnUseLRF
             // LRF更新
             {
-                bool resultLRF = LocSys.LRF.Update();
+                //bool resultLRF = LocSys.LRF.Update();
 
                 try
                 {
                     if (LocSys.LRF.IsConnect())
                     {
                         // LRFから取得
-                        if (resultLRF) lb_LRFResult.Text = "OK";    // 接続して、データも取得
+                        if (LocSys.LRF.isGetDatas) lb_LRFResult.Text = "OK";    // 接続して、データも取得
                         else lb_LRFResult.Text = "OK(noData)";      // 接続しているが、データ取得ならず
                     }
                     else
@@ -514,7 +564,7 @@ namespace VehicleRunner
             }
 
             // bServer ハードウェア(センサー)情報取得
-            CersioCt.GetHWStatus( ((usbGPS!=null)?true:false) );
+            //CersioCt.GetHWStatus( ((usbGPS!=null)?true:false) );
 
             // ロータリーエンコーダ(Plot座標)情報
             if (CersioCt.bhwREPlot)
@@ -573,6 +623,13 @@ namespace VehicleRunner
                 // 画面表示
                 lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
                 lbl_GPS_X.Text = CersioCt.hwGPS_LandX.ToString("f5");
+            }
+
+            // ROS LRF取得
+            if (rb_LRF_ROSnode.Checked)
+            {
+                // LRFのデータを外部から入力
+                LocSys.LRF.SetExtData( CersioCt.GetROS_LRFdata());
             }
 
             // LED状態 画面表示
@@ -643,6 +700,43 @@ namespace VehicleRunner
             updateHwCnt++;
         }
 
+        /*
+        /// <summary>
+        /// 位置座標更新 スレッド
+        /// </summary>
+        private void ThreadLocalizationUpdate()
+        {
+            while (!appExit)
+            {
+                if (null != LocSys)
+                {
+                    // 現在位置更新
+                    LocSys.update_NowLocation();
+
+                    // MAP座標更新処理
+                    //LocSys.MapArea_Update();
+                }
+
+                // bServer ハードウェア(センサー)情報取得
+                if (null != BrainCtrl)
+                {
+                    // 自律走行処理 更新
+                    if (bRunAutonomous)
+                    {
+                        // セルシオ コントロール
+                        // 自己位置更新処理とセルシオ管理
+                        BrainCtrl.AutonomousProc(LocSys,
+                                                    cb_EmgBrake.Checked, cb_EHS.Checked,
+                                                    bLocRivisionTRG, cb_AlwaysPFCalc.Checked);
+                        bLocRivisionTRG = false;
+                    }
+                }
+
+                Thread.Sleep(100);
+            }
+        }
+        */
+
         /// <summary>
         /// 自己位置推定計算用　更新
         /// (間隔長め)
@@ -667,8 +761,8 @@ namespace VehicleRunner
                 // 自己位置更新処理とセルシオ管理
                 BrainCtrl.AutonomousProc(LocSys,
                                             cb_EmgBrake.Checked, cb_EHS.Checked,
-                                            bLocRivisionTRG, cb_AlwaysPFCalc.Checked);
-
+                                            bLocRivisionTRG, cb_AlwaysPFCalc.Checked,
+                                            cb_StraghtMode.Checked );
                 // 動作内容TextBox表示
 
                 // ハンドル、アクセル値　表示
@@ -703,11 +797,11 @@ namespace VehicleRunner
 #if LRFLOG_OUTPUT
                 // LRFログ出力 
                 // データ量が多いので、周期の長い定期処理で実行
-                if (LocSys.LRF.IsConnect())
+                if (LocSys.LRF.IsConnect() && null != LocSys.LRF.getData() )
                 {
                     formLog.Output_LRFLog(LocSys.LRF.getData());
                 }
-#endif
+#endif  // LRFLOG_OUTPUT
                 // ログファイル出力
                 formLog.Output_VRLog(ref BrainCtrl, ref CersioCt, ref LocSys);
 
@@ -717,10 +811,10 @@ namespace VehicleRunner
                     // ログ出力
                     formLog.Output_GPSLog(usbGPS.resiveStr);
                 }
-#endif
+#endif  // GPSLOG_OUTPUT
 
             }
-#endif
+#endif  // LOGWRITE_MODE
 
 
             // 画面描画
@@ -752,33 +846,6 @@ namespace VehicleRunner
         {
             // 強制位置補正
             bLocRivisionTRG = true;
-        }
-
-        /// <summary>
-        /// 直進ルート生成
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void cb_StraightMode_CheckedChanged(object sender, EventArgs e)
-        {
-            if (cb_StraightMode.Checked)
-            {
-                BrainCtrl.RTS.ResetStraightMode();
-            }
-
-        }
-
-        /// <summary>
-        /// 送信コマンド処理 タイマー
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tm_SendCom_Tick(object sender, EventArgs e)
-        {
-            if (null != CersioCt)
-            {
-                CersioCt.SendCommandTick();
-            }
         }
 
         /// <summary>
@@ -946,8 +1013,6 @@ namespace VehicleRunner
                 // 現在座標から開始
 
                 // 開始時のリセット
-                CersioCt.SendCommandList.Clear();
-
                 LocSys.SetStartPostion( (int)(LocSys.R1.X+0.5),
                                         (int)(LocSys.R1.Y+0.5),
                                         LocSys.R1.Theta);
@@ -967,6 +1032,9 @@ namespace VehicleRunner
             }
             else
             {
+                // 停止
+                CersioCt.SendCommand_Stop();
+
                 bRunAutonomous = false;
                 cb_StartAutonomous.BackColor = SystemColors.Window;
             }
@@ -1035,6 +1103,55 @@ namespace VehicleRunner
             LocSys.R1.X = (double)num_R1X.Value;
             LocSys.R1.Y = (double)num_R1Y.Value;
             LocSys.R1.Theta = (double)num_R1Dir.Value;
+        }
+
+        /// <summary>
+        /// LRF接続先選択
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rb_LRF_LAN_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == rb_LRF_ROSnode)
+            {
+                // ROS node
+                lb_LRFResult.Enabled = false;
+                tb_LRFIpAddr.Enabled = false;
+                tb_LRFPort.Enabled = false;
+                cb_LRFConnect.Enabled = false;
+
+                // URG切断
+                if (cb_LRFConnect.Checked)
+                {
+                    cb_LRFConnect.Checked = false;
+                    cb_LRFConnect_CheckedChanged(sender, e);
+                }
+            }
+            else if (sender == rb_LRF_LAN)
+            {
+                // LAN接続
+                lb_LRFResult.Enabled = true;
+                tb_LRFIpAddr.Enabled = true;
+                tb_LRFPort.Enabled = true;
+                cb_LRFConnect.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// アクセル量
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbar_AccRatio_Scroll(object sender, EventArgs e)
+        {
+            CersioCtrl.AccRate = tbar_AccRatio.Value * 0.1;
+            lbl_AccRatio.Text = "アクセル上限:" + CersioCtrl.AccRate.ToString("f1");
+        }
+
+        private void tbar_HdlRatio_Scroll(object sender, EventArgs e)
+        {
+            CersioCtrl.HandleRate = tbar_HdlRatio.Value * 0.1;
+            lbl_HdlRatio.Text = "ハンドル上限:" + CersioCtrl.HandleRate.ToString("f1");
         }
     }
 }

@@ -32,12 +32,24 @@ namespace LocationPresumption
         /// <summary>
         /// 
         /// </summary>
-        public URG_LRF urgLRF = null;               // nullで仮想MAPモード
+        public URG_LRF urgLRF = null;
+
+        /// <summary>
+        /// データ取得フラグ
+        /// </summary>
+        public bool isGetDatas = false;
+
+        /// <summary>
+        /// 外部入力データフラグ
+        /// </summary>
+        public bool bExtData = false;
 
         public double[] LRF_Data = null;
         
         // LRFノイズリダクション
         public double[] LRF_UntiNoiseData;
+
+
 
         /// <summary>
         /// 
@@ -123,7 +135,7 @@ namespace LocationPresumption
         /// <returns>True...データを更新できた, False..更新失敗</returns>
         public bool Update()
         {
-            bool rt = false;
+            isGetDatas = false;
 
             if (null != urgLRF)
             {
@@ -134,17 +146,44 @@ namespace LocationPresumption
                 if (null != newLRFData && newLRFData.Count() > 0)
                 {
                     LRF_Data = newLRFData;
-                    rt = true;
+                    isGetDatas = true;
+                }
+            }
+            else if (bExtData)
+            {
+                isGetDatas = true;
+            }
 
-                    // lrfノイズ リダクション
-                    for (int i = 0; i < LRF_Data.Length; i++)
-                    {
-                        LRF_UntiNoiseData[i] = (LRF_UntiNoiseData[i] * (1.0 - LRF_noiseRate)) + (LRF_Data[i] * LRF_noiseRate);
-                    }
+            // lrfノイズ リダクション
+                if (null != LRF_Data && LRF_Data.Count() > 0)
+            {
+                for (int i = 0; i < LRF_Data.Length; i++)
+                {
+                    LRF_UntiNoiseData[i] = (LRF_UntiNoiseData[i] * (1.0 - LRF_noiseRate)) + (LRF_Data[i] * LRF_noiseRate);
                 }
             }
 
-            return rt;
+            return isGetDatas;
+        }
+
+        /// <summary>
+        /// 外部データ入力
+        /// </summary>
+        /// <param name="data"></param>
+        public void SetExtData( double[] data )
+        {
+            // 1080 -> 270へ変換
+            double[] newLRFData = new double[data.Length/4];
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                newLRFData[i/4] = data[i];
+            }
+
+            LRF_Data = newLRFData;
+
+            isGetDatas = true;
+            bExtData = true;
         }
 
         /// <summary>

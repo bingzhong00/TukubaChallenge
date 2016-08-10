@@ -12,7 +12,6 @@ using SCIP_library;
 using Axiom.Math;
 
 /* Todo
- * LRF管理クラスと分離  LRF_Ctrl.cs
  *
  */
 
@@ -775,7 +774,7 @@ namespace LocationPresumption
             if (bParticle)
             {
                 for (int i = 0; i < Particles.Count / 4; i++)    // 少なめ(1/4)描画
-                //for (int i = 0; i < Particles.Count; i++)
+                                                                    //for (int i = 0; i < Particles.Count; i++)
                 {
                     var p = Particles[i];
                     DrawMaker_Area(g, olScale, p.Location, Brushes.Blue, 5);
@@ -783,16 +782,16 @@ namespace LocationPresumption
             }
 
             // リアルタイム軌跡描画
-            if( bLineTrace )
+            if (bLineTrace)
             {
                 DrawMakerLog_Area(g, olScale, R1Log, Color.Red.R, Color.Red.G, Color.Red.B);
                 DrawMakerLog_Area(g, olScale, V1Log, Color.Cyan.R, Color.Cyan.G, Color.Cyan.B);
                 DrawMakerLog_Area(g, olScale, E1Log, Color.Purple.R, Color.Purple.G, Color.Purple.B);
                 DrawMakerLog_Area(g, olScale, G1Log, Color.Green.R, Color.Green.G, Color.Green.B);
             }
-             
+
             // 描画順を常にかえて、重なっても見えるようにする
-            for (int i = 0; i <4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 switch ((i + locMapDrawCnt) % 4)
                 {

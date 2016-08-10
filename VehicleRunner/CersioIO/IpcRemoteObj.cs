@@ -15,6 +15,7 @@ namespace CersioIO
         public IpcRemoteObj()
         {
             urgData = new double[1080];
+            urgDataSend = new double[1080];
         }
 
         /// <summary>
@@ -55,6 +56,10 @@ namespace CersioIO
         public double gpsGrandX { get; set; }
         public double gpsGrandY { get; set; }
 
+        /// <summary>
+        /// 送信用
+        /// </summary>
+        public double[] urgDataSend { get; set; }
 
         // -------------------------------------------------
         // ROS -> VR 受信情報
@@ -77,6 +82,7 @@ namespace CersioIO
         /// urg node
         /// </summary>
         public double[] urgData { get; set; }
+       
     }
 
     // サーバー

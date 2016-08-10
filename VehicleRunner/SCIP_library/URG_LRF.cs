@@ -120,37 +120,36 @@ namespace SCIP_library
         {
             if (null != stream)
             {
+                // LAN接続中のURG から取得
                 return getScanDataIP();
             }
-            else
+            else if (null != urgLog)
             {
                 // ログファイルから取得
-                if (null != urgLog)
+                double[] data = urgLog.getScanData();
+
+                if (data == null || data.Length == 0)
                 {
-                    double[] data = urgLog.getScanData();
-
-                    if (data == null || data.Length == 0)
-                    {
-                        return data;
-                    }
-
-                    // 1080のデータから 270へ変換
-                    double[] modData = new double[data.Length / LRFskipNum];
-                    int modIdx = 0;
-                    for (int i = 0; i < data.Length; i += LRFskipNum)
-                    {
-                        double minVal = data[i];
-                        for (int n = 1; n < LRFskipNum; n++)
-                        {
-                            if (minVal < data[i + n]) minVal = data[i + n];
-                        }
-                        modData[modIdx] = minVal;
-                        modIdx++;
-                    }
-
-                    return modData;
+                    return data;
                 }
+
+                // 1080のデータから 270へ変換
+                double[] modData = new double[data.Length / LRFskipNum];
+                int modIdx = 0;
+                for (int i = 0; i < data.Length; i += LRFskipNum)
+                {
+                    double minVal = data[i];
+                    for (int n = 1; n < LRFskipNum; n++)
+                    {
+                        if (minVal < data[i + n]) minVal = data[i + n];
+                    }
+                    modData[modIdx] = minVal;
+                    modIdx++;
+                }
+
+                return modData;
             }
+
             return new double[0];
         }
 
