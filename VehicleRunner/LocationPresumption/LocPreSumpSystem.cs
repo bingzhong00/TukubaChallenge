@@ -650,43 +650,36 @@ namespace LocationPresumption
         }
 
         /// <summary>
-        /// ログデータ更新
+        /// 蓄積ログデータ更新
         /// </summary>
         public void UpdateLogData()
         {
             // 軌跡ログ
             try
             {
-                MarkPoint logR1 = new MarkPoint(R1.X, R1.Y, R1.Theta);
-                if (R1Log.Count == 0 || !logR1.IsEqual(R1Log.Last()))
+                if (R1Log.Count == 0 || !R1.IsEqual(R1Log.Last()))
                 {
-                    R1Log.Add(logR1);
+                    R1Log.Add(new MarkPoint(R1.X, R1.Y, R1.Theta));
                 }
 
                 // ParticleFiler
-                //if (usePF)
+                if (V1Log.Count == 0 || !V1.IsEqual(V1Log.Last()))
                 {
-                    MarkPoint logV1 = new MarkPoint(V1.X, V1.Y, V1.Theta);
-                    if (V1Log.Count == 0 || !logV1.IsEqual(V1Log.Last()))
-                    {
-                        V1Log.Add(logV1);
-                    }
+                    V1Log.Add(new MarkPoint(V1.X, V1.Y, V1.Theta));
                 }
 
                 // RotaryEncoder
-                MarkPoint logE1 = new MarkPoint(E1.X, E1.Y, E1.Theta);
-                if (E1Log.Count == 0 || !logE1.IsEqual(E1Log.Last()))
+                if (E1Log.Count == 0 || !E1.IsEqual(E1Log.Last()))
                 {
-                    E1Log.Add(logE1);
+                    E1Log.Add(new MarkPoint(E1.X, E1.Y, E1.Theta));
                 }
 
                 // GPS
                 if (bEnableGPS)
                 {
-                    MarkPoint logG1 = new MarkPoint(G1.X, G1.Y, G1.Theta);
-                    if (G1Log.Count == 0 || !logG1.IsEqual(G1Log.Last()))
+                    if (G1Log.Count == 0 || !G1.IsEqual(G1Log.Last()))
                     {
-                        G1Log.Add(logG1);
+                        G1Log.Add(new MarkPoint(G1.X, G1.Y, G1.Theta));
                     }
                 }
             }
