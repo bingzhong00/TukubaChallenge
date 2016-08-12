@@ -155,9 +155,9 @@ namespace LocationPresumption
             }
 
             // lrfノイズ リダクション
-                if (null != LRF_Data && LRF_Data.Count() > 0)
+            if (null != LRF_Data && LRF_Data.Count() > 0)
             {
-                for (int i = 0; i < LRF_Data.Length; i++)
+                for (int i = 0; i < LRF_UntiNoiseData.Length; i++)
                 {
                     LRF_UntiNoiseData[i] = (LRF_UntiNoiseData[i] * (1.0 - LRF_noiseRate)) + (LRF_Data[i] * LRF_noiseRate);
                 }

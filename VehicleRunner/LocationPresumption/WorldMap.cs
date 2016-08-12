@@ -106,9 +106,8 @@ namespace LocationPresumption
 
             WldOffset.x = wldX;
             WldOffset.y = wldY;
-            
+
             MakeAreaGridMap();
-            
         }
 
         /// <summary>
@@ -209,7 +208,7 @@ namespace LocationPresumption
         /// <returns></returns>
         public GridMap MakeAreaGridMap()
         {
-            GridMap gm = new GridMap(GridSize.w,GridSize.h);
+            GridMap gm = new GridMap(GridSize.w, GridSize.h);
 
             BitmapAccess bmpAp = new BitmapAccess(mapBmp);
             bmpAp.BeginAccess();
@@ -231,7 +230,7 @@ namespace LocationPresumption
                     }
                     else
                     {
-                        c = bmpAp[adX,adY];
+                        c = bmpAp[adX, adY];
                     }
 
                     if (c == GridMap.GridColor_Fill)
@@ -270,6 +269,7 @@ namespace LocationPresumption
             bmpAp.EndAccess();
 
             AreaGridMap = gm;
+
             return gm;
         }
 

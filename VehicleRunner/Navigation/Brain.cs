@@ -46,6 +46,11 @@ namespace Navigation
         /// </summary>
         public bool goalFlg = false;
 
+        /// <summary>
+        /// 自己位置補正要請フラグ
+        /// </summary>
+        public bool bRevisionRequest = false;
+
         #region EBS 緊急ブレーキ クラス定義
         /// <summary>
         /// EBS 緊急ブレーキ
@@ -425,12 +430,11 @@ namespace Navigation
         /// 自律走行処理 定期更新
         /// </summary>
         /// <param name="LocSys"></param>
-        /// <param name="useEBS"></param>
-        /// <param name="useEHS"></param>
-        /// <param name="bLocRivisionTRG"></param>
-        /// <param name="useAlwaysPF"></param>
+        /// <param name="useEBS">壁回避ブレーキ</param>
+        /// <param name="useEHS">壁回避ハンドル</param>
+        /// <param name="bStraightMode">直進モード</param>
         /// <returns></returns>
-        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF, bool bStraightMode )
+        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bStraightMode )
         {
             // エマージェンシーブレーキを使わないフラグ
             bool untiEBS = false;
@@ -448,7 +452,7 @@ namespace Navigation
 
 
             // 自走処理
-            bNowBackProcess = untiEBS = Update(LocSys, useEBS, useEHS, bLocRivisionTRG, useAlwaysPF, bStraightMode);
+            bNowBackProcess = untiEBS = Update(LocSys, useEBS, useEHS, bStraightMode);
 
             if (EBS.EmgBrk && useEBS && !untiEBS)
             {
@@ -484,150 +488,13 @@ namespace Navigation
         /// <param name="LocSys"></param>
         /// <param name="useEBS">緊急ブレーキ</param>
         /// <param name="useEHS">壁避け動作</param>
-        /// <param name="bLocRivisionTRG">位置補正執行</param>
-        /// <param name="useAlwaysPF">常時PF更新</param>
+        /// <param name="bStraightMode">直進モード</param>
         /// <returns>true...バック中(緊急動作しない)</returns>
         /// 
-        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bLocRivisionTRG, bool useAlwaysPF, bool bStraightMode)
+        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bStraightMode)
         {
+            // LRFデータ取得
             double[] lrfData = LocSys.LRF.getData();
-
-            // ※後に、定期更新処理を３分割するべき
-            // 位置補正、ルーティング、ドライブコントロール(緊急動作)
-
-
-            // Pos Rivision ------------------------------------------------------------------------------------------------
-
-            // 自己位置補正
-            {
-#if false
-                // パーティクルフィルター計算
-                // (PFマーカー更新)
-                if (useAlwaysPF)
-                {
-                    LocSys.ParticleFilter_Update();
-
-                    // MAP座標更新処理
-                    LocSys.MapArea_Update();     // 
-                }
-#endif
-
-
-#if false
-                #region "位置補正処理"
-                // 位置補正処理
-
-                // 更新結果ログ保存
-                LocSys.UpdateLogData();
-
-                if (LocPreSumpSystem.bRivisonPF)
-                {
-                    // ※ 完全一致？1m以上はなれたら？
-                    LocSys.R1.Set(LocSys.V1);
-                }
-
-
-                // 補正執行の状況判断
-                {
-                    bool bRivisionIssue = false;
-                    Grid nowGrid = LocSys.GetMapInfo(LocSys.R1);
-
-                    // 補正執行 ボタン押下
-                    if (bLocRivisionTRG)
-                    {
-                        Brain.addLogMsg += "LocRivision:Button(ボタン押下による位置補正)\n";
-                        bRivisionIssue = true;
-                    }
-
-                    // 一定時間で更新
-                    if ((UpdateCnt % 30) == 0 && UpdateCnt != 0 && LocPreSumpSystem.bTimeRivision)
-                    {
-                        Brain.addLogMsg += "LocRivision:Timer(時間ごとの位置補正)\n";
-                        bRivisionIssue = true;
-                    }
-
-                    if (nowGrid == Grid.RedArea ||                        // 壁の中にいる
-                        (nowGrid == Grid.GreenArea && !bGreenAreaFlg))    // 補正実行エリア
-                    {
-                        if (nowGrid == Grid.RedArea)
-                        {
-                            // 強制補正エリアに入った
-                            Brain.addLogMsg += "LocRivision:ColorMap[Red](マップ情報の位置補正)\n";
-                        }
-                        else if (nowGrid == Grid.GreenArea)
-                        {
-                            // 補正指示のエリアに入った
-                            bGreenAreaFlg = true;
-                            Brain.addLogMsg += "LocRivision:ColorMap[Green](マップ情報の位置補正)\n";
-                        }
-
-                        bRivisionIssue = true;
-                    }
-
-
-                    if (bRivisionIssue)
-                    {
-                        // 自己位置推定　計算実行
-                        // ※後に、LocPreSumpSystem内で関数化が良いと思う。
-                        {
-                            // 補正基準 位置,向き
-                            double RivLocX = LocSys.G1.X;
-                            double RivLocY = LocSys.G1.Y;
-                            double RivDir = (LocSys.bActiveCompass ? LocSys.C1.Theta : LocSys.R1.Theta);    // コンパスが使えるなら、コンパスの値を使う
-
-                            if (LocPreSumpSystem.bRivisonPF)
-                            {
-                                // 補正基準位置からパーティクルフィルター補正
-                                LocSys.V1.Set(RivLocX, RivLocY, RivDir);
-                                LocSys.CalcLocalize(LocSys.V1, true, 10);
-                            }
-                            else
-                            {
-                                LocSys.V1.Set(RivLocX, RivLocY, RivDir);
-                            }
-                        }
-
-                        // 補正情報をログ出力
-                        // 補正前の座標
-                        Brain.addLogMsg += "座標補正を実行\n";
-                        Brain.addLogMsg += "LocRivision: FromR1 X" + LocSys.R1.X.ToString("f2") + "/Y " + LocSys.R1.Y.ToString("f2") + "/Dir " + LocSys.R1.Theta.ToString("f2") + "\n";
-                        if (LocSys.bActiveCompass)
-                        {
-                            // コンパスを使った
-                            Brain.addLogMsg += "LocRivision:useCompass C1 Dir " + LocSys.C1.Theta.ToString("f2") + "\n";
-                        }
-                        if (LocPreSumpSystem.bRivisonGPS)
-                        {
-                            // GPSを使った
-                            Brain.addLogMsg += "LocRivision: useGPS G1 X" + LocSys.G1.X.ToString("f2") + "/Y " + LocSys.G1.Y.ToString("f2") + "/Dir " + LocSys.G1.Theta.ToString("f2") + "\n";
-                        }
-                        // 補正後の座標
-                        if (LocPreSumpSystem.bRivisonPF)
-                        {
-                            Brain.addLogMsg += "LocRivision: usePF toR1 X" + LocSys.V1.X.ToString("f2") + "/Y " + LocSys.V1.Y.ToString("f2") + "/Dir " + LocSys.V1.Theta.ToString("f2") + "\n";
-                        }
-                        else
-                        {
-                            Brain.addLogMsg += "LocRivision: toR1 X" + LocSys.V1.X.ToString("f2") + "/Y " + LocSys.V1.Y.ToString("f2") + "/Dir " + LocSys.V1.Theta.ToString("f2") + "\n";
-                        }
-
-                        // 結果を反映
-                        LocSys.R1.Set(LocSys.V1);
-                        LocSys.E1.Set(LocSys.V1);
-                        LocSys.oldE1.Set(LocSys.V1);
-
-                        // REリセット
-                        CarCtrl.RE_Reset(LocSys.E1.X * LocSys.RealToMapSclae,
-                                         LocSys.E1.Y * LocSys.RealToMapSclae,
-                                         LocSys.E1.Theta);
-
-                        // V1ローパスフィルターリセット
-                        LocSys.ResetLPF_V1(LocSys.V1);
-                    }
-                }
-                #endregion
-#endif
-            }
 
             // Rooting ------------------------------------------------------------------------------------------------
             // ルート算定
@@ -642,17 +509,38 @@ namespace Navigation
             }
 
 
-            // DriveControl ------------------------------------------------------------------------------------------------
+            // DriveControl -------------------------------------------------------------------------------------------
 
+            // マップ情報取得
             {
+                Grid nowGrid = LocSys.GetMapInfo(LocSys.R1);
+
                 // マップ情報反映
                 // スローダウン
-                if (LocSys.GetMapInfo(LocSys.R1) == Grid.BlueArea)
+                if (nowGrid == Grid.BlueArea)
                 {
                     EBS.AccelSlowDownCnt = 5;
                     Brain.addLogMsg += "ColorMap:Blue\n";
                 }
-                if (LocSys.GetMapInfo(LocSys.R1) != Grid.GreenArea)
+
+                if (nowGrid == Grid.RedArea )                       // 壁の中にいる
+                {
+                    // 強制補正エリア
+                    Brain.addLogMsg += "LocRivision:ColorMap[Red](マップ情報の位置補正)\n";
+                    bRevisionRequest = true;
+                }
+
+                if(nowGrid == Grid.GreenArea && !bGreenAreaFlg)    // 補正実行エリア
+                {
+                    // 補正指示のエリアに入った
+                    Brain.addLogMsg += "LocRivision:ColorMap[Green](マップ情報の位置補正)\n";
+                    bGreenAreaFlg = true;
+
+                    bRevisionRequest = true;
+                }
+
+                // 緑を抜けた判定
+                if (nowGrid != Grid.GreenArea)
                 {
                     bGreenAreaFlg = false;
                 }

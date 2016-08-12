@@ -163,7 +163,7 @@ namespace VehicleRunner
             {
                 sw.Write("Comment:No Connect BoxPC" + System.Environment.NewLine);
             }
-            CersioCt.hwSendStr = "";
+            
 
             // 位置情報
             {
@@ -259,6 +259,20 @@ namespace VehicleRunner
             sw.Close();
         }
 
+
+        /// <summary>
+        /// ログ用のバッファクリア
+        /// </summary>
+        /// <param name="BrainCtrl"></param>
+        /// <param name="CersioCt"></param>
+        /// <param name="LocSys"></param>
+        public void LogBuffer_Clear(ref Brain BrainCtrl, ref CersioCtrl CersioCt, ref LocPreSumpSystem LocSys)
+        {
+            if (null != CersioCt)
+            {
+                CersioCt.hwSendStr = "";
+            }
+        }
 
     }
 }

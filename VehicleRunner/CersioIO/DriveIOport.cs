@@ -134,6 +134,42 @@ namespace CersioIO
             }
         }
 
+        /// <summary>
+        /// デバイス名リストを返す
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetDeviceList()
+        {
+            // すべてのシリアル・ポート名を取得する
+            string[] ports = System.IO.Ports.SerialPort.GetPortNames();
+            string[] portsName = GetDeviceNames();
+
+
+            if (ports.Length > 0)
+            {
+                string[] portListStr = new string[ports.Length];
+
+                int i = 0;
+                foreach (string port in ports)
+                {
+                    if (null != portsName)
+                    {
+                        portListStr[i] = port + ":" + portsName[i];
+                    }
+                    else
+                    {
+                        portListStr[i] = port;
+                    }
+                    i++;
+                }
+
+                return portListStr;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
 

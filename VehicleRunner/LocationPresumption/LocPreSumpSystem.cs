@@ -12,7 +12,9 @@ using SCIP_library;
 using Axiom.Math;
 
 /* Todo
- *
+ * ・ParticleFilter演算、描画系　ソースをわける
+ * 
+ * 
  */
 
 // 角度表記区別
@@ -38,7 +40,9 @@ namespace LocationPresumption
         /// <summary>全体マップ</summary>
         public WorldMap worldMap;
         /// <summary>表示用　エリアBMP</summary>
-        public Bitmap AreaBmp;
+        public Bitmap AreaBmp = new Bitmap(1,1);
+        private bool bAreaMapUpdateReqest = true;
+
         /// <summary>自己位置情報　表示BMP</summary>
         public Bitmap AreaOverlayBmp;
 
@@ -49,21 +53,24 @@ namespace LocationPresumption
         /// <summary>マップレンジファインダ</summary>
         private MapRangeFinder MRF;
 
-        /// <summary>現在のロボット位置</summary>
+        /// <summary>現在のロボット位置  (マーカー色：レッド)</summary>
         public MarkPoint R1;
-        /// <summary>REplotロボット位置</summary>
+        /// <summary>REplotロボット位置 (マーカー色：パープル)</summary>
         public MarkPoint E1;
         /// <summary>REplot差分計算</summary>
         public MarkPoint oldE1;
         /// <summary>REplot座標基点</summary>
         public MarkPoint E1_Pivot;
 
-        /// <summary>PF想定ロボット位置</summary>
+        /// <summary>vSlam or Amcl 自己位置推定結果 位置  (マーカー色：シアン)</summary>
         public MarkPoint V1;
 
-        /// <summary>地磁気コンパス値</summary>
-        public MarkPoint C1; 
-        /// <summary>GPS位置</summary>
+        /// <summary>PF自己位置推定 (マーカー色：オレンジ)</summary>
+        //public MarkPoint P1;
+
+        /// <summary>地磁気コンパス値 </summary>
+        public MarkPoint C1;
+        /// <summary>GPS位置  (マーカー色：グリーン)</summary>
         public MarkPoint G1;
         /// <summaryGPS差分計算</summary>
         public MarkPoint oldG1;
@@ -231,6 +238,7 @@ namespace LocationPresumption
 
             worldMap.UpdateAreaCenter(stWldX, stWldY);
             AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
+            bAreaMapUpdateReqest = false;
 
             MRF.SetMap(worldMap.AreaGridMap);
 
@@ -286,11 +294,16 @@ namespace LocationPresumption
             if ((R1.X < worldMap.GridSize.w / 4 || R1.X > worldMap.GridSize.w * 3 / 4) ||
                 (R1.Y < worldMap.GridSize.h / 4 || R1.Y > worldMap.GridSize.h * 3 / 4))
             {
-                // R1の位置を新しいエリアの中心とする
-                worldMap.UpdateAreaCenter( (int)(R1.X+0.5), (int)(R1.Y+0.5) );
+                lock (AreaBmp)
+                {
+                    // R1の位置を新しいエリアの中心とする
+                    worldMap.UpdateAreaCenter((int)(R1.X + 0.5), (int)(R1.Y + 0.5));
 
-                // エリアマップ更新
-                AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
+                    // エリアマップ更新
+                    AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
+                }
+
+                bAreaMapUpdateReqest = true;
                 MRF.SetMap(worldMap.AreaGridMap);
             }
         }
@@ -596,6 +609,8 @@ namespace LocationPresumption
                 }
             }
 
+            // 更新結果ログ保存
+            UpdateLogData();
         }
 
         /// <summary>
@@ -683,6 +698,71 @@ namespace LocationPresumption
 
         }
 
+
+        /// <summary>
+        /// 位置補正執行
+        /// </summary>
+        /// <param name="bRevisionFromGPS">GPSの値をそのまま使う</param>
+        public string LocalizeRevision( bool bRevisionFromGPS )
+        {
+            // 補正ログメッセージ
+            string revisionMsg = "";
+
+            // 補正後座標
+            MarkPoint rev = new MarkPoint(V1);
+
+            revisionMsg += "LocRevision:Issue / 座標補正を実行\n";
+            revisionMsg += "LocRevision: beforR1 R1.X" + R1.X.ToString("f2") + "/R1.Y " + R1.Y.ToString("f2") + "/R1.Dir " + R1.Theta.ToString("f2") + "\n";
+
+            // GPSが有効なら、GPSの値を元にPF補正
+            if (bEnableGPS)
+            {
+                // 補正基準 位置,向き
+                double RivLocX = G1.X;
+                double RivLocY = G1.Y;
+                double RivDir = (bActiveCompass ? C1.Theta : R1.Theta);    // コンパスが使えるなら、コンパスの値を使う
+
+                if (bActiveCompass)
+                {
+                    // コンパスを使った
+                    revisionMsg += "LocRevision:useCompass C1.Dir " + C1.Theta.ToString("f2") + "\n";
+                }
+
+                if (bRevisionFromGPS)
+                {
+                    // GPSの値をそのまま使う
+                    rev.Set(RivLocX, RivLocY, RivDir);
+
+                    // GPSを使った
+                    revisionMsg += "LocRevision: useGPS G1.X" + G1.X.ToString("f2") + "/G1.Y " + G1.Y.ToString("f2") + "/G1.Dir " + G1.Theta.ToString("f2") + "\n";
+                }
+                else
+                {
+                    // 補正基準位置からパーティクルフィルター補正
+                    rev.Set(RivLocX, RivLocY, RivDir);
+                    // V1ローパスフィルターリセット
+                    ResetLPF_V1(rev);
+
+                    // 自己位置推定演算 10回
+                    CalcLocalize(V1, true, 10);
+
+                    // PF
+                    revisionMsg += "LocRevision: usePF  V1.X" + V1.X.ToString("f2") + "/V1.Y " + V1.Y.ToString("f2") + "/V1.Dir " + V1.Theta.ToString("f2") + "\n";
+                }
+            }
+            else
+            {
+                revisionMsg += "LocRevision: V1toR1 V1.X" + V1.X.ToString("f2") + "/ V1.Y " + V1.Y.ToString("f2") + "/ V1.Dir " + V1.Theta.ToString("f2") + "\n";
+            }
+
+            // 結果を反映
+            R1.Set(rev);
+            E1.Set(rev);
+            oldE1.Set(rev);
+
+            return revisionMsg;
+        }
+
         // -------------------------------------------------------------------------------------------------------------------------------
         // 自己位置推定結果
 
@@ -759,69 +839,73 @@ namespace LocationPresumption
             swCNT_Draw.Reset();
             swCNT_Draw.Start();
 
-            Graphics g = Graphics.FromImage(AreaOverlayBmp);
-
-            // Overlayのスケール
-            // エリア座標からオーバーレイエリアへの変換
-            float olScale = (float)AreaOverlayBmp.Width / (float)AreaBmp.Width;
-
-            // エリアマップ描画
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.DrawImage(AreaBmp, 0, 0, AreaOverlayBmp.Width, AreaOverlayBmp.Height);
-
-            // パーティクル描画
-            int size = 10;
-            if (bParticle)
+            lock (AreaBmp)
             {
-                for (int i = 0; i < Particles.Count / 4; i++)    // 少なめ(1/4)描画
-                                                                    //for (int i = 0; i < Particles.Count; i++)
+                Graphics g = Graphics.FromImage(AreaOverlayBmp);
+
+                // Overlayのスケール
+                // エリア座標からオーバーレイエリアへの変換
+                float olScale = (float)AreaOverlayBmp.Width / (float)AreaBmp.Width;
+
+                // エリアマップ描画
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(AreaBmp, 0, 0, AreaOverlayBmp.Width, AreaOverlayBmp.Height);
+
+                // パーティクル描画
+                int size = 10;
+                if (bParticle)
                 {
-                    var p = Particles[i];
-                    DrawMaker_Area(g, olScale, p.Location, Brushes.Blue, 5);
+                    for (int i = 0; i < Particles.Count / 4; i++)    // 少なめ(1/4)描画
+                                                                     //for (int i = 0; i < Particles.Count; i++)
+                    {
+                        var p = Particles[i];
+                        DrawMaker_Area(g, olScale, p.Location, Brushes.Blue, 5);
+                    }
                 }
-            }
 
-            // リアルタイム軌跡描画
-            if (bLineTrace)
-            {
-                DrawMakerLog_Area(g, olScale, R1Log, Color.Red.R, Color.Red.G, Color.Red.B);
-                DrawMakerLog_Area(g, olScale, V1Log, Color.Cyan.R, Color.Cyan.G, Color.Cyan.B);
-                DrawMakerLog_Area(g, olScale, E1Log, Color.Purple.R, Color.Purple.G, Color.Purple.B);
-                DrawMakerLog_Area(g, olScale, G1Log, Color.Green.R, Color.Green.G, Color.Green.B);
-            }
-
-            // 描画順を常にかえて、重なっても見えるようにする
-            for (int i = 0; i < 4; i++)
-            {
-                switch ((i + locMapDrawCnt) % 4)
+                // リアルタイム軌跡描画
+                if (bLineTrace)
                 {
-                    case 0:
-                        // RE想定ロボット位置描画
-                        DrawMaker_Area(g, olScale, E1, Brushes.Purple, size);
-                        break;
-                    case 1:
-                        // PF想定ロボット位置描画
-                        DrawMaker_Area(g, olScale, V1, Brushes.Cyan, size);
-                        break;
-                    case 2:
-                        // 実ロボット想定位置描画
-                        DrawMaker_Area(g, olScale, R1, Brushes.Red, size);
-                        break;
-                    case 3:
-                        // GPS位置描画
-                        if (bEnableDirGPS)
-                        {
-                            DrawMaker_Area(g, olScale, G1, Brushes.Green, size);
-                        }
-                        else
-                        {
-                            DrawMakerND_Area(g, olScale, G1, Brushes.Green, size);
-                        }
-                        break;
+                    DrawMakerLog_Area(g, olScale, R1Log, Color.Red.R, Color.Red.G, Color.Red.B);
+                    DrawMakerLog_Area(g, olScale, V1Log, Color.Cyan.R, Color.Cyan.G, Color.Cyan.B);
+                    DrawMakerLog_Area(g, olScale, E1Log, Color.Purple.R, Color.Purple.G, Color.Purple.B);
+                    DrawMakerLog_Area(g, olScale, G1Log, Color.Green.R, Color.Green.G, Color.Green.B);
                 }
+
+                // 描画順を常にかえて、重なっても見えるようにする
+                for (int i = 0; i < 4; i++)
+                {
+                    switch ((i + locMapDrawCnt) % 4)
+                    {
+                        case 0:
+                            // RE想定ロボット位置描画
+                            DrawMaker_Area(g, olScale, E1, Brushes.Purple, size);
+                            break;
+                        case 1:
+                            // PF想定ロボット位置描画
+                            DrawMaker_Area(g, olScale, V1, Brushes.Cyan, size);
+                            break;
+                        case 2:
+                            // 実ロボット想定位置描画
+                            DrawMaker_Area(g, olScale, R1, Brushes.Red, size);
+                            break;
+                        case 3:
+                            // GPS位置描画
+                            if (bEnableDirGPS)
+                            {
+                                DrawMaker_Area(g, olScale, G1, Brushes.Green, size);
+                            }
+                            else
+                            {
+                                DrawMakerND_Area(g, olScale, G1, Brushes.Green, size);
+                            }
+                            break;
+                    }
+                }
+
+                g.Dispose();
             }
 
-            g.Dispose();
             locMapDrawCnt++;
 
             swCNT_Draw.Stop();

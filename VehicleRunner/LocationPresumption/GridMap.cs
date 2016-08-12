@@ -185,7 +185,7 @@ namespace LocationPresumption
                             cl = Color.LightGray;
                             break;
                     }
-                    MapAccess[x,y] = cl;
+                    MapAccess[x, y] = cl;
                 }
             }
             MapAccess.EndAccess();
