@@ -33,7 +33,7 @@ namespace LocationPresumption
         // LRF管理
         public LRF_Ctrl LRF = new LRF_Ctrl();
 
-        public double RealToMapSclae;                // マップサイズから メートル変換
+        public double MapToRealScale;                // マップサイズから メートル変換
 
 
         // エリアマップ管理
@@ -208,13 +208,13 @@ namespace LocationPresumption
         public void InitWorld( string fnameMapBmp, double worldWith, double worldHeight )
         {
             worldMap = new WorldMap(fnameMapBmp);
-            RealToMapSclae = (worldWith / (double)worldMap.WorldSize.w);     // 実サイズ（ｍｍ）/ピクセル数　＝　１ピクセルを何mmとするか
+            MapToRealScale = (worldWith / (double)worldMap.WorldSize.w);     // 実サイズ（ｍｍ）/ピクセル数　＝　１ピクセルを何mmとするか
 
-            URG_LRF.setScale(1.0 / RealToMapSclae);      // mm単位からピクセル単位へ スケール変換
+            URG_LRF.setScale(1.0 / MapToRealScale);      // mm単位からピクセル単位へ スケール変換
 
             // エリア初期化
             // エリアサイズ策定 LRF最大距離をエリアのピクセル数とする
-            int areaGridSize = (int)(LRF_Ctrl.LRFmaxRange_mm / RealToMapSclae);
+            int areaGridSize = (int)(LRF_Ctrl.LRFmaxRange_mm / MapToRealScale);
             worldMap.InitArea(areaGridSize, areaGridSize);
 
             AreaOverlayBmp = new Bitmap(OverlayBmpSize, OverlayBmpSize);
@@ -234,7 +234,7 @@ namespace LocationPresumption
         /// <param name="stDir">角度</param>
         public void SetStartPostion(int stWldX, int stWldY, double stDir)
         {
-            MRF = new MapRangeFinder(LRF_Ctrl.LRFmaxRange_mm / RealToMapSclae);    // 仮想Map用 LRFクラス
+            MRF = new MapRangeFinder(LRF_Ctrl.LRFmaxRange_mm / MapToRealScale);    // 仮想Map用 LRFクラス
 
             worldMap.UpdateAreaCenter(stWldX, stWldY);
             AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
@@ -259,7 +259,7 @@ namespace LocationPresumption
                 // サンプル数(ParticleSizeと同じで、すべてのパーティクルを対象とする)
                 // LRFの有効距離を半径に変換(/2.0)、20%の距離で散らばる
                 // +-5度の範囲
-                ParticleFilter = new ParticleFilter(ParticleSize*3/4, (((LRF_Ctrl.LRFmaxRange_mm / 2.0) * 0.20) / RealToMapSclae), 5.0 );        // サンプリング数、パーティクルのレンジ
+                ParticleFilter = new ParticleFilter(ParticleSize*3/4, (((LRF_Ctrl.LRFmaxRange_mm / 2.0) * 0.20) / MapToRealScale), 5.0 );        // サンプリング数、パーティクルのレンジ
 
                 Particles = new List<Particle>();
                 for (int i = 0; i < ParticleSize; ++i)
@@ -318,8 +318,8 @@ namespace LocationPresumption
         public bool Input_RotaryEncoder(double reX, double reY,double reTheta)
         {
             // 単位変換
-            reX = reX / RealToMapSclae;
-            reY = reY / RealToMapSclae;
+            reX = reX / MapToRealScale;
+            reY = reY / MapToRealScale;
 
             // ※リセット時点での向きで回転計算し
             // スタート位置を加算することで、マップ上の座標に変換する
@@ -342,8 +342,8 @@ namespace LocationPresumption
         public void Reset_RotaryEncoder_Maker(double reX, double reY, double reTheta)
         {
             // 単位変換
-            reX = reX / RealToMapSclae;
-            reY = reY / RealToMapSclae;
+            reX = reX / MapToRealScale;
+            reY = reY / MapToRealScale;
              
             oldE1.X = E1.X = reX;
             oldE1.Y = E1.Y = reY;
@@ -380,8 +380,8 @@ namespace LocationPresumption
             double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
 
             // 単位変換
-            mapX = (mapX - startPosGPSX) / RealToMapSclae;
-            mapY = -(mapY - startPosGPSY) / RealToMapSclae;
+            mapX = (mapX - startPosGPSX) / MapToRealScale;
+            mapY = -(mapY - startPosGPSY) / MapToRealScale;
 
             G1.X = mapX + startPosGPS_MapX;
             G1.Y = mapY + startPosGPS_MapY;
@@ -402,8 +402,8 @@ namespace LocationPresumption
             double mapX = (kdo * 60.0 + (landX - kdo)) * GPSScale * Math.Cos(ido * Math.PI / 180.0);
 
             // 単位変換
-            mapX = (mapX - startPosGPSX) / RealToMapSclae;
-            mapY = -(mapY - startPosGPSY) / RealToMapSclae;
+            mapX = (mapX - startPosGPSX) / MapToRealScale;
+            mapY = -(mapY - startPosGPSY) / MapToRealScale;
 
             G1.X = mapX + startPosGPS_MapX;
             G1.Y = mapY + startPosGPS_MapY;

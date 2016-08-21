@@ -69,20 +69,21 @@
             this.button1 = new System.Windows.Forms.Button();
             this.btn_ResetR1 = new System.Windows.Forms.Button();
             this.num_R1Dir = new System.Windows.Forms.NumericUpDown();
-            this.btn_GetCompustoR1 = new System.Windows.Forms.Button();
             this.num_R1Y = new System.Windows.Forms.NumericUpDown();
-            this.btn_GetGPStoR1 = new System.Windows.Forms.Button();
+            this.btn_GetCompustoR1 = new System.Windows.Forms.Button();
             this.num_R1X = new System.Windows.Forms.NumericUpDown();
             this.label22 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
+            this.btn_GetGPStoR1 = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.cb_VRRevision = new System.Windows.Forms.CheckBox();
             this.gbox_Revision = new System.Windows.Forms.GroupBox();
+            this.cb_DontAlwaysRivision = new System.Windows.Forms.CheckBox();
             this.rb_UseGPS_Revision = new System.Windows.Forms.RadioButton();
             this.btn_LocRevision = new System.Windows.Forms.Button();
             this.rb_UsePF_Revision = new System.Windows.Forms.RadioButton();
             this.cb_AlwaysPFCalc = new System.Windows.Forms.CheckBox();
-            this.cb_DontAlwaysRivision = new System.Windows.Forms.CheckBox();
             this.tabPage_Emulate = new System.Windows.Forms.TabPage();
             this.cb_StraghtMode = new System.Windows.Forms.CheckBox();
             this.lbl_AccRatio = new System.Windows.Forms.Label();
@@ -129,7 +130,15 @@
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.rb_LRF_LAN = new System.Windows.Forms.RadioButton();
             this.rb_LRF_ROSnode = new System.Windows.Forms.RadioButton();
-            this.cb_VRRevision = new System.Windows.Forms.CheckBox();
+            this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
+            this.rb_MoveREandCompus = new System.Windows.Forms.RadioButton();
+            this.rb_MovePF = new System.Windows.Forms.RadioButton();
+            this.btnCribration = new System.Windows.Forms.Button();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.tbCaribrationREL = new System.Windows.Forms.TextBox();
+            this.tbCaribrationRER = new System.Windows.Forms.TextBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -155,6 +164,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
             this.groupBox8.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -400,6 +410,7 @@
             this.tb_RESpeed.Size = new System.Drawing.Size(73, 23);
             this.tb_RESpeed.TabIndex = 34;
             this.tb_RESpeed.TabStop = false;
+            this.tb_RESpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label8
             // 
@@ -459,10 +470,10 @@
             this.groupBox10.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.groupBox10.Location = new System.Drawing.Point(9, 111);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(247, 95);
+            this.groupBox10.Size = new System.Drawing.Size(261, 95);
             this.groupBox10.TabIndex = 29;
             this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "向き入力ソース";
+            this.groupBox10.Text = "向き 入力ソース";
             // 
             // rb_DirAMCL
             // 
@@ -522,6 +533,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.rb_MovePF);
+            this.groupBox1.Controls.Add(this.rb_MoveREandCompus);
             this.groupBox1.Controls.Add(this.rb_MoveAMCL);
             this.groupBox1.Controls.Add(this.rb_MoveSVO);
             this.groupBox1.Controls.Add(this.rb_MoveGPS);
@@ -529,15 +542,15 @@
             this.groupBox1.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.groupBox1.Location = new System.Drawing.Point(9, 11);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(246, 88);
+            this.groupBox1.Size = new System.Drawing.Size(261, 94);
             this.groupBox1.TabIndex = 28;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "移動量入力ソース";
+            this.groupBox1.Text = "X,Y座標 入力ソース";
             // 
             // rb_MoveAMCL
             // 
             this.rb_MoveAMCL.AutoSize = true;
-            this.rb_MoveAMCL.Location = new System.Drawing.Point(106, 49);
+            this.rb_MoveAMCL.Location = new System.Drawing.Point(119, 49);
             this.rb_MoveAMCL.Name = "rb_MoveAMCL";
             this.rb_MoveAMCL.Size = new System.Drawing.Size(56, 16);
             this.rb_MoveAMCL.TabIndex = 3;
@@ -548,7 +561,7 @@
             // rb_MoveSVO
             // 
             this.rb_MoveSVO.AutoSize = true;
-            this.rb_MoveSVO.Location = new System.Drawing.Point(106, 27);
+            this.rb_MoveSVO.Location = new System.Drawing.Point(119, 27);
             this.rb_MoveSVO.Name = "rb_MoveSVO";
             this.rb_MoveSVO.Size = new System.Drawing.Size(121, 16);
             this.rb_MoveSVO.TabIndex = 2;
@@ -654,17 +667,6 @@
             this.num_R1Dir.TabIndex = 42;
             this.num_R1Dir.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // btn_GetCompustoR1
-            // 
-            this.btn_GetCompustoR1.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_GetCompustoR1.Location = new System.Drawing.Point(9, 86);
-            this.btn_GetCompustoR1.Name = "btn_GetCompustoR1";
-            this.btn_GetCompustoR1.Size = new System.Drawing.Size(108, 23);
-            this.btn_GetCompustoR1.TabIndex = 44;
-            this.btn_GetCompustoR1.Text = "地磁気値 取得";
-            this.btn_GetCompustoR1.UseVisualStyleBackColor = true;
-            this.btn_GetCompustoR1.Click += new System.EventHandler(this.btn_GetCompustoR1_Click);
-            // 
             // num_R1Y
             // 
             this.num_R1Y.Location = new System.Drawing.Point(160, 47);
@@ -683,16 +685,16 @@
             this.num_R1Y.TabIndex = 40;
             this.num_R1Y.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // btn_GetGPStoR1
+            // btn_GetCompustoR1
             // 
-            this.btn_GetGPStoR1.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_GetGPStoR1.Location = new System.Drawing.Point(9, 54);
-            this.btn_GetGPStoR1.Name = "btn_GetGPStoR1";
-            this.btn_GetGPStoR1.Size = new System.Drawing.Size(108, 23);
-            this.btn_GetGPStoR1.TabIndex = 43;
-            this.btn_GetGPStoR1.Text = "GPS値 取得";
-            this.btn_GetGPStoR1.UseVisualStyleBackColor = true;
-            this.btn_GetGPStoR1.Click += new System.EventHandler(this.btn_GetGPStoR1_Click);
+            this.btn_GetCompustoR1.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btn_GetCompustoR1.Location = new System.Drawing.Point(9, 86);
+            this.btn_GetCompustoR1.Name = "btn_GetCompustoR1";
+            this.btn_GetCompustoR1.Size = new System.Drawing.Size(108, 23);
+            this.btn_GetCompustoR1.TabIndex = 44;
+            this.btn_GetCompustoR1.Text = "地磁気値 取得";
+            this.btn_GetCompustoR1.UseVisualStyleBackColor = true;
+            this.btn_GetCompustoR1.Click += new System.EventHandler(this.btn_GetCompustoR1_Click);
             // 
             // num_R1X
             // 
@@ -730,6 +732,17 @@
             this.label20.TabIndex = 37;
             this.label20.Text = "Y:";
             // 
+            // btn_GetGPStoR1
+            // 
+            this.btn_GetGPStoR1.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btn_GetGPStoR1.Location = new System.Drawing.Point(9, 54);
+            this.btn_GetGPStoR1.Name = "btn_GetGPStoR1";
+            this.btn_GetGPStoR1.Size = new System.Drawing.Size(108, 23);
+            this.btn_GetGPStoR1.TabIndex = 43;
+            this.btn_GetGPStoR1.Text = "GPS値 取得";
+            this.btn_GetGPStoR1.UseVisualStyleBackColor = true;
+            this.btn_GetGPStoR1.Click += new System.EventHandler(this.btn_GetGPStoR1_Click);
+            // 
             // label19
             // 
             this.label19.AutoSize = true;
@@ -752,6 +765,17 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "補正条件";
             // 
+            // cb_VRRevision
+            // 
+            this.cb_VRRevision.AutoSize = true;
+            this.cb_VRRevision.Location = new System.Drawing.Point(9, 27);
+            this.cb_VRRevision.Name = "cb_VRRevision";
+            this.cb_VRRevision.Size = new System.Drawing.Size(138, 16);
+            this.cb_VRRevision.TabIndex = 37;
+            this.cb_VRRevision.Text = "VR上で補正処理を使う";
+            this.cb_VRRevision.UseVisualStyleBackColor = true;
+            this.cb_VRRevision.CheckedChanged += new System.EventHandler(this.cb_VRRevision_CheckedChanged);
+            // 
             // gbox_Revision
             // 
             this.gbox_Revision.Controls.Add(this.cb_DontAlwaysRivision);
@@ -767,6 +791,17 @@
             this.gbox_Revision.TabIndex = 36;
             this.gbox_Revision.TabStop = false;
             this.gbox_Revision.Text = "補正方法";
+            // 
+            // cb_DontAlwaysRivision
+            // 
+            this.cb_DontAlwaysRivision.AutoSize = true;
+            this.cb_DontAlwaysRivision.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_DontAlwaysRivision.Location = new System.Drawing.Point(11, 23);
+            this.cb_DontAlwaysRivision.Name = "cb_DontAlwaysRivision";
+            this.cb_DontAlwaysRivision.Size = new System.Drawing.Size(185, 17);
+            this.cb_DontAlwaysRivision.TabIndex = 30;
+            this.cb_DontAlwaysRivision.Text = "異常時のみ補正（壁めり込み）";
+            this.cb_DontAlwaysRivision.UseVisualStyleBackColor = true;
             // 
             // rb_UseGPS_Revision
             // 
@@ -814,20 +849,11 @@
             this.cb_AlwaysPFCalc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_AlwaysPFCalc.UseVisualStyleBackColor = true;
             // 
-            // cb_DontAlwaysRivision
-            // 
-            this.cb_DontAlwaysRivision.AutoSize = true;
-            this.cb_DontAlwaysRivision.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_DontAlwaysRivision.Location = new System.Drawing.Point(11, 23);
-            this.cb_DontAlwaysRivision.Name = "cb_DontAlwaysRivision";
-            this.cb_DontAlwaysRivision.Size = new System.Drawing.Size(185, 17);
-            this.cb_DontAlwaysRivision.TabIndex = 30;
-            this.cb_DontAlwaysRivision.Text = "異常時のみ補正（壁めり込み）";
-            this.cb_DontAlwaysRivision.UseVisualStyleBackColor = true;
-            // 
             // tabPage_Emulate
             // 
             this.tabPage_Emulate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.tabPage_Emulate.Controls.Add(this.groupBox7);
+            this.tabPage_Emulate.Controls.Add(this.cb_InDoorMode);
             this.tabPage_Emulate.Controls.Add(this.cb_StraghtMode);
             this.tabPage_Emulate.Controls.Add(this.lbl_AccRatio);
             this.tabPage_Emulate.Controls.Add(this.tbar_AccRatio);
@@ -847,7 +873,7 @@
             // 
             this.cb_StraghtMode.AutoSize = true;
             this.cb_StraghtMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_StraghtMode.Location = new System.Drawing.Point(17, 291);
+            this.cb_StraghtMode.Location = new System.Drawing.Point(8, 316);
             this.cb_StraghtMode.Name = "cb_StraghtMode";
             this.cb_StraghtMode.Size = new System.Drawing.Size(96, 20);
             this.cb_StraghtMode.TabIndex = 49;
@@ -857,7 +883,7 @@
             // lbl_AccRatio
             // 
             this.lbl_AccRatio.AutoSize = true;
-            this.lbl_AccRatio.Location = new System.Drawing.Point(6, 221);
+            this.lbl_AccRatio.Location = new System.Drawing.Point(6, 200);
             this.lbl_AccRatio.Name = "lbl_AccRatio";
             this.lbl_AccRatio.Size = new System.Drawing.Size(61, 12);
             this.lbl_AccRatio.TabIndex = 48;
@@ -866,7 +892,7 @@
             // tbar_AccRatio
             // 
             this.tbar_AccRatio.LargeChange = 2;
-            this.tbar_AccRatio.Location = new System.Drawing.Point(107, 217);
+            this.tbar_AccRatio.Location = new System.Drawing.Point(107, 196);
             this.tbar_AccRatio.Name = "tbar_AccRatio";
             this.tbar_AccRatio.Size = new System.Drawing.Size(163, 45);
             this.tbar_AccRatio.TabIndex = 47;
@@ -876,7 +902,7 @@
             // lbl_HdlRatio
             // 
             this.lbl_HdlRatio.AutoSize = true;
-            this.lbl_HdlRatio.Location = new System.Drawing.Point(6, 190);
+            this.lbl_HdlRatio.Location = new System.Drawing.Point(6, 169);
             this.lbl_HdlRatio.Name = "lbl_HdlRatio";
             this.lbl_HdlRatio.Size = new System.Drawing.Size(67, 12);
             this.lbl_HdlRatio.TabIndex = 46;
@@ -885,7 +911,7 @@
             // tbar_HdlRatio
             // 
             this.tbar_HdlRatio.LargeChange = 2;
-            this.tbar_HdlRatio.Location = new System.Drawing.Point(107, 179);
+            this.tbar_HdlRatio.Location = new System.Drawing.Point(107, 158);
             this.tbar_HdlRatio.Name = "tbar_HdlRatio";
             this.tbar_HdlRatio.Size = new System.Drawing.Size(163, 45);
             this.tbar_HdlRatio.TabIndex = 45;
@@ -896,9 +922,9 @@
             // 
             this.groupBox5.Controls.Add(this.cmbbox_UsbSH2Connect);
             this.groupBox5.Controls.Add(this.cb_UsbSH2Connect);
-            this.groupBox5.Location = new System.Drawing.Point(6, 115);
+            this.groupBox5.Location = new System.Drawing.Point(6, 97);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(257, 58);
+            this.groupBox5.Size = new System.Drawing.Size(264, 58);
             this.groupBox5.TabIndex = 23;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "SH2 Connect";
@@ -931,15 +957,15 @@
             this.groupBox2.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.groupBox2.Location = new System.Drawing.Point(6, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(251, 89);
+            this.groupBox2.Size = new System.Drawing.Size(264, 78);
             this.groupBox2.TabIndex = 25;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "USB-GPS接続";
+            this.groupBox2.Text = "USB-GPSアンテナ接続";
             // 
             // cb_SirialConnect
             // 
             this.cb_SirialConnect.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_SirialConnect.Location = new System.Drawing.Point(168, 23);
+            this.cb_SirialConnect.Location = new System.Drawing.Point(168, 18);
             this.cb_SirialConnect.Name = "cb_SirialConnect";
             this.cb_SirialConnect.Size = new System.Drawing.Size(77, 26);
             this.cb_SirialConnect.TabIndex = 23;
@@ -951,14 +977,14 @@
             // cb_UsbSirial
             // 
             this.cb_UsbSirial.FormattingEnabled = true;
-            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 27);
+            this.cb_UsbSirial.Location = new System.Drawing.Point(11, 22);
             this.cb_UsbSirial.Name = "cb_UsbSirial";
             this.cb_UsbSirial.Size = new System.Drawing.Size(143, 21);
             this.cb_UsbSirial.TabIndex = 21;
             // 
             // tb_SirialResive
             // 
-            this.tb_SirialResive.Location = new System.Drawing.Point(11, 58);
+            this.tb_SirialResive.Location = new System.Drawing.Point(11, 52);
             this.tb_SirialResive.Name = "tb_SirialResive";
             this.tb_SirialResive.Size = new System.Drawing.Size(234, 20);
             this.tb_SirialResive.TabIndex = 22;
@@ -1305,7 +1331,7 @@
             this.groupBox8.Size = new System.Drawing.Size(240, 304);
             this.groupBox8.TabIndex = 42;
             this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "ステータス";
+            this.groupBox8.Text = "BoxPC ステータス";
             // 
             // groupBox9
             // 
@@ -1350,16 +1376,96 @@
             this.rb_LRF_ROSnode.UseVisualStyleBackColor = true;
             this.rb_LRF_ROSnode.CheckedChanged += new System.EventHandler(this.rb_LRF_LAN_CheckedChanged);
             // 
-            // cb_VRRevision
+            // cb_InDoorMode
             // 
-            this.cb_VRRevision.AutoSize = true;
-            this.cb_VRRevision.Location = new System.Drawing.Point(9, 27);
-            this.cb_VRRevision.Name = "cb_VRRevision";
-            this.cb_VRRevision.Size = new System.Drawing.Size(138, 16);
-            this.cb_VRRevision.TabIndex = 37;
-            this.cb_VRRevision.Text = "VR上で補正処理を使う";
-            this.cb_VRRevision.UseVisualStyleBackColor = true;
-            this.cb_VRRevision.CheckedChanged += new System.EventHandler(this.cb_VRRevision_CheckedChanged);
+            this.cb_InDoorMode.AutoSize = true;
+            this.cb_InDoorMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_InDoorMode.Location = new System.Drawing.Point(154, 316);
+            this.cb_InDoorMode.Name = "cb_InDoorMode";
+            this.cb_InDoorMode.Size = new System.Drawing.Size(96, 20);
+            this.cb_InDoorMode.TabIndex = 50;
+            this.cb_InDoorMode.Text = "屋内モード";
+            this.cb_InDoorMode.UseVisualStyleBackColor = true;
+            // 
+            // rb_MoveREandCompus
+            // 
+            this.rb_MoveREandCompus.AutoSize = true;
+            this.rb_MoveREandCompus.Location = new System.Drawing.Point(13, 71);
+            this.rb_MoveREandCompus.Name = "rb_MoveREandCompus";
+            this.rb_MoveREandCompus.Size = new System.Drawing.Size(93, 16);
+            this.rb_MoveREandCompus.TabIndex = 4;
+            this.rb_MoveREandCompus.TabStop = true;
+            this.rb_MoveREandCompus.Text = "R.E. && 地磁気";
+            this.rb_MoveREandCompus.UseVisualStyleBackColor = true;
+            // 
+            // rb_MovePF
+            // 
+            this.rb_MovePF.AutoSize = true;
+            this.rb_MovePF.Location = new System.Drawing.Point(119, 71);
+            this.rb_MovePF.Name = "rb_MovePF";
+            this.rb_MovePF.Size = new System.Drawing.Size(103, 16);
+            this.rb_MovePF.TabIndex = 5;
+            this.rb_MovePF.TabStop = true;
+            this.rb_MovePF.Text = "VR PrticleFilter";
+            this.rb_MovePF.UseVisualStyleBackColor = true;
+            // 
+            // btnCribration
+            // 
+            this.btnCribration.Location = new System.Drawing.Point(199, 41);
+            this.btnCribration.Name = "btnCribration";
+            this.btnCribration.Size = new System.Drawing.Size(67, 23);
+            this.btnCribration.TabIndex = 51;
+            this.btnCribration.Text = "セット";
+            this.btnCribration.UseVisualStyleBackColor = true;
+            this.btnCribration.Click += new System.EventHandler(this.btnCribration_Click);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(7, 19);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(30, 12);
+            this.label21.TabIndex = 52;
+            this.label21.Text = "RE L";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(110, 21);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(32, 12);
+            this.label23.TabIndex = 53;
+            this.label23.Text = "RE R";
+            // 
+            // tbCaribrationREL
+            // 
+            this.tbCaribrationREL.Location = new System.Drawing.Point(43, 18);
+            this.tbCaribrationREL.Name = "tbCaribrationREL";
+            this.tbCaribrationREL.Size = new System.Drawing.Size(53, 19);
+            this.tbCaribrationREL.TabIndex = 54;
+            this.tbCaribrationREL.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // tbCaribrationRER
+            // 
+            this.tbCaribrationRER.Location = new System.Drawing.Point(148, 16);
+            this.tbCaribrationRER.Name = "tbCaribrationRER";
+            this.tbCaribrationRER.Size = new System.Drawing.Size(53, 19);
+            this.tbCaribrationRER.TabIndex = 55;
+            this.tbCaribrationRER.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.tbCaribrationRER);
+            this.groupBox7.Controls.Add(this.label21);
+            this.groupBox7.Controls.Add(this.tbCaribrationREL);
+            this.groupBox7.Controls.Add(this.label23);
+            this.groupBox7.Controls.Add(this.btnCribration);
+            this.groupBox7.Location = new System.Drawing.Point(3, 231);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(272, 75);
+            this.groupBox7.TabIndex = 56;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "キャリブレーション";
             // 
             // VehicleRunnerForm
             // 
@@ -1421,6 +1527,8 @@
             this.groupBox8.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1532,6 +1640,15 @@
         private System.Windows.Forms.Label lbl_HdlRatio;
         private System.Windows.Forms.TrackBar tbar_HdlRatio;
         private System.Windows.Forms.CheckBox cb_VRRevision;
+        private System.Windows.Forms.CheckBox cb_InDoorMode;
+        private System.Windows.Forms.RadioButton rb_MovePF;
+        private System.Windows.Forms.RadioButton rb_MoveREandCompus;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.TextBox tbCaribrationRER;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox tbCaribrationREL;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Button btnCribration;
     }
 }
 

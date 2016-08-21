@@ -488,6 +488,11 @@ namespace CersioIO
         double oldResiveMS;         // 速度計測用 受信時間差分
         double oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
 
+        // RE初期値
+        double ReInitR = 0;
+        double ReInitL = 0;
+        bool bInitRePulse = true;   // 初期化要求フラグ
+
         public double emuGPSX = 134.0000;
         public double emuGPSY = 35.0000;
 
@@ -523,7 +528,6 @@ namespace CersioIO
                     {
                         string[] rsvCmd = readStr.Split('$');
 
-                        SpeedMH = 0;   // 未計測
                         for (int i = 0; i < rsvCmd.Length; i++)
                         {
                             if (rsvCmd[i].Length <= 3) continue;
@@ -532,23 +536,39 @@ namespace CersioIO
                             if (rsvCmd[i].Substring(0, 3) == "A1,")
                             {
                                 const double tiyeSize = 140.0;  // タイヤ直径 [mm]
-                                const double OnePuls = 260.0;   // 一周のパルス数
+                                const double OnePuls = 250.0;   // 一周のパルス数
                                 double ResiveMS;
-                                //string[] splStr = (rsvCmd[i].Replace('[', ',').Replace(']', ',').Replace(' ', ',')).Split(',');
+                                double ResReR, ResReL;
                                 string[] splStr = rsvCmd[i].Split(',');
 
                                 // 0 A1
-                                double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
-                                double.TryParse(splStr[2], out hwRErotR);        // Right Wheel
-                                double.TryParse(splStr[3], out hwRErotL);        // Left Wheel
+                                double.TryParse(splStr[1], out ResiveMS);        // 小数点付き 秒
+                                double.TryParse(splStr[2], out ResReR);        // Right Wheel
+                                double.TryParse(splStr[3], out ResReL);        // Left Wheel
 
-                                // 絶対値用計算 10000  万ミリ秒
-                                SpeedMH = (int)(((double)(hwRErotR - oldWheelR) / OnePuls * Math.PI * tiyeSize) * 10000.0 / (ResiveMS - oldResiveMS));
-                                // mm/sec
-                                //SpeedMH = (int)(((double)wheelR / 260.0 * Math.PI * 140.0) * 10000.0 / 200.0);
+                                // 0.5秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
+                                if ((ResiveMS - oldResiveMS) > 0.5)
+                                {
+                                    // 速度計算(非動輪を基準)
+                                    SpeedMH = (int)(((double)(hwRErotR - oldWheelR) / OnePuls * (Math.PI * tiyeSize)) / (ResiveMS - oldResiveMS));
 
-                                oldResiveMS = ResiveMS;
-                                oldWheelR = hwRErotR;
+                                    oldResiveMS = ResiveMS;
+                                    oldWheelR = hwRErotR;
+                                }
+
+                                // 初回のパルス値リセット
+                                if(bInitRePulse)
+                                {
+                                    ReInitR = ResReR;
+                                    ReInitL = ResReL;
+                                    bInitRePulse = false;
+                                }
+
+                                // 初回からの変化値
+                                hwRErotR = ResReR - ReInitR;
+                                hwRErotL = ResReL - ReInitL;
+
+
 
                                 bhwRE = true;
                             }
@@ -623,7 +643,10 @@ namespace CersioIO
 
                                 // 座標系変換
                                 // 右上から右下へ
-
+#if true
+                                // 座標軸を変換
+                                ResiveY = -ResiveY;
+                                ResiveRad = -ResiveRad;
                                 // リセットした時点での電子コンパスの向きを元にマップ座標へ変換する
                                 // x*cos - y*sin
                                 // x*sin + y*cos
@@ -634,7 +657,12 @@ namespace CersioIO
                                     hwREX = (ResiveX * Math.Cos(theta) - ResiveY * Math.Sin(theta)) + hwREStartX;
                                     hwREY = (ResiveX * Math.Sin(theta) + ResiveY * Math.Cos(theta)) + hwREStartY;
                                 }
+#else
+                                hwREDir = ((-ResiveRad * 180.0) / Math.PI);
 
+                                hwREX = ResiveX;
+                                hwREY = ResiveY;
+#endif
                                 bhwREPlot = true;
                             }
 

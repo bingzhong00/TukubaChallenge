@@ -5,8 +5,8 @@
 #define LOGWRITE_MODE   // ログファイル出力
 
 #define LOGIMAGE_MODE   // イメージログ出力
-#define GPSLOG_OUTPUT   // GPSログ出力
-#define LRFLOG_OUTPUT   // LRFログ出力
+//#define GPSLOG_OUTPUT   // GPSログ出力
+//#define LRFLOG_OUTPUT   // LRFログ出力
 
 //#define UnUseLRF          // LRFを使わない
 
@@ -493,8 +493,8 @@ namespace VehicleRunner
             // REをリセット
             CersioCt.SendCommand_RE_Reset();
 
-            CersioCt.setREPlot_Start(RootingData.startPosition.x * LocSys.RealToMapSclae,
-                                     RootingData.startPosition.y * LocSys.RealToMapSclae,
+            CersioCt.setREPlot_Start(RootingData.startPosition.x * LocSys.MapToRealScale,
+                                     RootingData.startPosition.y * LocSys.MapToRealScale,
                                      RootingData.startDir);
 
             PictureUpdate();
@@ -741,9 +741,11 @@ namespace VehicleRunner
                                 logMsg = LocSys.LocalizeRevision(rb_UseGPS_Revision.Checked);
 
                                 // REリセット
-                                CersioCt.SendCommand_RE_Reset( LocSys.E1.X * LocSys.RealToMapSclae,
-                                                               LocSys.E1.Y * LocSys.RealToMapSclae,
-                                                               LocSys.E1.Theta);
+                                CersioCt.SendCommand_RE_Reset();
+
+                                CersioCt.setREPlot_Start( LocSys.E1.X * LocSys.MapToRealScale,
+                                                          LocSys.E1.Y * LocSys.MapToRealScale,
+                                                          LocSys.E1.Theta );
 
                                 Brain.addLogMsg += logMsg;
                             }
@@ -764,7 +766,7 @@ namespace VehicleRunner
                         // 自己位置更新処理とセルシオ管理
                         BrainCtrl.AutonomousProc( LocSys,
                                                   cb_EmgBrake.Checked, cb_EHS.Checked,
-                                                  cb_StraghtMode.Checked );
+                                                  cb_StraghtMode.Checked, cb_InDoorMode.Checked );
                     }
                 }
                 
@@ -1030,22 +1032,8 @@ namespace VehicleRunner
             LocSys.Setting.bMoveSrcRePlot = rb_MoveREPlot.Checked;
             LocSys.Setting.bMoveSrcGPS  = rb_MoveGPS.Checked;
             LocSys.Setting.bMoveSrcSVO  = rb_MoveSVO.Checked;
-
-            /*
-            if (sender == rb_MoveREPlot)
-            {
-                LocSys.Setting.bMoveSrcRePlot = true;
-            }
-            else if (sender == rb_MoveGPS)
-            {
-                LocSys.Setting.bMoveSrcGPS = true;
-            }
-            else if (sender == rb_MoveSVO)
-            {
-                LocSys.Setting.bMoveSrcSVO = true;
-            }
-            */
         }
+
         /// <summary>
         /// 向き入力元変更
         /// ラジオボタンクリック
@@ -1059,24 +1047,6 @@ namespace VehicleRunner
             LocSys.Setting.bDirSrcGPS = rb_DirGPS.Checked;
             LocSys.Setting.bDirSrcSVO  = rb_DirSVO.Checked;
             LocSys.Setting.bDirSrcCompus = rb_DirCompus.Checked;
-
-            /*
-            if (sender == rb_DirREPlot)
-            {
-                LocSys.Setting.bDirSrcRePlot = true;
-            }
-            else if (sender == rb_DirGPS)
-            {
-                LocSys.Setting.bDirSrcGPS = true;
-            }
-            else if (sender == rb_DirSVO)
-            {
-                LocSys.Setting.bDirSrcSVO = true;
-            }
-            else if (sender == rb_DirCompus)
-            {
-                LocSys.Setting.bDirSrcCompus = true;
-            }*/
         }
 
         /// <summary>
@@ -1252,6 +1222,23 @@ namespace VehicleRunner
         private void cb_VRRevision_CheckedChanged(object sender, EventArgs e)
         {
             gbox_Revision.Enabled = cb_VRRevision.Checked;
+        }
+
+        /// <summary>
+        /// キャリブレーション
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnCribration_Click(object sender, EventArgs e)
+        {
+            int reL, reR;
+
+            int.TryParse(tbCaribrationREL.Text, out reL);
+            int.TryParse(tbCaribrationRER.Text, out reR);
+
+            // ※比率計算
+
+            // ※コマンド送信
         }
     }
 }

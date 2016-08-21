@@ -439,7 +439,7 @@ namespace VehicleRunner
             // 30mを2m区切りで描画
             for (int i = 1; i <= 30 / 2; i++)
             {
-                int cirSize = (int)((((i * 2000) * 2) / LocSys.RealToMapSclae) * scale);
+                int cirSize = (int)((((i * 2000) * 2) / LocSys.MapToRealScale) * scale);
 
                 g.DrawPie(Pens.LightGray,
                                     (ctrX - cirSize / 2), (ctrY - cirSize / 2),
@@ -498,7 +498,7 @@ namespace VehicleRunner
                 {
                     // ブレーキレンジ内
                     Brush colBrs = Brushes.Red;
-                    cirSize = (int)((Brain.EmergencyBrake.BrakeRange * 2.0 / LocSys.RealToMapSclae) * scale);
+                    cirSize = (int)((Brain.EmergencyBrake.BrakeRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.FillPie(colBrs, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
@@ -507,7 +507,7 @@ namespace VehicleRunner
                 {
                     // スローダウンレンジ内
                     Brush colBrs = Brushes.Orange;
-                    cirSize = (int)((Brain.EmergencyBrake.SlowRange * 2.0 / LocSys.RealToMapSclae) * scale);
+                    cirSize = (int)((Brain.EmergencyBrake.SlowRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.FillPie(colBrs, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
@@ -518,13 +518,13 @@ namespace VehicleRunner
                     Pen colPen = Pens.Yellow;
 
                     // スローダウン　レンジ枠
-                    cirSize = (int)((Brain.EmergencyBrake.SlowRange * 2.0 / LocSys.RealToMapSclae) * scale);
+                    cirSize = (int)((Brain.EmergencyBrake.SlowRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
 
                     // ブレーキ　レンジ枠
-                    cirSize = (int)((Brain.EmergencyBrake.BrakeRange * 2.0 / LocSys.RealToMapSclae) * scale);
+                    cirSize = (int)((Brain.EmergencyBrake.BrakeRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
@@ -536,7 +536,7 @@ namespace VehicleRunner
                 int stAng;
                 int edAng;
 
-                int cirSize = (int)((Brain.EmergencyHandring.MaxRange * 2.0 / LocSys.RealToMapSclae) * scale);
+                int cirSize = (int)((Brain.EmergencyHandring.MaxRange * 2.0 / LocSys.MapToRealScale) * scale);
 
                 Pen colPen = Pens.LightGreen;
 

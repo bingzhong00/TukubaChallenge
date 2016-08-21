@@ -197,34 +197,46 @@ namespace Navigation
         #region 緊急時ハンドル　クラス定義
         public class EmergencyHandring
         {
-#if false
             // 室内向け
             // EHS設定 壁検知　ハンドル制御
             // ハンドル　－が右
-            public const int stLAng = -30;     // 左側感知角度 -35～-10度
-            public const int edLAng = -10;
+            public const int ind_stLAng = -30;     // 左側感知角度 -35～-10度
+            public const int ind_edLAng = -10;
 
-            public const int stRAng = 10;      // 右側感知角度 10～35度
-            public const int edRAng = 30;
+            public const int ind_stRAng = 10;      // 右側感知角度 10～35度
+            public const int ind_edRAng = 30;
 
-            public const double MinRange = 400.0;     // 感知最小距離 [mm] 30cm
-            public const double MaxRange = 1000.0;    // 感知最大距離 [mm] 150cm
+            public const double ind_MinRange = 400.0;     // 感知最小距離 [mm] 30cm
+            public const double ind_MaxRange = 1000.0;    // 感知最大距離 [mm] 150cm
 
-            const double WallRange = 450.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
-#else
+            public const double ind_WallRange = 450.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+
             // EHS設定 壁検知　ハンドル制御
             // ハンドル　－が右
-            public const int stRAng = -40;     // 右側感知角度 -35～-10度
-            public const int edRAng = -10;
+            public const int od_stRAng = -40;     // 右側感知角度 -35～-10度
+            public const int od_edRAng = -10;
 
-            public const int stLAng = 10;      // 左側感知角度 10～35度
-            public const int edLAng = 40;
+            public const int od_stLAng = 10;      // 左側感知角度 10～35度
+            public const int od_edLAng = 40;
 
-            public const double MinRange = 600.0;     // 感知最小距離 [mm] 30cm
-            public const double MaxRange = 3000.0;    // 感知最大距離 [mm] 150cm
+            public const double od_MinRange = 600.0;     // 感知最小距離 [mm] 30cm
+            public const double od_MaxRange = 3000.0;    // 感知最大距離 [mm] 150cm
 
-            const double WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
-#endif
+            public const double od_WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+            
+            // EHS設定 壁検知　ハンドル制御
+            // ハンドル　－が右
+            public static int stRAng = -40;     // 右側感知角度 -35～-10度
+            public static int edRAng = -10;
+
+            public static int stLAng = 10;      // 左側感知角度 10～35度
+            public static int edLAng = 40;
+
+            public static double MinRange = 600.0;     // 感知最小距離 [mm] 30cm
+            public static double MaxRange = 3000.0;    // 感知最大距離 [mm] 150cm
+
+            public static double WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+
 
             public enum EHS_MODE
             {
@@ -433,11 +445,42 @@ namespace Navigation
         /// <param name="useEBS">壁回避ブレーキ</param>
         /// <param name="useEHS">壁回避ハンドル</param>
         /// <param name="bStraightMode">直進モード</param>
+        /// <param name="bIndoorMode">屋内モード</param>
         /// <returns></returns>
-        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bStraightMode )
+        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bStraightMode, bool bIndoorMode)
         {
             // エマージェンシーブレーキを使わないフラグ
             bool untiEBS = false;
+
+            if( bIndoorMode )
+            {
+                // 屋内用ハンドル操作
+                EmergencyHandring.stRAng = EmergencyHandring.ind_stLAng;     // 右側感知角度 -35～-10度
+                EmergencyHandring.edRAng = EmergencyHandring.ind_stLAng;
+
+                EmergencyHandring.stLAng = EmergencyHandring.ind_stRAng;      // 左側感知角度 10～35度
+                EmergencyHandring.edLAng = EmergencyHandring.ind_edRAng;
+
+                EmergencyHandring.MinRange = EmergencyHandring.ind_MinRange;     // 感知最小距離 [mm] 30cm
+                EmergencyHandring.MaxRange = EmergencyHandring.ind_MaxRange;    // 感知最大距離 [mm] 150cm
+
+                EmergencyHandring.WallRange = EmergencyHandring.ind_WallRange;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+            }
+            else
+            {
+                // 屋外用ハンドル操作
+                EmergencyHandring.stRAng = EmergencyHandring.od_stRAng;     // 右側感知角度 -35～-10度
+                EmergencyHandring.edRAng = EmergencyHandring.od_edRAng;
+
+                EmergencyHandring.stLAng = EmergencyHandring.od_stLAng;      // 左側感知角度 10～35度
+                EmergencyHandring.edLAng = EmergencyHandring.od_edLAng;
+
+                EmergencyHandring.MinRange = EmergencyHandring.od_MinRange;     // 感知最小距離 [mm] 30cm
+                EmergencyHandring.MaxRange = EmergencyHandring.od_MaxRange;    // 感知最大距離 [mm] 150cm
+
+                EmergencyHandring.WallRange = EmergencyHandring.od_WallRange;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+
+            }
 
             // すべてのルートを回りゴールした。
             if (goalFlg)
