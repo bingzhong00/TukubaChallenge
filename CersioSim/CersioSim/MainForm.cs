@@ -236,8 +236,9 @@ namespace CersioSim
                 {
                     // ロータリーエンコーダ　Plot
                     // リセットされた時点ですべて0,0,0(X,Y,Dir)として、タイヤの回転値から移動量、向きを加算
-                    // ↑ Y-
+                    // ↑ Y+
                     //  → X+
+                    // 向きは時計周りに-
                     /*
                     bSrv.senRePlotX = (carSim.mkp.X - carInitPos.X);
                     bSrv.senRePlotY = (carSim.mkp.Y - carInitPos.Y);
@@ -252,13 +253,18 @@ namespace CersioSim
                     bSrv.senReL = (long)carSim.wheelPulseL;
 
                     // パルス値の差分から移動座標を計算
-                    REncoderToMap.CalcWheelPlotXY(ref bSrv.plotWheelR, ref bSrv.plotWheelL, ref bSrv.senReAng_Out,
+                    double resAng = 0;
+                    REncoderToMap.CalcWheelPlotXY(ref bSrv.plotWheelR, ref bSrv.plotWheelL, ref resAng,
                                                   bSrv.senReR, bSrv.senReL,
                                                   bSrv.senReR_, bSrv.senReL_);
 
                     // 現在位置を両輪の中心点で計算
                     bSrv.senRePlotX_Out = ((bSrv.plotWheelR.X + bSrv.plotWheelL.X) * 0.5);
                     bSrv.senRePlotY_Out = ((bSrv.plotWheelR.Y + bSrv.plotWheelL.Y) * 0.5);
+
+                    // 座標系を実機にあわせる
+                    bSrv.senRePlotY_Out = -bSrv.senRePlotY_Out;
+                    bSrv.senReAng_Out = resAng;
                 }
 
                 // 電子コンパス
@@ -296,7 +302,7 @@ namespace CersioSim
                 // R.Enc
                 lbl_RePlotX.Text = bSrv.senRePlotX_Out.ToString("f3");
                 lbl_RePlotY.Text = bSrv.senRePlotY_Out.ToString("f3");
-                lbl_RePlotAng.Text = bSrv.senReAng_Out.ToString("f3") + " /度 " + (bSrv.senReAng_Out*180.0/Math.PI).ToString("f3");
+                lbl_RePlotAng.Text = "Rad:" + bSrv.senReAng_Out.ToString("f3") + " / 度:" + (bSrv.senReAng_Out*180.0/Math.PI).ToString("f3");
                 lbl_ReR.Text = bSrv.senReR.ToString();
                 lbl_ReL.Text = bSrv.senReL.ToString();
 

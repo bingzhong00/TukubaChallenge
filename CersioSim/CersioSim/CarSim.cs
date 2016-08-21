@@ -283,19 +283,36 @@ namespace CersioSim
             const double WheelSize = 175;//172;    // ホイール直径
             const double OneRotValue = 240;   // １回転分の分解能
 
+            Vector3 wheelLmov, wheelRmov;
 
-            // 移動差分から、移動量を求める
-            Vector3 wheelLmov = new Vector3(wdRL.x - wdRLOld.x,
-                                             wdRL.y - wdRLOld.y,
-                                             wdRL.z - wdRLOld.z);
+            Real signL, signR;
+            // 移動量と移動方向(+,-)を求める
+            {
+                Quaternion rotQt = new Quaternion();
+                Vector3 moveVec = new Vector3();
 
-            Vector3 wheelRmov = new Vector3(wdRR.x - wdRROld.x,
-                                             wdRR.y - wdRROld.y,
-                                             wdRR.z - wdRROld.z);
+                rotQt.RollInDegrees = wdCarAng;
+                moveVec.y = 1.0;
+                moveVec = rotQt.ToRotationMatrix() * moveVec;
+
+                // 移動差分から、移動量を求める
+                wheelLmov = new Vector3(wdRL.x - wdRLOld.x,
+                                                 wdRL.y - wdRLOld.y,
+                                                 wdRL.z - wdRLOld.z);
+
+                wheelRmov = new Vector3(wdRR.x - wdRROld.x,
+                                                 wdRR.y - wdRROld.y,
+                                                 wdRR.z - wdRROld.z);
+
+                if (moveVec.Dot(wheelLmov) > 0.0) signL = -1.0;
+                else signL = 1.0;
+                if (moveVec.Dot(wheelRmov) > 0.0) signR = -1.0;
+                else signR = 1.0;
+            }
 
             // 移動量(長さ) / ホイール１回転の長さ * １回転のパルス数
-            wheelPulseL += wheelLmov.Length / (WheelSize * Math.PI) * OneRotValue;
-            wheelPulseR += wheelRmov.Length / (WheelSize * Math.PI) * OneRotValue;
+            wheelPulseL += (wheelLmov.Length / (WheelSize * Math.PI) * OneRotValue) * signL;
+            wheelPulseR += (wheelRmov.Length / (WheelSize * Math.PI) * OneRotValue) * signR;
 
         }
 
