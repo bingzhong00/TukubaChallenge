@@ -195,7 +195,7 @@ namespace VehicleRunner
         }
 
 
-        static int areaMapDrawCnt = 0;
+        //static int areaMapDrawCnt = 0;
 
         public void AreaMap_Draw_WorldMap(Graphics g, ref LocPreSumpSystem LocSys, ref CersioCtrl CersioCt, ref Brain BrainCtrl)
         {
@@ -224,38 +224,10 @@ namespace VehicleRunner
                 g.DrawImage(worldMapBmp, 0, 0);
             }
 
-            g.ResetTransform();
-            int mkSize = 8;
-            // 描画順を常にかえて、重なっても見えるようにする
-            for (int i = 0; i < 4; i++)
-            {
-                switch ((i + areaMapDrawCnt) % 4)
-                {
-                    case 0:
-                        // RE位置描画
-                        DrawMaker(g, viewScale, LocSys.E1, Brushes.Purple, mkSize);
-                        break;
-                    case 1:
-                        // PF位置描画
-                        DrawMaker(g, viewScale, LocSys.V1, Brushes.Cyan, mkSize);
-                        break;
-                    case 2:
-                        // 実ロボット想定位置描画
-                        DrawMaker(g, viewScale, LocSys.R1, Brushes.Red, mkSize);
-                        break;
-                    case 3:
-                        // GPS位置描画
-                        if (CersioCt.bhwUsbGPS)
-                        {
-                            // USB GPS
-                            DrawMaker(g, viewScale, LocSys.G1, Brushes.Green, mkSize);
-                        } else {
-                            // bServer GPS角度なし
-                            DrawMaker(g, Brushes.Green, LocSys.G1.X * viewScale, LocSys.G1.Y * viewScale, mkSize);
-                        }
-                        break;
-                }
-            }
+            //g.ResetTransform();
+
+            // 各マーカーの位置を描画
+            LocSys.DrawWorldMap(g, viewScale);
 
             // ターゲット描画
             if (null != CersioCt)
@@ -277,14 +249,6 @@ namespace VehicleRunner
                     Pens.Olive, 1);
             }
 
-            // エリア枠描画
-            g.DrawRectangle(Pens.Pink,
-                             (LocSys.worldMap.WldOffset.x * viewScale),
-                             (LocSys.worldMap.WldOffset.y * viewScale),
-                             (LocSys.worldMap.GridSize.w * viewScale),
-                             (LocSys.worldMap.GridSize.h * viewScale));
-
-            areaMapDrawCnt++;
         }
 
 
@@ -445,6 +409,8 @@ namespace VehicleRunner
                                     (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                     cirSize, cirSize,
                                     -135 - 90, 270);
+
+                g.DrawString((i*2).ToString("F1")+"m", fntMini, Brushes.LightGray, (ctrX - cirSize / 2), (ctrY - cirSize / 2));
             }
         }
 

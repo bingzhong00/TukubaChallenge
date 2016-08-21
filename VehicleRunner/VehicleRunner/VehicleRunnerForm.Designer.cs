@@ -60,6 +60,8 @@
             this.rb_DirGPS = new System.Windows.Forms.RadioButton();
             this.rb_DirREPlot = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rb_MovePF = new System.Windows.Forms.RadioButton();
+            this.rb_MoveREandCompus = new System.Windows.Forms.RadioButton();
             this.rb_MoveAMCL = new System.Windows.Forms.RadioButton();
             this.rb_MoveSVO = new System.Windows.Forms.RadioButton();
             this.rb_MoveGPS = new System.Windows.Forms.RadioButton();
@@ -85,6 +87,13 @@
             this.rb_UsePF_Revision = new System.Windows.Forms.RadioButton();
             this.cb_AlwaysPFCalc = new System.Windows.Forms.CheckBox();
             this.tabPage_Emulate = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.tbCaribrationRER = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.tbCaribrationREL = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.btnCribration = new System.Windows.Forms.Button();
+            this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
             this.cb_StraghtMode = new System.Windows.Forms.CheckBox();
             this.lbl_AccRatio = new System.Windows.Forms.Label();
             this.tbar_AccRatio = new System.Windows.Forms.TrackBar();
@@ -130,15 +139,6 @@
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.rb_LRF_LAN = new System.Windows.Forms.RadioButton();
             this.rb_LRF_ROSnode = new System.Windows.Forms.RadioButton();
-            this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
-            this.rb_MoveREandCompus = new System.Windows.Forms.RadioButton();
-            this.rb_MovePF = new System.Windows.Forms.RadioButton();
-            this.btnCribration = new System.Windows.Forms.Button();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.tbCaribrationREL = new System.Windows.Forms.TextBox();
-            this.tbCaribrationRER = new System.Windows.Forms.TextBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -153,6 +153,7 @@
             this.groupBox6.SuspendLayout();
             this.gbox_Revision.SuspendLayout();
             this.tabPage_Emulate.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_AccRatio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_HdlRatio)).BeginInit();
             this.groupBox5.SuspendLayout();
@@ -164,7 +165,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
             this.groupBox8.SuspendLayout();
             this.groupBox9.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -547,6 +547,29 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "X,Y座標 入力ソース";
             // 
+            // rb_MovePF
+            // 
+            this.rb_MovePF.AutoSize = true;
+            this.rb_MovePF.Enabled = false;
+            this.rb_MovePF.Location = new System.Drawing.Point(119, 71);
+            this.rb_MovePF.Name = "rb_MovePF";
+            this.rb_MovePF.Size = new System.Drawing.Size(103, 16);
+            this.rb_MovePF.TabIndex = 5;
+            this.rb_MovePF.TabStop = true;
+            this.rb_MovePF.Text = "VR PrticleFilter";
+            this.rb_MovePF.UseVisualStyleBackColor = true;
+            // 
+            // rb_MoveREandCompus
+            // 
+            this.rb_MoveREandCompus.AutoSize = true;
+            this.rb_MoveREandCompus.Location = new System.Drawing.Point(13, 71);
+            this.rb_MoveREandCompus.Name = "rb_MoveREandCompus";
+            this.rb_MoveREandCompus.Size = new System.Drawing.Size(93, 16);
+            this.rb_MoveREandCompus.TabIndex = 4;
+            this.rb_MoveREandCompus.TabStop = true;
+            this.rb_MoveREandCompus.Text = "R.E. && 地磁気";
+            this.rb_MoveREandCompus.UseVisualStyleBackColor = true;
+            // 
             // rb_MoveAMCL
             // 
             this.rb_MoveAMCL.AutoSize = true;
@@ -756,7 +779,6 @@
             // 
             this.groupBox6.Controls.Add(this.cb_VRRevision);
             this.groupBox6.Controls.Add(this.gbox_Revision);
-            this.groupBox6.Enabled = false;
             this.groupBox6.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.groupBox6.Location = new System.Drawing.Point(3, 5);
             this.groupBox6.Name = "groupBox6";
@@ -795,6 +817,8 @@
             // cb_DontAlwaysRivision
             // 
             this.cb_DontAlwaysRivision.AutoSize = true;
+            this.cb_DontAlwaysRivision.Checked = true;
+            this.cb_DontAlwaysRivision.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_DontAlwaysRivision.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.cb_DontAlwaysRivision.Location = new System.Drawing.Point(11, 23);
             this.cb_DontAlwaysRivision.Name = "cb_DontAlwaysRivision";
@@ -835,11 +859,11 @@
             this.rb_UsePF_Revision.TabStop = true;
             this.rb_UsePF_Revision.Text = "ParticleFilter";
             this.rb_UsePF_Revision.UseVisualStyleBackColor = true;
+            this.rb_UsePF_Revision.CheckedChanged += new System.EventHandler(this.rb_UsePF_Revision_CheckedChanged);
             // 
             // cb_AlwaysPFCalc
             // 
             this.cb_AlwaysPFCalc.AutoSize = true;
-            this.cb_AlwaysPFCalc.Enabled = false;
             this.cb_AlwaysPFCalc.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.cb_AlwaysPFCalc.Location = new System.Drawing.Point(116, 55);
             this.cb_AlwaysPFCalc.Name = "cb_AlwaysPFCalc";
@@ -868,6 +892,75 @@
             this.tabPage_Emulate.Size = new System.Drawing.Size(279, 342);
             this.tabPage_Emulate.TabIndex = 1;
             this.tabPage_Emulate.Text = "設定";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.tbCaribrationRER);
+            this.groupBox7.Controls.Add(this.label21);
+            this.groupBox7.Controls.Add(this.tbCaribrationREL);
+            this.groupBox7.Controls.Add(this.label23);
+            this.groupBox7.Controls.Add(this.btnCribration);
+            this.groupBox7.Location = new System.Drawing.Point(3, 231);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(272, 75);
+            this.groupBox7.TabIndex = 56;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "キャリブレーション";
+            // 
+            // tbCaribrationRER
+            // 
+            this.tbCaribrationRER.Location = new System.Drawing.Point(148, 16);
+            this.tbCaribrationRER.Name = "tbCaribrationRER";
+            this.tbCaribrationRER.Size = new System.Drawing.Size(53, 19);
+            this.tbCaribrationRER.TabIndex = 55;
+            this.tbCaribrationRER.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(7, 19);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(30, 12);
+            this.label21.TabIndex = 52;
+            this.label21.Text = "RE L";
+            // 
+            // tbCaribrationREL
+            // 
+            this.tbCaribrationREL.Location = new System.Drawing.Point(43, 18);
+            this.tbCaribrationREL.Name = "tbCaribrationREL";
+            this.tbCaribrationREL.Size = new System.Drawing.Size(53, 19);
+            this.tbCaribrationREL.TabIndex = 54;
+            this.tbCaribrationREL.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(110, 21);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(32, 12);
+            this.label23.TabIndex = 53;
+            this.label23.Text = "RE R";
+            // 
+            // btnCribration
+            // 
+            this.btnCribration.Location = new System.Drawing.Point(199, 41);
+            this.btnCribration.Name = "btnCribration";
+            this.btnCribration.Size = new System.Drawing.Size(67, 23);
+            this.btnCribration.TabIndex = 51;
+            this.btnCribration.Text = "セット";
+            this.btnCribration.UseVisualStyleBackColor = true;
+            this.btnCribration.Click += new System.EventHandler(this.btnCribration_Click);
+            // 
+            // cb_InDoorMode
+            // 
+            this.cb_InDoorMode.AutoSize = true;
+            this.cb_InDoorMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_InDoorMode.Location = new System.Drawing.Point(154, 316);
+            this.cb_InDoorMode.Name = "cb_InDoorMode";
+            this.cb_InDoorMode.Size = new System.Drawing.Size(96, 20);
+            this.cb_InDoorMode.TabIndex = 50;
+            this.cb_InDoorMode.Text = "屋内モード";
+            this.cb_InDoorMode.UseVisualStyleBackColor = true;
             // 
             // cb_StraghtMode
             // 
@@ -1376,97 +1469,6 @@
             this.rb_LRF_ROSnode.UseVisualStyleBackColor = true;
             this.rb_LRF_ROSnode.CheckedChanged += new System.EventHandler(this.rb_LRF_LAN_CheckedChanged);
             // 
-            // cb_InDoorMode
-            // 
-            this.cb_InDoorMode.AutoSize = true;
-            this.cb_InDoorMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_InDoorMode.Location = new System.Drawing.Point(154, 316);
-            this.cb_InDoorMode.Name = "cb_InDoorMode";
-            this.cb_InDoorMode.Size = new System.Drawing.Size(96, 20);
-            this.cb_InDoorMode.TabIndex = 50;
-            this.cb_InDoorMode.Text = "屋内モード";
-            this.cb_InDoorMode.UseVisualStyleBackColor = true;
-            // 
-            // rb_MoveREandCompus
-            // 
-            this.rb_MoveREandCompus.AutoSize = true;
-            this.rb_MoveREandCompus.Location = new System.Drawing.Point(13, 71);
-            this.rb_MoveREandCompus.Name = "rb_MoveREandCompus";
-            this.rb_MoveREandCompus.Size = new System.Drawing.Size(93, 16);
-            this.rb_MoveREandCompus.TabIndex = 4;
-            this.rb_MoveREandCompus.TabStop = true;
-            this.rb_MoveREandCompus.Text = "R.E. && 地磁気";
-            this.rb_MoveREandCompus.UseVisualStyleBackColor = true;
-            // 
-            // rb_MovePF
-            // 
-            this.rb_MovePF.AutoSize = true;
-            this.rb_MovePF.Location = new System.Drawing.Point(119, 71);
-            this.rb_MovePF.Name = "rb_MovePF";
-            this.rb_MovePF.Size = new System.Drawing.Size(103, 16);
-            this.rb_MovePF.TabIndex = 5;
-            this.rb_MovePF.TabStop = true;
-            this.rb_MovePF.Text = "VR PrticleFilter";
-            this.rb_MovePF.UseVisualStyleBackColor = true;
-            // 
-            // btnCribration
-            // 
-            this.btnCribration.Location = new System.Drawing.Point(199, 41);
-            this.btnCribration.Name = "btnCribration";
-            this.btnCribration.Size = new System.Drawing.Size(67, 23);
-            this.btnCribration.TabIndex = 51;
-            this.btnCribration.Text = "セット";
-            this.btnCribration.UseVisualStyleBackColor = true;
-            this.btnCribration.Click += new System.EventHandler(this.btnCribration_Click);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(7, 19);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(30, 12);
-            this.label21.TabIndex = 52;
-            this.label21.Text = "RE L";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(110, 21);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(32, 12);
-            this.label23.TabIndex = 53;
-            this.label23.Text = "RE R";
-            // 
-            // tbCaribrationREL
-            // 
-            this.tbCaribrationREL.Location = new System.Drawing.Point(43, 18);
-            this.tbCaribrationREL.Name = "tbCaribrationREL";
-            this.tbCaribrationREL.Size = new System.Drawing.Size(53, 19);
-            this.tbCaribrationREL.TabIndex = 54;
-            this.tbCaribrationREL.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // tbCaribrationRER
-            // 
-            this.tbCaribrationRER.Location = new System.Drawing.Point(148, 16);
-            this.tbCaribrationRER.Name = "tbCaribrationRER";
-            this.tbCaribrationRER.Size = new System.Drawing.Size(53, 19);
-            this.tbCaribrationRER.TabIndex = 55;
-            this.tbCaribrationRER.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.tbCaribrationRER);
-            this.groupBox7.Controls.Add(this.label21);
-            this.groupBox7.Controls.Add(this.tbCaribrationREL);
-            this.groupBox7.Controls.Add(this.label23);
-            this.groupBox7.Controls.Add(this.btnCribration);
-            this.groupBox7.Location = new System.Drawing.Point(3, 231);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(272, 75);
-            this.groupBox7.TabIndex = 56;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "キャリブレーション";
-            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1510,6 +1512,8 @@
             this.gbox_Revision.PerformLayout();
             this.tabPage_Emulate.ResumeLayout(false);
             this.tabPage_Emulate.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_AccRatio)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_HdlRatio)).EndInit();
             this.groupBox5.ResumeLayout(false);
@@ -1527,8 +1531,6 @@
             this.groupBox8.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -45,8 +45,9 @@ namespace SCIP_library
                 if (null != stream) return true;
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }

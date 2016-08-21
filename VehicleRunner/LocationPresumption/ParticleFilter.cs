@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 
 namespace LocationPresumption
@@ -145,17 +146,26 @@ namespace LocationPresumption
         {
             double sum = 0;
 
-            // パーティクルをばらまく
-            for (int i = 0; i < Particles.Count; ++i)
+            if (null == LRF_Data)
             {
-                // 散らばらせる
-                MakeParticle(mkp, PtclRange, PtclDirRange, Particles[i].Location);
-
-                // 散らばり％ = w ?
-                // マップデータとLRFのデータを比べる
-                Particles[i].W = Likefood(LRF_Data, MRF.Sense(Particles[i].Location));
-                sum += Particles[i].W;
+                Console.WriteLine("ParticleFilter.cs Localize() : Error! null LrfData");
+                return;
             }
+
+            // パーティクルをばらまく
+            //for (int i = 0; i < Particles.Count; ++i)
+            int numParticles = Particles.Count;
+            Parallel.For(0, numParticles, i =>
+
+                {
+                    // 散らばらせる
+                    MakeParticle(mkp, PtclRange, PtclDirRange, Particles[i].Location);
+
+                    // 散らばり％ = w ?
+                    // マップデータとLRFのデータを比べる
+                    Particles[i].W = Likefood(LRF_Data, MRF.Sense(Particles[i].Location));
+                    sum += Particles[i].W;
+                });
 
             // W順に並べ替え
             Particles.Sort((a, b) => (int)((a.W - b.W)*1000.0));

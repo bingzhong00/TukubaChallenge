@@ -63,6 +63,8 @@
     <Compile Include="GridMap.cs" />
     <Compile Include="KalmanFilter.cs" />
     <Compile Include="LocPreSumpSystem.cs" />
+    <Compile Include="LocPreSumpSystem_Calc.cs" />
+    <Compile Include="LocPreSumpSystem_Draw.cs" />
     <Compile Include="LRF_Ctrl.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleFilter.cs" />

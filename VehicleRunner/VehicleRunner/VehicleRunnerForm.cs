@@ -338,7 +338,7 @@ namespace VehicleRunner
 
                         picbox_LRF.BackColor = Color.Black;
 
-                        scale = 5.0f;
+                        scale = 4.0f;
 
                         // EBSに反応があればズーム
                         //scale += ((float)CersioCt.BrainCtrl.EBS_CautionLv * 3.0f / (float)Brain.EBS_CautionLvMax);
@@ -563,7 +563,7 @@ namespace VehicleRunner
             // ロータリーエンコーダ(Plot座標)情報
             if (CersioCt.bhwREPlot)
             {
-                // 自己位置推定に渡す
+                // 自己位置に REPlot情報を渡す
                 LocSys.Input_RotaryEncoder(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwREDir);
 
                 // 受信情報を画面に表示
@@ -575,6 +575,12 @@ namespace VehicleRunner
             // ロータリーエンコーダ（タイヤ回転数）情報
             if (CersioCt.bhwRE)
             {
+                if (CersioCt.bhwCompass)
+                {
+                    // 自己位置に情報を渡す
+                    LocSys.Input_RotaryEncoder_Pulse(CersioCt.hwRErotL, CersioCt.hwRErotR, CersioCt.hwCompass);
+                }
+
                 lbl_RErotR.Text = CersioCt.hwRErotR.ToString("f1");
                 lbl_RErotL.Text = CersioCt.hwRErotL.ToString("f1");
             }
@@ -727,11 +733,13 @@ namespace VehicleRunner
                             }
 
                             // 一定時間で更新
+                            /*
                             if ((updateMainCnt % 30) == 0 && !cb_DontAlwaysRivision.Checked)
                             {
                                 Brain.addLogMsg += "LocRivision:Timer(時間ごとの位置補正)\n";
                                 bRevisionIssue = true;
                             }
+                            */
 
                             if (bRevisionIssue)
                             {
@@ -1032,6 +1040,8 @@ namespace VehicleRunner
             LocSys.Setting.bMoveSrcRePlot = rb_MoveREPlot.Checked;
             LocSys.Setting.bMoveSrcGPS  = rb_MoveGPS.Checked;
             LocSys.Setting.bMoveSrcSVO  = rb_MoveSVO.Checked;
+            LocSys.Setting.bMoveSrcReCompus = rb_MoveREandCompus.Checked;
+            LocSys.Setting.bMoveSrcPF = rb_MovePF.Checked;
         }
 
         /// <summary>
@@ -1239,6 +1249,11 @@ namespace VehicleRunner
             // ※比率計算
 
             // ※コマンド送信
+        }
+
+        private void rb_UsePF_Revision_CheckedChanged(object sender, EventArgs e)
+        {
+            cb_AlwaysPFCalc.Enabled = rb_UsePF_Revision.Checked;
         }
     }
 }

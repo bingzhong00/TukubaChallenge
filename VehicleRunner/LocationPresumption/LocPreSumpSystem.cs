@@ -12,7 +12,6 @@ using SCIP_library;
 using Axiom.Math;
 
 /* Todo
- * ・ParticleFilter演算、描画系　ソースをわける
  * 
  * 
  */
@@ -28,7 +27,7 @@ namespace LocationPresumption
     /// <summary>
     /// 自己位置推定 マップ座標変換計算　クラス
     /// </summary>
-    public class LocPreSumpSystem
+    public partial class LocPreSumpSystem
     {
         // LRF管理
         public LRF_Ctrl LRF = new LRF_Ctrl();
@@ -41,7 +40,7 @@ namespace LocationPresumption
         public WorldMap worldMap;
         /// <summary>表示用　エリアBMP</summary>
         public Bitmap AreaBmp = new Bitmap(1,1);
-        private bool bAreaMapUpdateReqest = true;
+        //private bool bAreaMapUpdateReqest = true;
 
         /// <summary>自己位置情報　表示BMP</summary>
         public Bitmap AreaOverlayBmp;
@@ -59,8 +58,8 @@ namespace LocationPresumption
         public MarkPoint E1;
         /// <summary>REplot差分計算</summary>
         public MarkPoint oldE1;
-        /// <summary>REplot座標基点</summary>
-        public MarkPoint E1_Pivot;
+        /// <summary>RE pulse & Compus (マーカー色：)</summary>
+        public MarkPoint E2;
 
         /// <summary>vSlam or Amcl 自己位置推定結果 位置  (マーカー色：シアン)</summary>
         public MarkPoint V1;
@@ -74,26 +73,6 @@ namespace LocationPresumption
         public MarkPoint G1;
         /// <summaryGPS差分計算</summary>
         public MarkPoint oldG1;
-
-        /// <summary>
-        /// ローパスフィルター
-        /// </summary>
-        private KalmanFilter.SimpleLPF lpfV1X = new KalmanFilter.SimpleLPF();
-        private KalmanFilter.SimpleLPF lpfV1Y = new KalmanFilter.SimpleLPF();
-        private KalmanFilter.SimpleLPF lpfV1Theta = new KalmanFilter.SimpleLPF();
-
-
-        // REの絶対座標(差分計算用)
-        /*
-        double nowREX;
-        double nowREY;
-        double nowRETheta;
-        */
-
-        // 左回転が+　右が-
-        public const int ParticleSize = 100;        // パーティクル数
-        private ParticleFilter ParticleFilter;              // サンプリング数、パーティクルのレンジ
-        private List<Particle> Particles;           // パーティクルリスト
 
         // ログ
         List<MarkPoint> R1Log;
@@ -151,6 +130,16 @@ namespace LocationPresumption
             /// ＧＰＳ座標
             /// </summary>
             public bool bMoveSrcGPS;
+
+            /// <summary>
+            /// RE Pulse & 地磁気座標
+            /// </summary>
+            public bool bMoveSrcReCompus;
+
+            /// <summary>
+            /// RE Pulse & PF座標
+            /// </summary>
+            public bool bMoveSrcPF;
 
             // 向き
 
@@ -238,7 +227,7 @@ namespace LocationPresumption
 
             worldMap.UpdateAreaCenter(stWldX, stWldY);
             AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
-            bAreaMapUpdateReqest = false;
+            //bAreaMapUpdateReqest = false;
 
             MRF.SetMap(worldMap.AreaGridMap);
 
@@ -247,7 +236,8 @@ namespace LocationPresumption
 
             E1 = new MarkPoint(stWldX, stWldY, stDir);        // R.Encoderの位置
             oldE1 = new MarkPoint(stWldX, stWldY, stDir);     // 
-            E1_Pivot = new MarkPoint(stWldX, stWldY, stDir);
+
+            E2 = new MarkPoint(stWldX, stWldY, stDir);        // R.E Pluse & Compus の位置
 
             V1 = new MarkPoint(stWldX, stWldY, stDir);        // 推定位置ロボット
             C1 = new MarkPoint(0, 0, stDir);
@@ -259,7 +249,7 @@ namespace LocationPresumption
                 // サンプル数(ParticleSizeと同じで、すべてのパーティクルを対象とする)
                 // LRFの有効距離を半径に変換(/2.0)、20%の距離で散らばる
                 // +-5度の範囲
-                ParticleFilter = new ParticleFilter(ParticleSize*3/4, (((LRF_Ctrl.LRFmaxRange_mm / 2.0) * 0.20) / MapToRealScale), 5.0 );        // サンプリング数、パーティクルのレンジ
+                ParticleFilter = new ParticleFilter(ParticleSize, (((LRF_Ctrl.LRFmaxRange_mm / 2.0) * 0.20) / MapToRealScale), 30.0 );        // サンプリング数、パーティクルのレンジ
 
                 Particles = new List<Particle>();
                 for (int i = 0; i < ParticleSize; ++i)
@@ -303,7 +293,7 @@ namespace LocationPresumption
                     AreaBmp = worldMap.AreaGridMap.UpdateBitmap();
                 }
 
-                bAreaMapUpdateReqest = true;
+                //bAreaMapUpdateReqest = true;
                 MRF.SetMap(worldMap.AreaGridMap);
             }
         }
@@ -320,11 +310,6 @@ namespace LocationPresumption
             // 単位変換
             reX = reX / MapToRealScale;
             reY = reY / MapToRealScale;
-
-            // ※リセット時点での向きで回転計算し
-            // スタート位置を加算することで、マップ上の座標に変換する
-            // E1.X = E1_Pivot.X + (E1_Pivot.Theta * (reX, reY)).X
-            // E1.Y = E1_Pivot.Y + (E1_Pivot.Theta * (reX, reY)).Y
 
             E1.X = reX;
             E1.Y = reY;
@@ -373,6 +358,7 @@ namespace LocationPresumption
         {
             if (!bEnableGPS) return false;
 
+            // MapのX,Y座標に変換
             double ido = (int)landY;
             double kdo = (int)landX;
 
@@ -395,6 +381,7 @@ namespace LocationPresumption
         {
             if (!bEnableGPS) return false;
 
+            // MapのX,Y座標に変換
             double ido = (int)landY;
             double kdo = (int)landX;
 
@@ -409,6 +396,37 @@ namespace LocationPresumption
             G1.Y = mapY + startPosGPS_MapY;
             G1.Theta = 0.0;
             bEnableDirGPS = false;
+
+            return true;
+        }
+
+
+        double oldRePulseR = 0.0;
+        /// <summary>
+        /// R.Eパルス値と向きから座標計算
+        /// </summary>
+        /// <param name="reL"></param>
+        /// <param name="reR"></param>
+        /// <param name="reTheta"></param>
+        /// <returns></returns>
+        public bool Input_RotaryEncoder_Pulse(double reL, double reR, double reTheta)
+        {
+            const double tiyeSize = 140.0;  // タイヤ直径 [mm]
+            const double OnePuls = 250.0;   // 一周のパルス数
+
+            // 移動量算出
+            double moveLength = ((double)(reR - oldRePulseR) / OnePuls * (Math.PI * tiyeSize));
+
+            oldRePulseR = reR;
+
+            // 向きをもとに座標に変換
+            double movX = 0.0;
+            double movY = -moveLength;
+            double pi = reTheta * Math.PI / 180.0;
+
+            E2.X += (movX * Math.Cos(pi) - movY * Math.Sin(pi)) / MapToRealScale;
+            E2.Y += (movX * Math.Sin(pi) + movY * Math.Cos(pi)) / MapToRealScale;
+            E2.Theta = reTheta;
 
             return true;
         }
@@ -437,114 +455,6 @@ namespace LocationPresumption
         }
 
 
-
-        // 処理速度計測カウンタ
-        public static System.Diagnostics.Stopwatch swCNT_Update = new System.Diagnostics.Stopwatch();
-        public static System.Diagnostics.Stopwatch swCNT_MRF = new System.Diagnostics.Stopwatch();
-
-
-        /// <summary>
-        /// 任意座標でのＰＦ補正
-        /// </summary>
-        /// <param name="numPF"></param>
-        public void CalcLocalize(MarkPoint mkp, bool useLowFilter, int numPF = 1)
-        {
-            // パーティクルフィルター演算
-
-            if (useLowFilter)
-            {
-                KalmanFilter.SimpleLPF lpfX = null;
-                KalmanFilter.SimpleLPF lpfY = null;
-                KalmanFilter.SimpleLPF lpTheta = null;
-
-                for (int i = 0; i < numPF; i++)
-                {
-                    MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(mkp.X), worldMap.GetAreaY(mkp.Y), mkp.Theta);
-
-                    ParticleFilter.Localize(LRF.getData(), MRF, locMkp, Particles);
-
-                    locMkp.X = worldMap.GetWorldX(locMkp.X);
-                    locMkp.Y = worldMap.GetWorldY(locMkp.Y);
-
-                    // 結果にローパスフィルターをかける
-                    if (null == lpfX)
-                    {
-                        // 最初の値を初期値にする
-                        lpfX = new KalmanFilter.SimpleLPF(locMkp.X);
-                        lpfY = new KalmanFilter.SimpleLPF(locMkp.Y);
-                        lpTheta = new KalmanFilter.SimpleLPF(locMkp.Theta);
-                    }
-                    else
-                    {
-                        lpfX.update(locMkp.X);
-                        lpfY.update(locMkp.Y);
-                        lpTheta.update(locMkp.Theta);
-                    }
-                }
-
-                if (null != lpfX)
-                {
-                    mkp.X = lpfX.value();
-                    mkp.Y = lpfY.value();
-                    mkp.Theta = lpTheta.value();
-                }
-            }
-            else
-            {
-                ParticleFilter.Localize(LRF.getData(), MRF, mkp, Particles);
-            }
-        }
-
-        /// <summary>
-        /// PF自己位置計算 継続
-        /// </summary>
-        /// <param name="mkp"></param>
-        /// <param name="useLowFilter"></param>
-        /// <param name="numPF"></param>
-        public void ParticleFilterLocalize(bool useLPF)
-        {
-            MarkPoint locMkp = new MarkPoint(worldMap.GetAreaX(V1.X), worldMap.GetAreaY(V1.Y), V1.Theta);
-
-            // パーティクルフィルター演算
-            ParticleFilter.Localize(LRF.getData(), MRF, locMkp, Particles);
-
-            if (useLPF)
-            {
-                // 結果にローパスフィルターをかける
-                V1.X = lpfV1X.update(worldMap.GetWorldX(locMkp.X));
-                V1.Y = lpfV1Y.update(worldMap.GetWorldY(locMkp.Y));
-                V1.Theta = lpfV1Theta.update(locMkp.Theta);
-            }
-            else
-            {
-                V1.X = worldMap.GetWorldX(locMkp.X);
-                V1.Y = worldMap.GetWorldY(locMkp.Y);
-                V1.Theta = locMkp.Theta;
-            }
-        }
-
-        /// <summary>
-        /// 自己位置推定 更新
-        /// </summary>
-        /// <param name="useAlwaysPF">毎回パーティクルフィルターを計算する</param>
-        /// <returns>true...補正した, false..補正不要</returns>
-        public bool ParticleFilter_Update()
-        {
-            bool bResult = false;   // 補正したか？
-
-            {
-                // 処理時間計測
-                swCNT_Update.Start();
-
-                // PF演算
-                ParticleFilterLocalize(true);
-
-                // 処理時間計測完了
-                swCNT_Update.Stop();
-            }
-
-            return bResult;
-        }
 
         /// <summary>
         /// マップ座標更新
@@ -584,6 +494,17 @@ namespace LocationPresumption
             else if (Setting.bMoveSrcSVO)
             {
                 // Semi-direct Monocular Visual Odometry
+                // ※未実装
+            }
+            else if (Setting.bMoveSrcReCompus)
+            {
+                // RE Pulse値(移動量) & Compusの向きでの座標
+                R1.X = E2.X;
+                R1.Y = E2.Y;
+            }
+            else if (Setting.bMoveSrcPF)
+            {
+                //  RE Pulse値(移動量) & PFの向きでの座標
                 // ※未実装
             }
 
@@ -737,7 +658,7 @@ namespace LocationPresumption
                     ResetLPF_V1(rev);
 
                     // 自己位置推定演算 10回
-                    CalcLocalize(V1, true, 10);
+                    CalcLocalize(V1, true,10);
 
                     // PF
                     revisionMsg += "LocRevision: usePF  V1.X" + V1.X.ToString("f2") + "/V1.Y " + V1.Y.ToString("f2") + "/V1.Dir " + V1.Theta.ToString("f2") + "\n";
@@ -745,6 +666,7 @@ namespace LocationPresumption
             }
             else
             {
+                // V1の値をそのまま使う
                 revisionMsg += "LocRevision: V1toR1 V1.X" + V1.X.ToString("f2") + "/ V1.Y " + V1.Y.ToString("f2") + "/ V1.Dir " + V1.Theta.ToString("f2") + "\n";
             }
 
@@ -816,278 +738,6 @@ namespace LocationPresumption
             return worldMap.GetAreaMapInfo(mkp.X, mkp.Y);
         }
 
-        // --------------------------------------------------------------------------------------------------------------------------------
-        // 描画系
-        #region "LogMap描画"
-        // 処理カウンタ
-        public System.Diagnostics.Stopwatch swCNT_Draw = new System.Diagnostics.Stopwatch();
-
-        int locMapDrawCnt = 0;
-
-        /// <summary>
-        /// 自己位置情報表示 Bmp更新
-        /// </summary>
-        public void UpdateLocalizeBitmap( bool bParticle,bool bLineTrace )
-        {
-            swCNT_Draw.Reset();
-            swCNT_Draw.Start();
-
-            lock (AreaBmp)
-            {
-                Graphics g = Graphics.FromImage(AreaOverlayBmp);
-
-                // Overlayのスケール
-                // エリア座標からオーバーレイエリアへの変換
-                float olScale = (float)AreaOverlayBmp.Width / (float)AreaBmp.Width;
-
-                // エリアマップ描画
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                g.DrawImage(AreaBmp, 0, 0, AreaOverlayBmp.Width, AreaOverlayBmp.Height);
-
-                // パーティクル描画
-                int size = 10;
-                if (bParticle)
-                {
-                    for (int i = 0; i < Particles.Count / 4; i++)    // 少なめ(1/4)描画
-                                                                     //for (int i = 0; i < Particles.Count; i++)
-                    {
-                        var p = Particles[i];
-                        DrawMaker_Area(g, olScale, p.Location, Brushes.Blue, 5);
-                    }
-                }
-
-                // リアルタイム軌跡描画
-                if (bLineTrace)
-                {
-                    DrawMakerLog_Area(g, olScale, R1Log, Color.Red.R, Color.Red.G, Color.Red.B);
-                    DrawMakerLog_Area(g, olScale, V1Log, Color.Cyan.R, Color.Cyan.G, Color.Cyan.B);
-                    DrawMakerLog_Area(g, olScale, E1Log, Color.Purple.R, Color.Purple.G, Color.Purple.B);
-                    DrawMakerLog_Area(g, olScale, G1Log, Color.Green.R, Color.Green.G, Color.Green.B);
-                }
-
-                // 描画順を常にかえて、重なっても見えるようにする
-                for (int i = 0; i < 4; i++)
-                {
-                    switch ((i + locMapDrawCnt) % 4)
-                    {
-                        case 0:
-                            // RE想定ロボット位置描画
-                            DrawMaker_Area(g, olScale, E1, Brushes.Purple, size);
-                            break;
-                        case 1:
-                            // PF想定ロボット位置描画
-                            DrawMaker_Area(g, olScale, V1, Brushes.Cyan, size);
-                            break;
-                        case 2:
-                            // 実ロボット想定位置描画
-                            DrawMaker_Area(g, olScale, R1, Brushes.Red, size);
-                            break;
-                        case 3:
-                            // GPS位置描画
-                            if (bEnableDirGPS)
-                            {
-                                DrawMaker_Area(g, olScale, G1, Brushes.Green, size);
-                            }
-                            else
-                            {
-                                DrawMakerND_Area(g, olScale, G1, Brushes.Green, size);
-                            }
-                            break;
-                    }
-                }
-
-                g.Dispose();
-            }
-
-            locMapDrawCnt++;
-
-            swCNT_Draw.Stop();
-        }
-
-        /// <summary>
-        /// マーカー描画
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="robot"></param>
-        /// <param name="brush"></param>
-        /// <param name="size"></param>
-        private void DrawMaker_Area(Graphics g, float fScale, MarkPoint robot, Brush brush, int size )
-        {
-            double mkX = worldMap.GetAreaX(robot.X) * fScale;
-            double mkY = worldMap.GetAreaY(robot.Y) * fScale;
-            double mkDir = robot.Theta - 90.0;
-
-            var P1 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
-            var P2 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir - 150) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir - 150) * Math.PI / 180.0)));
-            var P3 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 150) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
-
-            g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
-        }
-
-        private void DrawMakerND_Area(Graphics g, float fScale, MarkPoint robot, Brush brush, int size)
-        {
-            double mkX = worldMap.GetAreaX(robot.X) * fScale;
-            double mkY = worldMap.GetAreaY(robot.Y) * fScale;
-            double mkDir = 0.0;
-
-            size /= 2;
-            var P1 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
-            var P2 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 90) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 90) * Math.PI / 180.0)));
-            var P3 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 180) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 180) * Math.PI / 180.0)));
-            var P4 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 270) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 270) * Math.PI / 180.0)));
-
-            g.FillPolygon(brush, new PointF[] { P1, P2, P3, P4 });
-        }
-
-        /// <summary>
-        /// ログ軌跡描画　ローカルエリアに変換
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="fScale"></param>
-        /// <param name="mkLog"></param>
-        /// <param name="colR"></param>
-        /// <param name="colG"></param>
-        /// <param name="colB"></param>
-        private void DrawMakerLog_Area(Graphics g, float fScale, List<MarkPoint> mkLog, byte colR, byte colG, byte colB)
-        {
-            if (mkLog.Count < 2) return;
-
-            int baseIdx = 0;
-            int drawNum = mkLog.Count;
-
-            if (drawNum > LogLine_maxDrawNum)
-            {
-                baseIdx = (mkLog.Count-1) - LogLine_maxDrawNum;
-                drawNum = LogLine_maxDrawNum;
-            }
-
-            Point[] ps = new Point[drawNum];
-
-            for (int i = 0; i < drawNum; i++)
-            {
-                ps[i].X = (int)(worldMap.GetAreaX((int)mkLog[baseIdx+i].X) * fScale);
-                ps[i].Y = (int)(worldMap.GetAreaY((int)mkLog[baseIdx+i].Y) * fScale);
-            }
-
-            //折れ線を引く
-            g.DrawLines(new Pen(Color.FromArgb(colR,colG,colB)), ps);
-        }
-
-        /// <summary>
-        /// ログ軌跡描画　ワールド
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="mkLog"></param>
-        /// <param name="colR"></param>
-        /// <param name="colG"></param>
-        /// <param name="colB"></param>
-        private void DrawMakerLogLine_World(Graphics g, List<MarkPoint> mkLog, byte colR, byte colG, byte colB)
-        {
-            Point[] ps = new Point[mkLog.Count];
-
-            if (mkLog.Count <= 1) return;
-
-            for (int i = 0; i < mkLog.Count; i++)
-            {
-                ps[i].X = (int)mkLog[i].X;
-                ps[i].Y = (int)mkLog[i].Y;
-            }
-
-            //折れ線を引く
-            g.DrawLines(new Pen(Color.FromArgb(colR, colG, colB)), ps);
-        }
-
-        /// <summary>
-        /// ログ保存用　ワールドマップへの軌跡画像生成
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap MakeMakerLogBmp( bool bPointOn, MarkPoint marker )
-        {
-            if (R1Log.Count <= 0) return null;  // データなし
-
-            Bitmap logBmp = new Bitmap(worldMap.mapBmp);
-            Graphics g = Graphics.FromImage(logBmp);
-
-            // 軌跡描画
-            // 自己位置
-            DrawMakerLogLine_World(g, R1Log, Color.Red.R, Color.Red.G, Color.Red.B);
-            // パーティクルフィルター 自己位置推定
-            DrawMakerLogLine_World(g, V1Log, Color.Cyan.R, Color.Cyan.G, Color.Cyan.B);
-            // ロータリーエンコーダ座標
-            DrawMakerLogLine_World(g, E1Log, Color.Purple.R, Color.Purple.G, Color.Purple.B);
-            // GPS座標
-            DrawMakerLogLine_World(g, G1Log, Color.Green.R, Color.Green.G, Color.Green.B);
-
-            // 最終地点にマーカ表示
-            if (R1Log.Count > 0)
-            {
-                DrawMaker_Area(g, 1.0f, R1Log[R1Log.Count - 1], Brushes.Red, 4);
-            }
-            if (V1Log.Count > 0)
-            {
-                DrawMaker_Area(g, 1.0f, V1Log[V1Log.Count - 1], Brushes.Cyan, 4);
-            }
-            if (E1Log.Count > 0)
-            {
-                DrawMaker_Area(g, 1.0f, E1Log[E1Log.Count - 1], Brushes.Purple, 4);
-            }
-            if (G1Log.Count > 0)
-            {
-                DrawMaker_Area(g, 1.0f, G1Log[G1Log.Count - 1], Brushes.Green, 4);
-            }
-            if (null != marker)
-            {
-                DrawMaker_Area(g, 1.0f, marker, Brushes.GreenYellow, 4);
-            }
-
-            // 一定期間ごとの位置と向き
-            if (bPointOn)
-            {
-                // 自己位置
-                //foreach (var p in R1Log)
-                for (int i = 0; i < R1Log.Count; i++)
-                {
-                    if ((i % 30) != 0) continue;
-                    DrawMaker_Area(g, 1.0f, R1Log[i], Brushes.Red, 4);
-                }
-
-                
-                // LRF パーティクルフィルター
-                //foreach (var p in V1Log)
-                for( int i=0; i<V1Log.Count; i++ )
-                {
-                    if ((i % 30) != 0) continue;
-                    DrawMaker_Area(g, 1.0f, V1Log[i], Brushes.Cyan, 3);
-                }
-                
-
-                // ロータリーエンコーダ座標
-                //foreach (var p in E1Log)
-                for (int i = 0; i < E1Log.Count; i++)
-                {
-                    if ((i % 30) != 0) continue;
-                    DrawMaker_Area(g, 1.0f, E1Log[i], Brushes.Purple, 4);
-                }
-            }
-
-            g.Dispose();
-            return logBmp;
-        }
-        #endregion
 
     }
 }
