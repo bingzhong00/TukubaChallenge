@@ -576,16 +576,20 @@ namespace CersioIO
                                 double ResiveLandY; // 経度
                                 string[] splStr = rsvCmd[i].Split(',');
 
-                                // splStr[0] "A3"
-                                // ミリ秒取得
-                                double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
+                                // 2個データが来る時がある
+                                if (splStr.Length >= 3)
+                                {
+                                    // splStr[0] "A3"
+                                    // ミリ秒取得
+                                    double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
 
-                                double.TryParse(splStr[2], out ResiveLandX);   // GPS値
-                                double.TryParse(splStr[3], out ResiveLandY);
-                                hwGPS_LandX = ResiveLandX;
-                                hwGPS_LandY = ResiveLandY;
-                                bhwGPS = true;
-                                bhwUsbGPS = false;
+                                    double.TryParse(splStr[2], out ResiveLandX);   // GPS値
+                                    double.TryParse(splStr[3], out ResiveLandY);
+                                    hwGPS_LandX = ResiveLandX;
+                                    hwGPS_LandY = ResiveLandY;
+                                    bhwGPS = true;
+                                    bhwUsbGPS = false;
+                                }
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A4,")
                             {
