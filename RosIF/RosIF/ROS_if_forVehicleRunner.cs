@@ -96,9 +96,9 @@ namespace RosIF
         /// <param name="dt"></param>
         private void cbSubScriber_URG(RosSharp.sensor_msgs.LaserScan dt)
         {
-            if (dt.ranges.Count <= urg_scan.Length)
+            if (dt.ranges.Count-1 <= urg_scan.Length)
             {
-                for (int i = 0; i < dt.ranges.Count; i++)
+                for (int i = 0; i < dt.ranges.Count-1; i++)
                 {
                     urg_scan[i] = dt.ranges[i];
                 }
@@ -206,7 +206,7 @@ namespace RosIF
                 subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
-                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
+                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
 
                 // Publisher生成
                 pubRE = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/re").Result;

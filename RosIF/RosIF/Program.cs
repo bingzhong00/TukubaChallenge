@@ -36,7 +36,7 @@ namespace RosIF
 
             Console.WriteLine("Connect VehircleRunner IPC..");
 
-            IpcClient ipc = new IpcClient();
+            IpcClient ipc = null;// new IpcClient();
             ROS_if_forVehicleRunner rosifVR = new ROS_if_forVehicleRunner();
 
 
@@ -66,7 +66,7 @@ namespace RosIF
             {
                 try
                 {
-                    if (null != ipc.RemoteObject)
+                    if (null != ipc && null != ipc.RemoteObject)
                     {
                         rosifVR.rePlotX = ipc.RemoteObject.rePlotX;
                         rosifVR.rePlotY = ipc.RemoteObject.rePlotY;
@@ -139,6 +139,15 @@ namespace RosIF
                     Console.WriteLine("Subscribe ----------- ");
                     Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
                     //Console.WriteLine("hslamPlotX:" + rosifVR.hslamPlotX.ToString("f2") + "/ hslamPlotY:" + rosifVR.hslamPlotY.ToString("f2") + "/ hslamAng:" + rosifVR.hslamAng.ToString("f2"));
+
+                    {
+                        string urgStr = "";
+                        for (int i = 0; i < 8; i++)
+                        {
+                            urgStr += rosifVR.urg_scan[(1080 * i / 8)].ToString("f2") + ",";
+                        }
+                        Console.WriteLine("urg:" + urgStr );
+                    }
                     Console.WriteLine("");
 
                     Console.WriteLine("Publish ------------- ");
