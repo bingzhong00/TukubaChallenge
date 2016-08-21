@@ -25,22 +25,31 @@ namespace CersioSim
 
         public System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
+        public string listenIP = "";
+        public int listenPort = 0;
+
+        public SCIPsim(string ipAddr = "127.0.0.10", int ipPort = 10940)
+        {
+            listenIP = ipAddr;
+            listenPort = ipPort;
+        }
+
         /// <summary>
         /// Open 通信要求受付(非同期)
         /// </summary>
         /// <param name="ipAddr">IPアドレス</param>
         /// <param name="ipPort">ポート</param>
         /// <returns></returns>
-        public async Task<bool>Open(string ipAddr = "127.0.0.10", int ipPort = 10940)
+        public async Task<bool>Open()
         {
             sw.Start();
 
             //ListenするIPアドレス
-            System.Net.IPAddress ipAdd = System.Net.IPAddress.Parse(ipAddr);
+            System.Net.IPAddress ipAdd = System.Net.IPAddress.Parse(listenIP);
 
             //TcpListenerオブジェクトを作成する
             listener =
-                new System.Net.Sockets.TcpListener(ipAdd, ipPort);
+                new System.Net.Sockets.TcpListener(ipAdd, listenPort);
 
             //Listenを開始する
             listener.Start();

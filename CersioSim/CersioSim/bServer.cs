@@ -65,12 +65,21 @@ namespace CersioSim
 
         public System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
-        public async Task<bool>Open(string ipAddr = "127.0.0.1", int ipPort = 50001)
+        public string listenIP = "";
+        public int listenPort = 0;
+
+        public bServer(string ipAddr = "127.0.0.1", int ipPort = 50001)
+        {
+            listenIP = ipAddr;
+            listenPort = ipPort;
+        }
+
+        public async Task<bool>Open()
         {
             sw.Start();
 
             //ListenするIPアドレス
-            System.Net.IPAddress ipAdd = System.Net.IPAddress.Parse(ipAddr);
+            System.Net.IPAddress ipAdd = System.Net.IPAddress.Parse(listenIP);
 
             //ホスト名からIPアドレスを取得する時は、次のようにする
             //string host = "localhost";
@@ -82,7 +91,7 @@ namespace CersioSim
 
             //TcpListenerオブジェクトを作成する
             listener =
-                new System.Net.Sockets.TcpListener(ipAdd, ipPort);
+                new System.Net.Sockets.TcpListener(ipAdd, listenPort);
 
             //Listenを開始する
             listener.Start();
@@ -226,7 +235,7 @@ namespace CersioSim
                 {
                     // REパルス数
                     // A1,ms,R,L
-                    //sendStr += string.Format("A1,{0},{1},{2}$", nowMs, senReR, senReL);
+                    sendStr += string.Format("A1,{0},{1},{2}$", nowMs, senReR, senReL);
                 }
                 else if (commandStr == "A2")
                 {

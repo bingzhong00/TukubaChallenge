@@ -77,6 +77,10 @@
             this.lbl_PosFL = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.cb_LRFForm = new System.Windows.Forms.CheckBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.lbl_bServerIP = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.lbl_URGIP = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarScale)).BeginInit();
@@ -174,7 +178,7 @@
             // 
             this.tBarScale.Location = new System.Drawing.Point(51, 498);
             this.tBarScale.Name = "tBarScale";
-            this.tBarScale.Size = new System.Drawing.Size(299, 45);
+            this.tBarScale.Size = new System.Drawing.Size(186, 45);
             this.tBarScale.TabIndex = 11;
             this.tBarScale.Scroll += new System.EventHandler(this.tBarScale_Scroll);
             // 
@@ -190,7 +194,7 @@
             // lbl_ScaleVal
             // 
             this.lbl_ScaleVal.AutoSize = true;
-            this.lbl_ScaleVal.Location = new System.Drawing.Point(357, 508);
+            this.lbl_ScaleVal.Location = new System.Drawing.Point(262, 508);
             this.lbl_ScaleVal.Name = "lbl_ScaleVal";
             this.lbl_ScaleVal.Size = new System.Drawing.Size(50, 12);
             this.lbl_ScaleVal.TabIndex = 13;
@@ -201,7 +205,7 @@
             this.cb_TraceView.AutoSize = true;
             this.cb_TraceView.Checked = true;
             this.cb_TraceView.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_TraceView.Location = new System.Drawing.Point(472, 504);
+            this.cb_TraceView.Location = new System.Drawing.Point(368, 504);
             this.cb_TraceView.Name = "cb_TraceView";
             this.cb_TraceView.Size = new System.Drawing.Size(73, 16);
             this.cb_TraceView.TabIndex = 14;
@@ -552,7 +556,7 @@
             // cb_LRFForm
             // 
             this.cb_LRFForm.AutoSize = true;
-            this.cb_LRFForm.Location = new System.Drawing.Point(577, 504);
+            this.cb_LRFForm.Location = new System.Drawing.Point(464, 504);
             this.cb_LRFForm.Name = "cb_LRFForm";
             this.cb_LRFForm.Size = new System.Drawing.Size(75, 16);
             this.cb_LRFForm.TabIndex = 16;
@@ -560,11 +564,51 @@
             this.cb_LRFForm.UseVisualStyleBackColor = true;
             this.cb_LRFForm.CheckedChanged += new System.EventHandler(this.cb_LRFForm_CheckedChanged);
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(660, 498);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(82, 12);
+            this.label15.TabIndex = 17;
+            this.label15.Text = "bServer sim IP:";
+            // 
+            // lbl_bServerIP
+            // 
+            this.lbl_bServerIP.AutoSize = true;
+            this.lbl_bServerIP.Location = new System.Drawing.Point(748, 498);
+            this.lbl_bServerIP.Name = "lbl_bServerIP";
+            this.lbl_bServerIP.Size = new System.Drawing.Size(41, 12);
+            this.lbl_bServerIP.TabIndex = 18;
+            this.lbl_bServerIP.Text = "label16";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(675, 522);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(67, 12);
+            this.label17.TabIndex = 19;
+            this.label17.Text = "URG sim IP:";
+            // 
+            // lbl_URGIP
+            // 
+            this.lbl_URGIP.AutoSize = true;
+            this.lbl_URGIP.Location = new System.Drawing.Point(748, 522);
+            this.lbl_URGIP.Name = "lbl_URGIP";
+            this.lbl_URGIP.Size = new System.Drawing.Size(41, 12);
+            this.lbl_URGIP.TabIndex = 20;
+            this.lbl_URGIP.Text = "label18";
+            // 
             // CersioSimForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(895, 543);
+            this.Controls.Add(this.lbl_URGIP);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.lbl_bServerIP);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.cb_LRFForm);
             this.Controls.Add(this.lbl_Speed);
             this.Controls.Add(this.tabControl1);
@@ -647,6 +691,10 @@
         private System.Windows.Forms.Label lbl_PosFL;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.CheckBox cb_LRFForm;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label lbl_bServerIP;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lbl_URGIP;
     }
 }
 

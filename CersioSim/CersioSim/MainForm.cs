@@ -84,7 +84,12 @@ namespace CersioSim
                 slamForm.Show();
             }
 
-            initAsync();
+            // IP,Port表示
+            lbl_bServerIP.Text = bSrv.listenIP + " : " + bSrv.listenPort.ToString();
+            lbl_URGIP.Text = UrgSim.listenIP + " : " + UrgSim.listenPort.ToString();
+
+            initAsync_bServer();
+            initAsync_URG();
 
             tmr_Update.Enabled = true;
         }
@@ -92,13 +97,16 @@ namespace CersioSim
         /// <summary>
         /// 非同期初期化タスク
         /// </summary>
-        private async void initAsync()
+        private async void initAsync_bServer()
         {
             // bServer Listen Open
             await bSrv.Open();
+        }
 
+        private async void initAsync_URG()
+        {
             // URG Listen
-            await UrgSim.Open("192.168.1.4");
+            await UrgSim.Open();
         }
 
         /// <summary>
@@ -264,7 +272,7 @@ namespace CersioSim
 
                     // 座標系を実機にあわせる
                     bSrv.senRePlotY_Out = -bSrv.senRePlotY_Out;
-                    bSrv.senReAng_Out = resAng;
+                    bSrv.senReAng_Out = -resAng;
                 }
 
                 // 電子コンパス
