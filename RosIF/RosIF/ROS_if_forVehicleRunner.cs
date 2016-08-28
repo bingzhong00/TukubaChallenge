@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RosSharp;
 using RosSharp.geometry_msgs;
+using RosSharp.rosgraph_msgs;
 
 namespace RosIF
 {
@@ -42,15 +43,19 @@ namespace RosIF
         public double[] urg_scan;
 
         public double[] urg_scan_send;
+        public double[] urg_intensities_send;
 
+        public DateTime rosClock = DateTime.Now;
 
-        //SubScriber
+        // SubScriber ---------------------------------
         // V-Slam
         RosSharp.Topic.Subscriber<RosSharp.visualization_msgs.Marker> subVSlam;
         // hokuyo-node
         RosSharp.Topic.Subscriber<RosSharp.sensor_msgs.LaserScan> subUrg;
 
-        // Publisher
+        RosSharp.Topic.Subscriber<RosSharp.rosgraph_msgs.Clock> subClock;
+
+        // Publisher ---------------------------------
         // ロータリーエンコーダ　パルス値
         RosSharp.Topic.Publisher<RosSharp.geometry_msgs.Twist> pubRE;
         // ロータリーエンコーダ　プロット値
@@ -62,15 +67,19 @@ namespace RosIF
         // hokuyo-node
         RosSharp.Topic.Publisher<RosSharp.sensor_msgs.LaserScan> pubUrg;
 
+        RosSharp.Topic.Publisher<RosSharp.rosgraph_msgs.Clock> pubClock;
+
         // ================================================================================================
+        public const int numUrgData = 1080;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public ROS_if_forVehicleRunner()
         {
-            urg_scan = new double[1080];
-            urg_scan_send = new double[1080];
+            urg_scan = new double[numUrgData];
+            urg_scan_send = new double[numUrgData];
+            urg_intensities_send = new double[numUrgData];
         }
 
 
@@ -82,10 +91,11 @@ namespace RosIF
         /// <param name="dt"></param>
         private void cbSubScriber_VSlam(RosSharp.visualization_msgs.Marker dt)
         {
+            /*
             Console.WriteLine("time:" + dt.header.stamp.Second.ToString() + "," + dt.header.stamp.Millisecond.ToString());
             Console.WriteLine("pose:" + dt.pose.position.x.ToString() + "," + dt.pose.position.y.ToString() + "," + dt.pose.position.z.ToString());
             Console.WriteLine("color:" + dt.color.r.ToString() + "," + dt.color.g.ToString() + "," + dt.color.b.ToString());
-
+            */
             vslamPlotX = dt.pose.position.x;
             vslamPlotY = dt.pose.position.y;
         }
@@ -107,6 +117,14 @@ namespace RosIF
             {
                 Console.WriteLine("urg data OverFlow: dt.ranges.Count " + dt.ranges.Count.ToString() + "/ urg_scan.Length " + urg_scan.Length.ToString());
             }
+        }
+
+
+        private void cbSubScriber_Clock(RosSharp.rosgraph_msgs.Clock dt)
+        {
+            //Console.WriteLine("time:" + dt.clock.ToString() );
+
+            rosClock = dt.clock ;
         }
 
         /// <summary>
@@ -159,15 +177,25 @@ namespace RosIF
                     pubGPS.OnNext(data);
                 }
 
-                /*
+                
                 // URG
                 if (null != pubUrg)
                 {
-                    var data = new RosSharp.sensor_msgs.LaserScan() { linear = new Vector3() { x = gpsGrandX, y = gpsGrandY, z = 0.0 } };
-                    //Console.WriteLine("data = {0}", data.data);
-                    pubUrg.OnNext(data);
-                }*/
 
+                    //var data = new RosSharp.sensor_msgs.LaserScan(); // { linear = new Vector3() { x = gpsGrandX, y = gpsGrandY, z = 0.0 } };
+                    //Console.WriteLine("data = {0}", data.data);
+                    var data = MakeLaserScanData();
+
+                    pubUrg.OnNext(data);
+                }
+
+                
+                if (null != pubClock)
+                {
+                    var data = new RosSharp.rosgraph_msgs.Clock()  { clock = DateTime.Now };
+                    pubClock.OnNext(data);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -200,25 +228,33 @@ namespace RosIF
             {
                 // Nodeの生成。Nodeが生成されるまで待つ。
                 // Node名
-                rosNode = Ros.InitNodeAsync(NodeName).Result;
+                rosNode = Ros.InitNodeAsync(NodeName,true,true).Result;
 
                 // Subscriberの生成。Subscriberが生成されるまで待つ。
                 subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
                 subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
+                //subClock = rosNode.SubscriberAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
 
                 // Publisher生成
                 pubRE = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/re").Result;
                 pubPlot = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/replot").Result;
                 pubCompus = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/compus").Result;
                 pubGPS = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/gpsplot").Result;
-                //pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
+                pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scan2").Result;
 
+                //pubClock = rosNode.PublisherAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
 
                 // メッセージを購読
                 subVSlam.Subscribe(cbSubScriber_VSlam);
                 subUrg.Subscribe(cbSubScriber_URG);
+
+                if (null != subClock)
+                {
+                    subClock.Subscribe(cbSubScriber_Clock);
+                }
+
             }
             catch (Exception ex)
             {
@@ -240,6 +276,60 @@ namespace RosIF
             }
         }
 
+        // ================================================================================================
+
+        static uint seqCnt = 0;
+        /// <summary>
+        /// LaserScan データ作成
+        /// </summary>
+        /// <returns></returns>
+        public RosSharp.sensor_msgs.LaserScan MakeLaserScanData()
+        {
+            var dat = new RosSharp.sensor_msgs.LaserScan();
+
+            {
+                var header = new RosSharp.std_msgs.Header();
+                header.seq = seqCnt;
+                header.stamp = rosClock; 
+                header.frame_id = "laser";
+
+                dat.header = header;
+                seqCnt++;
+            }
+
+            int num_readings = urg_scan_send.Length;
+            float laser_frequency = 40;
+
+            // public float angle_min { get; set; }
+            dat.angle_min = (-270.0f/2.0f) * (float)Math.PI / 360.0f;
+
+            // public float angle_max { get; set; }
+            dat.angle_max = (270.0f / 2.0f) * (float)Math.PI / 360.0f;
+
+            //public float angle_increment { get; set; }
+            dat.angle_increment = (270.0f * (float)Math.PI / 360.0f) / num_readings;
+
+            //public float time_increment { get; set; }
+            dat.time_increment = (1 / laser_frequency) / (num_readings);
+
+            //public float scan_time { get; set; }
+            dat.scan_time = 0.025f;
+
+            //public float range_min { get; set; }
+            //public float range_max { get; set; }
+            dat.range_min = 0.025f;
+            dat.range_max = 30.0f;
+
+            //public List<float> ranges { get; set; }
+            //public List<float> intensities { get; set; }
+            for (int i = 0; i < urg_scan_send.Length; i++)
+            {
+                dat.ranges.Add( (float)(urg_scan_send[i]+i*0.1f) );
+                dat.intensities.Add( (float)(urg_intensities_send[i]+i) );
+            }
+
+            return dat;
+        }
 
     }
 }

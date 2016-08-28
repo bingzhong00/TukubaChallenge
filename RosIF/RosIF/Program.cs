@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define STAND_ALONE  // VehicleRunnerと接続しない
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,8 +37,11 @@ namespace RosIF
             Console.WriteLine("");
 
             Console.WriteLine("Connect VehircleRunner IPC..");
-
-            IpcClient ipc = null;// new IpcClient();
+#if STAND_ALONE
+            IpcClient ipc = null;
+#else
+            IpcClient ipc = new IpcClient();
+#endif
             ROS_if_forVehicleRunner rosifVR = new ROS_if_forVehicleRunner();
 
 
@@ -104,6 +109,7 @@ namespace RosIF
                         for (int i = 0; i < rosifVR.urg_scan.Length; i++)
                         {
                             rosifVR.urg_scan_send[i] = ipc.RemoteObject.urgDataSend[i];
+                            rosifVR.urg_intensities_send[i] = ipc.RemoteObject.urgIntensitiesSend[i];
                         }
 
                     }
@@ -144,7 +150,7 @@ namespace RosIF
                         string urgStr = "";
                         for (int i = 0; i < 8; i++)
                         {
-                            urgStr += rosifVR.urg_scan[(1080 * i / 8)].ToString("f2") + ",";
+                            urgStr += rosifVR.urg_scan[(ROS_if_forVehicleRunner.numUrgData * i / 8)].ToString("f2") + ",";
                         }
                         Console.WriteLine("urg:" + urgStr );
                     }
