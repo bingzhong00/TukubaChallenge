@@ -52,8 +52,11 @@ namespace RosIF
         RosSharp.Topic.Subscriber<RosSharp.visualization_msgs.Marker> subVSlam;
         // hokuyo-node
         RosSharp.Topic.Subscriber<RosSharp.sensor_msgs.LaserScan> subUrg;
-
+        // [debug] clock
         RosSharp.Topic.Subscriber<RosSharp.rosgraph_msgs.Clock> subClock;
+        // tf base_link
+        RosSharp.Topic.Subscriber<RosSharp.geometry_msgs.Twist> subRosif_pub;
+
 
         // Publisher ---------------------------------
         // ロータリーエンコーダ　パルス値
@@ -119,12 +122,26 @@ namespace RosIF
             }
         }
 
+        /// <summary>
+        /// SubScriber CallBack
+        /// </summary>
+        /// <param name="dt"></param>
+        private void cbSubScriber_rofif_pub(RosSharp.geometry_msgs.Twist dt)
+        {
+            amclPlotX = dt.linear.x;
+            amclPlotY = dt.linear.y;
+            amclAng = dt.angular.z;
+        }
 
+        /// <summary>
+        /// [debug] clock
+        /// </summary>
+        /// <param name="dt"></param>
         private void cbSubScriber_Clock(RosSharp.rosgraph_msgs.Clock dt)
         {
             //Console.WriteLine("time:" + dt.clock.ToString() );
 
-            rosClock = dt.clock ;
+            rosClock = dt.clock;
         }
 
         /// <summary>
@@ -228,33 +245,30 @@ namespace RosIF
             {
                 // Nodeの生成。Nodeが生成されるまで待つ。
                 // Node名
-                rosNode = Ros.InitNodeAsync(NodeName,true,true).Result;
+                rosNode = Ros.InitNodeAsync(NodeName).Result;
 
                 // Subscriberの生成。Subscriberが生成されるまで待つ。
-                subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
+                //subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
-                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
-                //subClock = rosNode.SubscriberAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
+                subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/base_link").Result;
+                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
+                subClock = rosNode.SubscriberAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
 
                 // Publisher生成
                 pubRE = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/re").Result;
                 pubPlot = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/replot").Result;
                 pubCompus = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/compus").Result;
                 pubGPS = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/gpsplot").Result;
-                pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scan2").Result;
+                pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scanVR").Result;
 
                 //pubClock = rosNode.PublisherAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
 
-                // メッセージを購読
-                subVSlam.Subscribe(cbSubScriber_VSlam);
-                subUrg.Subscribe(cbSubScriber_URG);
-
-                if (null != subClock)
-                {
-                    subClock.Subscribe(cbSubScriber_Clock);
-                }
-
+                // Subscribe CallBack指定
+                if (null != subVSlam) subVSlam.Subscribe(cbSubScriber_VSlam);
+                if( null!= subUrg)    subUrg.Subscribe(cbSubScriber_URG);
+                if (null != subRosif_pub)    subRosif_pub.Subscribe(cbSubScriber_rofif_pub);
+                if (null != subClock) subClock.Subscribe(cbSubScriber_Clock);
             }
             catch (Exception ex)
             {
@@ -270,9 +284,29 @@ namespace RosIF
         {
             if (null != rosNode)
             {
-                rosNode.Dispose();
-                rosNode = null;
-                Ros.Dispose();
+                try
+                {
+                    rosNode.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    rosNode = null;
+                }
+
+                System.Threading.Thread.Sleep(3000);
+
+                try
+                {
+                    Ros.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }                
             }
         }
 

@@ -1,4 +1,4 @@
-﻿#define STAND_ALONE  // VehicleRunnerと接続しない
+﻿//#define STAND_ALONE  // VehicleRunnerと接続しない
 
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ namespace RosIF
             // 更新タイミング MS
             const int sleepMS = 100;
 
+            bool loopFlg = true;
 
             // パラメータ取得
             // RosIF.exe 自IP roscore側IP
@@ -47,12 +48,14 @@ namespace RosIF
 
             // 終了イベント
             Console.CancelKeyPress += (sender, e) => {
-                Console.WriteLine("終了");
+                Console.Clear();
+                Console.WriteLine("終了....");
 
+                loopFlg = false;
                 // trueにすると、プログラムを終了させない
-                //e.Cancel = true;
+                e.Cancel = true;
 
-                rosifVR.disconnect();
+                //rosifVR.disconnect();
             };
 
 
@@ -67,7 +70,7 @@ namespace RosIF
             // 現在のカーソル行取得
             int curStartRow = Console.CursorTop;
 
-            while ( true )
+            while (loopFlg)
             {
                 try
                 {
@@ -93,12 +96,13 @@ namespace RosIF
                         rosifVR.vslamPlotX;
                         rosifVR.vslamPlotY;
                         rosifVR.vslamAng;
+                        */
 
                         /// amcl-slam
-                        rosifVR.hslamPlotX;
-                        rosifVR.hslamPlotY;
-                        rosifVR.hslamAng;
-                        */
+                        ipc.RemoteObject.amclPlotX = rosifVR.amclPlotX;
+                        ipc.RemoteObject.amclPlotY = rosifVR.amclPlotY;
+                        ipc.RemoteObject.amclAng  = rosifVR.amclAng;
+                        
 
                         // URG ROS->VR SubScribe(購読)
                         for (int i = 0; i < rosifVR.urg_scan.Length; i++) {
@@ -143,8 +147,9 @@ namespace RosIF
                 // コンソール表示
                 {
                     Console.WriteLine("Subscribe ----------- ");
+                    Console.WriteLine("clock:" + rosifVR.rosClock.ToLongTimeString());
                     Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
-                    //Console.WriteLine("hslamPlotX:" + rosifVR.hslamPlotX.ToString("f2") + "/ hslamPlotY:" + rosifVR.hslamPlotY.ToString("f2") + "/ hslamAng:" + rosifVR.hslamAng.ToString("f2"));
+                    Console.WriteLine("amclX:" + rosifVR.amclPlotX.ToString("f2") + "/ amclY:" + rosifVR.amclPlotY.ToString("f2") + "/ amclAng:" + rosifVR.amclAng.ToString("f2"));
 
                     {
                         string urgStr = "";
@@ -173,13 +178,14 @@ namespace RosIF
                 System.Threading.Thread.Sleep(sleepMS);
             }
 
-            Console.WriteLine("エラー発生 アプリを終了します。");
+            // trueのまま抜けていたらエラー
+            if (loopFlg)
+            {
+                Console.WriteLine("エラー発生 アプリを終了します。");
+            }
 
             // 
             rosifVR.disconnect();
-
-            // ３秒後終了
-            System.Threading.Thread.Sleep(3000);
         }
     }
 }

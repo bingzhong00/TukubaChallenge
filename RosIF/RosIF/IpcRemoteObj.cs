@@ -76,11 +76,11 @@ namespace CersioIO
         public double vslamAng { get; set; }
 
         /// <summary>
-        /// hector-slam
+        /// amcl
         /// </summary>
-        public double hslamPlotX { get; set; }
-        public double hslamPlotY { get; set; }
-        public double hslamAng { get; set; }
+        public double amclPlotX { get; set; }
+        public double amclPlotY { get; set; }
+        public double amclAng { get; set; }
 
         /// <summary>
         /// urg node
