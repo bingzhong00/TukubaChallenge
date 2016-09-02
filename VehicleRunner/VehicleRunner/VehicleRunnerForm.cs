@@ -1,6 +1,6 @@
 ﻿
 // 動作フラグ
-#define EMULATOR_MODE  // LRF エミュレーション起動
+//#define EMULATOR_MODE  // LRF エミュレーション起動
 
 #define LOGWRITE_MODE   // ログファイル出力
 
@@ -1248,7 +1248,8 @@ namespace VehicleRunner
 
             // ※比率計算
 
-            // ※コマンド送信
+            // コマンド送信
+            CersioCt.SendCommand_RE_OneRotatePulse_Reset(reL, reR);
         }
 
         private void rb_UsePF_Revision_CheckedChanged(object sender, EventArgs e)

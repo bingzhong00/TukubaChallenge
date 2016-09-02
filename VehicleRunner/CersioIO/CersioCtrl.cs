@@ -1,4 +1,4 @@
-﻿#define EMULATOR_MODE  // bServer エミュレーション起動
+﻿//#define EMULATOR_MODE  // bServer エミュレーション起動
 
 
 using System;
@@ -198,11 +198,27 @@ namespace CersioIO
             SendCommand("AR," + rad.ToString("f") + "\n");
         }
 
+        /// <summary>
+        /// ロータリーエンコーダのスタート位置セット
+        /// 回転差分計算用
+        /// </summary>
+        /// <param name="mmX"></param>
+        /// <param name="mmY"></param>
+        /// <param name="dir"></param>
         public void setREPlot_Start(double mmX, double mmY, double dir)
         {
             hwREStartX = mmX;
             hwREStartY = mmY;
             hwREStartDir = dir;
+        }
+
+        /// <summary>
+        /// １回転のパルス値セット
+        /// </summary>
+        /// <param name="dir"></param>
+        public void SendCommand_RE_OneRotatePulse_Reset(double wheelL, double wheelR )
+        {
+            SendCommand("ES," + wheelL.ToString("f") + "," + wheelR.ToString("f") + "\n");
         }
 
 
