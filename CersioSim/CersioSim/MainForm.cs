@@ -38,7 +38,7 @@ namespace CersioSim
         // SLAMフォームを生成するか？
         private const bool useSlamForm = false;
 
-        const string MapFileName = "../mapdata/utubo01_1200x1300_fix.png";
+        const string MapFileName = "../mapdata/TukubaCourse2016_Ver001b.png";
 
         private double viewX;
         private double viewY;
@@ -80,7 +80,7 @@ namespace CersioSim
 
             if( useSlamForm || cb_LRFForm.Checked)
             {
-                slamForm = new LRFMapForm(carSim, 1200, 1300, ScaleRealToPixel);
+                slamForm = new LRFMapForm(carSim, MapBmp.Width, MapBmp.Height, ScaleRealToPixel);
                 slamForm.Show();
             }
 
