@@ -18,18 +18,25 @@ namespace CersioIO
     public class CersioCtrl
     {
         // BOXPC(bServer)通信クラス
-#if EMULATOR_MODE
-        // エミュレータ接続先
-        TCPClient objTCPSC = new TCPClient("127.0.0.1", 50001);
-
         // エミュレータ用プロセス
         Process processEmuSim = null;
 
-        public bool bServerEmu = true;
-#else
-        TCPClient objTCPSC = new TCPClient("192.168.1.1", 50001);
+        /// <summary>
+        /// bServerEmuratorフラグ
+        /// </summary>
         public bool bServerEmu = false;
-#endif
+
+        /// <summary>
+        /// bServer通信ソケット
+        /// </summary>
+        TCPClient objTCPSC = null; // new TCPClient("192.168.1.1", 50001);
+
+
+        /// <summary>
+        /// ROSIFプロセス
+        /// </summary>
+        Process processRosIF = null;
+
 
         // モータードライバー直結時
         // アクセル、ハンドルコントローラ
@@ -101,13 +108,6 @@ namespace CersioIO
         /// </summary>
         public void Start()
         {
-#if EMULATOR_MODE
-            // セルシオ　エミュレータ起動
-            processEmuSim = Process.Start(@"..\..\..\CersioSim\bin\CersioSim.exe");
-
-            //アイドル状態になるまで待機
-            //processEmuSim.WaitForInputIdle();
-#endif
         }
 
         /// <summary>
@@ -115,22 +115,27 @@ namespace CersioIO
         /// </summary>
         public void Close()
         {
+            // 停止コマンド送信
             SendCommand_Stop();
 
+            // USB SH制御解除
             if (null != UsbMotorDriveIO)
             {
                 UsbMotorDriveIO.Close();
             }
 
-            objTCPSC.Dispose();
+            // bServer切断
+            if (null != objTCPSC)
+            {
+                objTCPSC.Dispose();
+                objTCPSC = null;
+            }
 
-#if EMULATOR_MODE
             // エミュレータ終了
             if (null != processEmuSim && !processEmuSim.HasExited)
             {
                 processEmuSim.Kill();
             }
-#endif
         }
 
         /// <summary>
@@ -139,15 +144,76 @@ namespace CersioIO
         /// <returns></returns>
         public bool ConnectBoxPC()
         {
-            if (TCP_IsConnected())
+            if (null != objTCPSC)
             {
-                objTCPSC.Dispose();
-                // 少し待つ
-                System.Threading.Thread.Sleep(100);
+                if (TCP_IsConnected())
+                {
+                    objTCPSC.Dispose();
+                    // 少し待つ
+                    System.Threading.Thread.Sleep(100);
+                }
+
+                // 通信接続
+                objTCPSC = null;
+                objTCPSC = new TCPClient("192.168.1.1", 50001);
+
+                bServerEmu = false;
+
+                // 回線オープン
+                return objTCPSC.Start();
             }
+            return false;
+        }
+
+        /// <summary>
+        /// BoxPcエミュレータ起動
+        /// </summary>
+        /// <returns></returns>
+        public bool RunBoxPC_Emulator()
+        {
+            // セルシオ　エミュレータ起動
+            if (null == processEmuSim || processEmuSim.HasExited)
+            {
+                processEmuSim = Process.Start(@"..\..\..\CersioSim\bin\CersioSim.exe");
+
+                //アイドル状態になるまで待機
+                //processEmuSim.WaitForInputIdle();
+            }
+
+            // 通信接続
+            if (null != objTCPSC)
+            {
+                if (TCP_IsConnected())
+                {
+                    SendCommand_Stop();
+
+                    objTCPSC.Dispose();
+                    // 少し待つ
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+
+            bServerEmu = true;
+
+            objTCPSC = null;
+            objTCPSC = new TCPClient("127.0.0.1", 50001);
 
             // 回線オープン
             return objTCPSC.Start();
+        }
+
+        /// <summary>
+        /// ROFIF起動
+        /// </summary>
+        /// <returns></returns>
+        public bool Run_RosIF()
+        {
+            if (null == processRosIF || processRosIF.HasExited)
+            {
+                processRosIF = Process.Start(@"..\..\..\RosIF\bin\RosIF.exe");
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -472,6 +538,9 @@ namespace CersioIO
         /// <param name="comStr"></param>
         public void TCP_SendCommand(string comStr)
         {
+            if (null == objTCPSC) return;
+
+
             System.Net.Sockets.NetworkStream objStm = objTCPSC.MyProperty;
 
             if (objStm != null)
@@ -518,6 +587,8 @@ namespace CersioIO
         /// <returns></returns>
         public string TCP_ReciveCommand()
         {
+            if (null == objTCPSC) return "";
+
             System.Net.Sockets.TcpClient objSck = objTCPSC.SckProperty;
             System.Net.Sockets.NetworkStream objStm = objTCPSC.MyProperty;
             string readStr = "";
@@ -696,6 +767,8 @@ namespace CersioIO
         /// <returns></returns>
         public bool TCP_IsConnected()
         {
+            if (null == objTCPSC) return false;
+
             System.Net.Sockets.TcpClient objSck = objTCPSC.SckProperty;
             System.Net.Sockets.NetworkStream objStm = objTCPSC.MyProperty;
 

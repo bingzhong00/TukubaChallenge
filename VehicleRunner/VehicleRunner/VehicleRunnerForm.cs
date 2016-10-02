@@ -1256,5 +1256,70 @@ namespace VehicleRunner
         {
             cb_AlwaysPFCalc.Enabled = rb_UsePF_Revision.Checked;
         }
+
+        /// <summary>
+        /// チェックボックス　ボタン色変え
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cb_Color_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox item = (CheckBox)sender;
+            if (item.Checked)
+            {
+                item.BackColor = Color.LimeGreen;
+            }
+            else
+            {
+                item.BackColor = SystemColors.Control;
+            }
+        }
+
+        /// <summary>
+        /// bServerエミュレータ切り替え
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cb_ConnectBServerEmu_CheckedChanged(object sender, EventArgs e)
+        {
+            if( cb_ConnectBServerEmu.Checked )
+            {
+                // エミュレータ接続
+                CersioCt.RunBoxPC_Emulator();
+            }
+            else
+            {
+                // BoxPC接続
+                CersioCt.ConnectBoxPC();
+            }
+        }
+
+        /// <summary>
+        /// ROS-IF接続
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cb_ConnectRosIF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_ConnectRosIF.Checked)
+            {
+                CersioCt.Run_RosIF();
+            }
+        }
+
+        /// <summary>
+        /// Map選択
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_MapLoad_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+
+            if(dlg.ShowDialog() ==  DialogResult.OK  )
+            {
+                // ※ロード
+            }
+        }
     }
 }
