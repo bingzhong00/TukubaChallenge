@@ -33,6 +33,7 @@ namespace RosIF
         /// v-slam
         public double vslamPlotX;
         public double vslamPlotY;
+        public double vslamPlotZ;
         public double vslamAng;
 
         /// amcl
@@ -101,6 +102,10 @@ namespace RosIF
             */
             vslamPlotX = dt.pose.position.x;
             vslamPlotY = dt.pose.position.y;
+            vslamPlotZ = dt.pose.position.z;    // 座標系がわからないので、とりあえず Z軸も保持
+
+            // ※Quatanionから角度(向き)へ変換が必要
+            vslamAng = dt.pose.orientation.w; 
         }
 
         /// <summary>
@@ -118,6 +123,7 @@ namespace RosIF
             }
             else
             {
+                // データ数が異なる場合
                 Console.WriteLine("urg data OverFlow: dt.ranges.Count " + dt.ranges.Count.ToString() + "/ urg_scan.Length " + urg_scan.Length.ToString());
             }
         }

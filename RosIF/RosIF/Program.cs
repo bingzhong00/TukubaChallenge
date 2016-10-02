@@ -1,4 +1,7 @@
-﻿//#define STAND_ALONE  // VehicleRunnerと接続しない
+﻿#if DEBUG
+//#define STAND_ALONE  // VehicleRunnerと接続しない
+#endif
+
 
 using System;
 using System.Collections.Generic;
@@ -34,14 +37,17 @@ namespace RosIF
             }
 
 
-            Console.WriteLine("VehircleRunner ROS-Interface Ver0.10");
+            Console.WriteLine("VehircleRunner ROS-Interface Ver0.20");
             Console.WriteLine("");
 
-            Console.WriteLine("Connect VehircleRunner IPC..");
 #if STAND_ALONE
+            Console.WriteLine("StandAlone Mode");
             IpcClient ipc = null;
 #else
+            Console.WriteLine("Connect VehircleRunner IPC..");
             IpcClient ipc = new IpcClient();
+
+            // ※コネクトリトライ機能 追加
 #endif
             ROS_if_forVehicleRunner rosifVR = new ROS_if_forVehicleRunner();
 
@@ -91,12 +97,12 @@ namespace RosIF
                         rosifVR.gpsGrandX = ipc.RemoteObject.gpsGrandX;
                         rosifVR.gpsGrandY = ipc.RemoteObject.gpsGrandY;
 
-                        /*
+
                         /// v-slam
-                        rosifVR.vslamPlotX;
-                        rosifVR.vslamPlotY;
-                        rosifVR.vslamAng;
-                        */
+                        ipc.RemoteObject.vslamPlotX = rosifVR.vslamPlotX;
+                        ipc.RemoteObject.vslamPlotY = rosifVR.vslamPlotY;
+                        ipc.RemoteObject.vslamAng = rosifVR.vslamAng;
+                        
 
                         /// amcl-slam
                         ipc.RemoteObject.amclPlotX = rosifVR.amclPlotX;
@@ -124,6 +130,7 @@ namespace RosIF
                     Console.WriteLine(ex.Message);
 
                     /*
+                    // VehivleRunner <--> ROS-IF 通信テスト用 ダミーデータ 
                     {
                         rosifVR.rePlotX += 1.0;
                         rosifVR.rePlotY += 1.0;
