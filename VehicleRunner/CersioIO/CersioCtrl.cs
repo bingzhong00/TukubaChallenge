@@ -144,25 +144,21 @@ namespace CersioIO
         /// <returns></returns>
         public bool ConnectBoxPC()
         {
-            if (null != objTCPSC)
+            if (TCP_IsConnected())
             {
-                if (TCP_IsConnected())
-                {
-                    objTCPSC.Dispose();
-                    // 少し待つ
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // 通信接続
-                objTCPSC = null;
-                objTCPSC = new TCPClient("192.168.1.1", 50001);
-
-                bServerEmu = false;
-
-                // 回線オープン
-                return objTCPSC.Start();
+                objTCPSC.Dispose();
+                // 少し待つ
+                System.Threading.Thread.Sleep(100);
             }
-            return false;
+
+            // 通信接続
+            objTCPSC = null;
+            objTCPSC = new TCPClient("192.168.1.1", 50001);
+
+            bServerEmu = false;
+
+            // 回線オープン
+            return objTCPSC.Start();
         }
 
         /// <summary>
