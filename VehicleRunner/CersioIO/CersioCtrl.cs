@@ -98,6 +98,10 @@ namespace CersioIO
         /// </summary>
         private IpcServer ipc = new IpcServer();
 
+        private string bServerAddr = "192.168.1.1";
+        private string bServerEmuAddr = "127.0.0.1";
+        private int bServerPort = 50001;
+
         // --------------------------------------------------------------------------------------------------
         public CersioCtrl()
         {
@@ -153,7 +157,7 @@ namespace CersioIO
 
             // 通信接続
             objTCPSC = null;
-            objTCPSC = new TCPClient("192.168.1.1", 50001);
+            objTCPSC = new TCPClient(bServerAddr, bServerPort );
 
             bServerEmu = false;
 
@@ -192,7 +196,7 @@ namespace CersioIO
             bServerEmu = true;
 
             objTCPSC = null;
-            objTCPSC = new TCPClient("127.0.0.1", 50001);
+            objTCPSC = new TCPClient(bServerEmuAddr, bServerPort);
 
             // 回線オープン
             return objTCPSC.Start();
