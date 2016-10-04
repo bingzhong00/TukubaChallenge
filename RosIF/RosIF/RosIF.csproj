@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IpcRemoteObj.cs" />
+    <Compile Include="MatrixMath.cs" />
     <Compile Include="msgs\Clock.cs" />
     <Compile Include="msgs\LaserScan.cs" />
     <Compile Include="msgs\Marker.cs" />

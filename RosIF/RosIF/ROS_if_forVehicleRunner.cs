@@ -104,8 +104,11 @@ namespace RosIF
             vslamPlotY = dt.pose.position.y;
             vslamPlotZ = dt.pose.position.z;    // 座標系がわからないので、とりあえず Z軸も保持
 
-            // ※Quatanionから角度(向き)へ変換が必要
-            vslamAng = dt.pose.orientation.w; 
+            // Quatanionから角度(向き)へ変換
+            vslamAng = MatrixMath.QuaternionToAngle( (float)dt.pose.orientation.x,
+                                                     (float)dt.pose.orientation.y,
+                                                     (float)dt.pose.orientation.z,
+                                                     (float)dt.pose.orientation.w ); 
         }
 
         /// <summary>
