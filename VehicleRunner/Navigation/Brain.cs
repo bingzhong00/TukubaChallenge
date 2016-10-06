@@ -20,13 +20,30 @@ namespace Navigation
     /// </summary>
     public class Brain
     {
-        // セルシオ制御クラス
-        public CersioCtrl CarCtrl = null;
+        /// <summary>
+        /// セルシオ制御クラス
+        /// </summary>
+        public CersioCtrl CarCtrl;
 
-        // ルート制御
-        public Rooting RTS = new Rooting();
+        /// <summary>
+        /// 現在位置システム
+        /// </summary>
+        public LocPreSumpSystem LocSys;
 
-        // ハンドル、アクセル操作
+
+        /// <summary>
+        /// マップファイル
+        /// </summary>
+        public MapData MapFile;
+
+        /// <summary>
+        /// ルート制御
+        /// </summary>
+        public Rooting RTS;
+
+        /// <summary>
+        /// ハンドル、アクセル操作
+        /// </summary>
         static public double handleValue;
         static public double accValue;
 
@@ -416,22 +433,50 @@ namespace Navigation
         /// コンストラクタ
         /// </summary>
         /// <param name="ceCtrl"></param>
-        public Brain(CersioCtrl ceCtrl)
+        public Brain(CersioCtrl ceCtrl, string mapFileName )
         {
             CarCtrl = ceCtrl;
-            UpdateCnt = 0;
-
-            handleValue = 0.0;
-            accValue = 0.0;
-            goalFlg = false;
+            Reset(mapFileName);
         }
 
-        public void Reset()
+        public void Reset(string mapFileName)
         {
-            RTS.ResetSeq();
+            // 
+            MapFile = MapData.LoadMapFile(mapFileName);
+            // 
+            RTS = new Rooting(MapFile);
+
+            //  マップ画像ファイル名、実サイズの横[mm], 実サイズ縦[mm] (北向き基準)
+            LocSys = new LocPreSumpSystem(MapFile.MapImageFileName, MapFile.RealWidth, MapFile.RealHeight);
+
+            UpdateCnt = 0;
+
             checkpntIdx = 0;
             cntAvoideMode = 0;
             goalFlg = false;
+
+            handleValue = 0.0;
+            accValue = 0.0;
+
+            Reset_StartPosition();
+        }
+
+        /// <summary>
+        /// スタート位置に座標情報をセット
+        /// </summary>
+        public void Reset_StartPosition()
+        {
+            // スタート位置をセット
+            LocSys.SetStartPostion((int)MapFile.startPosition.x,
+                                   (int)MapFile.startPosition.y,
+                                   MapFile.startDir);
+
+            // REをリセット
+            CarCtrl.SendCommand_RE_Reset();
+
+            CarCtrl.setREPlot_Start(MapFile.startPosition.x * LocSys.MapToRealScale,
+                                     MapFile.startPosition.y * LocSys.MapToRealScale,
+                                     MapFile.startDir);
         }
 
         // グリーン(補正要請)エリア侵入フラグ
@@ -441,13 +486,12 @@ namespace Navigation
         /// <summary>
         /// 自律走行処理 定期更新
         /// </summary>
-        /// <param name="LocSys"></param>
         /// <param name="useEBS">壁回避ブレーキ</param>
         /// <param name="useEHS">壁回避ハンドル</param>
         /// <param name="bStraightMode">直進モード</param>
         /// <param name="bIndoorMode">屋内モード</param>
         /// <returns></returns>
-        public bool AutonomousProc(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bStraightMode, bool bIndoorMode)
+        public bool AutonomousProc( bool useEBS, bool useEHS, bool bStraightMode, bool bIndoorMode)
         {
             // エマージェンシーブレーキを使わないフラグ
             bool untiEBS = false;

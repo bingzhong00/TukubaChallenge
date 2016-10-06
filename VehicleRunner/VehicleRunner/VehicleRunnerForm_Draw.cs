@@ -162,9 +162,10 @@ namespace VehicleRunner
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AreaMap_Draw_Area(Graphics g, ref LocPreSumpSystem LocSys, ref CersioCtrl CersioCt, ref Brain BrainCtrl)
+        public void AreaMap_Draw_Area(Graphics g, ref CersioCtrl CersioCt, ref Brain BrainCtrl)
         {
             // 書き換えＢＭＰ（追加障害物）描画
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
 
             // エリアマップ描画
             //g.FillRectangle(Brushes.Black, 0, 0, picbox_AreaMap.Width, picbox_AreaMap.Height);
@@ -197,8 +198,9 @@ namespace VehicleRunner
 
         //static int areaMapDrawCnt = 0;
 
-        public void AreaMap_Draw_WorldMap(Graphics g, ref LocPreSumpSystem LocSys, ref CersioCtrl CersioCt, ref Brain BrainCtrl)
+        public void AreaMap_Draw_WorldMap(Graphics g, ref CersioCtrl CersioCt, ref Brain BrainCtrl)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
 
             // 全体マップ描画
             float viewScale;
@@ -252,8 +254,10 @@ namespace VehicleRunner
         }
 
 
-        public void AreaMap_Draw_Text(Graphics g, ref LocPreSumpSystem LocSys, ref Brain BrainCtrl, long updateHwCnt)
+        public void AreaMap_Draw_Text(Graphics g, ref Brain BrainCtrl, long updateHwCnt)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             g.ResetTransform();
 
             try

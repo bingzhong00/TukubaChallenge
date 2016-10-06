@@ -176,25 +176,10 @@ namespace LocationPresumption
         /// <summary>
         /// 
         /// </summary>
-        public LocPreSumpSystem()
-        {
-        }
-
-        /// <summary>
-        /// クローズ
-        /// </summary>
-        public void Close()
-        {
-            LRF.Close();
-        }
-
-        /// <summary>
-        /// ワールドマップ初期化
-        /// </summary>
         /// <param name="fnameMapBmp"></param>
         /// <param name="worldWith">実際のマップサイズ mm</param>
         /// <param name="worldHeight">実際のマップサイズ mm</param>
-        public void InitWorld( string fnameMapBmp, double worldWith, double worldHeight )
+        public LocPreSumpSystem(string fnameMapBmp, double worldWith, double worldHeight)
         {
             worldMap = new WorldMap(fnameMapBmp);
             MapToRealScale = (worldWith / (double)worldMap.WorldSize.w);     // 実サイズ（ｍｍ）/ピクセル数　＝　１ピクセルを何mmとするか

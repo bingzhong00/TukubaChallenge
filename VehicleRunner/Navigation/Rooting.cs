@@ -17,6 +17,7 @@ namespace Navigation
     {
         //Matrix3 mat;
         //Quaternion qut;
+
         double tgtDir;      // 目的の方向
         double tgtDist;     // 目的地までの距離
         Vector3 tgtPos;     // 目的の座標
@@ -38,6 +39,16 @@ namespace Navigation
         const double passRange = touchRange * 3.0;  // パスできるチェックポイントの距離
         const double passOverDir = 130.0;           // パスできるチェックポイントとの角度
 
+        MapData rootData;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="_mapData"></param>
+        public Rooting(MapData _mapData)
+        {
+            rootData = _mapData;
+        }
 
         /// <summary>
         /// 2つのベクトルがなす角をかえす
@@ -92,20 +103,22 @@ namespace Navigation
             seqIdx = 0;
             goalFlg = false;
 
-            RootingData.checkPoint = new Vector3[1];
+            /*
+            MapData.checkPoint = new Vector3[1];
 
-            double wRad = -RootingData.startDir * Axiom.Math.Utility.PI / 180.0;
+            double wRad = -MapData.startDir * Axiom.Math.Utility.PI / 180.0;
             double cs = Math.Cos(wRad);
             double sn = Math.Sin(wRad);
 
             double tgtX = 0.0;
             double tgtY = -500.0; // pixel 10cm x 500 = 50m 先を目指す
 
-            double newCpX = RootingData.startPosition.x + (tgtX * cs - tgtY * sn);
-            double newCpY = RootingData.startPosition.y + (tgtX * sn + tgtY * cs);
+            double newCpX = MapData.startPosition.x + (tgtX * cs - tgtY * sn);
+            double newCpY = MapData.startPosition.y + (tgtX * sn + tgtY * cs);
 
             // 新チェックポイント作成
-            RootingData.checkPoint[0] = new Vector3(newCpX, newCpY, 0);
+            MapData.checkPoint[0] = new Vector3(newCpX, newCpY, 0);
+            */
 
             // 目標座標 再計算
             calcCheckPoint();
@@ -122,10 +135,10 @@ namespace Navigation
         // 目標の座標取得
         public void getNowTarget(ref int posX, ref int posY)
         {
-            if (!goalFlg && seqIdx < RootingData.checkPoint.Length)
+            if (!goalFlg && seqIdx < rootData.checkPoint.Length)
             {
-                posX = (int)RootingData.checkPoint[seqIdx].x;
-                posY = (int)RootingData.checkPoint[seqIdx].y;
+                posX = (int)rootData.checkPoint[seqIdx].x;
+                posY = (int)rootData.checkPoint[seqIdx].y;
             }
         }
 
@@ -212,14 +225,14 @@ namespace Navigation
         private bool calcCheckPoint()
         {
             // ゴールしてたら計算しない
-            if (goalFlg || seqIdx >= RootingData.checkPoint.Count()) return true;
+            if (goalFlg || seqIdx >= rootData.checkPoint.Count()) return true;
 
             // 次のチェックポイントにすすむか？
-            for (int i = 0; i < RootingData.checkPoint.Count(); i++)
+            for (int i = 0; i < rootData.checkPoint.Count(); i++)
             {
-                if ((RootingData.checkPoint[seqIdx] - nowPos).Length > touchRange) break;
+                if ((rootData.checkPoint[seqIdx] - nowPos).Length > touchRange) break;
                 seqIdx++;
-                if (seqIdx >= RootingData.checkPoint.Count())
+                if (seqIdx >= rootData.checkPoint.Count())
                 {
                     goalFlg = true;
                     return true;
@@ -227,7 +240,7 @@ namespace Navigation
             }
 
             // 目標座標
-            tgtPos = RootingData.checkPoint[seqIdx];
+            tgtPos = rootData.checkPoint[seqIdx];
 
             // 目標方向
             {
@@ -248,7 +261,7 @@ namespace Navigation
         /// <returns></returns>
         private double GetCheckPointDistance( Vector3 vPos )
         {
-            return (RootingData.checkPoint[seqIdx] - nowPos).Length;
+            return (rootData.checkPoint[seqIdx] - nowPos).Length;
         }
 
 

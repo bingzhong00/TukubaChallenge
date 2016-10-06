@@ -45,11 +45,6 @@ namespace VehicleRunner
         };
 
         /// <summary>
-        /// 位置推定管理 クラス
-        /// </summary>
-        LocPreSumpSystem LocSys;
-
-        /// <summary>
         /// セルシオ管理 クラス
         /// </summary>
         CersioCtrl CersioCt;
@@ -57,8 +52,12 @@ namespace VehicleRunner
         /// <summary>
         /// 動作決定管理クラス
         /// </summary>
-        public Brain BrainCtrl;
+        Brain BrainCtrl;
 
+        /// <summary>
+        /// 起動時のマップファイル
+        /// </summary>
+        private const string defaultMapFile = "../../../MapFile/utsubo201608/utsubo201608.xml";
 
         /// <summary>
         /// USB GPSクラス
@@ -121,24 +120,12 @@ namespace VehicleRunner
 
             // セルシオコントローラ初期化
             CersioCt = new CersioCtrl();
-            CersioCt.Start();
-
-            BrainCtrl = new Brain(CersioCt);
-            BrainCtrl.Reset();
 
             // BoxPc(bServer)接続
-            CersioCt.ConnectBoxPC();
+            //CersioCt.ConnectBoxPC();
 
-            // 自己位置推定初期化
-            LocSys = new LocPreSumpSystem();
-
-            // マップ情報設定
-            //  マップファイル名、実サイズの横[mm], 実サイズ縦[mm] (北向き基準)
-            LocSys.InitWorld( RootingData.MapFileName, RootingData.RealWidth, RootingData.RealHeight);
-
-
-            // スタート位置をセット
-            btn_PositionReset_Click(null, null);
+            // ブレイン起動
+            BrainCtrl = new Brain(CersioCt, defaultMapFile);
 
             // 初期ボタン設定セット
             rb_Move_CheckedChanged(null, null);
@@ -150,7 +137,7 @@ namespace VehicleRunner
             cb_VRRevision_CheckedChanged(null, null);
 
             // マップウィンドウサイズのbmp作成
-            formDraw.MakePictureBoxWorldMap(LocSys.worldMap.mapBmp, picbox_AreaMap);
+            formDraw.MakePictureBoxWorldMap(BrainCtrl.LocSys.worldMap.mapBmp, picbox_AreaMap);
 
             // LRF 入力スケール調整反映
             tb_LRFScale.Text = trackBar_LRFViewScale.Value.ToString();
@@ -227,6 +214,8 @@ namespace VehicleRunner
 
             cb_AlwaysPFCalc.Enabled = rb_UsePF_Revision.Checked;
 
+            tb_MapName.Text = BrainCtrl.MapFile.MapName;
+
             // 画面更新
             PictureUpdate();
 
@@ -245,8 +234,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void VehicleRunnerForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            LocSys.Close();
-            CersioCt.Close();
+            BrainCtrl.LocSys.LRF.Close();
+            CersioCt.Disconnect();
         }
 
         /// <summary>
@@ -266,7 +255,7 @@ namespace VehicleRunner
 
 #if LOGIMAGE_MODE
             // マップログ出力
-            formLog.Output_ImageLog(ref BrainCtrl, ref LocSys);
+            formLog.Output_ImageLog(ref BrainCtrl);
 #endif
         }
 
@@ -282,10 +271,10 @@ namespace VehicleRunner
         private void picbox_AreaMap_Paint(object sender, PaintEventArgs e)
         {
             // 書き換えＢＭＰ（追加障害物）描画
-            if (selAreaMapMode == 0) formDraw.AreaMap_Draw_Area( e.Graphics, ref LocSys, ref CersioCt, ref BrainCtrl);
-            else if (selAreaMapMode == 1) formDraw.AreaMap_Draw_WorldMap(e.Graphics, ref LocSys,ref CersioCt, ref BrainCtrl);
+            if (selAreaMapMode == 0) formDraw.AreaMap_Draw_Area( e.Graphics, ref CersioCt, ref BrainCtrl);
+            else if (selAreaMapMode == 1) formDraw.AreaMap_Draw_WorldMap(e.Graphics, ref CersioCt, ref BrainCtrl);
 
-            formDraw.AreaMap_Draw_Text(e.Graphics, ref LocSys, ref BrainCtrl, (long)updateHwCnt);
+            formDraw.AreaMap_Draw_Text(e.Graphics, ref BrainCtrl, (long)updateHwCnt);
         }
 
         /// <summary>
@@ -314,6 +303,7 @@ namespace VehicleRunner
         private void picbox_LRF_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
 
             // LRF取得データを描画
             {
@@ -426,6 +416,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void cb_LRFConnect_CheckedChanged(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             if (cb_LRFConnect.Checked)
             {
                 // LRF接続
@@ -470,7 +462,7 @@ namespace VehicleRunner
         private void PictureUpdate()
         {
             // 自己位置マーカー入りマップBmp描画
-            LocSys.UpdateLocalizeBitmap(cb_AlwaysPFCalc.Checked, true);
+            BrainCtrl.LocSys.UpdateLocalizeBitmap(cb_AlwaysPFCalc.Checked, true);
 
             // 各PictureBox更新
             this.picbox_AreaMap.Refresh();
@@ -485,18 +477,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void btn_PositionReset_Click(object sender, EventArgs e)
         {
-            // スタート位置をセット
-            LocSys.SetStartPostion((int)RootingData.startPosition.x,
-                                   (int)RootingData.startPosition.y,
-                                   RootingData.startDir);
-
-            // REをリセット
-            CersioCt.SendCommand_RE_Reset();
-
-            CersioCt.setREPlot_Start(RootingData.startPosition.x * LocSys.MapToRealScale,
-                                     RootingData.startPosition.y * LocSys.MapToRealScale,
-                                     RootingData.startDir);
-
+            BrainCtrl.Reset_StartPosition();
             PictureUpdate();
         }
 
@@ -511,9 +492,9 @@ namespace VehicleRunner
             while (!appExit)
             {
 #if !UnUseLRF
-                if (null != LocSys && null != LocSys.LRF)
+                if (null != BrainCtrl.LocSys && null != BrainCtrl.LocSys.LRF)
                 {
-                    LocSys.LRF.Update();
+                    BrainCtrl.LocSys.LRF.Update();
                 }
 #endif
                 // bServer ハードウェア(センサー)情報取得
@@ -534,6 +515,7 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void tm_UpdateHw_Tick(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
 
 #if !UnUseLRF
             // LRF更新
@@ -708,10 +690,10 @@ namespace VehicleRunner
             while (!appExit)
             {
                 
-                if (null != LocSys)
+                if (null != BrainCtrl && null != BrainCtrl.LocSys)
                 {
                     // 現在位置更新
-                    LocSys.update_NowLocation();
+                    BrainCtrl.LocSys.update_NowLocation();
 
                     // パーティクルフィルター自己位置推定 演算
                     if (cb_VRRevision.Checked)
@@ -719,7 +701,7 @@ namespace VehicleRunner
                         // 常時PF演算
                         if (cb_AlwaysPFCalc.Checked)
                         {
-                            LocSys.ParticleFilter_Update();
+                            BrainCtrl.LocSys.ParticleFilter_Update();
                         }
 
                         // 自己位置補正執行判断
@@ -745,6 +727,7 @@ namespace VehicleRunner
                             {
                                 // 自己位置補正
                                 string logMsg;
+                                LocPreSumpSystem LocSys = BrainCtrl.LocSys;
 
                                 logMsg = LocSys.LocalizeRevision(rb_UseGPS_Revision.Checked);
 
@@ -772,9 +755,10 @@ namespace VehicleRunner
                     {
                         // セルシオ コントロール
                         // 自己位置更新処理とセルシオ管理
-                        BrainCtrl.AutonomousProc( LocSys,
-                                                  cb_EmgBrake.Checked, cb_EHS.Checked,
-                                                  cb_StraghtMode.Checked, cb_InDoorMode.Checked );
+                        BrainCtrl.AutonomousProc( cb_EmgBrake.Checked,
+                                                  cb_EHS.Checked,
+                                                  cb_StraghtMode.Checked,
+                                                  cb_InDoorMode.Checked );
                     }
                 }
                 
@@ -842,7 +826,7 @@ namespace VehicleRunner
 
             // MAP座標更新処理
             // ※描画と演算のタイミングの整合をとる
-            LocSys.MapArea_Update();
+            BrainCtrl.LocSys.MapArea_Update();
             
 
             // REからのスピード表示
@@ -898,7 +882,7 @@ namespace VehicleRunner
 #endif  // LRFLOG_OUTPUT
 
                 // ログファイル出力
-                formLog.Output_VRLog(ref BrainCtrl, ref CersioCt, ref LocSys);
+                formLog.Output_VRLog(ref BrainCtrl, ref CersioCt);
 
 #if GPSLOG_OUTPUT
                 if (null != usbGPS)
@@ -912,7 +896,7 @@ namespace VehicleRunner
 #endif  // LOGWRITE_MODE
 
             // ログバッファクリア
-            formLog.LogBuffer_Clear(ref BrainCtrl, ref CersioCt, ref LocSys);
+            formLog.LogBuffer_Clear(ref BrainCtrl, ref CersioCt);
 
 
             // 画面描画
@@ -1036,6 +1020,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void rb_Move_CheckedChanged(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             // 移動入力元　センサー切り替え
             LocSys.Setting.bMoveSrcRePlot = rb_MoveREPlot.Checked;
             LocSys.Setting.bMoveSrcGPS  = rb_MoveGPS.Checked;
@@ -1052,6 +1038,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void rb_Dir_CheckedChanged(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             // 向き入力元　センサー切り替え
             LocSys.Setting.bDirSrcRePlot = rb_DirREPlot.Checked;
             LocSys.Setting.bDirSrcGPS = rb_DirGPS.Checked;
@@ -1080,6 +1068,8 @@ namespace VehicleRunner
         {
             if (cb_StartAutonomous.Checked)
             {
+                LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
                 // 現在座標から開始
 
                 // 開始時のリセット
@@ -1137,6 +1127,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             num_R1X.Value = (int)LocSys.R1.X;
             num_R1Y.Value = (int)LocSys.R1.Y;
             num_R1Dir.Value = (int)LocSys.R1.Theta;
@@ -1149,6 +1141,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void btn_GetGPStoR1_Click(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             num_R1X.Value = (int)LocSys.G1.X;
             num_R1Y.Value = (int)LocSys.G1.Y;
         }
@@ -1160,6 +1154,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void btn_GetCompustoR1_Click(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             num_R1Dir.Value = (int)LocSys.C1.Theta;
         }
 
@@ -1170,6 +1166,8 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void btn_ResetR1_Click(object sender, EventArgs e)
         {
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
+
             LocSys.R1.X = (double)num_R1X.Value;
             LocSys.R1.Y = (double)num_R1Y.Value;
             LocSys.R1.Theta = (double)num_R1Dir.Value;
@@ -1318,7 +1316,8 @@ namespace VehicleRunner
 
             if(dlg.ShowDialog() ==  DialogResult.OK  )
             {
-                // ※ロード
+                // ロード
+                BrainCtrl.Reset(dlg.FileName);
             }
         }
     }

@@ -108,16 +108,9 @@ namespace CersioIO
         }
 
         /// <summary>
-        /// 起動
-        /// </summary>
-        public void Start()
-        {
-        }
-
-        /// <summary>
         /// 終了
         /// </summary>
-        public void Close()
+        public void Disconnect()
         {
             // 停止コマンド送信
             SendCommand_Stop();

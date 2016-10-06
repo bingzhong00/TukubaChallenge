@@ -143,6 +143,7 @@
             this.cb_ConnectBServerEmu = new System.Windows.Forms.CheckBox();
             this.cb_ConnectRosIF = new System.Windows.Forms.CheckBox();
             this.btn_MapLoad = new System.Windows.Forms.Button();
+            this.tb_MapName = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -255,7 +256,7 @@
             // btn_VRReset
             // 
             this.btn_VRReset.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_VRReset.Location = new System.Drawing.Point(729, 440);
+            this.btn_VRReset.Location = new System.Drawing.Point(730, 445);
             this.btn_VRReset.Name = "btn_VRReset";
             this.btn_VRReset.Size = new System.Drawing.Size(117, 38);
             this.btn_VRReset.TabIndex = 12;
@@ -1518,7 +1519,7 @@
             // btn_MapLoad
             // 
             this.btn_MapLoad.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_MapLoad.Location = new System.Drawing.Point(608, 441);
+            this.btn_MapLoad.Location = new System.Drawing.Point(607, 445);
             this.btn_MapLoad.Name = "btn_MapLoad";
             this.btn_MapLoad.Size = new System.Drawing.Size(115, 36);
             this.btn_MapLoad.TabIndex = 47;
@@ -1526,11 +1527,22 @@
             this.btn_MapLoad.UseVisualStyleBackColor = true;
             this.btn_MapLoad.Click += new System.EventHandler(this.btn_MapLoad_Click);
             // 
+            // tb_MapName
+            // 
+            this.tb_MapName.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tb_MapName.Location = new System.Drawing.Point(608, 416);
+            this.tb_MapName.Name = "tb_MapName";
+            this.tb_MapName.ReadOnly = true;
+            this.tb_MapName.Size = new System.Drawing.Size(239, 23);
+            this.tb_MapName.TabIndex = 48;
+            this.tb_MapName.TabStop = false;
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1157, 729);
+            this.Controls.Add(this.tb_MapName);
             this.Controls.Add(this.btn_MapLoad);
             this.Controls.Add(this.cb_ConnectRosIF);
             this.Controls.Add(this.cb_ConnectBServerEmu);
@@ -1719,6 +1731,7 @@
         private System.Windows.Forms.CheckBox cb_ConnectBServerEmu;
         private System.Windows.Forms.CheckBox cb_ConnectRosIF;
         private System.Windows.Forms.Button btn_MapLoad;
+        private System.Windows.Forms.TextBox tb_MapName;
     }
 }
 

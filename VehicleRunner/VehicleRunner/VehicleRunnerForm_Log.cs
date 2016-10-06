@@ -61,9 +61,8 @@ namespace VehicleRunner
         /// マップイメージログ出力
         /// </summary>
         /// <param name="BrainCtrl"></param>
-        /// <param name="LocSys"></param>
         /// <returns></returns>
-        public bool Output_ImageLog(ref Brain BrainCtrl, ref LocPreSumpSystem LocSys )
+        public bool Output_ImageLog(ref Brain BrainCtrl )
         {
             try
             {
@@ -85,7 +84,7 @@ namespace VehicleRunner
                     }
 
                     {
-                        Bitmap bmp = LocSys.MakeMakerLogBmp(false, tgtMaker);
+                        Bitmap bmp = BrainCtrl.LocSys.MakeMakerLogBmp(false, tgtMaker);
                         if (null != bmp)
                         {
                             // 画像ファイル保存
@@ -145,9 +144,11 @@ namespace VehicleRunner
         /// <summary>
         /// VehicleRunnerログ出力
         /// </summary>
-        public void Output_VRLog(ref Brain BrainCtrl, ref CersioCtrl CersioCt, ref LocPreSumpSystem LocSys)
+        public void Output_VRLog(ref Brain BrainCtrl, ref CersioCtrl CersioCt)
         {
             System.IO.StreamWriter sw = new System.IO.StreamWriter(saveLogFname, true, System.Text.Encoding.GetEncoding("shift_jis"));
+
+            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
 
             // 固有識別子 + 時間
             sw.Write("LocPresumpLog:" + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + System.Environment.NewLine);
@@ -266,7 +267,7 @@ namespace VehicleRunner
         /// <param name="BrainCtrl"></param>
         /// <param name="CersioCt"></param>
         /// <param name="LocSys"></param>
-        public void LogBuffer_Clear(ref Brain BrainCtrl, ref CersioCtrl CersioCt, ref LocPreSumpSystem LocSys)
+        public void LogBuffer_Clear(ref Brain BrainCtrl, ref CersioCtrl CersioCt)
         {
             if (null != CersioCt)
             {
