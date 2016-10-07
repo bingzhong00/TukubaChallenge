@@ -98,8 +98,19 @@ namespace CersioIO
         /// </summary>
         private IpcServer ipc = new IpcServer();
 
+        /// <summary>
+        /// bServer IpAddr
+        /// </summary>
         private string bServerAddr = "192.168.1.1";
+
+        /// <summary>
+        /// bServer エミュレータ
+        /// </summary>
         private string bServerEmuAddr = "127.0.0.1";
+
+        /// <summary>
+        /// bServer ポートNo
+        /// </summary>
         private int bServerPort = 50001;
 
         // --------------------------------------------------------------------------------------------------

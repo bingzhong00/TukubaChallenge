@@ -271,9 +271,19 @@ namespace VehicleRunner
         private void picbox_AreaMap_Paint(object sender, PaintEventArgs e)
         {
             // 書き換えＢＭＰ（追加障害物）描画
-            if (selAreaMapMode == 0) formDraw.AreaMap_Draw_Area( e.Graphics, ref CersioCt, ref BrainCtrl);
-            else if (selAreaMapMode == 1) formDraw.AreaMap_Draw_WorldMap(e.Graphics, ref CersioCt, ref BrainCtrl);
+            if (selAreaMapMode == 0)
+            {
+                // エリアマップ描画
+                formDraw.AreaMap_Draw_Area(e.Graphics, ref CersioCt, ref BrainCtrl);
+                formDraw.AreaMap_Draw_Ruler(e.Graphics, ref BrainCtrl, picbox_AreaMap.Width, picbox_AreaMap.Height );
+            }
+            else if (selAreaMapMode == 1)
+            {
+                // ワールドマップ描画
+                formDraw.AreaMap_Draw_WorldMap(e.Graphics, ref CersioCt, ref BrainCtrl);
+            }
 
+            // テキスト描画
             formDraw.AreaMap_Draw_Text(e.Graphics, ref BrainCtrl, (long)updateHwCnt);
         }
 
