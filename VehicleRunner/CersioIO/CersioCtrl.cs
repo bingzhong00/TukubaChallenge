@@ -687,8 +687,8 @@ namespace CersioIO
                                 double ResiveLandY; // 経度
                                 string[] splStr = rsvCmd[i].Split(',');
 
-                                // 2個データが来る時がある
-                                if (splStr.Length >= 3)
+                                // データが足らないことがある
+                                if (splStr.Length >= 4)
                                 {
                                     // splStr[0] "A3"
                                     // ミリ秒取得
