@@ -12,6 +12,7 @@ using System.Drawing.Drawing2D;
 
 using System.Diagnostics;
 using LocationPresumption;
+using CersioIO;
 
 using Axiom.Math;
 
@@ -38,7 +39,8 @@ namespace CersioSim
         // SLAMフォームを生成するか？
         private const bool useSlamForm = false;
 
-        const string MapFileName = "../mapdata/TukubaCourse2016_Ver001b.png";
+        //const string MapFileName = "../mapdata/TukubaCourse2016_Ver001b.png";
+        const string MapFileName = "../mapdata/utubo01_1200x1300_fix.png";
 
         private double viewX;
         private double viewY;
@@ -54,6 +56,12 @@ namespace CersioSim
         /// URG SCIPシミュレータ
         /// </summary>
         private SCIPsim UrgSim = new SCIPsim();
+
+        /// <summary>
+        /// ROS-IF Emu
+        /// </summary>
+        private IpcClient ipc;
+
 
         /// <summary>
         /// 
@@ -90,6 +98,15 @@ namespace CersioSim
 
             initAsync_bServer();
             initAsync_URG();
+
+            // ROS-IF Emu
+            try
+            {
+                ipc = new IpcClient();
+            } catch (Exception e)
+            {
+                ipc = null;
+            }
 
             tmr_Update.Enabled = true;
         }
@@ -335,6 +352,21 @@ namespace CersioSim
             }
             UrgSim.numLrfData = carSim.mkp.LRFdata.Length;
 
+            // ROS-IF経由でのLRFデータ送信
+            try
+            {
+                if (ipc != null && ipc.RemoteObject.urgData.Length > 0)
+                {
+                    int nSkip = ipc.RemoteObject.urgData.Length / carSim.mkp.LRFdata.Length;
+                    for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
+                    {
+                        ipc.RemoteObject.urgData[i * nSkip] = carSim.mkp.LRFdata[i];
+                    }
+                }
+            } catch ( Exception ex )
+            {
+                //
+            }
             
             // URGコマンド受信処理
             if (UrgSim.readMessage())

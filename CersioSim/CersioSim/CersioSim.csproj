@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +57,7 @@
   <ItemGroup>
     <Compile Include="bServer.cs" />
     <Compile Include="CarSim.cs" />
+    <Compile Include="IpcRemoteObj.cs" />
     <Compile Include="LRFMapForm.cs">
       <SubType>Form</SubType>
     </Compile>
