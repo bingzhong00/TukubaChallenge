@@ -60,7 +60,7 @@ namespace CersioSim
         /// <summary>
         /// ROS-IF Emu
         /// </summary>
-        private IpcClient ipc;
+        private IpcServer ipc;
 
 
         /// <summary>
@@ -102,8 +102,9 @@ namespace CersioSim
             // ROS-IF Emu
             try
             {
-                ipc = new IpcClient();
-            } catch (Exception e)
+                ipc = new IpcServer();
+            }
+            catch (Exception e)
             {
                 ipc = null;
             }
@@ -117,13 +118,24 @@ namespace CersioSim
         private async void initAsync_bServer()
         {
             // bServer Listen Open
-            await bSrv.Open();
+            try
+            {
+                await bSrv.Open();
+            }
+            catch
+            {
+            }
         }
 
         private async void initAsync_URG()
         {
             // URG Listen
-            await UrgSim.Open();
+            try
+            {
+                await UrgSim.Open();
+            } catch
+            {
+            }
         }
 
         /// <summary>
@@ -355,13 +367,22 @@ namespace CersioSim
             // ROS-IF経由でのLRFデータ送信
             try
             {
-                if (ipc != null && ipc.RemoteObject.urgData.Length > 0)
+                if (ipc != null && ipc.RemoteObject.urgData.Length  > 0)
                 {
                     int nSkip = ipc.RemoteObject.urgData.Length / carSim.mkp.LRFdata.Length;
                     for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
                     {
-                        ipc.RemoteObject.urgData[i * nSkip] = carSim.mkp.LRFdata[i];
+                        for (int n = 0; n < nSkip; n++)
+                        {
+                            ipc.RemoteObject.urgData[i * nSkip + n] = carSim.mkp.LRFdata[i];
+                        }
                     }
+
+                    //lbl_Speed.Text = "LRF:" + ipc.RemoteObject.urgData[0].ToString();
+
+                    // debug
+                    ipc.RemoteObject.vslamPlotX = carSim.mkp.LRFdata[0]; //carSim.mkp.X;
+                    ipc.RemoteObject.vslamPlotY = carSim.mkp.Y;
                 }
             } catch ( Exception ex )
             {
