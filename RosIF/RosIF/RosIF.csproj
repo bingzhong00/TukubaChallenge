@@ -65,7 +65,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IpcRemoteObj.cs" />
     <Compile Include="MatrixMath.cs" />
     <Compile Include="msgs\Clock.cs" />
     <Compile Include="msgs\LaserScan.cs" />
@@ -85,6 +84,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\VRIpcLib\VRIpcLib\VRIpcLib.csproj">
+      <Project>{49b18a6e-1ff5-4c96-839f-16f26826cbf3}</Project>
+      <Name>VRIpcLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

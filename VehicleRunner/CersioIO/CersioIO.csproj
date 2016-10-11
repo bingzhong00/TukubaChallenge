@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="CersioCtrl.cs" />
     <Compile Include="DriveIOport.cs" />
-    <Compile Include="IpcRemoteObj.cs" />
     <Compile Include="REncoderInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TCPClient.cs" />
@@ -71,6 +70,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\VRIpcLib\VRIpcLib\VRIpcLib.csproj">
+      <Project>{49b18a6e-1ff5-4c96-839f-16f26826cbf3}</Project>
+      <Name>VRIpcLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LocationPresumption\LocationPresumption.csproj">
       <Project>{996e51a3-8549-460d-9c91-14402266a0fd}</Project>
       <Name>LocationPresumption</Name>
