@@ -118,10 +118,6 @@
             this.btnCribration = new System.Windows.Forms.Button();
             this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
             this.cb_StraghtMode = new System.Windows.Forms.CheckBox();
-            this.lbl_AccRatio = new System.Windows.Forms.Label();
-            this.tbar_AccRatio = new System.Windows.Forms.TrackBar();
-            this.lbl_HdlRatio = new System.Windows.Forms.Label();
-            this.tbar_HdlRatio = new System.Windows.Forms.TrackBar();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cmbbox_UsbSH2Connect = new System.Windows.Forms.ComboBox();
             this.cb_UsbSH2Connect = new System.Windows.Forms.CheckBox();
@@ -165,8 +161,6 @@
             this.groupBox12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_LRFViewScale)).BeginInit();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbar_AccRatio)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbar_HdlRatio)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.gb_DriveControl.SuspendLayout();
@@ -1120,10 +1114,6 @@
             this.tabPage_Emulate.Controls.Add(this.groupBox7);
             this.tabPage_Emulate.Controls.Add(this.cb_InDoorMode);
             this.tabPage_Emulate.Controls.Add(this.cb_StraghtMode);
-            this.tabPage_Emulate.Controls.Add(this.lbl_AccRatio);
-            this.tabPage_Emulate.Controls.Add(this.tbar_AccRatio);
-            this.tabPage_Emulate.Controls.Add(this.lbl_HdlRatio);
-            this.tabPage_Emulate.Controls.Add(this.tbar_HdlRatio);
             this.tabPage_Emulate.Controls.Add(this.groupBox5);
             this.tabPage_Emulate.Controls.Add(this.groupBox2);
             this.tabPage_Emulate.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -1239,44 +1229,6 @@
             this.cb_StraghtMode.TabIndex = 49;
             this.cb_StraghtMode.Text = "直進モード";
             this.cb_StraghtMode.UseVisualStyleBackColor = true;
-            // 
-            // lbl_AccRatio
-            // 
-            this.lbl_AccRatio.AutoSize = true;
-            this.lbl_AccRatio.Location = new System.Drawing.Point(6, 200);
-            this.lbl_AccRatio.Name = "lbl_AccRatio";
-            this.lbl_AccRatio.Size = new System.Drawing.Size(61, 12);
-            this.lbl_AccRatio.TabIndex = 48;
-            this.lbl_AccRatio.Text = "AccelRatio";
-            // 
-            // tbar_AccRatio
-            // 
-            this.tbar_AccRatio.LargeChange = 2;
-            this.tbar_AccRatio.Location = new System.Drawing.Point(107, 196);
-            this.tbar_AccRatio.Name = "tbar_AccRatio";
-            this.tbar_AccRatio.Size = new System.Drawing.Size(163, 45);
-            this.tbar_AccRatio.TabIndex = 47;
-            this.tbar_AccRatio.Value = 5;
-            this.tbar_AccRatio.Scroll += new System.EventHandler(this.tbar_AccRatio_Scroll);
-            // 
-            // lbl_HdlRatio
-            // 
-            this.lbl_HdlRatio.AutoSize = true;
-            this.lbl_HdlRatio.Location = new System.Drawing.Point(6, 169);
-            this.lbl_HdlRatio.Name = "lbl_HdlRatio";
-            this.lbl_HdlRatio.Size = new System.Drawing.Size(67, 12);
-            this.lbl_HdlRatio.TabIndex = 46;
-            this.lbl_HdlRatio.Text = "HandleRatio";
-            // 
-            // tbar_HdlRatio
-            // 
-            this.tbar_HdlRatio.LargeChange = 2;
-            this.tbar_HdlRatio.Location = new System.Drawing.Point(107, 158);
-            this.tbar_HdlRatio.Name = "tbar_HdlRatio";
-            this.tbar_HdlRatio.Size = new System.Drawing.Size(163, 45);
-            this.tbar_HdlRatio.TabIndex = 45;
-            this.tbar_HdlRatio.Value = 10;
-            this.tbar_HdlRatio.Scroll += new System.EventHandler(this.tbar_HdlRatio_Scroll);
             // 
             // groupBox5
             // 
@@ -1469,12 +1421,10 @@
             // rb_LRF_LAN
             // 
             this.rb_LRF_LAN.AutoSize = true;
-            this.rb_LRF_LAN.Checked = true;
             this.rb_LRF_LAN.Location = new System.Drawing.Point(16, 51);
             this.rb_LRF_LAN.Name = "rb_LRF_LAN";
             this.rb_LRF_LAN.Size = new System.Drawing.Size(87, 16);
             this.rb_LRF_LAN.TabIndex = 28;
-            this.rb_LRF_LAN.TabStop = true;
             this.rb_LRF_LAN.Text = "ConnectLAN";
             this.rb_LRF_LAN.UseVisualStyleBackColor = true;
             this.rb_LRF_LAN.CheckedChanged += new System.EventHandler(this.rb_LRF_LAN_CheckedChanged);
@@ -1482,10 +1432,12 @@
             // rb_LRF_ROSnode
             // 
             this.rb_LRF_ROSnode.AutoSize = true;
+            this.rb_LRF_ROSnode.Checked = true;
             this.rb_LRF_ROSnode.Location = new System.Drawing.Point(16, 24);
             this.rb_LRF_ROSnode.Name = "rb_LRF_ROSnode";
             this.rb_LRF_ROSnode.Size = new System.Drawing.Size(88, 16);
             this.rb_LRF_ROSnode.TabIndex = 27;
+            this.rb_LRF_ROSnode.TabStop = true;
             this.rb_LRF_ROSnode.Text = "ConnectROS";
             this.rb_LRF_ROSnode.UseVisualStyleBackColor = true;
             this.rb_LRF_ROSnode.CheckedChanged += new System.EventHandler(this.rb_LRF_LAN_CheckedChanged);
@@ -1596,8 +1548,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_LRFViewScale)).EndInit();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbar_AccRatio)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbar_HdlRatio)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -1712,10 +1662,6 @@
         private System.Windows.Forms.RadioButton rb_LRF_LAN;
         private System.Windows.Forms.RadioButton rb_LRF_ROSnode;
         private System.Windows.Forms.CheckBox cb_StraghtMode;
-        private System.Windows.Forms.Label lbl_AccRatio;
-        private System.Windows.Forms.TrackBar tbar_AccRatio;
-        private System.Windows.Forms.Label lbl_HdlRatio;
-        private System.Windows.Forms.TrackBar tbar_HdlRatio;
         private System.Windows.Forms.CheckBox cb_VRRevision;
         private System.Windows.Forms.CheckBox cb_InDoorMode;
         private System.Windows.Forms.RadioButton rb_MovePF;

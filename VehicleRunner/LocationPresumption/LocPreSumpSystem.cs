@@ -184,7 +184,7 @@ namespace LocationPresumption
             worldMap = new WorldMap(fnameMapBmp);
             MapToRealScale = (worldWith / (double)worldMap.WorldSize.w);     // 実サイズ（ｍｍ）/ピクセル数　＝　１ピクセルを何mmとするか
 
-            URG_LRF.setScale(1.0 / MapToRealScale);      // mm単位からピクセル単位へ スケール変換
+            //URG_LRF.setScale(1.0 / MapToRealScale);      // mm単位からピクセル単位へ スケール変換
 
             // エリア初期化
             // エリアサイズ策定 LRF最大距離をエリアのピクセル数とする

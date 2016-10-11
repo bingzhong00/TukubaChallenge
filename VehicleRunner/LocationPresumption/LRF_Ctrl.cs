@@ -176,12 +176,14 @@ namespace LocationPresumption
         /// <param name="data"></param>
         public void SetExtData( double[] data )
         {
-            // 1080 -> 270へ変換
-            double[] newLRFData = new double[data.Length/4];
+            if (null == data) return;
 
-            for (int i = 0; i < data.Length; i++)
+            // 1080 -> 270へ変換
+            double[] newLRFData = new double[maxLrfDir];
+            int nSkip = data.Length / maxLrfDir;
+            for (int i = 0; i < maxLrfDir; i++)
             {
-                newLRFData[i/4] = data[i];
+                newLRFData[i] = data[i * nSkip];
             }
 
             LRF_Data = newLRFData;

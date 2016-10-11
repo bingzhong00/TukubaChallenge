@@ -54,6 +54,8 @@
     <Compile Include="ActiveDetour.cs" />
     <Compile Include="AStar.cs" />
     <Compile Include="Brain.cs" />
+    <Compile Include="EmergencyBrake.cs" />
+    <Compile Include="EmergencyHandring.cs" />
     <Compile Include="HexPixelMap.cs" />
     <Compile Include="MapData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

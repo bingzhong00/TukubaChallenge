@@ -29,7 +29,7 @@ namespace CersioIO
         /// <summary>
         /// bServer通信ソケット
         /// </summary>
-        TCPClient objTCPSC = null; // new TCPClient("192.168.1.1", 50001);
+        TCPClient objTCPSC = null;
 
 
         /// <summary>
@@ -76,6 +76,7 @@ namespace CersioIO
 
         public double hwGPS_LandX = 0.0;
         public double hwGPS_LandY = 0.0;
+
         /// <summary>
         /// GPS移動情報からの向き
         /// 比較的遅れる
@@ -96,12 +97,12 @@ namespace CersioIO
         /// <summary>
         /// ROS中継　通信オブジェクト
         /// </summary>
-        private IpcServer ipc = new IpcServer();
+        private IpcClient ipc = new IpcClient();
 
         /// <summary>
         /// bServer IpAddr
         /// </summary>
-        private string bServerAddr = "192.168.1.1";
+        private string bServerAddr = "192.168.1.101";
 
         /// <summary>
         /// bServer エミュレータ
@@ -158,7 +159,7 @@ namespace CersioIO
                 // 少し待つ
                 System.Threading.Thread.Sleep(100);
             }
-
+#if false
             // 通信接続
             objTCPSC = null;
             objTCPSC = new TCPClient(bServerAddr, bServerPort );
@@ -167,6 +168,9 @@ namespace CersioIO
 
             // 回線オープン
             return objTCPSC.Start();
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -227,6 +231,9 @@ namespace CersioIO
         {
             if (TCP_IsConnected())
             {
+                // 他のACコマンドを発行するスレッドの終了を待つ
+                System.Threading.Thread.Sleep(250);
+
                 // 動力停止
                 TCP_SendCommand("AC,0.0,0.0\n");
                 System.Threading.Thread.Sleep(50);
@@ -288,7 +295,7 @@ namespace CersioIO
         /// <param name="dir"></param>
         public void SendCommand_RE_OneRotatePulse_Reset(double wheelL, double wheelR )
         {
-            SendCommand("ES," + wheelL.ToString("f") + "," + wheelR.ToString("f") + "\n");
+            SendCommand("EP," + wheelL.ToString("f") + "," + wheelR.ToString("f") + "\n");
         }
 
 
@@ -374,7 +381,14 @@ namespace CersioIO
         /// <returns></returns>
         public double[] GetROS_LRFdata()
         {
-            return ipc.RemoteObject.urgData;
+            try
+            {
+                return ipc.RemoteObject.urgData;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -414,13 +428,13 @@ namespace CersioIO
         /// <param name="targetAccelVal"></param>
         public void CalcHandleAccelControl(double targetHandleVal, double targetAccelVal )
         {
-            double handleTgt = targetHandleVal * CersioCtrl.HandleRate;
-            double accTgt = targetAccelVal * CersioCtrl.AccRate;
-            double diffAcc = (accTgt - CersioCtrl.nowSendAccValue);
+            double handleTgt = targetHandleVal * HandleRate;
+            double accTgt = targetAccelVal * AccRate;
+            double diffAcc = (accTgt - nowSendAccValue);
 
             // ハンドル、アクセル操作を徐々に目的値に変更する
-            CersioCtrl.nowSendHandleValue += (handleTgt - CersioCtrl.nowSendHandleValue) * CersioCtrl.HandleControlPow;
-            CersioCtrl.nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * CersioCtrl.AccControlPowUP) : (diffAcc * CersioCtrl.AccControlPowDOWN));
+            nowSendHandleValue += (handleTgt - nowSendHandleValue) * HandleControlPow;
+            nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));
         }
 
         // =====================================================================================
@@ -496,34 +510,20 @@ namespace CersioIO
             if (TCP_IsConnected())
             {
                 // 先頭から順に送信
-                if (SendCommandList.Count > 0)
+                while (SendCommandList.Count > 0)
                 {
-                    // コマンド結合
-                    string sendMsg = "";
-                    for (int i = 0; i < 10; i++)
-                    {
-                        sendMsg += SendCommandList[0];
-                        SendCommandList.RemoveAt(0);
-
-                        if (SendCommandList.Count <= 0) break;
-                    }
-
+                    string sendMsg = SendCommandList[0];
                     TCP_SendCommand(sendMsg);
-                }
 
-                // もし、たまりすぎたら捨てる
-                if (SendCommandList.Count > 100)
-                {
-                    SendCommandList.Clear();
-                    // ※ログ出力先　再検討
-                    //Brain.addLogMsg += "SendCommandTick: OverFlow!\n";
+                    if (SendCommandList.Count > 0)
+                    {
+                        SendCommandList.RemoveAt(0);
+                    }
                 }
             }
-            else
-            {
-                // 接続されていないなら、リストをクリア
-                SendCommandList.Clear();
-            }
+
+            // 接続されていないなら、リストをクリア
+            SendCommandList.Clear();
         }
 
         /// <summary>

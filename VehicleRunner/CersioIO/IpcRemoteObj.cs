@@ -14,13 +14,6 @@ namespace CersioIO
     {
         public const int numUrgData = 1080;
 
-        public IpcRemoteObj()
-        {
-            urgData = new double[numUrgData];
-            urgDataSend = new double[numUrgData];
-            urgIntensitiesSend = new double[numUrgData];
-        }
-
         /// <summary>
         /// アドレス
         /// </summary>
@@ -62,8 +55,8 @@ namespace CersioIO
         /// <summary>
         /// 送信用
         /// </summary>
-        public double[] urgDataSend { get; set; }
-        public double[] urgIntensitiesSend { get; set; }
+        //public List<double> urgDataSend { get; set; }
+        //public List<double> urgIntensitiesSend { get; set; }
 
         // -------------------------------------------------
         // ROS -> VR 受信情報
@@ -85,7 +78,13 @@ namespace CersioIO
         /// <summary>
         /// urg node
         /// </summary>
-        public double[] urgData { get; set; }
+        public double[] _urgData = new double[numUrgData];
+        
+        public double[] urgData
+        {
+            set { _urgData = value; }
+            get { return _urgData; }
+        }
     }
 
     // サーバー

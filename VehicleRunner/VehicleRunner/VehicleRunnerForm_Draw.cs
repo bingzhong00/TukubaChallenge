@@ -458,8 +458,7 @@ namespace VehicleRunner
         /// <param name="picScale"></param>
         public void LRF_Draw_Point(Graphics g, Brush colBursh,double[] LRF_Data, int ctrX, int ctrY, double picScale)
         {
-            //double rScale = (1.0 / LocSys.RealToMapSclae);
-            double rPI = Math.PI / 180.0;
+           double rPI = Math.PI / 180.0;
             int pixelSize = 3;
 
             // LRFの値を描画
@@ -489,25 +488,25 @@ namespace VehicleRunner
         public void LRF_Draw_PointEBS(Graphics g, ref LocPreSumpSystem LocSys, ref Brain BrainCtrl, double[] lrfdata, int ctrX, int ctrY, double scale, double picScale)
         {
             {
-                int stAng = Brain.EmergencyBrake.stAng + (int)BrainCtrl.EBS.HandleDiffAngle;
-                int edAng = Brain.EmergencyBrake.edAng + (int)BrainCtrl.EBS.HandleDiffAngle;
+                int stAng = EmergencyBrake.stAng + (int)BrainCtrl.EBS.HandleDiffAngle;
+                int edAng = EmergencyBrake.edAng + (int)BrainCtrl.EBS.HandleDiffAngle;
 
                 int cirSize;
 
-                if (BrainCtrl.EBS.CautionLv >= Brain.EmergencyBrake.StopLv)
+                if (BrainCtrl.EBS.CautionLv >= EmergencyBrake.StopLv)
                 {
                     // ブレーキレンジ内
                     Brush colBrs = Brushes.Red;
-                    cirSize = (int)((Brain.EmergencyBrake.BrakeRange * 2.0 / LocSys.MapToRealScale) * scale);
+                    cirSize = (int)((EmergencyBrake.BrakeRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.FillPie(colBrs, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
                 }
-                else if (BrainCtrl.EBS.CautionLv >= Brain.EmergencyBrake.SlowDownLv)
+                else if (BrainCtrl.EBS.CautionLv >= EmergencyBrake.SlowDownLv)
                 {
                     // スローダウンレンジ内
                     Brush colBrs = Brushes.Orange;
-                    cirSize = (int)((Brain.EmergencyBrake.SlowRange * 2.0 / LocSys.MapToRealScale) * scale);
+                    cirSize = (int)((EmergencyBrake.SlowRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.FillPie(colBrs, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
@@ -518,13 +517,13 @@ namespace VehicleRunner
                     Pen colPen = Pens.Yellow;
 
                     // スローダウン　レンジ枠
-                    cirSize = (int)((Brain.EmergencyBrake.SlowRange * 2.0 / LocSys.MapToRealScale) * scale);
+                    cirSize = (int)((EmergencyBrake.SlowRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
 
                     // ブレーキ　レンジ枠
-                    cirSize = (int)((Brain.EmergencyBrake.BrakeRange * 2.0 / LocSys.MapToRealScale) * scale);
+                    cirSize = (int)((EmergencyBrake.BrakeRange * 2.0 / LocSys.MapToRealScale) * scale);
                     g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       stAng - 90, (edAng - stAng));
@@ -536,15 +535,15 @@ namespace VehicleRunner
                 int stAng;
                 int edAng;
 
-                int cirSize = (int)((Brain.EmergencyHandring.MaxRange * 2.0 / LocSys.MapToRealScale) * scale);
+                int cirSize = (int)((EmergencyHandring.MaxRange * 2.0 / LocSys.MapToRealScale) * scale);
 
                 Pen colPen = Pens.LightGreen;
 
                 // 左側
-                stAng = Brain.EmergencyHandring.stLAng;
-                edAng = Brain.EmergencyHandring.edLAng;
-                if (BrainCtrl.EHS.Result == Brain.EmergencyHandring.EHS_MODE.LeftWallHit ||
-                    BrainCtrl.EHS.Result == Brain.EmergencyHandring.EHS_MODE.CenterPass)
+                stAng = EmergencyHandring.stLAng;
+                edAng = EmergencyHandring.edLAng;
+                if (BrainCtrl.EHS.Result == EmergencyHandring.EHS_MODE.LeftWallHit ||
+                    BrainCtrl.EHS.Result == EmergencyHandring.EHS_MODE.CenterPass)
                 {
                     g.FillPie(Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
@@ -556,10 +555,10 @@ namespace VehicleRunner
 
 
                 // 右側
-                stAng = Brain.EmergencyHandring.stRAng;
-                edAng = Brain.EmergencyHandring.edRAng;
-                if (BrainCtrl.EHS.Result == Brain.EmergencyHandring.EHS_MODE.RightWallHit ||
-                    BrainCtrl.EHS.Result == Brain.EmergencyHandring.EHS_MODE.CenterPass)
+                stAng = EmergencyHandring.stRAng;
+                edAng = EmergencyHandring.edRAng;
+                if (BrainCtrl.EHS.Result == EmergencyHandring.EHS_MODE.RightWallHit ||
+                    BrainCtrl.EHS.Result == EmergencyHandring.EHS_MODE.CenterPass)
                 {
                     g.FillPie(Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
@@ -573,7 +572,7 @@ namespace VehicleRunner
             // ノイズリダクションLRF描画
             if (lrfdata != null)
             {
-                LRF_Draw_Point(g, Brushes.Cyan, lrfdata, ctrX, ctrY, picScale);
+                LRF_Draw_Point(g, Brushes.Cyan, lrfdata, ctrX, ctrY, picScale*(1.0 / LocSys.MapToRealScale));
             }
         }
   

@@ -131,9 +131,7 @@ namespace VehicleRunner
             rb_Move_CheckedChanged(null, null);
             rb_Dir_CheckedChanged(null, null);
 
-            tbar_AccRatio_Scroll(null, null);
-            tbar_HdlRatio_Scroll(null, null);
-
+            // 自己位置補正設定　切り替え
             cb_VRRevision_CheckedChanged(null, null);
 
             // マップウィンドウサイズのbmp作成
@@ -365,7 +363,7 @@ namespace VehicleRunner
                         // LRF描画
                         if (LocSys.LRF.getData() != null)
                         {
-                            formDraw.LRF_Draw_Point(g, Brushes.Yellow, LocSys.LRF.getData(), ctrX, ctrY, (LRFViewScale / 1000.0f)*scale);
+                            formDraw.LRF_Draw_Point(g, Brushes.Yellow, LocSys.LRF.getData(), ctrX, ctrY, (LRFViewScale / 1000.0f)*scale * (1.0 / LocSys.MapToRealScale));
                         }
 
                         {
@@ -543,7 +541,7 @@ namespace VehicleRunner
 #endif
 
             // 実走行時、bServerと接続が切れたら再接続
-            if (updateHwCnt % 50 == 0)
+            if (updateHwCnt % 100 == 0)
             {
                 // 状態を見て、自動接続
                 if (!CersioCt.TCP_IsConnected())
@@ -863,7 +861,7 @@ namespace VehicleRunner
                     if (BrainCtrl.EBS.EmgBrk && cb_EmgBrake.Checked) cb_EmgBrake.BackColor = Color.Red;
                     else cb_EmgBrake.BackColor = SystemColors.Control;
 
-                    if (BrainCtrl.EHS.Result != Brain.EmergencyHandring.EHS_MODE.None && cb_EHS.Checked)
+                    if (BrainCtrl.EHS.Result != EmergencyHandring.EHS_MODE.None && cb_EHS.Checked)
                     {
                         cb_EHS.BackColor = Color.Orange;
                     }
@@ -1103,9 +1101,9 @@ namespace VehicleRunner
             else
             {
                 // 停止
-                CersioCt.SendCommand_Stop();
-
                 bRunAutonomous = false;
+
+                CersioCt.SendCommand_Stop();
                 cb_StartAutonomous.BackColor = SystemColors.Window;
             }
         }
@@ -1215,25 +1213,9 @@ namespace VehicleRunner
             }
         }
 
-        /// <summary>
-        /// アクセル量
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tbar_AccRatio_Scroll(object sender, EventArgs e)
-        {
-            CersioCtrl.AccRate = tbar_AccRatio.Value * 0.1;
-            lbl_AccRatio.Text = "アクセル上限:" + CersioCtrl.AccRate.ToString("f1");
-        }
-
-        private void tbar_HdlRatio_Scroll(object sender, EventArgs e)
-        {
-            CersioCtrl.HandleRate = tbar_HdlRatio.Value * 0.1;
-            lbl_HdlRatio.Text = "ハンドル上限:" + CersioCtrl.HandleRate.ToString("f1");
-        }
 
         /// <summary>
-        /// 自己位置補正切り替え
+        /// 自己位置補正設定　切り替え
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

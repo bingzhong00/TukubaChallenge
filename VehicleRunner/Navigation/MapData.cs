@@ -51,8 +51,6 @@ namespace Navigation
         /// </summary>
         public Vector3[] checkPoint;
 
-        public bool bNewMap;
-
         /// <summary>
         /// Mapファイル読み込み
         /// </summary>

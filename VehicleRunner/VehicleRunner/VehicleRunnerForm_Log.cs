@@ -217,7 +217,7 @@ namespace VehicleRunner
                 // Brain情報
                 {
                     sw.Write("EBS_CautionLv:" + BrainCtrl.EBS.CautionLv.ToString() + System.Environment.NewLine);
-                    sw.Write("EHS_Handle:" + BrainCtrl.EHS.HandleVal.ToString("f2") + "/Result " + Brain.EmergencyHandring.ResultStr[(int)BrainCtrl.EHS.Result] + System.Environment.NewLine);
+                    sw.Write("EHS_Handle:" + BrainCtrl.EHS.HandleVal.ToString("f2") + "/Result " + EmergencyHandring.ResultStr[(int)BrainCtrl.EHS.Result] + System.Environment.NewLine);
                 }
 
                 // CersioCtrl
