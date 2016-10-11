@@ -17,7 +17,7 @@ namespace RosIF
         static void Main(string[] args)
         {
             // 接続情報
-            string myAddr = "192.168.1.4";
+            string myAddr = "192.168.1.101";
             string roscoreAddr = "http://192.168.1.32:11311";
 
             // 更新タイミング MS
@@ -42,10 +42,10 @@ namespace RosIF
 
 #if STAND_ALONE
             Console.WriteLine("StandAlone Mode");
-            IpcClient ipc = null;
+            IpcServer ipc = null;
 #else
             Console.WriteLine("Connect VehircleRunner IPC..");
-            IpcClient ipc = new IpcClient();
+            IpcServer ipc = new IpcServer();
 
             // ※コネクトリトライ機能 追加
 #endif
@@ -110,18 +110,20 @@ namespace RosIF
                         ipc.RemoteObject.amclAng  = rosifVR.amclAng;
                         
 
-                        // URG ROS->VR SubScribe(購読)
+                        // URG ROS->VR SubScribe(購読)                      
                         for (int i = 0; i < rosifVR.urg_scan.Length; i++) {
                             ipc.RemoteObject.urgData[i] = rosifVR.urg_scan[i];
                         }
+                        
 
                         // URG VR->ROS Publish(配信)
+                        /*
                         for (int i = 0; i < rosifVR.urg_scan.Length; i++)
                         {
                             rosifVR.urg_scan_send[i] = ipc.RemoteObject.urgDataSend[i];
                             rosifVR.urg_intensities_send[i] = ipc.RemoteObject.urgIntensitiesSend[i];
                         }
-
+                        */
                     }
                 }
                 catch (Exception ex)
@@ -156,13 +158,18 @@ namespace RosIF
                     Console.WriteLine("Subscribe ----------- ");
                     Console.WriteLine("clock:" + rosifVR.rosClock.ToLongTimeString());
                     Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
+                    //Console.WriteLine("vslamPlotX:" + ipc.RemoteObject.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + ipc.RemoteObject.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
                     Console.WriteLine("amclX:" + rosifVR.amclPlotX.ToString("f2") + "/ amclY:" + rosifVR.amclPlotY.ToString("f2") + "/ amclAng:" + rosifVR.amclAng.ToString("f2"));
 
                     {
                         string urgStr = "";
-                        for (int i = 0; i < 8; i++)
+                        if (null != ipc.RemoteObject.urgData)
                         {
-                            urgStr += rosifVR.urg_scan[(ROS_if_forVehicleRunner.numUrgData * i / 8)].ToString("f2") + ",";
+                            for (int i = 0; i < 8; i++)
+                            {
+                                urgStr += rosifVR.urg_scan[(ROS_if_forVehicleRunner.numUrgData * i / 8)].ToString("f2") + ",";
+                                //urgStr += ipc.RemoteObject.urgData[(ROS_if_forVehicleRunner.numUrgData * i / 8)].ToString("f2") + ",";
+                            }
                         }
                         Console.WriteLine("urg:" + urgStr );
                     }
