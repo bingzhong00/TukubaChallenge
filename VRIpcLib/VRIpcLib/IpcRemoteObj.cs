@@ -85,6 +85,8 @@ namespace VRIpcLib
             set { _urgData = value; }
             get { return _urgData; }
         }
+
+        // ※WatchDogを追加して、通信接続を監視する？
     }
 
     // サーバー

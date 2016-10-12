@@ -121,8 +121,11 @@ namespace VehicleRunner
             // セルシオコントローラ初期化
             CersioCt = new CersioCtrl();
 
-            // BoxPc(bServer)接続
-            //CersioCt.ConnectBoxPC();
+            // BoxPc(bServer) Emu接続
+            // 起動時にレスポンスの早いエミュレータをつなぎにいく
+            // エミュレータがなければ、リトライ時　実機のbServerにつなぎにいく
+            //bServerConnectAsync();
+            CersioCt.ConnectBoxPC_Emulator();
 
             // ブレイン起動
             BrainCtrl = new Brain(CersioCt, defaultMapFile);
@@ -141,7 +144,6 @@ namespace VehicleRunner
             tb_LRFScale.Text = trackBar_LRFViewScale.Value.ToString();
             //btm_LRFScale_Click(null, null);
             tb_LRFScale_TextChanged(null, null);
-
 
             // bServerエミュレーション表記
             lbl_bServerEmu.Visible = CersioCt.bServerEmu;
@@ -541,12 +543,12 @@ namespace VehicleRunner
 #endif
 
             // 実走行時、bServerと接続が切れたら再接続
-            if (updateHwCnt % 100 == 0)
+            if (updateHwCnt != 0 && updateHwCnt % 100 == 0)
             {
                 // 状態を見て、自動接続
                 if (!CersioCt.TCP_IsConnected())
                 {
-                    CersioCt.ConnectBoxPC();
+                    CersioCt.ConnectBoxPC_Async();
                 }
             }
 
@@ -645,16 +647,18 @@ namespace VehicleRunner
             // BoxPC接続状態確認
             if (CersioCt.TCP_IsConnected())
             {
+                // 接続ＯＫ
                 tb_SendData.BackColor = Color.Lime;
                 tb_ResiveData.BackColor = Color.Lime;
-                lb_BServerConnect.Text = "BServer 接続OK";
+                lb_BServerConnect.Text = "bServer [" + CersioCt.TCP_GetConnectedAddr() + "] 接続OK";
                 lb_BServerConnect.BackColor = Color.Lime;
             }
             else
             {
+                // 接続ＮＧ
                 tb_SendData.BackColor = SystemColors.Window;
                 tb_ResiveData.BackColor = SystemColors.Window;
-                lb_BServerConnect.Text = "BServer 未接続";
+                lb_BServerConnect.Text = "bServer 未接続";
                 lb_BServerConnect.BackColor = SystemColors.Window;
             }
 
@@ -1275,12 +1279,12 @@ namespace VehicleRunner
             if( cb_ConnectBServerEmu.Checked )
             {
                 // エミュレータ接続
-                CersioCt.RunBoxPC_Emulator();
+                CersioCt.ConnectBoxPC_Emulator();
             }
             else
             {
                 // BoxPC接続
-                CersioCt.ConnectBoxPC();
+                CersioCt.ConnectBoxPC_Async();
             }
         }
 

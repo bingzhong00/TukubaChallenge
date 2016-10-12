@@ -1453,6 +1453,7 @@
             this.cb_ConnectBServerEmu.Text = "Emu接続";
             this.cb_ConnectBServerEmu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_ConnectBServerEmu.UseVisualStyleBackColor = true;
+            this.cb_ConnectBServerEmu.Visible = false;
             this.cb_ConnectBServerEmu.CheckedChanged += new System.EventHandler(this.cb_ConnectBServerEmu_CheckedChanged);
             // 
             // cb_ConnectRosIF
@@ -1466,6 +1467,7 @@
             this.cb_ConnectRosIF.Text = "RosIF 接続";
             this.cb_ConnectRosIF.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_ConnectRosIF.UseVisualStyleBackColor = true;
+            this.cb_ConnectRosIF.Visible = false;
             this.cb_ConnectRosIF.CheckedChanged += new System.EventHandler(this.cb_ConnectRosIF_CheckedChanged);
             // 
             // btn_MapLoad

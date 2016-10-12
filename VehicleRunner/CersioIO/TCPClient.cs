@@ -50,10 +50,6 @@ namespace CersioIO
             ConnectResult = false;
         }
 
-        public TCPClient() : this("192.168.1.1",50001)
-        {
-        }
-
         //~TCPClient()
         public void Dispose()
         {
@@ -122,6 +118,35 @@ namespace CersioIO
 
         }
 
+
+        public async void StartAsync()
+        {
+            System.Net.IPAddress ipAdd = System.Net.IPAddress.Parse(this.ipString);
+
+            if (objSck != null)
+            {
+                objSck.Close();
+                objSck = null;
+            }
+
+            objSck = new System.Net.Sockets.TcpClient();
+
+            try
+            {
+                await objSck.ConnectAsync(ipAdd, port);
+            }
+            catch (Exception)
+            {
+                //return false;
+                return;
+            }
+
+            //NetworkStreamを取得
+            ns = objSck.GetStream();
+
+            ConnectResult = true;
+            //return ConnectResult;
+        }
 
     }
 }

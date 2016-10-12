@@ -152,7 +152,7 @@ namespace CersioIO
         /// BoxPcと接続
         /// </summary>
         /// <returns></returns>
-        public bool ConnectBoxPC()
+        public void ConnectBoxPC_Async()
         {
             if (TCP_IsConnected())
             {
@@ -160,27 +160,27 @@ namespace CersioIO
                 // 少し待つ
                 System.Threading.Thread.Sleep(100);
             }
-#if false
+
             // 通信接続
             objTCPSC = null;
-            objTCPSC = new TCPClient(bServerAddr, bServerPort );
+
+            objTCPSC = new TCPClient(bServerAddr, bServerPort);
+            // 回線オープン
+            objTCPSC.StartAsync();
 
             bServerEmu = false;
 
-            // 回線オープン
-            return objTCPSC.Start();
-#else
-            return false;
-#endif
+            return;
         }
 
         /// <summary>
-        /// BoxPcエミュレータ起動
+        /// 
         /// </summary>
         /// <returns></returns>
-        public bool RunBoxPC_Emulator()
+        public void ConnectBoxPC_Emulator()
         {
             // セルシオ　エミュレータ起動
+            /*
             if (null == processEmuSim || processEmuSim.HasExited)
             {
                 processEmuSim = Process.Start(@"..\..\..\CersioSim\bin\CersioSim.exe");
@@ -188,6 +188,7 @@ namespace CersioIO
                 //アイドル状態になるまで待機
                 //processEmuSim.WaitForInputIdle();
             }
+            */
 
             // 通信接続
             if (null != objTCPSC)
@@ -203,12 +204,13 @@ namespace CersioIO
             }
 
             bServerEmu = true;
-
             objTCPSC = null;
-            objTCPSC = new TCPClient(bServerEmuAddr, bServerPort);
 
+            objTCPSC = new TCPClient(bServerEmuAddr, bServerPort);
             // 回線オープン
-            return objTCPSC.Start();
+            objTCPSC.Start();
+
+            return;
         }
 
         /// <summary>
@@ -569,8 +571,6 @@ namespace CersioIO
             }
         }
 
-
-
         // -----------------------------------------------------------------------------------------
         //
         //
@@ -782,6 +782,17 @@ namespace CersioIO
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 接続先 アドレス取得
+        /// </summary>
+        /// <returns></returns>
+        public string TCP_GetConnectedAddr()
+        {
+            if (!TCP_IsConnected()) return "";
+
+            return objTCPSC.ipStringProperty;
         }
 
 
