@@ -40,7 +40,7 @@ namespace CersioSim
         /// <param name="ipAddr">IPアドレス</param>
         /// <param name="ipPort">ポート</param>
         /// <returns></returns>
-        public async Task<bool>Open()
+        public async void OpenAsync()
         {
             sw.Start();
 
@@ -59,15 +59,19 @@ namespace CersioSim
 
             //接続要求があったら受け入れる
             //client = listener.AcceptTcpClient();
-            client = await listener.AcceptTcpClientAsync();
-            Console.WriteLine("クライアント({0}:{1})と接続しました。",
-                ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Address,
-                ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Port);
+            try
+            {
+                client = await listener.AcceptTcpClientAsync();
+                Console.WriteLine("クライアント({0}:{1})と接続しました。",
+                    ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Address,
+                    ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Port);
 
-            //NetworkStreamを取得
-            ns = client.GetStream();
-
-            return true;
+                //NetworkStreamを取得
+                ns = client.GetStream();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>

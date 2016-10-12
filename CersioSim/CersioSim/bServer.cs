@@ -63,6 +63,11 @@ namespace CersioSim
         private System.Net.Sockets.TcpClient client = null;
         private System.Net.Sockets.TcpListener listener = null;
 
+        private bool bListening = false;
+
+        /// <summary>
+        /// 返信に付加する　MSタイマー
+        /// </summary>
         public System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
         public string listenIP = "";
@@ -70,13 +75,19 @@ namespace CersioSim
 
         public bServer(string ipAddr = "127.0.0.1", int ipPort = 50001)
         {
+            sw.Start();
+
             listenIP = ipAddr;
             listenPort = ipPort;
         }
 
-        public async Task<bool>Open()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async void OpenAsync()
         {
-            sw.Start();
+            bListening = true;
 
             //ListenするIPアドレス
             System.Net.IPAddress ipAdd = System.Net.IPAddress.Parse(listenIP);
@@ -100,79 +111,146 @@ namespace CersioSim
                 ((System.Net.IPEndPoint)listener.LocalEndpoint).Port);
 
             //接続要求があったら受け入れる
-            //client = listener.AcceptTcpClient();
-            client = await listener.AcceptTcpClientAsync();
-            Console.WriteLine("クライアント({0}:{1})と接続しました。",
-                ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Address,
-                ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Port);
+            try
+            {
+                //client = listener.AcceptTcpClient();
+                client = await listener.AcceptTcpClientAsync();
+                Console.WriteLine("クライアント({0}:{1})と接続しました。",
+                    ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Address,
+                    ((System.Net.IPEndPoint)client.Client.RemoteEndPoint).Port);
 
-            //NetworkStreamを取得
-            ns = client.GetStream();
+                //NetworkStreamを取得
+                ns = client.GetStream();
 
-            return true;
+                //読み取り、書き込みのタイムアウトを10秒にする
+                //デフォルトはInfiniteで、タイムアウトしない
+                //(.NET Framework 2.0以上が必要)
+                ns.ReadTimeout = 10000;
+                ns.WriteTimeout = 10000;
+
+                bListening = false;
+            }
+            catch (Exception)
+            {
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Close()
         {
             //閉じる
             if (ns != null)
             {
                 ns.Close();
+                ns = null;
             }
             if (client != null)
             {
                 client.Close();
+                client = null;
                 Console.WriteLine("クライアントとの接続を閉じました。");
             }
 
             //リスナを閉じる
-            listener.Stop();
-            Console.WriteLine("Listenerを閉じました。");
+            if (null != listener)
+            {
+                listener.Stop();
+                listener = null;
+                Console.WriteLine("Listenerを閉じました。");
+            }
+
+            bListening = false;
         }
 
+        /// <summary>
+        /// 受信待ち状態か？
+        /// </summary>
+        /// <returns></returns>
+        public bool IsListening()
+        {
+            return bListening;
+        }
+
+        /// <summary>
+        /// 接続確認
+        /// </summary>
+        /// <returns></returns>
+        public bool IsConected()
+        {
+            if (listener == null || client == null || ns == null) return false;
+
+              
+            if (client.Connected)
+            {
+                return true;
+            }
+            return false;
+        }
 
         public bool readMessage()
         {
             if (ns == null) return false;
 
+            /*
             //読み取り、書き込みのタイムアウトを10秒にする
             //デフォルトはInfiniteで、タイムアウトしない
             //(.NET Framework 2.0以上が必要)
             ns.ReadTimeout = 10000;
             ns.WriteTimeout = 10000;
+            */
 
-            // データがない
-            if (!ns.DataAvailable) return false;
+            // 受信データがない
+            if (!ns.DataAvailable)
+            {
+                try
+                {
+                    // 空白を送り接続状態を確認
+                    byte[] sendBytes = new byte[8];
+                    ns.Write(sendBytes, 0, sendBytes.Length);
+                }
+                catch
+                {
+                    Console.WriteLine("クライアントが切断しました。");
+                    Close();
+                }
+                return false;
+            }
 
             //クライアントから送られたデータを受信する
 
             System.Text.Encoding enc = System.Text.Encoding.UTF8;
             bool disconnected = false;
+            string resMsg;
 
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-            byte[] resBytes = new byte[256];
-            int resSize = 0;
-            do
             {
-                //データの一部を受信する
-                resSize = ns.Read(resBytes, 0, resBytes.Length);
-                //Readが0を返した時はクライアントが切断したと判断
-                if (resSize == 0)
+                System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                byte[] resBytes = new byte[256];
+                int resSize = 0;
+
+                do
                 {
-                    disconnected = true;
-                    Console.WriteLine("クライアントが切断しました。");
-                    break;
-                }
+                    //データの一部を受信する
+                    resSize = ns.Read(resBytes, 0, resBytes.Length);
+                    //Readが0を返した時はクライアントが切断したと判断
+                    if (resSize == 0)
+                    {
+                        disconnected = true;
+                        Console.WriteLine("クライアントが切断しました。");
+                        break;
+                    }
 
-                //受信したデータを蓄積する
-                ms.Write(resBytes, 0, resSize);
-                //まだ読み取れるデータがあるか、データの最後が\nでない時は、
-                // 受信を続ける
-            } while (ns.DataAvailable || resBytes[resSize - 1] != '\n');
+                    //受信したデータを蓄積する
+                    ms.Write(resBytes, 0, resSize);
+                    //まだ読み取れるデータがあるか、データの最後が\nでない時は、
+                    // 受信を続ける
+                } while (ns.DataAvailable || resBytes[resSize - 1] != '\n');
 
-            //受信したデータを文字列に変換
-            string resMsg = enc.GetString(ms.GetBuffer(), 0, (int)ms.Length);
-            ms.Close();
+                //受信したデータを文字列に変換
+                resMsg = enc.GetString(ms.GetBuffer(), 0, (int)ms.Length);
+                ms.Close();
+            }
 
             //末尾の\nを削除
             resMsg = resMsg.TrimEnd('\n');
@@ -180,6 +258,7 @@ namespace CersioSim
             Console.WriteLine("receive:" + resMsg);
 #endif
 
+            // 返信
             if (!disconnected)
             {
                 //クライアントにデータを送信する
@@ -197,7 +276,7 @@ namespace CersioSim
 
                 string sendMsg = AnalizeMessage(resMsg);
 
-                if (!string.IsNullOrEmpty( sendMsg))
+                if (!string.IsNullOrEmpty(sendMsg))
                 {
                     byte[] sendBytes = enc.GetBytes(sendMsg + '\n');
 
@@ -206,7 +285,11 @@ namespace CersioSim
                     Console.WriteLine("send:" + sendMsg);
 #endif
                 }
-
+            }
+            else
+            {
+                // 切断
+                Close();
             }
 
             return !disconnected;

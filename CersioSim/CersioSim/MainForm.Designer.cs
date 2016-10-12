@@ -77,9 +77,9 @@
             this.lbl_PosFL = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.cb_LRFForm = new System.Windows.Forms.CheckBox();
-            this.label15 = new System.Windows.Forms.Label();
+            this.lbl_bServerIPTitle = new System.Windows.Forms.Label();
             this.lbl_bServerIP = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
+            this.lbl_URGIPTitle = new System.Windows.Forms.Label();
             this.lbl_URGIP = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).BeginInit();
@@ -564,14 +564,14 @@
             this.cb_LRFForm.UseVisualStyleBackColor = true;
             this.cb_LRFForm.CheckedChanged += new System.EventHandler(this.cb_LRFForm_CheckedChanged);
             // 
-            // label15
+            // lbl_bServerIPTitle
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(660, 498);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(82, 12);
-            this.label15.TabIndex = 17;
-            this.label15.Text = "bServer sim IP:";
+            this.lbl_bServerIPTitle.AutoSize = true;
+            this.lbl_bServerIPTitle.Location = new System.Drawing.Point(660, 498);
+            this.lbl_bServerIPTitle.Name = "lbl_bServerIPTitle";
+            this.lbl_bServerIPTitle.Size = new System.Drawing.Size(82, 12);
+            this.lbl_bServerIPTitle.TabIndex = 17;
+            this.lbl_bServerIPTitle.Text = "bServer sim IP:";
             // 
             // lbl_bServerIP
             // 
@@ -582,14 +582,14 @@
             this.lbl_bServerIP.TabIndex = 18;
             this.lbl_bServerIP.Text = "label16";
             // 
-            // label17
+            // lbl_URGIPTitle
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(675, 522);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(67, 12);
-            this.label17.TabIndex = 19;
-            this.label17.Text = "URG sim IP:";
+            this.lbl_URGIPTitle.AutoSize = true;
+            this.lbl_URGIPTitle.Location = new System.Drawing.Point(675, 522);
+            this.lbl_URGIPTitle.Name = "lbl_URGIPTitle";
+            this.lbl_URGIPTitle.Size = new System.Drawing.Size(67, 12);
+            this.lbl_URGIPTitle.TabIndex = 19;
+            this.lbl_URGIPTitle.Text = "URG sim IP:";
             // 
             // lbl_URGIP
             // 
@@ -606,9 +606,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(895, 543);
             this.Controls.Add(this.lbl_URGIP);
-            this.Controls.Add(this.label17);
+            this.Controls.Add(this.lbl_URGIPTitle);
             this.Controls.Add(this.lbl_bServerIP);
-            this.Controls.Add(this.label15);
+            this.Controls.Add(this.lbl_bServerIPTitle);
             this.Controls.Add(this.cb_LRFForm);
             this.Controls.Add(this.lbl_Speed);
             this.Controls.Add(this.tabControl1);
@@ -691,9 +691,9 @@
         private System.Windows.Forms.Label lbl_PosFL;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.CheckBox cb_LRFForm;
-        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label lbl_bServerIPTitle;
         private System.Windows.Forms.Label lbl_bServerIP;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lbl_URGIPTitle;
         private System.Windows.Forms.Label lbl_URGIP;
     }
 }

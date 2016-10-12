@@ -96,8 +96,11 @@ namespace CersioSim
             lbl_bServerIP.Text = bSrv.listenIP + " : " + bSrv.listenPort.ToString();
             lbl_URGIP.Text = UrgSim.listenIP + " : " + UrgSim.listenPort.ToString();
 
-            initAsync_bServer();
-            initAsync_URG();
+            // bServer回線待ち
+            bSrv.OpenAsync();
+
+            // URG回線待ち
+            UrgSim.OpenAsync();
 
             // ROS-IF Emu
             try
@@ -110,32 +113,6 @@ namespace CersioSim
             }
 
             tmr_Update.Enabled = true;
-        }
-
-        /// <summary>
-        /// 非同期初期化タスク
-        /// </summary>
-        private async void initAsync_bServer()
-        {
-            // bServer Listen Open
-            try
-            {
-                await bSrv.Open();
-            }
-            catch
-            {
-            }
-        }
-
-        private async void initAsync_URG()
-        {
-            // URG Listen
-            try
-            {
-                await UrgSim.Open();
-            } catch
-            {
-            }
         }
 
         /// <summary>
@@ -233,28 +210,43 @@ namespace CersioSim
             }
 
             // bServer受信処理　メッセージ処理
-            if (bSrv.readMessage())
+            if (bSrv.IsConected())
             {
-                // 受信コントロール情報
-                // アクセル、ハンドル値 セット
-                carSim.carHandleAng = -bSrv.ctrHandle * 30.0;
-                /*
-                 * ステアリングの遅れをシミュレーション
+                lbl_bServerIPTitle.ForeColor = Color.LimeGreen;
+
+                if (bSrv.readMessage())
                 {
-                    const double stearingSpeed = 2.0;
-                    double tgtHandle = -bSrv.ctrHandle * 30.0;
-
-                    if (carSim.carHandleAng < tgtHandle) carSim.carHandleAng += stearingSpeed;
-                    else carSim.carHandleAng -= stearingSpeed;
-
-                    if (Math.Abs(carSim.carHandleAng - tgtHandle) < stearingSpeed)
+                    // 受信コントロール情報
+                    // アクセル、ハンドル値 セット
+                    carSim.carHandleAng = -bSrv.ctrHandle * 30.0;
+                    /*
+                     * ステアリングの遅れをシミュレーション
                     {
-                        carSim.carHandleAng = tgtHandle;
-                    }
-                }
-                */
+                        const double stearingSpeed = 2.0;
+                        double tgtHandle = -bSrv.ctrHandle * 30.0;
 
-                carSim.carAccVal = bSrv.ctrAccel;
+                        if (carSim.carHandleAng < tgtHandle) carSim.carHandleAng += stearingSpeed;
+                        else carSim.carHandleAng -= stearingSpeed;
+
+                        if (Math.Abs(carSim.carHandleAng - tgtHandle) < stearingSpeed)
+                        {
+                            carSim.carHandleAng = tgtHandle;
+                        }
+                    }
+                    */
+
+                    carSim.carAccVal = bSrv.ctrAccel;
+                }
+            }
+            else
+            {
+                lbl_bServerIPTitle.ForeColor = Color.Black;
+
+                // 受信待ちでなければ、待ち状態に移行
+                if (!bSrv.IsListening())
+                {
+                    bSrv.OpenAsync();
+                }
             }
 
             {
@@ -392,7 +384,13 @@ namespace CersioSim
             // URGコマンド受信処理
             if (UrgSim.readMessage())
             {
+                lbl_URGIPTitle.ForeColor = Color.LimeGreen;
             }
+            else
+            {
+                lbl_URGIPTitle.ForeColor = Color.Black;
+            }
+
         }
 
         /// <summary>
