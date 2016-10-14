@@ -76,6 +76,8 @@ namespace RosIF
         // ================================================================================================
         public const int numUrgData = 1080;
 
+        private Queue<Point> vSlamMoveVecQue = new Queue<Point>();
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -100,15 +102,57 @@ namespace RosIF
             Console.WriteLine("pose:" + dt.pose.position.x.ToString() + "," + dt.pose.position.y.ToString() + "," + dt.pose.position.z.ToString());
             Console.WriteLine("color:" + dt.color.r.ToString() + "," + dt.color.g.ToString() + "," + dt.color.b.ToString());
             */
-            vslamPlotX = dt.pose.position.x;
-            vslamPlotY = dt.pose.position.y;
-            vslamPlotZ = dt.pose.position.z;    // 座標系がわからないので、とりあえず Z軸も保持
 
-            // Quatanionから角度(向き)へ変換
-            vslamAng = MatrixMath.QuaternionToAngle( (float)dt.pose.orientation.x,
-                                                     (float)dt.pose.orientation.y,
-                                                     (float)dt.pose.orientation.z,
-                                                     (float)dt.pose.orientation.w ); 
+            // 特定の色のマーカー情報を読む
+            if ( dt.color.r == 0.0f && dt.color.g == 0.0f && dt.color.b == 0.5f && dt.color.a == 1.0f )
+            {
+                // 単位変換 m -> mm
+                vslamPlotX = dt.pose.position.x * 1000.0;
+                vslamPlotY = dt.pose.position.y * 1000.0;
+                vslamPlotZ = dt.pose.position.z * 1000.0;    // とりあえず Z軸も保持
+
+#if false
+                // Quatanionから角度(向き)へ変換
+                vslamAng = MatrixMath.QuaternionToAngle((float)dt.pose.orientation.x,
+                                                         (float)dt.pose.orientation.y,
+                                                         (float)dt.pose.orientation.z,
+                                                         (float)dt.pose.orientation.w);
+#endif
+
+                // キューに入っているベクトルを足して方向に変換
+                {
+                    vSlamMoveVecQue.Enqueue(dt.pose.position);
+
+                    Point dirVec = new Point();
+                    Point prevVec = vSlamMoveVecQue.First();
+                    foreach (var vec in vSlamMoveVecQue)
+                    {
+                        dirVec.x += (vec.x - prevVec.x);
+                        dirVec.y += (vec.y - prevVec.y);
+                        dirVec.z += (vec.z - prevVec.z);
+
+                        prevVec = vec;
+                    }
+
+                    double vecLeng = Math.Sqrt(dirVec.x * dirVec.x) + Math.Sqrt(dirVec.y * dirVec.y);
+                    if (vecLeng > 1.0)
+                    {
+                        // 正規化
+                        dirVec.x /= vecLeng;
+                        dirVec.y /= vecLeng;
+
+                        // 方向へ変換
+                        vslamAng = Math.Atan2(dirVec.y, dirVec.x);
+                    }
+
+
+                    if (vSlamMoveVecQue.Count > 10)
+                    {
+                        vSlamMoveVecQue.Dequeue();
+                    }
+                }
+
+            }
         }
 
         /// <summary>
@@ -257,7 +301,7 @@ namespace RosIF
                 rosNode = Ros.InitNodeAsync(NodeName).Result;
 
                 // Subscriberの生成。Subscriberが生成されるまで待つ。
-                //subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
+                subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
                 subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/base_link").Result;

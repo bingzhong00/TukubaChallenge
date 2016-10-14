@@ -1,8 +1,4 @@
-﻿#if DEBUG
-//#define STAND_ALONE  // VehicleRunnerと接続しない
-#endif
-
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,15 +36,9 @@ namespace RosIF
             Console.WriteLine("VehircleRunner ROS-Interface Ver0.20");
             Console.WriteLine("");
 
-#if STAND_ALONE
-            Console.WriteLine("StandAlone Mode");
-            IpcServer ipc = null;
-#else
             Console.WriteLine("Connect VehircleRunner IPC..");
             IpcServer ipc = new IpcServer();
 
-            // ※コネクトリトライ機能 追加
-#endif
             ROS_if_forVehicleRunner rosifVR = new ROS_if_forVehicleRunner();
 
 
@@ -130,25 +120,6 @@ namespace RosIF
                 {
                     Console.WriteLine("IPC Connect Error!");
                     Console.WriteLine(ex.Message);
-
-                    /*
-                    // VehivleRunner <--> ROS-IF 通信テスト用 ダミーデータ 
-                    {
-                        rosifVR.rePlotX += 1.0;
-                        rosifVR.rePlotY += 1.0;
-                        rosifVR.reAng += 1.0;
-
-                        // Compus
-                        rosifVR.compusDir += 1.0;
-
-                        // RE パルス値
-                        rosifVR.reRpulse += 1.0;
-                        rosifVR.reLpulse += 1.0;
-
-                        // GPS
-                        rosifVR.gpsGrandX += 1.0;
-                        rosifVR.gpsGrandY += 1.0;
-                    }*/
 
                     break;
                 }
