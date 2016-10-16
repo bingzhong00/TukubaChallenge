@@ -77,7 +77,7 @@ namespace RosIF
         // ================================================================================================
         public const int numUrgData = 1080;
 
-        private Queue<Point> vSlamMoveVecQue = new Queue<Point>();
+        private Queue<Vector3> vSlamMoveVecQue = new Queue<Vector3>();
 
         /// <summary>
         /// コンストラクタ
@@ -140,13 +140,13 @@ namespace RosIF
                                                          (float)dt.pose.orientation.w);
 #endif
 
-#if false
+#if true
                 // キューに入っているベクトルを足して方向に変換
                 {
-                    vSlamMoveVecQue.Enqueue(dt.pose.position);
+                    vSlamMoveVecQue.Enqueue(dt.linear);
 
-                    Point dirVec = new Point();
-                    Point prevVec = vSlamMoveVecQue.First();
+                    Vector3 dirVec = new Vector3();
+                    Vector3 prevVec = vSlamMoveVecQue.First();
                     foreach (var vec in vSlamMoveVecQue)
                     {
                         dirVec.x += (vec.x - prevVec.x);
@@ -333,12 +333,13 @@ namespace RosIF
                 subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
                 subClock = rosNode.SubscriberAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
                 
+
                 // Publisher生成
                 pubRE = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/re").Result;
                 pubPlot = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/replot").Result;
                 pubCompus = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/compus").Result;
                 pubGPS = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/gpsplot").Result;
-                pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scanVR").Result;
+                //pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scanVR").Result;
 
                 //pubClock = rosNode.PublisherAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
 
@@ -362,6 +363,21 @@ namespace RosIF
         {
             if (null != rosNode)
             {
+                try
+                {
+                    if (null != pubRE) pubRE.Dispose();
+                    if (null != pubPlot) pubPlot.Dispose();
+                    if (null != pubCompus) pubCompus.Dispose();
+                    if (null != pubGPS) pubGPS.Dispose();
+                    if (null != pubUrg) pubUrg.Dispose();
+
+                    if (null != subVSlam) subVSlam.Dispose();
+                    if (null != subRosif_pub) subRosif_pub.Dispose();
+                    if (null != subUrg) subUrg.Dispose();
+                    if (null != subClock) subClock.Dispose();
+
+                } catch { }
+
                 try
                 {
                     rosNode.Dispose();
