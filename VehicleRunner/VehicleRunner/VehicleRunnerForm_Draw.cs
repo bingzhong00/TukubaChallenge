@@ -293,11 +293,14 @@ namespace VehicleRunner
             try
             {
                 // Info
+                /*
                 DrawString(g, 0, drawFont.Height * 0,
                            "R1 X:" + ((int)(LocSys.R1.X + 0.5)).ToString("D4") +
                            ",Y:" + ((int)(LocSys.R1.Y + 0.5)).ToString("D4") +
                            ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
                            Brushes.Red, Brushes.Black);
+                */
+
                 /*
                 DrawString(g, 0, drawFont.Height * 1,
                            "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwREDir)).ToString("D3") +
@@ -307,12 +310,13 @@ namespace VehicleRunner
                 DrawString(g, 0, drawFont.Height * 1,
                            "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (BrainCtrl.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + BrainCtrl.RTS.GetNowCheckPointIdx().ToString()),
                            Brushes.Blue, Brushes.White);
-
+                /*
                 DrawString(g, 0, drawFont.Height * 2,
                            "LocProc:" + LocPreSumpSystem.swCNT_Update.ElapsedMilliseconds +
                            "ms /Draw:" + LocSys.swCNT_Draw.ElapsedMilliseconds +
                            "ms /MRF:" + LocPreSumpSystem.swCNT_MRF.ElapsedMilliseconds + "ms",
                            Brushes.Blue, Brushes.White);
+                */
 
                 LocPreSumpSystem.swCNT_Update.Reset();
                 LocPreSumpSystem.swCNT_MRF.Reset();
@@ -547,11 +551,11 @@ namespace VehicleRunner
                 {
                     g.FillPie(Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
-                                      stAng - 90, (edAng - stAng));
+                                      -stAng - 90, -(edAng - stAng));
                 }
                 g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                                           cirSize, cirSize,
-                                                          stAng - 90, (edAng - stAng));
+                                                          -stAng - 90, -(edAng - stAng));
 
 
                 // 右側
@@ -562,11 +566,11 @@ namespace VehicleRunner
                 {
                     g.FillPie(Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
-                                      stAng - 90, (edAng - stAng));
+                                      -stAng - 90, -(edAng - stAng));
                 }
                 g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                                               cirSize, cirSize,
-                                                              stAng - 90, (edAng - stAng));
+                                                              -stAng - 90, -(edAng - stAng));
             }
 
             // ノイズリダクションLRF描画

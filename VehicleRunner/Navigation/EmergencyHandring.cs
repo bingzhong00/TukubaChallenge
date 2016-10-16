@@ -18,29 +18,30 @@ namespace Navigation
         // 室内向け
         // EHS設定 壁検知　ハンドル制御
         // ハンドル　－が右
-        public const int ind_stLAng = -30;     // 左側感知角度 -35～-10度
+        public const int ind_stLAng = -30;     // 左側感知角度 -30～-10度
         public const int ind_edLAng = -10;
 
-        public const int ind_stRAng = 10;      // 右側感知角度 10～35度
+        public const int ind_stRAng = 10;      // 右側感知角度 10～30度
         public const int ind_edRAng = 30;
 
-        public const double ind_MinRange = 400.0;     // 感知最小距離 [mm] 30cm
-        public const double ind_MaxRange = 1000.0;    // 感知最大距離 [mm] 150cm
+        public const double ind_MinRange = 400.0;     // 感知最小距離 [mm] 40cm
+        public const double ind_MaxRange = 1000.0;    // 感知最大距離 [mm] 100cm
 
         public const double ind_WallRange = 450.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
 
+        // 屋外向け
         // EHS設定 壁検知　ハンドル制御
         // ハンドル　－が右
-        public const int od_stRAng = -40;     // 右側感知角度 -35～-10度
+        public const int od_stRAng = -40;     // 右側感知角度 -40～-10度
         public const int od_edRAng = -10;
 
-        public const int od_stLAng = 10;      // 左側感知角度 10～35度
+        public const int od_stLAng = 10;      // 左側感知角度 10～40度
         public const int od_edLAng = 40;
 
-        public const double od_MinRange = 600.0;     // 感知最小距離 [mm] 30cm
-        public const double od_MaxRange = 3000.0;    // 感知最大距離 [mm] 150cm
+        public const double od_MinRange = 600.0;     // 感知最小距離 [mm] 60cm
+        public const double od_MaxRange = 3000.0;    // 感知最大距離 [mm] 3000cm
 
-        public const double od_WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 45cm (車体半分25cm+離れる距離20cm)
+        public const double od_WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 60cm (車体半分25cm+離れる距離35cm)
 
         // EHS設定 壁検知　ハンドル制御
         // ハンドル　－が右
@@ -93,11 +94,11 @@ namespace Navigation
             if (bIndoorMode)
             {
                 // 屋内用ハンドル操作
-                EmergencyHandring.stRAng = EmergencyHandring.ind_stLAng;     // 右側感知角度 -35～-10度
-                EmergencyHandring.edRAng = EmergencyHandring.ind_stLAng;
+                EmergencyHandring.stRAng = EmergencyHandring.ind_stRAng;     // 右側感知角度 -35～-10度
+                EmergencyHandring.edRAng = EmergencyHandring.ind_stRAng;
 
-                EmergencyHandring.stLAng = EmergencyHandring.ind_stRAng;      // 左側感知角度 10～35度
-                EmergencyHandring.edLAng = EmergencyHandring.ind_edRAng;
+                EmergencyHandring.stLAng = EmergencyHandring.ind_stLAng;      // 左側感知角度 10～35度
+                EmergencyHandring.edLAng = EmergencyHandring.ind_edLAng;
 
                 EmergencyHandring.MinRange = EmergencyHandring.ind_MinRange;     // 感知最小距離 [mm] 30cm
                 EmergencyHandring.MaxRange = EmergencyHandring.ind_MaxRange;    // 感知最大距離 [mm] 150cm
@@ -134,7 +135,7 @@ namespace Navigation
 
             // 指定の扇状角度の指定の距離範囲内に、障害物があればハンドルを切る。
             {
-                double lrfScale = URG_LRF.getScale();   // mm -> Pixelスケール変換値
+                double lrfScale = URG_LRF.getScale();   // スケール変換値
                 const int rangeCenterAng = 270 / 2; // 中央(角度)
 
                 double LHitLength = 0.0;
@@ -142,19 +143,20 @@ namespace Navigation
                 double RHitLength = 0.0;
                 double RHitDir = 0.0;
 
-                double minPixRange = (MinRange * lrfScale);
-                double maxPixRange = (MaxRange * lrfScale);
+                double minScaledRange = (MinRange * lrfScale);
+                double maxScaleRange = (MaxRange * lrfScale);
                 double minDistance;
 
                 // LRFの値を調べる
 
                 // 右側
-                minDistance = maxPixRange;
+                minDistance = maxScaleRange;
                 for (int i = (stRAng + rangeCenterAng); i < (edRAng + rangeCenterAng); i++)
                 {
                     // 範囲内なら反応
-                    if (lrfData[i] > minPixRange && lrfData[i] < maxPixRange)
+                    if (lrfData[i] > minScaledRange && lrfData[i] < maxScaleRange)
                     {
+                        // もっとも近い障害物を選定
                         if (lrfData[i] < minDistance)
                         {
                             minDistance = lrfData[i];
@@ -165,11 +167,11 @@ namespace Navigation
                 }
 
                 // 左側
-                minDistance = maxPixRange;
+                minDistance = maxScaleRange;
                 for (int i = (edLAng + rangeCenterAng); i >= (stLAng + rangeCenterAng); i--)
                 {
-                    // 以下なら反応
-                    if (lrfData[i] > minPixRange && lrfData[i] < maxPixRange)
+                    // 範囲内なら反応
+                    if (lrfData[i] > minScaledRange && lrfData[i] < maxScaleRange)
                     {
                         if (lrfData[i] < minDistance)
                         {

@@ -91,6 +91,8 @@ namespace Navigation
 
             bool bCauntion = false;
             bool bStop = false;
+            int cntCautuon = 0;
+            int cntStop = 0;
 
             // 時間経過で注意Lv引き下げ
             if ((UpdateCnt - hzUCNT) > LvDownCnt)
@@ -112,28 +114,38 @@ namespace Navigation
                 }
 #endif
 
+            double BrakeScaledRange = BrakeRange * URG_LRF.getScale();
+            double SlowScaledRange = SlowRange * URG_LRF.getScale();
+
             // LRFの値を調べる
             for (int i = (stAng + rangeAngHalf); i < (edAng + rangeAngHalf); i++)
             {
-                // 以下ならとまる
-                if (lrfData[i] < (BrakeRange * URG_LRF.getScale()))
+                // ブレーキレンジ内か？
+                if (lrfData[i] < BrakeScaledRange)
                 {
+                    cntStop++;
                     bStop = true;
-                    break;
                 }
-                if (lrfData[i] < (SlowRange * URG_LRF.getScale())) bCauntion = true;
+
+                // 徐行レンジ内か？ 
+                if (lrfData[i] < SlowScaledRange)
+                {
+                    cntCautuon++;
+                    bCauntion = true;
+                }
             }
 
             // 注意Lv引き上げ
             if (bStop)
             {
+                // 停止
                 CautionLv = CautionLvMax;
                 hzUCNT = UpdateCnt;
             }
             else if (bCauntion && CautionLv < (StopLv - 1))
             {
                 // 徐行の最大まで(注意状態だけなら止まりはしない)
-                CautionLv++;
+                CautionLv += cntCautuon;
                 hzUCNT = UpdateCnt;
             }
 

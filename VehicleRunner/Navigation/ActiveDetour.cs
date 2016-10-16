@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Axiom.Math;
+using SCIP_library;     // LRFライブラリ
 
-namespace ActiveDetour
+namespace ActiveDetourNavigation
 {
     /// <summary>
     /// 動的回避
+    /// **マップ座標系で計算
     /// </summary>
     public class ActiveDetour
     {
@@ -29,20 +31,24 @@ namespace ActiveDetour
 
         public HexPixelMap hexMap;
 
-        public ActiveDetour(LocationPresumption.GridMap areaMap )
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="areaMap"></param>
+        public ActiveDetour(LocationPresumption.GridMap areaMap, double[] lrfData )
         {
             // GridMapの1/5 [100mm間隔から、500mmに変換]
             hexMap = new HexPixelMap(areaMap.W / dotScale, areaMap.H / dotScale);
 
             // GridMap[100mm間隔]からhexMap[500mm間隔]に変換
-            for ( int iH = 0; iH < areaMap.H / dotScale; iH++ )
+            for (int iH = 0; iH < areaMap.H / dotScale; iH++)
             {
                 for (int iW = 0; iW < areaMap.W / dotScale; iW++)
                 {
                     bool bFree = true;
 
                     // 500mm間隔の中に1つでも通行不可ならば、通行できない
-                    for ( int nH = 0; nH< dotScale; nH++)
+                    for (int nH = 0; nH < dotScale; nH++)
                     {
                         for (int nW = 0; nW < dotScale; nW++)
                         {
@@ -53,15 +59,41 @@ namespace ActiveDetour
                         }
                     }
 
-                    if( !bFree )
+                    if (!bFree)
                     {
                         // 障害物あり
                         hexMap[iW, iH].powVal = 2.0;
                     }
                 }
-
             }
+
+            // LRFから現在の障害物をマップに落とし込む
+            {
+                double lrfScale = URG_LRF.getScale();   // スケール変換値
+                double rPI = Math.PI / 180.0;
+                double mmToPix = 1.0 / 500.0;
+
+                // LRFの値を描画
+                for (int i = 0; i < lrfData.Length; i++)
+                {
+                    double val = lrfData[i] * lrfScale;
+                    double rad = (-i + (270.0/2.0) - 90) * rPI;
+
+                    // LRFは右下から左回り
+                    int iX = (int)(val * Math.Cos(rad) * mmToPix);
+                    int iY = (int)(val * Math.Sin(rad) * mmToPix);
+
+                    // 障害物あり
+                    hexMap[iX, iY].powVal = 2.0;
+                }
+            }
+
         }
+
+
+        // ※スタート位置、ゴール位置を求める
+        // まずは、エリア内にゴールがなければ、ギブアップでもよいかも。 
+
 
         /// <summary>
         /// 回避チェックポイント生成

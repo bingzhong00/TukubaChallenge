@@ -11,7 +11,7 @@ using LocationPresumption;
 using CersioIO;
 using SCIP_library;     // LRFライブラリ
 using Axiom.Math;       // Vector3D計算ライブラリ
-
+using ActiveDetourNavigation;
 
 namespace Navigation
 {
@@ -97,6 +97,11 @@ namespace Navigation
         // バック動作中フラグ
         public bool bNowBackProcess = false;
 
+        /// <summary>
+        /// 回避動作開始　トリガ
+        /// </summary>
+        private bool bActiveDetourTRG = false;
+
         // ===========================================================================================================
 
         /// <summary>
@@ -160,8 +165,9 @@ namespace Navigation
         /// <param name="useEHS">壁回避ハンドル</param>
         /// <param name="bStraightMode">直進モード</param>
         /// <param name="bIndoorMode">屋内モード</param>
+        /// <param name="bCtrlOutput">CarCtrlに動作出力</param>
         /// <returns></returns>
-        public bool AutonomousProc( bool useEBS, bool useEHS, bool bStraightMode, bool bIndoorMode)
+        public bool AutonomousProc( bool useEBS, bool useEHS, bool bStraightMode, bool bIndoorMode, bool bCtrlOutput )
         {
             // エマージェンシーブレーキを使わないフラグ
             bool untiEBS = false;
@@ -200,12 +206,14 @@ namespace Navigation
             else
             {
                 // 走行可能状態
+                if (bCtrlOutput)
+                {
+                    // ルート計算から、目標ハンドル、目標アクセル値をもらう。
+                    CarCtrl.CalcHandleAccelControl(getHandleValue(), getAccelValue());
 
-                // ルート計算から、目標ハンドル、目標アクセル値をもらう。
-                CarCtrl.CalcHandleAccelControl(getHandleValue(), getAccelValue());
-
-                // 送信
-                CarCtrl.SetCommandAC();
+                    // 送信
+                    CarCtrl.SetCommandAC();
+                }
             }
 
             goalFlg = RTS.getGoalFlg();
@@ -343,6 +351,7 @@ namespace Navigation
                     {
                         // １０秒たったら、バックモードへ
                         cntAvoideMode = 40;
+                        bActiveDetourTRG = true;
                     }
                 }
                 else
@@ -359,9 +368,18 @@ namespace Navigation
                 double handleTgt = RTS.getHandleValue();
                 //double accTgt = RTS.getAccelValue();
 
+                if (bActiveDetourTRG)
+                {
+                    // ※
+                    //ActiveDetour actDetour = new ActiveDetour();
+                    bActiveDetourTRG = false;
+                }
+
+
                 // 直進モード
                 if (bStraightMode) handleTgt = 0.0;
 
+                // 障害物をみて、ハンドルを切る方向を求める
                 {
                     double ehsHandleVal = EHS.CheckEHS(LocSys.LRF.getData_UntiNoise());
 

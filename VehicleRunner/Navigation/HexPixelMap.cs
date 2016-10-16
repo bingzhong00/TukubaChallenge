@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using LocationPresumption;
 
-namespace ActiveDetour
+namespace ActiveDetourNavigation
 {
     public class HexPixel
     {

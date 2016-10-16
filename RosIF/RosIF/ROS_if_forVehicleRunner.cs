@@ -50,7 +50,8 @@ namespace RosIF
 
         // SubScriber ---------------------------------
         // V-Slam
-        RosSharp.Topic.Subscriber<RosSharp.visualization_msgs.Marker> subVSlam;
+ //       RosSharp.Topic.Subscriber<RosSharp.visualization_msgs.Marker> subVSlam;
+        RosSharp.Topic.Subscriber<RosSharp.geometry_msgs.Twist> subVSlam;
         // hokuyo-node
         RosSharp.Topic.Subscriber<RosSharp.sensor_msgs.LaserScan> subUrg;
         // [debug] clock
@@ -95,21 +96,41 @@ namespace RosIF
         /// SubScriber CallBack
         /// </summary>
         /// <param name="dt"></param>
-        private void cbSubScriber_VSlam(RosSharp.visualization_msgs.Marker dt)
+        //private void cbSubScriber_VSlam(RosSharp.visualization_msgs.Marker dt)
+        private void cbSubScriber_VSlam(RosSharp.geometry_msgs.Twist dt)
         {
-            /*
-            Console.WriteLine("time:" + dt.header.stamp.Second.ToString() + "," + dt.header.stamp.Millisecond.ToString());
-            Console.WriteLine("pose:" + dt.pose.position.x.ToString() + "," + dt.pose.position.y.ToString() + "," + dt.pose.position.z.ToString());
-            Console.WriteLine("color:" + dt.color.r.ToString() + "," + dt.color.g.ToString() + "," + dt.color.b.ToString());
-            */
+#if false
+            if (dt.color.r == 0.0f && dt.color.g == 0.0f && dt.color.b == 0.5f && dt.color.a == 1.0f)
+            {
+                Console.WriteLine("seqid:" + dt.header.seq.ToString());
+                Console.WriteLine("time:" + dt.header.stamp.Ticks.ToString() + " ,MS " + dt.header.stamp.Millisecond.ToString());
+                Console.WriteLine("pose: ");// + dt.pose.position.x.ToString() + "," + dt.pose.position.y.ToString() + "," + dt.pose.position.z.ToString());
+                Console.WriteLine("   position: ");// + dt.pose.position.x.ToString() + "," + dt.pose.position.y.ToString() + "," + dt.pose.position.z.ToString());
+                Console.WriteLine("             x:" + dt.pose.position.x.ToString());
+                Console.WriteLine("             y:" + dt.pose.position.y.ToString());
+                Console.WriteLine("             z:" + dt.pose.position.z.ToString());
+                //Console.WriteLine("color:" + dt.color.r.ToString() + "," + dt.color.g.ToString() + "," + dt.color.b.ToString());
+            }
+#endif
+
+            // カメラに対して
+            // 左右      X:   左 -1.0 <----> +1.0 右
+            // 上下　    Y:   上 +1.0 <----> -1.0 下
+            // 奥・手前　Z: 手前 +1.0 <----> -1.0 奥
 
             // 特定の色のマーカー情報を読む
-            if ( dt.color.r == 0.0f && dt.color.g == 0.0f && dt.color.b == 0.5f && dt.color.a == 1.0f )
+            //if ( dt.color.r == 0.0f && dt.color.g == 0.0f && dt.color.b == 0.5f && dt.color.a == 1.0f )
             {
                 // 単位変換 m -> mm
+#if true
+                vslamPlotX = dt.linear.x * 1000.0;
+                vslamPlotY = dt.linear.y * 1000.0;
+                vslamPlotZ = dt.linear.z * 1000.0;    // とりあえず Z軸も保持
+#else
                 vslamPlotX = dt.pose.position.x * 1000.0;
                 vslamPlotY = dt.pose.position.y * 1000.0;
                 vslamPlotZ = dt.pose.position.z * 1000.0;    // とりあえず Z軸も保持
+#endif
 
 #if false
                 // Quatanionから角度(向き)へ変換
@@ -119,6 +140,7 @@ namespace RosIF
                                                          (float)dt.pose.orientation.w);
 #endif
 
+#if false
                 // キューに入っているベクトルを足して方向に変換
                 {
                     vSlamMoveVecQue.Enqueue(dt.pose.position);
@@ -135,7 +157,7 @@ namespace RosIF
                     }
 
                     double vecLeng = Math.Sqrt(dirVec.x * dirVec.x) + Math.Sqrt(dirVec.y * dirVec.y);
-                    if (vecLeng > 1.0)
+                    if (vecLeng*1000.0 > 1.0)
                     {
                         // 正規化
                         dirVec.x /= vecLeng;
@@ -151,6 +173,7 @@ namespace RosIF
                         vSlamMoveVecQue.Dequeue();
                     }
                 }
+#endif
 
             }
         }
@@ -299,15 +322,17 @@ namespace RosIF
                 // Nodeの生成。Nodeが生成されるまで待つ。
                 // Node名
                 rosNode = Ros.InitNodeAsync(NodeName).Result;
-
+                
                 // Subscriberの生成。Subscriberが生成されるまで待つ。
-                subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
+                // subVSlam = rosNode.SubscriberAsync<RosSharp.visualization_msgs.Marker>("/svo/points").Result;
+                subVSlam = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/torosif/vslam").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
                 subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/base_link").Result;
-                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
+                //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
+                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
                 subClock = rosNode.SubscriberAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
-
+                
                 // Publisher生成
                 pubRE = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/re").Result;
                 pubPlot = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/vehiclerunner/replot").Result;
@@ -340,6 +365,7 @@ namespace RosIF
                 try
                 {
                     rosNode.Dispose();
+                    Console.WriteLine("ROS Node Dispose");
                 }
                 catch (Exception ex)
                 {
@@ -350,16 +376,18 @@ namespace RosIF
                     rosNode = null;
                 }
 
-                System.Threading.Thread.Sleep(3000);
+                System.Threading.Thread.Sleep(1000);
 
                 try
                 {
                     Ros.Dispose();
+                    Console.WriteLine("ROS Dispose");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                }                
+                }
+                System.Threading.Thread.Sleep(3000);
             }
         }
 

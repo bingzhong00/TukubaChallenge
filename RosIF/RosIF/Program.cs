@@ -68,6 +68,7 @@ namespace RosIF
 
             while (loopFlg)
             {
+#if true
                 try
                 {
                     if (null != ipc && null != ipc.RemoteObject)
@@ -128,7 +129,8 @@ namespace RosIF
                 {
                     Console.WriteLine("Subscribe ----------- ");
                     Console.WriteLine("clock:" + rosifVR.rosClock.ToLongTimeString());
-                    Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
+                    Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamPlotZ:" + rosifVR.vslamPlotZ.ToString("f2")+"    ");
+                    Console.WriteLine("vslamAng(Degree):" + (rosifVR.vslamAng*180.0/Math.PI).ToString("f2") + "      ");
                     //Console.WriteLine("vslamPlotX:" + ipc.RemoteObject.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + ipc.RemoteObject.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
                     Console.WriteLine("amclX:" + rosifVR.amclPlotX.ToString("f2") + "/ amclY:" + rosifVR.amclPlotY.ToString("f2") + "/ amclAng:" + rosifVR.amclAng.ToString("f2"));
 
@@ -158,7 +160,7 @@ namespace RosIF
 
                 // カーソル位置を初期化
                 Console.SetCursorPosition(0, curStartRow);
-
+#endif
                 // 処理を休止
                 System.Threading.Thread.Sleep(sleepMS);
             }

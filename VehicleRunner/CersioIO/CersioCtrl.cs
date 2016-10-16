@@ -336,6 +336,7 @@ namespace CersioIO
 
 
                 // ROS-IFへデータ書き込み
+                try
                 {
                     // REPlotX,Y
                     ipc.RemoteObject.rePlotX = hwREX;
@@ -358,6 +359,7 @@ namespace CersioIO
                         ipc.RemoteObject.gpsGrandY = hwGPS_LandY;
                     }
                 }
+                catch { }
 
                 // コマンド送信
                 SendCommandQue();

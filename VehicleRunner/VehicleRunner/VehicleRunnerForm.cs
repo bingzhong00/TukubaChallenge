@@ -57,7 +57,7 @@ namespace VehicleRunner
         /// <summary>
         /// 起動時のマップファイル
         /// </summary>
-        private const string defaultMapFile = "../../../MapFile/utsubo201608/utsubo201608.xml";
+        private const string defaultMapFile = "../../../MapFile/syaoku201610/syaoku201610.xml";
 
         /// <summary>
         /// USB GPSクラス
@@ -144,10 +144,6 @@ namespace VehicleRunner
             tb_LRFScale.Text = trackBar_LRFViewScale.Value.ToString();
             //btm_LRFScale_Click(null, null);
             tb_LRFScale_TextChanged(null, null);
-
-            // bServerエミュレーション表記
-            lbl_bServerEmu.Visible = CersioCt.bServerEmu;
-
 
             // センサー値取得 スレッド起動
             Thread trdSensor = new Thread(new ThreadStart(ThreadSensorUpdate));
@@ -543,7 +539,7 @@ namespace VehicleRunner
 #endif
 
             // 実走行時、bServerと接続が切れたら再接続
-            if (updateHwCnt != 0 && updateHwCnt % 100 == 0)
+            if (updateHwCnt % 100 == 0)
             {
                 // 状態を見て、自動接続
                 if (!CersioCt.TCP_IsConnected())
@@ -763,15 +759,13 @@ namespace VehicleRunner
                 if (null != BrainCtrl)
                 {
                     // 自律走行処理 更新
-                    if (bRunAutonomous)
-                    {
-                        // セルシオ コントロール
-                        // 自己位置更新処理とセルシオ管理
-                        BrainCtrl.AutonomousProc( cb_EmgBrake.Checked,
-                                                  cb_EHS.Checked,
-                                                  cb_StraghtMode.Checked,
-                                                  cb_InDoorMode.Checked );
-                    }
+                    // セルシオ コントロール
+                    // 自己位置更新処理とセルシオ管理
+                    BrainCtrl.AutonomousProc(cb_EmgBrake.Checked,
+                                              cb_EHS.Checked,
+                                              cb_StraghtMode.Checked,
+                                              cb_InDoorMode.Checked,
+                                              bRunAutonomous);
                 }
                 
                 updateMainCnt++;
@@ -910,6 +904,8 @@ namespace VehicleRunner
             // ログバッファクリア
             formLog.LogBuffer_Clear(ref BrainCtrl, ref CersioCt);
 
+            // bServerエミュレーション表記
+            lbl_bServerEmu.Visible = CersioCt.bServerEmu;
 
             // 画面描画
             PictureUpdate();

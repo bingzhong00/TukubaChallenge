@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ActiveDetour
+namespace ActiveDetourNavigation
 {
     /// A-star algorithm
     public class AStar
