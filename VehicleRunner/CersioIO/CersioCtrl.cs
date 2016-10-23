@@ -562,11 +562,10 @@ namespace CersioIO
                 {
                     objStm.Write(dat, 0, dat.GetLength(0));
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     // 接続エラー
-                    // ※ログ出力先　再検討
-                    //Brain.addLogMsg += "TCP_SendCommand:Error "+e.Message+"\n";
+                    Debug.WriteLine("Exception Error!! TCP_SendCommand()" + e.Message);
 
                     objTCPSC.DisConnect();
                 }
@@ -619,7 +618,7 @@ namespace CersioIO
                     }
 
                     readStr = System.Text.Encoding.GetEncoding("SHIFT-JIS").GetString(dat);
-                    hwResiveStr = readStr;
+                    hwResiveStr += readStr;
 
                     {
                         string[] rsvCmd = readStr.Split('$');

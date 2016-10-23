@@ -263,11 +263,11 @@ namespace LocationPresumption
         /// <summary>
         /// エリアの移動
         /// </summary>
-        private void MoveAreaCheck()
+        private bool MoveAreaCheck()
         {
             // エリアの端に近づいたか？
-            if ((R1.X < worldMap.GridSize.w / 4 || R1.X > worldMap.GridSize.w * 3 / 4) ||
-                (R1.Y < worldMap.GridSize.h / 4 || R1.Y > worldMap.GridSize.h * 3 / 4))
+            if ((R1.X < worldMap.AreaGridSize.w / 4 || R1.X > worldMap.AreaGridSize.w * 3 / 4) ||
+                (R1.Y < worldMap.AreaGridSize.h / 4 || R1.Y > worldMap.AreaGridSize.h * 3 / 4))
             {
                 lock (AreaBmp)
                 {
@@ -280,7 +280,9 @@ namespace LocationPresumption
 
                 //bAreaMapUpdateReqest = true;
                 MRF.SetMap(worldMap.AreaGridMap);
+                return true;
             }
+            return false;
         }
 
         /// <summary>
@@ -452,15 +454,25 @@ namespace LocationPresumption
             // 自己位置推定位置がエリア内になるようにチェック
             MoveAreaCheck();
 
+            // マップ外になった？
+            if ((R1.X < 0.0 || R1.X > worldMap.WorldSize.w) ||
+                (R1.Y < 0.0 || R1.Y > worldMap.WorldSize.h))
+            {
+                bResult = false;
+            }
+
             return bResult;
         }
 
         /// <summary>
         /// 現在位置更新
+        /// 各センサー情報から、座標、向きを選択
         /// </summary>
         public void update_NowLocation()
         {
+            // R.E.Plotの座標を計算・取得
             MarkPoint RePlotMkp = updateMkp_FromREPlot();
+            // GPS座標を計算・取得
             MarkPoint GpsMkp = updateMkp_FromGPS();
 
             // 移動情報 更新

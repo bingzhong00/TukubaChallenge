@@ -63,7 +63,7 @@ namespace LocationPresumption
         public PointI WldOffset = new PointI();
         //public PointI WldOffsetDiff = new PointI();
 
-        public SizeI GridSize = new SizeI();
+        public SizeI AreaGridSize = new SizeI();
         public SizeI WorldSize = new SizeI();
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace LocationPresumption
         public WorldMap( string mapFname )
         {
             WldOffset = new PointI();
-            GridSize = new SizeI();
+            AreaGridSize = new SizeI();
             mapBmp = new Bitmap(mapFname);
 
             WorldSize.w = mapBmp.Width;
@@ -87,8 +87,8 @@ namespace LocationPresumption
         /// <param name="areaH"></param>
         public void InitArea( int areaW, int areaH )
         {
-            GridSize.w = areaW;
-            GridSize.h = areaH;
+            AreaGridSize.w = areaW;
+            AreaGridSize.h = areaH;
 
             UpdateArea(0, 0);
         }
@@ -117,7 +117,7 @@ namespace LocationPresumption
         /// <param name="y"></param>
         public void UpdateAreaCenter(int wldX, int wldY)
         {
-            UpdateArea(wldX - (GridSize.w / 2), wldY - (GridSize.h / 2));
+            UpdateArea(wldX - (AreaGridSize.w / 2), wldY - (AreaGridSize.h / 2));
         }
 
         /// <summary>
@@ -175,8 +175,8 @@ namespace LocationPresumption
             int laX = GetAreaX(wldX);
             int laY = GetAreaY(wldY);
 
-            if ((laX < 0 || laX >= GridSize.w) ||
-                (laY < 0 || laY >= GridSize.h))
+            if ((laX < 0 || laX >= AreaGridSize.w) ||
+                (laY < 0 || laY >= AreaGridSize.h))
             {
                 return false;
             }
@@ -208,7 +208,7 @@ namespace LocationPresumption
         /// <returns></returns>
         public GridMap MakeAreaGridMap()
         {
-            GridMap gm = new GridMap(GridSize.w, GridSize.h);
+            GridMap gm = new GridMap(AreaGridSize.w, AreaGridSize.h);
 
             BitmapAccess bmpAp = new BitmapAccess(mapBmp);
             bmpAp.BeginAccess();

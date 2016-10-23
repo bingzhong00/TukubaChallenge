@@ -259,33 +259,37 @@ namespace Navigation
                 Grid nowGrid = LocSys.GetMapInfo(LocSys.R1);
 
                 // マップ情報反映
-                // スローダウン
                 if (nowGrid == Grid.BlueArea)
                 {
+                    // スローダウン
                     EBS.AccelSlowDownCnt = 5;
                     Brain.addLogMsg += "ColorMap:Blue\n";
                 }
 
-                if (nowGrid == Grid.RedArea )                       // 壁の中にいる
+                // 壁の中にいる
+                if (nowGrid == Grid.RedArea )
                 {
                     // 強制補正エリア
                     Brain.addLogMsg += "LocRivision:ColorMap[Red](マップ情報の位置補正)\n";
                     bRevisionRequest = true;
                 }
 
-                if(nowGrid == Grid.GreenArea && !bGreenAreaFlg)    // 補正実行エリア
+                // 補正実行エリア
                 {
-                    // 補正指示のエリアに入った
-                    Brain.addLogMsg += "LocRivision:ColorMap[Green](マップ情報の位置補正)\n";
-                    bGreenAreaFlg = true;
+                    if (nowGrid == Grid.GreenArea && !bGreenAreaFlg)
+                    {
+                        // 補正指示のエリアに入った
+                        Brain.addLogMsg += "LocRivision:ColorMap[Green](マップ情報の位置補正)\n";
+                        bGreenAreaFlg = true;
 
-                    bRevisionRequest = true;
-                }
+                        bRevisionRequest = true;
+                    }
 
-                // 緑を抜けた判定
-                if (nowGrid != Grid.GreenArea)
-                {
-                    bGreenAreaFlg = false;
+                    // 補正指示のエリアを抜けた判定
+                    if (nowGrid != Grid.GreenArea)
+                    {
+                        bGreenAreaFlg = false;
+                    }
                 }
             }
 

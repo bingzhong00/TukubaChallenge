@@ -226,7 +226,7 @@ namespace VehicleRunner
             // ハードウェア更新タイマ起動
             //tm_UpdateHw.Enabled = true;
             // 位置管理定期処理タイマー起動
-            tm_LocUpdate.Enabled = true;
+            tm_Update.Enabled = true;
 
             //tm_SendCom.Enabled = true;
         }
@@ -253,9 +253,7 @@ namespace VehicleRunner
             appExit = true;
 
             // タイマー停止
-            //tm_SendCom.Enabled = false;
-            tm_UpdateHw.Enabled = false;
-            tm_LocUpdate.Enabled = false;
+            tm_Update.Enabled = false;
 
 #if LOGIMAGE_MODE
             // マップログ出力
@@ -542,274 +540,13 @@ namespace VehicleRunner
             }
         }
 
-#if false
-        /// <summary>
-        /// ハードウェア系の更新
-        /// (間隔短め 50MS)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tm_UpdateHw_Tick(object sender, EventArgs e)
-        {
-            LocPreSumpSystem LocSys = BrainCtrl.LocSys;
-
-#if !UnUseLRF
-            // LRF更新
-            if (LocSys.LRF.IsConnect())
-            {
-                // LRFから取得
-                if (LocSys.LRF.isGetDatas) lb_LRFResult.Text = "OK";    // 接続して、データも取得
-                else lb_LRFResult.Text = "OK(noData)";      // 接続しているが、データ取得ならず
-            }
-            else
-            {
-                // 仮想マップから取得
-                lb_LRFResult.Text = "Disconnect";
-            }
-#endif
-
-            // 実走行時、bServerと接続が切れたら再接続
-            if (updateHwCnt % 100 == 0)
-            {
-                // 状態を見て、自動接続
-                if (!CersioCt.TCP_IsConnected())
-                {
-                    CersioCt.ConnectBoxPC_Async();
-                }
-            }
-
-            // ロータリーエンコーダ(Plot座標)情報
-            if (CersioCt.bhwREPlot)
-            {
-                // 自己位置に REPlot情報を渡す
-                LocSys.Input_RotaryEncoder(CersioCt.hwREX, CersioCt.hwREY, CersioCt.hwREDir);
-
-                // 受信情報を画面に表示
-                lbl_REPlotX.Text = CersioCt.hwREX.ToString("f1");
-                lbl_REPlotY.Text = CersioCt.hwREY.ToString("f1");
-                lbl_REPlotDir.Text = CersioCt.hwREDir.ToString("f1");
-            }
-
-            // ロータリーエンコーダ（タイヤ回転数）情報
-            if (CersioCt.bhwRE)
-            {
-                if (CersioCt.bhwCompass)
-                {
-                    // 自己位置に情報を渡す
-                    LocSys.Input_RotaryEncoder_Pulse(CersioCt.hwRErotL, CersioCt.hwRErotR, CersioCt.hwCompass);
-                }
-
-                lbl_RErotR.Text = CersioCt.hwRErotR.ToString("f1");
-                lbl_RErotL.Text = CersioCt.hwRErotL.ToString("f1");
-            }
-
-            // 地磁気情報
-            if (CersioCt.bhwCompass)
-            {
-                // 自己位置推定に渡す
-                LocSys.Input_Compass(CersioCt.hwCompass);
-
-                // 画面表示
-                lbl_Compass.Text = CersioCt.hwCompass.ToString();
-            }
-
-            // GPS情報
-            if (CersioCt.bhwGPS)
-            {
-                // 途中からでもGPSのデータを拾う
-                if (!LocPreSumpSystem.bEnableGPS)
-                {
-                    // 応対座標算出のために、取得開始時点のマップ座標とGPS座標をリンク
-                    LocPreSumpSystem.Set_GPSStart(CersioCt.hwGPS_LandX,
-                                                  CersioCt.hwGPS_LandY,
-                                                  (int)(LocSys.R1.X+0.5),
-                                                  (int)(LocSys.R1.Y+0.5) );
-                }
-
-                // 自己位置推定に渡す
-                if (CersioCt.bhwUsbGPS)
-                {
-                    // 角度情報あり
-                    LocSys.Input_GPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY, CersioCt.hwGPS_MoveDir);
-                }
-                else
-                {
-                    // 角度情報なし
-                    LocSys.Input_GPSData(CersioCt.hwGPS_LandX, CersioCt.hwGPS_LandY);
-                }
-
-                // 画面表示
-                lbl_GPS_Y.Text = CersioCt.hwGPS_LandY.ToString("f5");
-                lbl_GPS_X.Text = CersioCt.hwGPS_LandX.ToString("f5");
-            }
-
-            // ROS LRF取得
-            if (rb_LRF_ROSnode.Checked)
-            {
-                // LRFのデータを外部から入力
-                LocSys.LRF.SetExtData( CersioCt.GetROS_LRFdata());
-            }
-
-            // LED状態 画面表示
-            if (CersioCt.ptnHeadLED == -1)
-            {
-                lbl_LED.Text = "ND";
-            }
-            else
-            {
-                string ledStr = CersioCt.ptnHeadLED.ToString();
-
-                if (CersioCt.ptnHeadLED >= 0 && CersioCt.ptnHeadLED < CersioCtrl.LEDMessage.Count())
-                {
-                    ledStr += "," + CersioCtrl.LEDMessage[CersioCt.ptnHeadLED];
-                }
-
-                if (!ledStr.Equals(lbl_LED.Text))
-                {
-                    lbl_LED.Text = ledStr;
-                }
-            }
-
-            // BoxPC接続状態確認
-            if (CersioCt.TCP_IsConnected())
-            {
-                // 接続ＯＫ
-                tb_SendData.BackColor = Color.Lime;
-                tb_ResiveData.BackColor = Color.Lime;
-                lb_BServerConnect.Text = "bServer [" + CersioCt.TCP_GetConnectedAddr() + "] 接続OK";
-                lb_BServerConnect.BackColor = Color.Lime;
-            }
-            else
-            {
-                // 接続ＮＧ
-                tb_SendData.BackColor = SystemColors.Window;
-                tb_ResiveData.BackColor = SystemColors.Window;
-                lb_BServerConnect.Text = "bServer 未接続";
-                lb_BServerConnect.BackColor = SystemColors.Window;
-            }
-
-
-            // 送受信文字 画面表示
-            if (null != CersioCt.hwResiveStr)
-            {
-                tb_ResiveData.Text = CersioCt.hwResiveStr.Replace('\n', ' ');
-            }
-            if (null != CersioCt.hwSendStr)
-            {
-                tb_SendData.Text = CersioCt.hwSendStr.Replace('\n', ' ');
-            }
-
-            // USB GPSからの取得情報画面表示
-            if (null != usbGPS)
-            {
-                tb_SirialResive.Text = usbGPS.resiveStr;
-
-                if (!string.IsNullOrEmpty(usbGPS.resiveStr))
-                {
-                    CersioCt.usbGPSResive.Add(usbGPS.resiveStr);
-                }
-                usbGPS.resiveStr = "";
-
-                if (CersioCt.usbGPSResive.Count > 30)
-                {
-                    CersioCt.usbGPSResive.RemoveRange(0, CersioCt.usbGPSResive.Count - 30);
-                }
-            }
-
-
-            updateHwCnt++;
-        }
-
-        /// <summary>
-        /// 位置座標更新 スレッド
-        /// </summary>
-        private void ThreadLocalizationUpdate()
-        {
-            while (!appExit)
-            {
-                
-                if (null != BrainCtrl && null != BrainCtrl.LocSys)
-                {
-                    // 現在位置更新
-                    BrainCtrl.LocSys.update_NowLocation();
-
-                    // パーティクルフィルター自己位置推定 演算
-                    if (cb_VRRevision.Checked)
-                    {
-                        // 常時PF演算
-                        if (cb_AlwaysPFCalc.Checked)
-                        {
-                            BrainCtrl.LocSys.ParticleFilter_Update();
-                        }
-
-                        // 自己位置補正執行判断
-                        {
-                            bool bRevisionIssue = false;
-
-                            if((bLocRivisionTRG || BrainCtrl.bRevisionRequest))
-                            {
-                                bRevisionIssue = true;
-                                bLocRivisionTRG = false;
-                            }
-
-                            // 一定時間で更新
-                            /*
-                            if ((updateMainCnt % 30) == 0 && !cb_DontAlwaysRivision.Checked)
-                            {
-                                Brain.addLogMsg += "LocRivision:Timer(時間ごとの位置補正)\n";
-                                bRevisionIssue = true;
-                            }
-                            */
-
-                            if (bRevisionIssue)
-                            {
-                                // 自己位置補正
-                                string logMsg;
-                                LocPreSumpSystem LocSys = BrainCtrl.LocSys;
-
-                                logMsg = LocSys.LocalizeRevision(rb_UseGPS_Revision.Checked);
-
-                                // REリセット
-                                CersioCt.SendCommand_RE_Reset();
-
-                                CersioCt.setREPlot_Start( LocSys.E1.X * LocSys.MapToRealScale,
-                                                          LocSys.E1.Y * LocSys.MapToRealScale,
-                                                          LocSys.E1.Theta );
-
-                                Brain.addLogMsg += logMsg;
-                            }
-                        }
-                    }
-
-                    // MAP座標更新処理
-                    //LocSys.MapArea_Update();
-                }
-
-                // bServer ハードウェア(センサー)情報取得
-                if (null != BrainCtrl)
-                {
-                    // 自律走行処理 更新
-                    // セルシオ コントロール
-                    // 自己位置更新処理とセルシオ管理
-                    BrainCtrl.AutonomousProc(cb_EmgBrake.Checked,
-                                              cb_EHS.Checked,
-                                              cb_InDoorMode.Checked,
-                                              bRunAutonomous);
-                }
-                
-                updateMainCnt++;
-                
-                Thread.Sleep(100);
-            }
-        }
-#endif
 
         /// <summary>
         /// 描画と親密な定期処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tm_LocUpdate_Tick(object sender, EventArgs e)
+        private void tm_Update_Tick(object sender, EventArgs e)
         {
             if (null != BrainCtrl && null != BrainCtrl.LocSys)
             {
@@ -818,7 +555,7 @@ namespace VehicleRunner
                 // tm_UpdateHw_Tick
                 {
 #if !UnUseLRF
-                    // LRF更新
+                    // LRF接続状況 表示
                     if (LocSys.LRF.IsConnect())
                     {
                         // LRFから取得
@@ -980,11 +717,13 @@ namespace VehicleRunner
                         }
                     }
 
+                    // bServerエミュレーション表記
+                    lbl_bServerEmu.Visible = CersioCt.bServerEmu;
 
                     updateHwCnt++;
                 }
 
-                // 現在位置更新
+                // マップ上の現在位置更新
                 BrainCtrl.LocSys.update_NowLocation();
 
                 // パーティクルフィルター自己位置推定 演算
@@ -998,8 +737,10 @@ namespace VehicleRunner
 
                     // 自己位置補正執行判断
                     {
+                        // 補正執行フラグ
                         bool bRevisionIssue = false;
 
+                        // ボタン操作、またはマップ情報から 補正要請があるか？
                         if ((bLocRivisionTRG || BrainCtrl.bRevisionRequest))
                         {
                             bRevisionIssue = true;
@@ -1007,27 +748,27 @@ namespace VehicleRunner
                         }
 
                         // 一定時間で更新
-                        /*
                         if ((updateMainCnt % 30) == 0 && !cb_DontAlwaysRivision.Checked)
                         {
                             Brain.addLogMsg += "LocRivision:Timer(時間ごとの位置補正)\n";
                             bRevisionIssue = true;
                         }
-                        */
 
                         if (bRevisionIssue)
                         {
-                            // 自己位置補正
                             string logMsg;
 
+                            // 自己位置補正
                             logMsg = LocSys.LocalizeRevision(rb_UseGPS_Revision.Checked);
 
-                            // REリセット
-                            CersioCt.SendCommand_RE_Reset();
+                            // REPlotを補正後の位置座標でリセット
+                            {
+                                CersioCt.SendCommand_RE_Reset();
 
-                            CersioCt.setREPlot_Start( LocSys.E1.X * LocSys.MapToRealScale,
-                                                      LocSys.E1.Y * LocSys.MapToRealScale,
-                                                      LocSys.E1.Theta);
+                                CersioCt.setREPlot_Start(LocSys.E1.X * LocSys.MapToRealScale,
+                                                          LocSys.E1.Y * LocSys.MapToRealScale,
+                                                          LocSys.E1.Theta);
+                            }
 
                             Brain.addLogMsg += logMsg;
                         }
@@ -1037,9 +778,7 @@ namespace VehicleRunner
                 // MAP座標更新処理
                 LocSys.MapArea_Update();
             
-                // 自律走行処理 更新
-                // セルシオ コントロール
-                // 自己位置更新処理とセルシオ管理
+                // 自律走行(緊急ブレーキ、壁よけ含む)処理 更新
                 BrainCtrl.AutonomousProc( cb_EmgBrake.Checked,
                                           cb_EHS.Checked,
                                           cb_InDoorMode.Checked,
@@ -1049,16 +788,17 @@ namespace VehicleRunner
             // REからのスピード表示
             tb_RESpeed.Text = CersioCtrl.SpeedMH.ToString("f1");
 
-            // 自律走行処理 更新
+            // ハンドル、アクセル値　表示
+            tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
+            tb_HandleVal.Text = CersioCtrl.nowSendHandleValue.ToString("f2");
+
+            // 自律走行情報
             if (bRunAutonomous)
             {
                 // 動作内容TextBox表示
 
-                // ハンドル、アクセル値　表示
-                tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
-                tb_HandleVal.Text = CersioCtrl.nowSendHandleValue.ToString("f2");
-
                 // エマージェンシーブレーキ 動作カラー表示
+                if (null != BrainCtrl)
                 {
                     if (BrainCtrl.EBS.EmgBrk && cb_EmgBrake.Checked) cb_EmgBrake.BackColor = Color.Red;
                     else cb_EmgBrake.BackColor = SystemColors.Control;
@@ -1074,15 +814,16 @@ namespace VehicleRunner
                     lbl_BackProcess.Visible = BrainCtrl.bNowBackProcess;
                 }
             }
-            //updateMainCnt++;
 
 
 #if LOGWRITE_MODE
             // 自律走行、またはロギング中
             if (bRunAutonomous || bRunMappingAndLogging)
             {
+                // ログファイル出力
+                formLog.Output_VRLog(ref BrainCtrl, ref CersioCt);
 
-#if LRFLOG_OUTPUT
+#if LRFLOG_OUTPUT   // ＬＲＦログ出力
                 // LRFログ出力 
                 // データ量が多いので、周期の長い定期処理で実行
                 if (LocSys.LRF.IsConnect() && null != LocSys.LRF.getData() )
@@ -1091,25 +832,18 @@ namespace VehicleRunner
                 }
 #endif  // LRFLOG_OUTPUT
 
-                // ログファイル出力
-                formLog.Output_VRLog(ref BrainCtrl, ref CersioCt);
-
-#if GPSLOG_OUTPUT
+#if GPSLOG_OUTPUT // GPSログ出力
                 if (null != usbGPS)
                 {
                     // ログ出力
                     formLog.Output_GPSLog(usbGPS.resiveStr);
                 }
 #endif  // GPSLOG_OUTPUT
-
             }
 #endif  // LOGWRITE_MODE
-
+            
             // ログバッファクリア
             formLog.LogBuffer_Clear(ref BrainCtrl, ref CersioCt);
-
-            // bServerエミュレーション表記
-            lbl_bServerEmu.Visible = CersioCt.bServerEmu;
 
             // 画面描画
             PictureUpdate();
@@ -1513,7 +1247,7 @@ namespace VehicleRunner
             if(dlg.ShowDialog() ==  DialogResult.OK  )
             {
                 // 自己位置計算 一時停止
-                tm_LocUpdate.Enabled = false;
+                tm_Update.Enabled = false;
 
                 // Mapロード
                 BrainCtrl.Reset(dlg.FileName);
@@ -1525,7 +1259,7 @@ namespace VehicleRunner
                 tb_MapName.Text = BrainCtrl.MapFile.MapName;
 
                 // 自己位置計算 再開
-                tm_LocUpdate.Enabled = true;
+                tm_Update.Enabled = true;
             }
         }
     }

@@ -36,12 +36,11 @@
             this.tb_LRFIpAddr = new System.Windows.Forms.TextBox();
             this.tb_LRFPort = new System.Windows.Forms.TextBox();
             this.cb_EmgBrake = new System.Windows.Forms.CheckBox();
-            this.tm_UpdateHw = new System.Windows.Forms.Timer(this.components);
             this.tb_ResiveData = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.tb_SendData = new System.Windows.Forms.TextBox();
-            this.tm_LocUpdate = new System.Windows.Forms.Timer(this.components);
+            this.tm_Update = new System.Windows.Forms.Timer(this.components);
             this.label5 = new System.Windows.Forms.Label();
             this.tb_AccelVal = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -290,10 +289,6 @@
             this.cb_EmgBrake.UseVisualStyleBackColor = true;
             this.cb_EmgBrake.CheckedChanged += new System.EventHandler(this.cb_Color_CheckedChanged);
             // 
-            // tm_UpdateHw
-            // 
-            this.tm_UpdateHw.Interval = 50;
-            // 
             // tb_ResiveData
             // 
             this.tb_ResiveData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -336,9 +331,9 @@
             this.tb_SendData.TabIndex = 27;
             this.tb_SendData.TabStop = false;
             // 
-            // tm_LocUpdate
+            // tm_Update
             // 
-            this.tm_LocUpdate.Tick += new System.EventHandler(this.tm_LocUpdate_Tick);
+            this.tm_Update.Tick += new System.EventHandler(this.tm_Update_Tick);
             // 
             // label5
             // 
@@ -1562,12 +1557,11 @@
         private System.Windows.Forms.TextBox tb_LRFIpAddr;
         private System.Windows.Forms.TextBox tb_LRFPort;
         private System.Windows.Forms.CheckBox cb_EmgBrake;
-        private System.Windows.Forms.Timer tm_UpdateHw;
         private System.Windows.Forms.TextBox tb_ResiveData;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tb_SendData;
-        private System.Windows.Forms.Timer tm_LocUpdate;
+        private System.Windows.Forms.Timer tm_Update;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tb_AccelVal;
         private System.Windows.Forms.Label label6;

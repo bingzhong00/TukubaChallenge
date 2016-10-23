@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 using System.IO;
 
@@ -272,7 +273,21 @@ namespace VehicleRunner
             if (null != CersioCt)
             {
                 CersioCt.hwSendStr = "";
+                CersioCt.hwResiveStr = "";
             }
+        }
+
+        /// <summary>
+        /// Trace出力ファイルをTraceListenerに登録します
+        /// </summary>
+        /// <param name="filePath"></param>
+        public static void RegistTraceLog(string filePath)
+        {
+            //DefaultTraceListenerオブジェクトを取得
+            DefaultTraceListener drl;
+            drl = (DefaultTraceListener)Trace.Listeners["Default"];
+            //LogFileNameを変更する
+            drl.LogFileName = filePath;
         }
 
     }

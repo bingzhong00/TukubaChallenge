@@ -248,8 +248,8 @@ namespace LocationPresumption
             g.DrawRectangle(Pens.Pink,
                              (worldMap.WldOffset.x * viewScale),
                              (worldMap.WldOffset.y * viewScale),
-                             (worldMap.GridSize.w * viewScale),
-                             (worldMap.GridSize.h * viewScale));
+                             (worldMap.AreaGridSize.w * viewScale),
+                             (worldMap.AreaGridSize.h * viewScale));
 
             worldMapDrawCnt++;
         }
