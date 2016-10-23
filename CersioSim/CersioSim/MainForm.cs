@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.IO;
 using System.Drawing.Drawing2D;
 
 using System.Diagnostics;
 using LocationPresumption;
 using VRIpcLib;
+using Navigation;
 
 using Axiom.Math;
 
@@ -24,12 +25,14 @@ namespace CersioSim
         public Bitmap SimAreaBmp;
         public Bitmap MapBmp;
 
-        // mm からピクセルへの変換
-        const double ScalePixelToReal = 100.0;    // 10mmを１ピクセルとする
-        const double ScaleRealToPixel = 1.0 / ScalePixelToReal;
+        public MapData mapFileData;
 
-        CarSim carSim = new CarSim();
-        MarkPoint carInitPos = new MarkPoint(730 * ScalePixelToReal, 400 * ScalePixelToReal, 180.0);
+        // mm からピクセルへの変換
+        double ScalePixelToReal;    // mmを１ピクセルとする
+        double ScaleRealToPixel;
+
+        CarSim carSim;
+        //MarkPoint carInitPos;
         MarkPoint carPos;
 
         // SLAM用フォーム
@@ -38,9 +41,6 @@ namespace CersioSim
 
         // SLAMフォームを生成するか？
         private const bool useSlamForm = false;
-
-        //const string MapFileName = "../mapdata/TukubaCourse2016_Ver001b.png";
-        const string MapFileName = "../mapdata/utubo01_1200x1300_fix.png";
 
         private double viewX;
         private double viewY;
@@ -62,32 +62,21 @@ namespace CersioSim
         /// </summary>
         private IpcServer ipc;
 
+        string defaultMapFileName = "../../../MapFile/utsubo201608/utsubo201608.xml";
 
         /// <summary>
-        /// 
+        /// コンストラクタ
         /// </summary>
         public CersioSimForm()
         {
             InitializeComponent();
 
-            //シミュレーションマップエリア
-            SimAreaBmp = new Bitmap(picbox_SimArea.Width, picbox_SimArea.Height);
-            picbox_SimArea.Image = SimAreaBmp;
-
-            // クルマが中心にくるようにビューを設定する
-            SetView_CarCenter();
-
             // マップファイル読み込み
-            string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
-            MapBmp = new Bitmap(path + "\\" + MapFileName);
+            LoadMapFile(defaultMapFileName);
 
-            // シムカー生成
-            carPos = new MarkPoint(carInitPos.X, carInitPos.Y, carInitPos.Theta );
-            carSim.CarInit(carInitPos);
-            carSim.MapInit(MapBmp);
-
-            if( useSlamForm || cb_LRFForm.Checked)
+            if ( useSlamForm || cb_LRFForm.Checked)
             {
+                // LRFフォーム生成
                 slamForm = new LRFMapForm(carSim, MapBmp.Width, MapBmp.Height, ScaleRealToPixel);
                 slamForm.Show();
             }
@@ -107,12 +96,25 @@ namespace CersioSim
             {
                 ipc = new IpcServer();
             }
-            catch (Exception e)
+            catch 
             {
                 ipc = null;
             }
 
             tmr_Update.Enabled = true;
+        }
+
+        /// <summary>
+        /// フォーム開始時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CersioSimForm_Load(object sender, EventArgs e)
+        {
+            tb_MapName.Text = mapFileData.MapName;
+            tb_MapFileName.Text = Path.GetFileName(mapFileData.MapFileName);
+            tb_MapImageFileName.Text = Path.GetFileName(mapFileData.MapImageFileName);
+            tb_MapPixelScale.Text = ((int)ScalePixelToReal).ToString() + "mm";
         }
 
         /// <summary>
@@ -140,6 +142,57 @@ namespace CersioSim
             //viewY += carPos.Y * ScaleRealToPixel;
             viewX += ((double)carSim.wdCarF.x) * ScaleRealToPixel;
             viewY += ((double)carSim.wdCarF.y) * ScaleRealToPixel;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="loadFile"></param>
+        /// <returns></returns>
+        private bool LoadMapFile(string loadFile )
+        {
+            // 
+            mapFileData = MapData.LoadMapFile(loadFile);
+
+            //シミュレーションマップエリア
+            SimAreaBmp = new Bitmap(picbox_SimArea.Width, picbox_SimArea.Height);
+            picbox_SimArea.Image = SimAreaBmp;
+
+            // マップファイル読み込み
+            //string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+            //MapBmp = new Bitmap(path + "\\" + mapFile.MapImageFileName );
+            string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+            MapBmp = new Bitmap(mapFileData.MapImageFileName);
+
+            // ピクセルスケール計算
+            ScalePixelToReal = mapFileData.RealWidth / MapBmp.Width;    // １ピクセルを何mmにするか
+            ScaleRealToPixel = 1.0 / ScalePixelToReal;
+
+            SimCarInit();
+
+            // クルマが中心にくるようにビューを設定する
+            SetView_CarCenter();
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void SimCarInit()
+        {
+            // クルマの配置の初期状態
+            MarkPoint carInitPos = new MarkPoint(mapFileData.startPosition.x * ScalePixelToReal,
+                                                 mapFileData.startPosition.y * ScalePixelToReal,
+                                                 mapFileData.startDir);
+
+
+            // シムカー生成
+            carPos = new MarkPoint(carInitPos.X, carInitPos.Y, carInitPos.Theta);
+
+            carSim = new CarSim(ScalePixelToReal);
+            carSim.CarInit(carInitPos);
+            carSim.MapInit(MapBmp);
         }
 
         /// <summary>
@@ -592,6 +645,13 @@ namespace CersioSim
             }
         }
 
+        private void picbox_MsController_MouseUp(object sender, MouseEventArgs e)
+        {
+            carSim.carAccVal = 0.0;
+            carSim.carHandleAng = 0.0;
+            bMsControlON = false;
+        }
+
         private void cb_LRFForm_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_LRFForm.Checked)
@@ -609,11 +669,33 @@ namespace CersioSim
             }
         }
 
-        private void picbox_MsController_MouseUp(object sender, MouseEventArgs e)
+        /// <summary>
+        /// Mapファイル変更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_LoadMapFile_Click(object sender, EventArgs e)
         {
-            carSim.carAccVal = 0.0;
-            carSim.carHandleAng = 0.0;
-            bMsControlON = false;
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                tmr_Update.Enabled = false;
+                LoadMapFile(dlg.FileName);
+                tmr_Update.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// クルマ状態初期化ボタン
+        /// 位置など
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_CarInit_Click(object sender, EventArgs e)
+        {
+            SimCarInit();
         }
 
         /// <summary>

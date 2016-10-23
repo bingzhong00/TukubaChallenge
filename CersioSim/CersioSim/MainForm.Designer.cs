@@ -76,11 +76,22 @@
             this.lbl_PosFront = new System.Windows.Forms.Label();
             this.lbl_PosFL = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
+            this.tabPage_MapInfo = new System.Windows.Forms.TabPage();
+            this.tb_MapName = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tb_MapPixelScale = new System.Windows.Forms.TextBox();
+            this.tb_MapImageFileName = new System.Windows.Forms.TextBox();
+            this.tb_MapFileName = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.cb_LRFForm = new System.Windows.Forms.CheckBox();
             this.lbl_bServerIPTitle = new System.Windows.Forms.Label();
             this.lbl_bServerIP = new System.Windows.Forms.Label();
             this.lbl_URGIPTitle = new System.Windows.Forms.Label();
             this.lbl_URGIP = new System.Windows.Forms.Label();
+            this.btn_LoadMapFile = new System.Windows.Forms.Button();
+            this.btn_CarInit = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarScale)).BeginInit();
@@ -89,6 +100,7 @@
             this.grp_Control.SuspendLayout();
             this.grp_RePlot.SuspendLayout();
             this.tabPage_CarStatus.SuspendLayout();
+            this.tabPage_MapInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // picbox_SimArea
@@ -216,6 +228,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage_Status);
             this.tabControl1.Controls.Add(this.tabPage_CarStatus);
+            this.tabControl1.Controls.Add(this.tabPage_MapInfo);
             this.tabControl1.Location = new System.Drawing.Point(662, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -553,6 +566,88 @@
             this.label14.TabIndex = 0;
             this.label14.Text = "車体座標";
             // 
+            // tabPage_MapInfo
+            // 
+            this.tabPage_MapInfo.Controls.Add(this.btn_LoadMapFile);
+            this.tabPage_MapInfo.Controls.Add(this.tb_MapName);
+            this.tabPage_MapInfo.Controls.Add(this.label18);
+            this.tabPage_MapInfo.Controls.Add(this.label17);
+            this.tabPage_MapInfo.Controls.Add(this.label16);
+            this.tabPage_MapInfo.Controls.Add(this.tb_MapPixelScale);
+            this.tabPage_MapInfo.Controls.Add(this.tb_MapImageFileName);
+            this.tabPage_MapInfo.Controls.Add(this.tb_MapFileName);
+            this.tabPage_MapInfo.Controls.Add(this.label15);
+            this.tabPage_MapInfo.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_MapInfo.Name = "tabPage_MapInfo";
+            this.tabPage_MapInfo.Size = new System.Drawing.Size(213, 322);
+            this.tabPage_MapInfo.TabIndex = 2;
+            this.tabPage_MapInfo.Text = "マップ情報";
+            this.tabPage_MapInfo.UseVisualStyleBackColor = true;
+            // 
+            // tb_MapName
+            // 
+            this.tb_MapName.Location = new System.Drawing.Point(3, 29);
+            this.tb_MapName.Name = "tb_MapName";
+            this.tb_MapName.Size = new System.Drawing.Size(207, 19);
+            this.tb_MapName.TabIndex = 7;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 14);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(55, 12);
+            this.label18.TabIndex = 6;
+            this.label18.Text = "MapName";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(3, 154);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(117, 12);
+            this.label17.TabIndex = 5;
+            this.label17.Text = "MapScale(1Pixel/mm)";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(3, 98);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(75, 12);
+            this.label16.TabIndex = 4;
+            this.label16.Text = "MapImageFile";
+            // 
+            // tb_MapPixelScale
+            // 
+            this.tb_MapPixelScale.Location = new System.Drawing.Point(123, 151);
+            this.tb_MapPixelScale.Name = "tb_MapPixelScale";
+            this.tb_MapPixelScale.Size = new System.Drawing.Size(87, 19);
+            this.tb_MapPixelScale.TabIndex = 3;
+            // 
+            // tb_MapImageFileName
+            // 
+            this.tb_MapImageFileName.Location = new System.Drawing.Point(3, 113);
+            this.tb_MapImageFileName.Name = "tb_MapImageFileName";
+            this.tb_MapImageFileName.Size = new System.Drawing.Size(207, 19);
+            this.tb_MapImageFileName.TabIndex = 2;
+            // 
+            // tb_MapFileName
+            // 
+            this.tb_MapFileName.Location = new System.Drawing.Point(3, 70);
+            this.tb_MapFileName.Name = "tb_MapFileName";
+            this.tb_MapFileName.Size = new System.Drawing.Size(207, 19);
+            this.tb_MapFileName.TabIndex = 1;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(3, 55);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(45, 12);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "MapFile";
+            // 
             // cb_LRFForm
             // 
             this.cb_LRFForm.AutoSize = true;
@@ -600,11 +695,32 @@
             this.lbl_URGIP.TabIndex = 20;
             this.lbl_URGIP.Text = "label18";
             // 
+            // btn_LoadMapFile
+            // 
+            this.btn_LoadMapFile.Location = new System.Drawing.Point(7, 286);
+            this.btn_LoadMapFile.Name = "btn_LoadMapFile";
+            this.btn_LoadMapFile.Size = new System.Drawing.Size(75, 23);
+            this.btn_LoadMapFile.TabIndex = 8;
+            this.btn_LoadMapFile.Text = "MapLoad";
+            this.btn_LoadMapFile.UseVisualStyleBackColor = true;
+            this.btn_LoadMapFile.Click += new System.EventHandler(this.btn_LoadMapFile_Click);
+            // 
+            // btn_CarInit
+            // 
+            this.btn_CarInit.Location = new System.Drawing.Point(577, 504);
+            this.btn_CarInit.Name = "btn_CarInit";
+            this.btn_CarInit.Size = new System.Drawing.Size(75, 23);
+            this.btn_CarInit.TabIndex = 21;
+            this.btn_CarInit.Text = "Car Init";
+            this.btn_CarInit.UseVisualStyleBackColor = true;
+            this.btn_CarInit.Click += new System.EventHandler(this.btn_CarInit_Click);
+            // 
             // CersioSimForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(895, 543);
+            this.Controls.Add(this.btn_CarInit);
             this.Controls.Add(this.lbl_URGIP);
             this.Controls.Add(this.lbl_URGIPTitle);
             this.Controls.Add(this.lbl_bServerIP);
@@ -624,6 +740,7 @@
             this.Name = "CersioSimForm";
             this.Text = "TKBC2016 Cersio Simurator";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CersioSimForm_FormClosing);
+            this.Load += new System.EventHandler(this.CersioSimForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarScale)).EndInit();
@@ -636,6 +753,8 @@
             this.grp_RePlot.PerformLayout();
             this.tabPage_CarStatus.ResumeLayout(false);
             this.tabPage_CarStatus.PerformLayout();
+            this.tabPage_MapInfo.ResumeLayout(false);
+            this.tabPage_MapInfo.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -695,6 +814,17 @@
         private System.Windows.Forms.Label lbl_bServerIP;
         private System.Windows.Forms.Label lbl_URGIPTitle;
         private System.Windows.Forms.Label lbl_URGIP;
+        private System.Windows.Forms.TabPage tabPage_MapInfo;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox tb_MapPixelScale;
+        private System.Windows.Forms.TextBox tb_MapImageFileName;
+        private System.Windows.Forms.TextBox tb_MapFileName;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox tb_MapName;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button btn_LoadMapFile;
+        private System.Windows.Forms.Button btn_CarInit;
     }
 }
 

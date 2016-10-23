@@ -61,6 +61,15 @@ namespace CersioSim
         public double wheelPulseL = 0.0;
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="_pixelScale"></param>
+        public CarSim(double _pixelScale)
+        {
+            PixelScale = _pixelScale;
+        }
+
+        /// <summary>
         /// クルマ初期化
         /// </summary>
         public void CarInit(double posx, double posy, double ang)
