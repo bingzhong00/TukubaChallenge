@@ -94,6 +94,8 @@ namespace CersioIO
             }
             
             objSck = new System.Net.Sockets.TcpClient();
+            // 小さいバッファを貯めない(遅延させない)
+            objSck.NoDelay = true;
 
             try
             {
@@ -130,7 +132,8 @@ namespace CersioIO
             }
 
             objSck = new System.Net.Sockets.TcpClient();
-
+            // 小さいバッファを貯めない(遅延させない)
+            objSck.NoDelay = true;
             try
             {
                 await objSck.ConnectAsync(ipAdd, port);

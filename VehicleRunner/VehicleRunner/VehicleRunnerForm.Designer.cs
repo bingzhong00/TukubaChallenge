@@ -117,7 +117,6 @@
             this.label23 = new System.Windows.Forms.Label();
             this.btnCribration = new System.Windows.Forms.Button();
             this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
-            this.cb_StraghtMode = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cmbbox_UsbSH2Connect = new System.Windows.Forms.ComboBox();
             this.cb_UsbSH2Connect = new System.Windows.Forms.CheckBox();
@@ -294,7 +293,6 @@
             // tm_UpdateHw
             // 
             this.tm_UpdateHw.Interval = 50;
-            this.tm_UpdateHw.Tick += new System.EventHandler(this.tm_UpdateHw_Tick);
             // 
             // tb_ResiveData
             // 
@@ -1113,7 +1111,6 @@
             this.tabPage_Emulate.Controls.Add(this.groupBox12);
             this.tabPage_Emulate.Controls.Add(this.groupBox7);
             this.tabPage_Emulate.Controls.Add(this.cb_InDoorMode);
-            this.tabPage_Emulate.Controls.Add(this.cb_StraghtMode);
             this.tabPage_Emulate.Controls.Add(this.groupBox5);
             this.tabPage_Emulate.Controls.Add(this.groupBox2);
             this.tabPage_Emulate.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -1218,17 +1215,6 @@
             this.cb_InDoorMode.TabIndex = 50;
             this.cb_InDoorMode.Text = "屋内モード";
             this.cb_InDoorMode.UseVisualStyleBackColor = true;
-            // 
-            // cb_StraghtMode
-            // 
-            this.cb_StraghtMode.AutoSize = true;
-            this.cb_StraghtMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_StraghtMode.Location = new System.Drawing.Point(12, 384);
-            this.cb_StraghtMode.Name = "cb_StraghtMode";
-            this.cb_StraghtMode.Size = new System.Drawing.Size(96, 20);
-            this.cb_StraghtMode.TabIndex = 49;
-            this.cb_StraghtMode.Text = "直進モード";
-            this.cb_StraghtMode.UseVisualStyleBackColor = true;
             // 
             // groupBox5
             // 
@@ -1663,7 +1649,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.RadioButton rb_LRF_LAN;
         private System.Windows.Forms.RadioButton rb_LRF_ROSnode;
-        private System.Windows.Forms.CheckBox cb_StraghtMode;
         private System.Windows.Forms.CheckBox cb_VRRevision;
         private System.Windows.Forms.CheckBox cb_InDoorMode;
         private System.Windows.Forms.RadioButton rb_MovePF;

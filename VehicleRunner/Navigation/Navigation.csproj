@@ -58,6 +58,7 @@
     <Compile Include="EmergencyHandring.cs" />
     <Compile Include="HexPixelMap.cs" />
     <Compile Include="MapData.cs" />
+    <Compile Include="ModeControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rooting.cs" />
     <Compile Include="RootingData.cs" />

@@ -39,10 +39,17 @@ namespace SCIP_library
             try
             {
                 urg = new TcpClient();
+                urg.NoDelay = true;
                 urg.Connect(LRFip, LRFport);
                 stream = urg.GetStream();
 
-                if (null != stream) return true;
+                if (null != stream)
+                {
+                    // SCIP Ver2 Command
+                    write(stream, SCIP_Writer.SCIP2());
+                    read_line(stream); // ignore echo back
+                    return true;
+                }
                 return false;
             }
             catch (Exception ex)
@@ -165,9 +172,7 @@ namespace SCIP_library
 
             try
             {
-                write(stream, SCIP_Writer.SCIP2());
-                read_line(stream); // ignore echo back
-                write(stream, SCIP_Writer.MD(start_step, end_step,4));  //   270=度のParticleFilterの仕様にあわせる
+                write(stream, SCIP_Writer.MD(start_step, end_step,4,1));  //   270=度のParticleFilterの仕様にあわせる
                 //read_line(stream);  // ignore echo back
 
                 List<double> distances = new List<double>();

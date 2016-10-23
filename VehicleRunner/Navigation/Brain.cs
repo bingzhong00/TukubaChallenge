@@ -13,6 +13,8 @@ using SCIP_library;     // LRFライブラリ
 using Axiom.Math;       // Vector3D計算ライブラリ
 using ActiveDetourNavigation;
 
+using System.Drawing;
+
 namespace Navigation
 {
     /// <summary>
@@ -31,6 +33,8 @@ namespace Navigation
         public LocPreSumpSystem LocSys;
 
 
+        public ModeControl ModeCtrl;
+
         /// <summary>
         /// マップファイル
         /// </summary>
@@ -40,6 +44,11 @@ namespace Navigation
         /// ルート制御
         /// </summary>
         public Rooting RTS;
+
+        /// <summary>
+        /// 回避ルーティング
+        /// </summary>
+        private Rooting avoidRTS;
 
         /// <summary>
         /// ハンドル、アクセル操作
@@ -52,11 +61,6 @@ namespace Navigation
         /// </summary>
         private long UpdateCnt;
 
-
-        /// <summary>
-        /// チェックポイント通過　インデックス
-        /// </summary>
-        public int checkpntIdx;
 
         /// <summary>
         /// ゴール到達フラグ
@@ -90,17 +94,15 @@ namespace Navigation
         public static string addLogMsg;
 
 
-        // 回復（バック）モード
-        int cntAvoideMode = 0;
-        bool unUseAvoideMode = false;    // 回復モード使わないフラグ
-
         // バック動作中フラグ
         public bool bNowBackProcess = false;
 
         /// <summary>
-        /// 回避動作開始　トリガ
+        /// 回避ルートイメージ
         /// </summary>
-        private bool bActiveDetourTRG = false;
+        public Bitmap AvoidRootImage;
+
+        public DateTime AvoidRootDispTime;
 
         // ===========================================================================================================
 
@@ -116,6 +118,7 @@ namespace Navigation
 
         public void Reset(string mapFileName)
         {
+            ModeCtrl = new ModeControl();
             // 
             MapFile = MapData.LoadMapFile(mapFileName);
             // 
@@ -126,8 +129,6 @@ namespace Navigation
 
             UpdateCnt = 0;
 
-            checkpntIdx = 0;
-            cntAvoideMode = 0;
             goalFlg = false;
 
             handleValue = 0.0;
@@ -163,18 +164,11 @@ namespace Navigation
         /// </summary>
         /// <param name="useEBS">壁回避ブレーキ</param>
         /// <param name="useEHS">壁回避ハンドル</param>
-        /// <param name="bStraightMode">直進モード</param>
         /// <param name="bIndoorMode">屋内モード</param>
         /// <param name="bCtrlOutput">CarCtrlに動作出力</param>
         /// <returns></returns>
-        public bool AutonomousProc( bool useEBS, bool useEHS, bool bStraightMode, bool bIndoorMode, bool bCtrlOutput )
+        public bool AutonomousProc( bool useEBS, bool useEHS, bool bIndoorMode, bool bCtrlOutput )
         {
-            // エマージェンシーブレーキを使わないフラグ
-            bool untiEBS = false;
-
-            // ハンドルレンジ設定
-            EHS.SetSensorRange(bIndoorMode);
-
             // すべてのルートを回りゴールした。
             if (goalFlg)
             {
@@ -186,34 +180,20 @@ namespace Navigation
                 return goalFlg;
             }
 
+            // ハンドルレンジ設定
+            EHS.SetSensorRange(bIndoorMode);
 
             // 自走処理
-            bNowBackProcess = untiEBS = Update(LocSys, useEBS, useEHS, bStraightMode);
+            bNowBackProcess = Update(LocSys, useEBS, useEHS);
 
-            if (EBS.EmgBrk && useEBS && !untiEBS)
+            // 走行可能状態
+            if (bCtrlOutput)
             {
-                // 強制停止状態
-                // エマージェンシー ブレーキ
-                //handleValue = 0.0;
-                CersioCtrl.nowSendAccValue = 0.0;
+                // ルート計算から、目標ハンドル、目標アクセル値をもらう。
+                CarCtrl.CalcHandleAccelControl(getHandleValue(), getAccelValue());
 
-                // 停止情報送信
-                CarCtrl.SetCommandAC(0.0, 0.0);
-
-                // 赤
-                CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.RED, true);
-            }
-            else
-            {
-                // 走行可能状態
-                if (bCtrlOutput)
-                {
-                    // ルート計算から、目標ハンドル、目標アクセル値をもらう。
-                    CarCtrl.CalcHandleAccelControl(getHandleValue(), getAccelValue());
-
-                    // 送信
-                    CarCtrl.SetCommandAC();
-                }
+                // 送信
+                CarCtrl.SetCommandAC();
             }
 
             goalFlg = RTS.getGoalFlg();
@@ -229,21 +209,46 @@ namespace Navigation
         /// <param name="bStraightMode">直進モード</param>
         /// <returns>true...バック中(緊急動作しない)</returns>
         /// 
-        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS, bool bStraightMode)
+        public bool Update(LocPreSumpSystem LocSys, bool useEBS, bool useEHS)
         {
             // LRFデータ取得
             double[] lrfData = LocSys.LRF.getData();
 
             // Rooting ------------------------------------------------------------------------------------------------
-            // ルート算定
+            ModeCtrl.update();
+
+            if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.CheckPoint)
             {
+                // ルート進行
+                // ルート算定
                 // 現在座標更新
                 RTS.setNowPostion((int)LocSys.GetResultLocationX(),
                                   (int)LocSys.GetResultLocationY(),
-                                  (int)LocSys.GetResultAngle() );
+                                  (int)LocSys.GetResultAngle());
 
                 // ルート計算
                 RTS.calcRooting();
+
+                // チェックポイント通過をLEDで伝える
+                if (RTS.IsCheckPointPass())
+                {
+                    CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.WHITE_FLASH, true);
+                }
+            }
+            else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.Avoid)
+            {
+                // 回避ルート進行
+                // ルート算定
+                // 現在座標更新
+                avoidRTS.setNowPostion((int)LocSys.GetResultLocationX(),
+                                       (int)LocSys.GetResultLocationY(),
+                                       (int)LocSys.GetResultAngle());
+
+                // ルート計算
+                avoidRTS.calcRooting();
+
+                // 回避中をLEDで伝える
+                //CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.WHITE_FLASH, false);
             }
 
 
@@ -284,50 +289,52 @@ namespace Navigation
                 }
             }
 
-            // エマージェンシー ブレーキチェック
-            EBS.EmgBrk = false;
-            if (null != lrfData && lrfData.Length > 0)
-            {
-                //int BrakeLv = CheckEBS(lrfData);
-                // ノイズ除去モーとで非常停止発動
-                int BrakeLv = EBS.CheckEBS(LocSys.LRF.getData_UntiNoise(), UpdateCnt );
-
-                // 注意Lvに応じた対処(スローダウン指示)
-                // Lvで段階ごとに分けてるのは、揺れなどによるLRFのノイズ対策
-                // 瞬間的なノイズでいちいち止まらないように。
-                if (BrakeLv >= EmergencyBrake.SlowDownLv) EBS.AccelSlowDownCnt = 20;
-                if (BrakeLv >= EmergencyBrake.StopLv) EBS.EmgBrk = true;        // 緊急停止
-            }
-
-
+            // 動作モードごとの走行情報更新
             // ハンドル、アクセルを調整
-            if (cntAvoideMode == 0 || unUseAvoideMode)
+            if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.CheckPoint)
             {
+                // 通常時
+
+                // エマージェンシー ブレーキチェック
+                EBS.EmgBrk = false;
+                if (null != lrfData && lrfData.Length > 0)
+                {
+                    //int BrakeLv = CheckEBS(lrfData);
+                    // ノイズ除去モーとで非常停止発動
+                    int BrakeLv = EBS.CheckEBS(LocSys.LRF.getData_UntiNoise(), UpdateCnt);
+
+                    // 注意Lvに応じた対処(スローダウン指示)
+                    // Lvで段階ごとに分けてるのは、揺れなどによるLRFのノイズ対策
+                    // 瞬間的なノイズでいちいち止まらないように。
+                    if (BrakeLv >= EmergencyBrake.SlowDownLv) EBS.AccelSlowDownCnt = 20;
+                    //if (BrakeLv >= EmergencyBrake.StopLv) EBS.EmgBrk = true;        // 緊急停止
+                }
+
+
                 // ルートにそったハンドル、アクセル値を取得
                 double handleTgt = RTS.getHandleValue();
                 double accTgt = RTS.getAccelValue();
 
-                // 直進モード
-                if (bStraightMode) handleTgt = 0.0;
-
                 // 壁回避
+                if(useEHS)
                 {
                     EHS.HandleVal = EHS.CheckEHS(LocSys.LRF.getData_UntiNoise());
 
-                    if (useEHS && 0.0 != EHS.HandleVal)
+                    if (0.0 != EHS.HandleVal)
                     {
                         // 回避ハンドル操作　
                         // ばたつき防止
-                        handleTgt = CersioCtrl.nowSendHandleValue + (EHS.HandleVal - CersioCtrl.nowSendHandleValue) * ((CersioCtrl.HandleControlPow) * 0.5);
+                        handleTgt = CersioCtrl.nowSendHandleValue + ((EHS.HandleVal - CersioCtrl.nowSendHandleValue) * CersioCtrl.HandleControlPow);
 
                         //AccelSlowDownCnt = 5;       // 速度もさげる
                         CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.BLUE);
                     }
                 }
 
-                // スローダウン
+                // スローダウン中 動作
                 if (EBS.AccelSlowDownCnt > 0)
                 {
+                    // 遅くする
                     accValue = accTgt = RTS.getAccelValue() * EmergencyBrake.AccSlowdownRate;
                     EBS.AccelSlowDownCnt--;
 
@@ -343,41 +350,47 @@ namespace Navigation
 
 
                 // 緊急ブレーキ動作
-                if (EBS.EmgBrk)
+                if (EBS.EmgBrk && useEBS)
                 {
-                    EmgBrakeContinueCnt++;
-
-                    if (EmgBrakeContinueCnt > 10 * 10)
-                    {
-                        // １０秒たったら、バックモードへ
-                        cntAvoideMode = 40;
-                        bActiveDetourTRG = true;
-                    }
-                }
-                else
-                {
-                    EmgBrakeContinueCnt = 0;
+                    ModeCtrl.SetActionMode(ModeControl.ActionMode.EmergencyStop);
                 }
 
                 handleValue = handleTgt;
                 accValue = accTgt;
             }
-            else
+            else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.EmergencyStop)
             {
-                // 復帰（バック）モード
-                double handleTgt = RTS.getHandleValue();
-                //double accTgt = RTS.getAccelValue();
-
-                if (bActiveDetourTRG)
+                // 緊急ブレーキ 中
+                if (null != lrfData && lrfData.Length > 0)
                 {
-                    // ※
-                    //ActiveDetour actDetour = new ActiveDetour();
-                    bActiveDetourTRG = false;
+                    int BrakeLv = EBS.CheckEBS(LocSys.LRF.getData_UntiNoise(), UpdateCnt);
+
+                    // 停止状態の確認
+                    if (BrakeLv >= EmergencyBrake.StopLv)
+                    {
+                        // 10秒経過したらバック動作へ
+                        if (ModeCtrl.GetModePassSeconds(10))
+                        {
+                            ModeCtrl.SetActionMode(ModeControl.ActionMode.MoveBack);
+                        }
+                    }
+                    else
+                    {
+                        // 緊急ブレーキ解除
+                        ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
+                    }
                 }
 
-
-                // 直進モード
-                if (bStraightMode) handleTgt = 0.0;
+                // 赤
+                CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.RED, true);
+                accValue = 0.0;
+            }
+            else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.MoveBack)
+            {
+                // 復帰（バック）モード
+                // 向かうべき方向とハンドルを逆に切り、バック
+                double handleTgt = -RTS.getHandleValue();
+                //double accTgt = RTS.getAccelValue();
 
                 // 障害物をみて、ハンドルを切る方向を求める
                 {
@@ -389,41 +402,76 @@ namespace Navigation
                         if (EHS.Result == EmergencyHandring.EHS_MODE.LeftWallHit ||
                             EHS.Result == EmergencyHandring.EHS_MODE.RightWallHit)
                         {
-                            handleTgt = ehsHandleVal;
+                            handleTgt = -ehsHandleVal;
                         }
                     }
                 }
 
-                // ハンドルを逆に切り、バック
-                handleValue = -handleTgt;
-                accValue = -EmergencyBrake.AccSlowdownRate;
+                handleValue = handleTgt;
+                accValue = -EmergencyBrake.AccSlowdownRate; // スローダウンの速度でバック
 
                 // ＬＥＤパターン
+                // バック中
                 CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.UnKnown1, true);
 
-                cntAvoideMode--;
-            }
 
-            // チェックポイント通過をLEDで伝える
-            {
-                int nowIdx = RTS.GetNowCheckPointIdx();
-                if (checkpntIdx != nowIdx)
+                // バック完了、回避ルートを動的計算
+                if (ModeCtrl.GetModePassSeconds(10))
                 {
-                    CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.WHITE_FLASH, true);
-                    checkpntIdx = nowIdx;
+                    ActiveDetour actDetour = new ActiveDetour(LocSys.worldMap.AreaGridMap, LocSys.LRF.getData());
+
+                    // 現在位置と到達したい位置で、回避ルートを求める
+                    {
+                        int nowPosX, nowPosY;
+                        double nowAng;
+                        int tgtPosX = 0;
+                        int tgtPosY = 0;
+                        RTS.getNowPostion(out nowPosX, out nowPosY, out nowAng);
+                        RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
+
+                        // 回避ルートを求める
+                        List<Vector3> avoidCheckPoint = actDetour.Calc_DetourCheckPoint(nowPosX, nowPosY, tgtPosX, tgtPosY);
+
+                        if (avoidCheckPoint.Count > 0)
+                        {
+                            // 回避ルートあり
+                            // 新規ルートを作成
+                            MapData avoidMap = new MapData();
+                            avoidMap.checkPoint = avoidCheckPoint.ToArray();
+                            avoidMap.MapName = "ActiveDetour AvoidMap";
+                            avoidRTS = new Rooting(avoidMap);
+
+                            // 回避情報を画面に表示
+                            // 回避イメージ生成
+                            AvoidRootImage = actDetour.getDetourRootImage();
+                            // イメージ表示時間設定
+                            AvoidRootDispTime = DateTime.Now.AddSeconds(15);
+
+                            // 回避ルートモード
+                            ModeCtrl.SetActionMode(ModeControl.ActionMode.Avoid);
+                        }
+                        else
+                        {
+                            // 回避ルートなし(回避不能)
+                            // ※動作検討 
+                            // とりあえず、チェックポイントへ向かう
+                            ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
+                        }
+                    }
+
                 }
             }
 
             UpdateCnt++;
 
             // 回復モードか否か
-            if (cntAvoideMode == 0 || unUseAvoideMode) return false;
+            if (ModeCtrl.GetActionMode() != ModeControl.ActionMode.MoveBack) return false;
             return true;
         }
 
 
         /// <summary>
-        /// ブレインの結果　ハンドリング、アクセル情報
+        /// ブレイン結果のハンドリング情報取得
         /// </summary>
         /// <returns></returns>
         public double getHandleValue()
@@ -431,6 +479,10 @@ namespace Navigation
             return handleValue;
         }
 
+        /// <summary>
+        /// アクセル情報 取得
+        /// </summary>
+        /// <returns></returns>
         public double getAccelValue()
         {
             return accValue;

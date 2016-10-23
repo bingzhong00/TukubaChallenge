@@ -12,6 +12,7 @@ using LocationPresumption;
 using SCIP_library;
 using System.Diagnostics;
 using VRIpcLib;
+using System.Threading;
 
 
 namespace CersioIO
@@ -51,7 +52,7 @@ namespace CersioIO
 
         // ハンドル、アクセル上限値
         static public double HandleRate = 1.0;
-        static public double AccRate = 0.5;
+        static public double AccRate = 0.30;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.125; // 0.15;
@@ -519,6 +520,7 @@ namespace CersioIO
                 {
                     string sendMsg = SendCommandList[0];
                     TCP_SendCommand(sendMsg);
+                    Thread.Sleep(10);
 
                     if (SendCommandList.Count > 0)
                     {

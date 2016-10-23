@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Axiom.Math;
 using SCIP_library;     // LRFライブラリ
+using System.Drawing;
 
 namespace ActiveDetourNavigation
 {
@@ -188,10 +189,19 @@ namespace ActiveDetourNavigation
                 }
             }
 
-            // Bmp生成
-            hexMap.UpdateBitmap();
+            // ※出来上がったルートの整合性をチェック
 
             return resCheckPoint;
+        }
+
+        /// <summary>
+        /// 回避マップ取得
+        /// </summary>
+        /// <returns></returns>
+        public Bitmap getDetourRootImage()
+        {
+            // Bmp生成
+            return hexMap.UpdateBitmap();
         }
     }
 }

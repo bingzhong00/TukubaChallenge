@@ -18,11 +18,11 @@ namespace Navigation
         // 室内向け
         // EHS設定 壁検知　ハンドル制御
         // ハンドル　－が右
-        public const int ind_stLAng = -30;     // 左側感知角度 -30～-10度
+        public const int ind_stLAng = -35;     // 左側感知角度 -30～-10度
         public const int ind_edLAng = -10;
 
         public const int ind_stRAng = 10;      // 右側感知角度 10～30度
-        public const int ind_edRAng = 30;
+        public const int ind_edRAng = 35;
 
         public const double ind_MinRange = 400.0;     // 感知最小距離 [mm] 40cm
         public const double ind_MaxRange = 1000.0;    // 感知最大距離 [mm] 100cm
@@ -234,7 +234,7 @@ namespace Navigation
             // 極小値は切り捨て
             rtHandleVal = (double)((int)(rtHandleVal * 100.0)) / 100.0;
 
-            return rtHandleVal;
+            return -rtHandleVal;
         }
 
         /// <summary>

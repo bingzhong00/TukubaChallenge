@@ -29,7 +29,13 @@ namespace Navigation
 
         // CheckPoint --------------------------------------
         int seqIdx = 0;         // チェックポイントインデックス
+        int seqIdxOld = 0;      
         bool goalFlg = false;   // ゴールしたか？
+
+        /// <summary>
+        /// チェックポイントを通過した瞬間
+        /// </summary>
+        bool bCheckPointPass = false;
 
         // 
         const double touchRange = 10.0;              // チェックポイントに近づく距離(半径) [Pixel]
@@ -92,44 +98,37 @@ namespace Navigation
         public void ResetSeq()
         {
             seqIdx = 0;
+            seqIdxOld = 0;
             goalFlg = false;
         }
+
 
         /// <summary>
-        /// 前方にチェックポイントを作り直す
+        /// 現在位置をセット
+        /// ワールドマップ座標
         /// </summary>
-        public void ResetStraightMode()
-        {
-            seqIdx = 0;
-            goalFlg = false;
-
-            /*
-            MapData.checkPoint = new Vector3[1];
-
-            double wRad = -MapData.startDir * Axiom.Math.Utility.PI / 180.0;
-            double cs = Math.Cos(wRad);
-            double sn = Math.Sin(wRad);
-
-            double tgtX = 0.0;
-            double tgtY = -500.0; // pixel 10cm x 500 = 50m 先を目指す
-
-            double newCpX = MapData.startPosition.x + (tgtX * cs - tgtY * sn);
-            double newCpY = MapData.startPosition.y + (tgtX * sn + tgtY * cs);
-
-            // 新チェックポイント作成
-            MapData.checkPoint[0] = new Vector3(newCpX, newCpY, 0);
-            */
-
-            // 目標座標 再計算
-            calcCheckPoint();
-        }
-
-        // 現在位置セット
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="dir"></param>
         public void setNowPostion(int posX, int posY, double dir)
         {
             nowDir = dir * Axiom.Math.Utility.PI / 180.0;
             nowPos.x = posX;
             nowPos.y = posY;
+        }
+
+        /// <summary>
+        /// 現在位置を取得
+        /// ワールドマップ座標
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="dir"></param>
+        public void getNowPostion(out int posX, out int posY, out double dir)
+        {
+            dir = nowDir * 180.0 / Axiom.Math.Utility.PI;
+            posX = (int)nowPos.x;
+            posY = (int)nowPos.y;
         }
 
         // 目標の座標取得
@@ -195,14 +194,29 @@ namespace Navigation
             return goalFlg;
         }
 
-        // チェックポイント間ルーティング
+        /// <summary>
+        /// チェックポイント通過したか？
+        /// </summary>
+        /// <returns></returns>
+        public bool IsCheckPointPass()
+        {
+            return bCheckPointPass;
+        }
+
+
+        /// <summary>
+        /// チェックポイント間ルーティング
+        /// </summary>
         public void calcRooting()
         {
+            bCheckPointPass = false;
+
             // ゴールしてたら計算しない
             if (goalFlg) return;
 
             calcCheckPoint();
 
+            // チェックポイント短絡　判定
             // ターゲットがある程度の範囲内で、向きが大幅に違う場合パスする。
 #if CHECKPOINT_PASS
             if (Math.Abs(getNowTargetDir() - (nowDir * 180.0 / Math.PI)) > passOverDir)
@@ -216,6 +230,13 @@ namespace Navigation
                 }
             }
 #endif
+
+            // 更新されたか？
+            if (seqIdxOld != seqIdx)
+            {
+                bCheckPointPass = true;
+            }
+            seqIdxOld = seqIdx;
         }
 
         /// <summary>
