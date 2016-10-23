@@ -85,7 +85,7 @@ namespace Navigation
             if( !File.Exists(mapFile.MapImageFileName) )
             {
                 // ファイルを見つけられない場合、MapFileのパスを使う
-                string newPath = Path.GetDirectoryName(fileName) + mapFile.MapImageFileName;
+                string newPath = Path.GetDirectoryName(fileName) + "/" + mapFile.MapImageFileName;
                 if (!File.Exists(newPath))
                 {
                     new Exception("MapImageFileNameが見つからない:" + mapFile.MapImageFileName );
