@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 using Axiom.Math;
 
@@ -76,7 +77,22 @@ namespace Navigation
                 sr.Close();
             }
 
+            // 
             mapFile.MapFileName = fileName;
+
+            
+            // MapImageのパスを、MapFileのディレクトリを基準として取得
+            if( !File.Exists(mapFile.MapImageFileName) )
+            {
+                // ファイルを見つけられない場合、MapFileのパスを使う
+                string newPath = Path.GetDirectoryName(fileName) + mapFile.MapImageFileName;
+                if (!File.Exists(newPath))
+                {
+                    new Exception("MapImageFileNameが見つからない:" + mapFile.MapImageFileName );
+                }
+                mapFile.MapImageFileName = newPath;
+            }
+            
 
             return mapFile;
         }

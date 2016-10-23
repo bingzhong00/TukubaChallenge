@@ -562,7 +562,7 @@ namespace CersioIO
                 {
                     objStm.Write(dat, 0, dat.GetLength(0));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // 接続エラー
                     // ※ログ出力先　再検討
