@@ -126,7 +126,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rem exeコピー
-copy $(TargetPath) $(ProjectDir)..\..\VehicleRunner\CersioSim\bin\</PostBuildEvent>
+copy $(TargetPath) $(ProjectDir)..\..\VehicleRunner\CersioSim\bin\Release
+copy $(TargetDir)*.dll $(ProjectDir)..\..\VehicleRunner\CersioSim\bin\Release</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
