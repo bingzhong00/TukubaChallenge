@@ -85,7 +85,11 @@ namespace ActiveDetourNavigation
                     int iY = (int)(val * Math.Sin(rad) * mmToPix);
 
                     // 障害物あり
-                    hexMap[iX, iY].powVal = 2.0;
+                    if (iX >= 0 && iX < hexMap.W &&
+                        iY >= 0 && iY < hexMap.H)
+                    {
+                        hexMap[iX, iY].powVal = 2.0;
+                    }
                 }
             }
 

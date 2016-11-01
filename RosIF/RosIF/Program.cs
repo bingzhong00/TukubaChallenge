@@ -13,7 +13,7 @@ namespace RosIF
         static void Main(string[] args)
         {
             // 接続情報
-            string myAddr = "192.168.1.101";
+            string myAddr = "192.168.1.102";
             string roscoreAddr = "http://192.168.1.32:11311";
 
             // 更新タイミング MS

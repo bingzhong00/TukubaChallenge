@@ -2,84 +2,44 @@
 <MapData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MapName>社屋マップ</MapName>
   <MapFileName>C:\Users\Raptor\Desktop\つくチャレ\プロジェクト\TukubaChallenge\VehicleRunner\MapFile\syaoku201610\syaoku201610.xml</MapFileName>
-  <MapImageFileName>./utubo01_1200x1300_red.png</MapImageFileName>
-  <RealWidth>120000</RealWidth>
-  <RealHeight>130000</RealHeight>
+  <MapImageFileName>./mymap7b.png</MapImageFileName>
+  <RealWidth>80000</RealWidth>
+  <RealHeight>80000</RealHeight>
   <startPosition>
-    <x>743</x>
-    <y>387</y>
+    <x>286</x>
+    <y>500</y>
     <z>0</z>
   </startPosition>
-  <startDir>180</startDir>
+  <startDir>90</startDir>
   <checkPoint>
     <Vector3>
-      <x>743</x>
-      <y>560</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>743</x>
-      <y>765</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>743</x>
-      <y>870</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>746</x>
-      <y>895</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>613</x>
-      <y>920</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>425</x>
-      <y>980</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>380</x>
-      <y>870</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>316</x>
-      <y>654</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>287</x>
-      <y>569</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>358</x>
-      <y>535</y>
-      <z>0</z>
-    </Vector3>
-    <Vector3>
-      <x>476</x>
+      <x>310</x>
       <y>500</y>
       <z>0</z>
     </Vector3>
     <Vector3>
-      <x>666</x>
-      <y>445</y>
+      <x>321</x>
+      <y>507</y>
       <z>0</z>
     </Vector3>
     <Vector3>
-      <x>756</x>
-      <y>470</y>
+      <x>323</x>
+      <y>520</y>
       <z>0</z>
     </Vector3>
     <Vector3>
-      <x>714</x>
-      <y>425</y>
+      <x>350</x>
+      <y>516</y>
+      <z>0</z>
+    </Vector3>
+    <Vector3>
+      <x>380</x>
+      <y>514</y>
+      <z>0</z>
+    </Vector3>
+    <Vector3>
+      <x>462</x>
+      <y>509</y>
       <z>0</z>
     </Vector3>
   </checkPoint>

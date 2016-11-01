@@ -330,7 +330,8 @@ namespace RosIF
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
                 subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/base_link").Result;
                 //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
-                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
+                //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
+                subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/torosif/scan").Result;
                 subClock = rosNode.SubscriberAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
                 
 

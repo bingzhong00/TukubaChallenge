@@ -433,6 +433,12 @@ namespace Navigation
                         RTS.getNowPostion(out nowPosX, out nowPosY, out nowAng);
                         RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
 
+                        nowPosX = LocSys.worldMap.GetAreaX(nowPosX);
+                        nowPosY = LocSys.worldMap.GetAreaX(nowPosY);
+
+                        tgtPosX = LocSys.worldMap.GetAreaX(tgtPosX);
+                        tgtPosY = LocSys.worldMap.GetAreaX(tgtPosY);
+
                         // 回避ルートを求める
                         List<Vector3> avoidCheckPoint = actDetour.Calc_DetourCheckPoint(nowPosX, nowPosY, tgtPosX, tgtPosY);
 

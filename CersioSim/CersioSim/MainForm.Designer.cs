@@ -77,6 +77,7 @@
             this.lbl_PosFL = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.tabPage_MapInfo = new System.Windows.Forms.TabPage();
+            this.btn_LoadMapFile = new System.Windows.Forms.Button();
             this.tb_MapName = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -90,7 +91,6 @@
             this.lbl_bServerIP = new System.Windows.Forms.Label();
             this.lbl_URGIPTitle = new System.Windows.Forms.Label();
             this.lbl_URGIP = new System.Windows.Forms.Label();
-            this.btn_LoadMapFile = new System.Windows.Forms.Button();
             this.btn_CarInit = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).BeginInit();
@@ -189,6 +189,8 @@
             // tBarScale
             // 
             this.tBarScale.Location = new System.Drawing.Point(51, 498);
+            this.tBarScale.Maximum = 20;
+            this.tBarScale.Minimum = -3;
             this.tBarScale.Name = "tBarScale";
             this.tBarScale.Size = new System.Drawing.Size(186, 45);
             this.tBarScale.TabIndex = 11;
@@ -584,6 +586,16 @@
             this.tabPage_MapInfo.Text = "マップ情報";
             this.tabPage_MapInfo.UseVisualStyleBackColor = true;
             // 
+            // btn_LoadMapFile
+            // 
+            this.btn_LoadMapFile.Location = new System.Drawing.Point(7, 286);
+            this.btn_LoadMapFile.Name = "btn_LoadMapFile";
+            this.btn_LoadMapFile.Size = new System.Drawing.Size(75, 23);
+            this.btn_LoadMapFile.TabIndex = 8;
+            this.btn_LoadMapFile.Text = "MapLoad";
+            this.btn_LoadMapFile.UseVisualStyleBackColor = true;
+            this.btn_LoadMapFile.Click += new System.EventHandler(this.btn_LoadMapFile_Click);
+            // 
             // tb_MapName
             // 
             this.tb_MapName.Location = new System.Drawing.Point(3, 29);
@@ -694,16 +706,6 @@
             this.lbl_URGIP.Size = new System.Drawing.Size(41, 12);
             this.lbl_URGIP.TabIndex = 20;
             this.lbl_URGIP.Text = "label18";
-            // 
-            // btn_LoadMapFile
-            // 
-            this.btn_LoadMapFile.Location = new System.Drawing.Point(7, 286);
-            this.btn_LoadMapFile.Name = "btn_LoadMapFile";
-            this.btn_LoadMapFile.Size = new System.Drawing.Size(75, 23);
-            this.btn_LoadMapFile.TabIndex = 8;
-            this.btn_LoadMapFile.Text = "MapLoad";
-            this.btn_LoadMapFile.UseVisualStyleBackColor = true;
-            this.btn_LoadMapFile.Click += new System.EventHandler(this.btn_LoadMapFile_Click);
             // 
             // btn_CarInit
             // 

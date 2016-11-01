@@ -1262,5 +1262,18 @@ namespace VehicleRunner
                 tm_Update.Enabled = true;
             }
         }
+
+        /// <summary>
+        /// 強制回避
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnAvoid_Click(object sender, EventArgs e)
+        {
+            if (BrainCtrl.ModeCtrl.GetActionMode() == ModeControl.ActionMode.CheckPoint)
+            {
+                BrainCtrl.ModeCtrl.SetActionMode(ModeControl.ActionMode.MoveBack);
+            }
+        }
     }
 }

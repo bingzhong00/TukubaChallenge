@@ -47,6 +47,9 @@ namespace CersioSim
 
         private double viewScale = 1.0;
 
+        // 車の速度
+        private double dbgSpeed = 1.0;// 8.0;
+
         /// <summary>
         /// bServerエミュレータ
         /// </summary>
@@ -62,7 +65,7 @@ namespace CersioSim
         /// </summary>
         private IpcServer ipc;
 
-        string defaultMapFileName = "../../../MapFile/utsubo201608/utsubo201608.xml";
+        string defaultMapFileName = "../../../MapFile/syaoku201610/syaoku201610.xml";
 
         /// <summary>
         /// コンストラクタ
@@ -452,9 +455,12 @@ namespace CersioSim
         public void DrawUpdateSimArea()
         {
             Graphics g = Graphics.FromImage(SimAreaBmp);
+            double pixScale = ScaleRealToPixel * viewScale;
 
+            g.ResetTransform();
             g.FillRectangle(Brushes.Black, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
-
+            //g.DrawImage(MapBmp, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
+            
             g.TranslateTransform((float)(-viewX * viewScale), (float)(-viewY * viewScale), MatrixOrder.Append);
             g.ScaleTransform((float)(viewScale), (float)(viewScale));
 
@@ -462,25 +468,28 @@ namespace CersioSim
             g.DrawImage(MapBmp, 0, 0);
 
             g.ResetTransform();
-            g.ScaleTransform((float)(ScaleRealToPixel * viewScale), (float)(ScaleRealToPixel * viewScale));
+            g.ScaleTransform((float)pixScale, (float)pixScale);
 
-            // グリッド線
-            for (int x = 0; x <= (int)((SimAreaBmp.Width / ScaleRealToPixel) / 1000.0); x++)
+            // グリッド線 (0.5倍以下なら表示しない)
+            if( pixScale > ScaleRealToPixel*0.5 )
             {
-                int dx = (x * 1000) + (((int)((-viewX * ScalePixelToReal) + 0.5)) % 1000);
-                g.DrawLine(Pens.DarkGray, dx, 0, dx, (int)(SimAreaBmp.Height / ScaleRealToPixel));
-            }
-            for (int y = 0; y <= (int)((SimAreaBmp.Height / ScaleRealToPixel) / 1000.0); y++)
-            {
-                int dy = (y * 1000) + (((int)((-viewY * ScalePixelToReal) + 0.5)) % 1000);
-                g.DrawLine(Pens.DarkGray, 0, dy, (int)(SimAreaBmp.Width / ScaleRealToPixel), dy);
+                for (int x = 0; x <= (int)((SimAreaBmp.Width / pixScale) / 1000.0); x++)
+                {
+                    int dx = (x * 1000) + (((int)((-viewX * ScalePixelToReal) + 0.5)) % 1000);
+                    g.DrawLine(Pens.DarkGray, dx, 0, dx, (int)(SimAreaBmp.Height / pixScale));
+                }
+                for (int y = 0; y <= (int)((SimAreaBmp.Height / pixScale) / 1000.0); y++)
+                {
+                    int dy = (y * 1000) + (((int)((-viewY * ScalePixelToReal) + 0.5)) % 1000);
+                    g.DrawLine(Pens.DarkGray, 0, dy, (int)(SimAreaBmp.Width / pixScale), dy);
+                }
             }
 
 
             g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
 
             carSim.DrawCar(g, ScaleRealToPixel, viewScale, viewX, viewY);
-
+            
             g.Dispose();
         }
 
@@ -641,7 +650,7 @@ namespace CersioSim
                 }
 
                 carSim.carHandleAng = ((double)difX / (picbox_MsController.Width / 2.0)) * 30.0;
-                carSim.carAccVal = (double)-difY / (picbox_MsController.Height / 2.0);
+                carSim.carAccVal = (double)-difY / (picbox_MsController.Height / 2.0) * dbgSpeed;
             }
         }
 
@@ -705,8 +714,8 @@ namespace CersioSim
         /// <param name="e"></param>
         private void tBarScale_Scroll(object sender, EventArgs e)
         {
-            viewScale = 1.0 + tBarScale.Value*0.5;
-            lbl_ScaleVal.Text = viewScale.ToString("F1");
+            viewScale = 1.0 + tBarScale.Value*0.25;
+            lbl_ScaleVal.Text = viewScale.ToString("F2");
         }
 
 

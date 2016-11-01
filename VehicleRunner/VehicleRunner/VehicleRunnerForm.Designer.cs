@@ -138,6 +138,7 @@
             this.cb_ConnectRosIF = new System.Windows.Forms.CheckBox();
             this.btn_MapLoad = new System.Windows.Forms.Button();
             this.tb_MapName = new System.Windows.Forms.TextBox();
+            this.btnAvoid = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -848,6 +849,7 @@
             // tabPage_LocSump
             // 
             this.tabPage_LocSump.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage_LocSump.Controls.Add(this.btnAvoid);
             this.tabPage_LocSump.Controls.Add(this.groupBox11);
             this.tabPage_LocSump.Controls.Add(this.groupBox6);
             this.tabPage_LocSump.Location = new System.Drawing.Point(4, 26);
@@ -1472,6 +1474,16 @@
             this.tb_MapName.TabIndex = 48;
             this.tb_MapName.TabStop = false;
             // 
+            // btnAvoid
+            // 
+            this.btnAvoid.Location = new System.Drawing.Point(7, 346);
+            this.btnAvoid.Name = "btnAvoid";
+            this.btnAvoid.Size = new System.Drawing.Size(102, 29);
+            this.btnAvoid.TabIndex = 47;
+            this.btnAvoid.Text = "回避ルート";
+            this.btnAvoid.UseVisualStyleBackColor = true;
+            this.btnAvoid.Click += new System.EventHandler(this.btnAvoid_Click);
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1659,6 +1671,7 @@
         private System.Windows.Forms.CheckBox cb_ConnectRosIF;
         private System.Windows.Forms.Button btn_MapLoad;
         private System.Windows.Forms.TextBox tb_MapName;
+        private System.Windows.Forms.Button btnAvoid;
     }
 }
 
