@@ -65,7 +65,7 @@ namespace CersioSim
         /// </summary>
         private IpcServer ipc;
 
-        string defaultMapFileName = "../../../MapFile/syaoku201610/syaoku201610.xml";
+        string defaultMapFileName = "../../../MapFile/tsukuba20161104_2/tsukuba20161104_2.xml";
 
         /// <summary>
         /// コンストラクタ
@@ -349,7 +349,7 @@ namespace CersioSim
 
                     // 座標系を実機にあわせる
                     bSrv.senRePlotY_Out = -bSrv.senRePlotY_Out;
-                    bSrv.senReAng_Out = -resAng;
+                    bSrv.senReAng_Out = resAng;
                 }
 
                 // 電子コンパス
@@ -649,7 +649,7 @@ namespace CersioSim
                     }
                 }
 
-                carSim.carHandleAng = ((double)difX / (picbox_MsController.Width / 2.0)) * 30.0;
+                carSim.carHandleAng = -((double)difX / (picbox_MsController.Width / 2.0)) * 30.0;
                 carSim.carAccVal = (double)-difY / (picbox_MsController.Height / 2.0) * dbgSpeed;
             }
         }

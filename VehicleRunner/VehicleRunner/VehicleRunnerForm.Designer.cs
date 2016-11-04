@@ -87,6 +87,7 @@
             this.rb_MoveGPS = new System.Windows.Forms.RadioButton();
             this.rb_MoveREPlot = new System.Windows.Forms.RadioButton();
             this.tabPage_LocSump = new System.Windows.Forms.TabPage();
+            this.btnAvoid = new System.Windows.Forms.Button();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.button1 = new System.Windows.Forms.Button();
             this.btn_ResetR1 = new System.Windows.Forms.Button();
@@ -138,7 +139,6 @@
             this.cb_ConnectRosIF = new System.Windows.Forms.CheckBox();
             this.btn_MapLoad = new System.Windows.Forms.Button();
             this.tb_MapName = new System.Windows.Forms.TextBox();
-            this.btnAvoid = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_LRF)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -858,6 +858,16 @@
             this.tabPage_LocSump.TabIndex = 3;
             this.tabPage_LocSump.Text = "位置補正";
             // 
+            // btnAvoid
+            // 
+            this.btnAvoid.Location = new System.Drawing.Point(7, 346);
+            this.btnAvoid.Name = "btnAvoid";
+            this.btnAvoid.Size = new System.Drawing.Size(102, 29);
+            this.btnAvoid.TabIndex = 47;
+            this.btnAvoid.Text = "回避ルート";
+            this.btnAvoid.UseVisualStyleBackColor = true;
+            this.btnAvoid.Click += new System.EventHandler(this.btnAvoid_Click);
+            // 
             // groupBox11
             // 
             this.groupBox11.Controls.Add(this.button1);
@@ -1364,7 +1374,6 @@
             this.lbl_BackProcess.Size = new System.Drawing.Size(96, 16);
             this.lbl_BackProcess.TabIndex = 41;
             this.lbl_BackProcess.Text = "バック動作中";
-            this.lbl_BackProcess.Visible = false;
             // 
             // label9
             // 
@@ -1473,16 +1482,6 @@
             this.tb_MapName.Size = new System.Drawing.Size(239, 23);
             this.tb_MapName.TabIndex = 48;
             this.tb_MapName.TabStop = false;
-            // 
-            // btnAvoid
-            // 
-            this.btnAvoid.Location = new System.Drawing.Point(7, 346);
-            this.btnAvoid.Name = "btnAvoid";
-            this.btnAvoid.Size = new System.Drawing.Size(102, 29);
-            this.btnAvoid.TabIndex = 47;
-            this.btnAvoid.Text = "回避ルート";
-            this.btnAvoid.UseVisualStyleBackColor = true;
-            this.btnAvoid.Click += new System.EventHandler(this.btnAvoid_Click);
             // 
             // VehicleRunnerForm
             // 

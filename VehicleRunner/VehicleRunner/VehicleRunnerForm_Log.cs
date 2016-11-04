@@ -157,8 +157,14 @@ namespace VehicleRunner
             // ハードウェア情報
             if (CersioCt.TCP_IsConnected())
             {
-                sw.Write("hwSendStr:" + CersioCt.hwSendStr.Replace('\n', ' ') + System.Environment.NewLine);
-                sw.Write("hwResiveStr:" + CersioCt.hwResiveStr + System.Environment.NewLine);
+                if (null != CersioCt.hwSendStr)
+                {
+	                sw.Write("hwSendStr:" + CersioCt.hwSendStr.Replace('\n', ' ') + System.Environment.NewLine);
+				}
+                if (null != CersioCt.hwResiveStr)
+                {
+                    sw.Write("hwResiveStr:" + CersioCt.hwResiveStr + System.Environment.NewLine);
+                }
                 sw.Write("handle:" + CersioCtrl.nowSendHandleValue + " / acc:" + CersioCtrl.nowSendAccValue + System.Environment.NewLine);
             }
             else

@@ -28,7 +28,7 @@ namespace LocationPresumption
             swCNT_Draw.Reset();
             swCNT_Draw.Start();
 
-            lock (AreaBmp)
+            //lock (AreaBmp)
             {
                 Graphics g = Graphics.FromImage(AreaOverlayBmp);
 

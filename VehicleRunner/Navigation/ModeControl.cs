@@ -67,6 +67,15 @@ namespace Navigation
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public string GetActionModeString()
+        {
+            return ActMode.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="_actMode"></param>
         /// <returns></returns>
         public bool SetActionMode(ActionMode _actMode )

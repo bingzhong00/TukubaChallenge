@@ -549,9 +549,11 @@ namespace VehicleRunner
                 if (BrainCtrl.EHS.Result == EmergencyHandring.EHS_MODE.LeftWallHit ||
                     BrainCtrl.EHS.Result == EmergencyHandring.EHS_MODE.CenterPass)
                 {
+                    
                     g.FillPie(Brushes.Red, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                       cirSize, cirSize,
                                       -stAng - 90, -(edAng - stAng));
+                    
                 }
                 g.DrawPie(colPen, (ctrX - cirSize / 2), (ctrY - cirSize / 2),
                                                           cirSize, cirSize,

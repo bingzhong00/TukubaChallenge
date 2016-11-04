@@ -31,15 +31,15 @@ namespace Navigation
 
         // 屋外向け
         // EHS設定 壁検知　ハンドル制御
-        // ハンドル　－が右
-        public const int od_stRAng = -40;     // 右側感知角度 -40～-10度
-        public const int od_edRAng = -10;
+        // ハンドル　－が右 (左右の値が逆？らしい)
+        public const int od_stLAng = -40;     // 右側感知角度 -40～-10度
+        public const int od_edLAng = -10;
 
-        public const int od_stLAng = 10;      // 左側感知角度 10～40度
-        public const int od_edLAng = 40;
+        public const int od_stRAng = 10;      // 左側感知角度 10～40度
+        public const int od_edRAng = 40;
 
         public const double od_MinRange = 600.0;     // 感知最小距離 [mm] 60cm
-        public const double od_MaxRange = 3000.0;    // 感知最大距離 [mm] 3000cm
+        public const double od_MaxRange = 2000.0;    // 感知最大距離 [mm] 3000cm
 
         public const double od_WallRange = 600.0;   // 壁から離れる距離(LRFの位置から)[mm] 60cm (車体半分25cm+離れる距離35cm)
 
@@ -95,7 +95,7 @@ namespace Navigation
             {
                 // 屋内用ハンドル操作
                 EmergencyHandring.stRAng = EmergencyHandring.ind_stRAng;     // 右側感知角度 -35～-10度
-                EmergencyHandring.edRAng = EmergencyHandring.ind_stRAng;
+                EmergencyHandring.edRAng = EmergencyHandring.ind_edRAng;
 
                 EmergencyHandring.stLAng = EmergencyHandring.ind_stLAng;      // 左側感知角度 10～35度
                 EmergencyHandring.edLAng = EmergencyHandring.ind_edLAng;

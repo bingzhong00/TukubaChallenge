@@ -57,7 +57,7 @@ namespace VehicleRunner
         /// <summary>
         /// 起動時のマップファイル
         /// </summary>
-        private const string defaultMapFile = "../../../MapFile/syaoku201610/syaoku201610.xml";
+        private const string defaultMapFile = "../../../MapFile/tsukuba20161104_2/tsukuba20161104_2.xml";
 
         /// <summary>
         /// USB GPSクラス
@@ -811,8 +811,13 @@ namespace VehicleRunner
 
                     // UntiEBS Cnt
                     lbl_BackCnt.Text = "EBS cnt:" + BrainCtrl.EmgBrakeContinueCnt.ToString();
-                    lbl_BackProcess.Visible = BrainCtrl.bNowBackProcess;
+                    //lbl_BackProcess.Visible = BrainCtrl.bNowBackProcess;
+                    lbl_BackProcess.Text = BrainCtrl.ModeCtrl.GetActionModeString();
                 }
+            }
+            else
+            {
+                lbl_BackProcess.Text = "モニタリング";
             }
 
 
@@ -1264,7 +1269,7 @@ namespace VehicleRunner
         }
 
         /// <summary>
-        /// 強制回避
+        /// 強制回避起動
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

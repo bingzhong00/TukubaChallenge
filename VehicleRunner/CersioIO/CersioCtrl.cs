@@ -49,10 +49,12 @@ namespace CersioIO
         static public double nowSendHandleValue;
         static public double nowSendAccValue;
 
+        // 最大ハンドル角
+        public const double MaxHandleAngle = 30.0;
 
         // ハンドル、アクセル上限値
         static public double HandleRate = 1.0;
-        static public double AccRate = 0.30;
+        static public double AccRate = 0.50;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.125; // 0.15;
@@ -471,6 +473,14 @@ namespace CersioIO
         };
         public int ptnHeadLED = -1;
         private int cntHeadLED = 0;
+
+        private static string[] ledCommand =
+        {
+            "rainbow",
+            "teater",
+            "rainbowCycle",
+        };
+
         /// <summary>
         /// 
         /// </summary>
@@ -485,6 +495,11 @@ namespace CersioIO
             if (bForce || (ptnHeadLED != setPattern && cntHeadLED == 0))
             {
                 SendCommand("AL," + setPattern.ToString() + ",\n");
+                try
+                {
+                    ipc.RemoteObject.ledCommand = ledCommand[setPattern];
+                }
+                catch { }
 
                 cntHeadLED = 20 * 1;          // しばらく変更しない
                 ptnHeadLED = setPattern;
@@ -741,7 +756,7 @@ namespace CersioIO
 #if true
                                 // 座標軸を変換
                                 ResiveY = -ResiveY;
-                                ResiveRad = -ResiveRad;
+                                //ResiveRad = -ResiveRad;
                                 // リセットした時点での電子コンパスの向きを元にマップ座標へ変換する
                                 // x*cos - y*sin
                                 // x*sin + y*cos

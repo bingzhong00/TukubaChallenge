@@ -52,6 +52,9 @@ namespace VRIpcLib
         public double gpsGrandX { get; set; }
         public double gpsGrandY { get; set; }
 
+        // Bentz LED
+        public string ledCommand { get; set; }
+
         /// <summary>
         /// 送信用
         /// </summary>

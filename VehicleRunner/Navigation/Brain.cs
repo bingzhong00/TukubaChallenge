@@ -468,7 +468,6 @@ namespace Navigation
                             ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
                         }
                     }
-
                 }
             }
 

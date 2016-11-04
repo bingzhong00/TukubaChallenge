@@ -112,8 +112,8 @@ namespace LocationPresumption
             // bmpからGridMapを生成
             for (int x = 0; x < W; ++x) {
                 for (int y = 0; y < H; ++y) {
-                    //Color c = access[x, H-1-y];
                     Color c = access[x, y];
+
                     if (c == GridColor_Fill)
                     {
                         // 障害物
@@ -148,6 +148,40 @@ namespace LocationPresumption
             }
 
             access.EndAccess();
+        }
+
+        /// <summary>
+        /// ある値以上
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsUpper(Color a, Color b, int val)
+        {
+            if (((a.ToArgb() >> 16) & 0xFF) > (((b.ToArgb() >> 16) & 0xFF)+val) &&
+                ((a.ToArgb() >> 8) & 0xFF) > (((b.ToArgb() >> 8) & 0xFF)+val) &&
+                ((a.ToArgb()) & 0xFF) > (((b.ToArgb()) & 0xFF)+val))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// ある値以下
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsLess(Color a, Color b, int val)
+        {
+            if (((a.ToArgb() >> 16) & 0xFF) < (((b.ToArgb() >> 16) & 0xFF)+val) &&
+                ((a.ToArgb() >> 8) & 0xFF) < (((b.ToArgb() >> 8)+val) & 0xFF) &&
+                ((a.ToArgb()) & 0xFF) < (((b.ToArgb()) & 0xFF)+val) )
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

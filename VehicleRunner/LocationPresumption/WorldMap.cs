@@ -231,14 +231,19 @@ namespace LocationPresumption
                     else
                     {
                         c = bmpAp[adX, adY];
+
+                        // 色数を減らして、微妙な誤差をなくす
+                        //c = Color.FromArgb((((c.R+4) / 5) * 5), (((c.G+4) / 5) * 5), (((c.B+4) / 5) * 5));
                     }
 
-                    if (c == GridMap.GridColor_Fill)
+                    //if (c == GridMap.GridColor_Fill)
+                    if ( GridMap.IsLess(c,GridMap.GridColor_Fill,20))
                     {
                         // 障害物
                         gm.M[x, y] = Grid.Fill;
                     }
-                    else if (c == GridMap.GridColor_Free)
+                    //else if (c == GridMap.GridColor_Free)
+                    else if (GridMap.IsUpper(c, GridMap.GridColor_Free, -20))
                     {
                         // 通行可能
                         gm.M[x, y] = Grid.Free;

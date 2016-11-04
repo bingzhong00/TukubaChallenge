@@ -30,6 +30,8 @@ namespace RosIF
         public double gpsGrandX;
         public double gpsGrandY;
 
+        public string ledCommand;
+
         /// v-slam
         public double vslamPlotX;
         public double vslamPlotY;
@@ -73,6 +75,9 @@ namespace RosIF
         RosSharp.Topic.Publisher<RosSharp.sensor_msgs.LaserScan> pubUrg;
 
         RosSharp.Topic.Publisher<RosSharp.rosgraph_msgs.Clock> pubClock;
+
+        // LED
+        RosSharp.Topic.Publisher<RosSharp.std_msgs.String> pubBenzLED;
 
         // ================================================================================================
         public const int numUrgData = 1080;
@@ -288,7 +293,13 @@ namespace RosIF
                     var data = new RosSharp.rosgraph_msgs.Clock()  { clock = DateTime.Now };
                     pubClock.OnNext(data);
                 }
-                
+
+                // LED
+                if (null!= pubBenzLED)
+                {
+                    var data = new RosSharp.std_msgs.String() { data = ledCommand };
+                    pubBenzLED.OnNext(data);
+                }
             }
             catch (Exception ex)
             {
@@ -343,6 +354,7 @@ namespace RosIF
                 //pubUrg = rosNode.PublisherAsync<RosSharp.sensor_msgs.LaserScan>("/scanVR").Result;
 
                 //pubClock = rosNode.PublisherAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
+                pubBenzLED = rosNode.PublisherAsync<RosSharp.std_msgs.String>("/benz/led").Result;
 
                 // Subscribe CallBack指定
                 if (null != subVSlam) subVSlam.Subscribe(cbSubScriber_VSlam);
@@ -371,6 +383,7 @@ namespace RosIF
                     if (null != pubCompus) pubCompus.Dispose();
                     if (null != pubGPS) pubGPS.Dispose();
                     if (null != pubUrg) pubUrg.Dispose();
+                    if (null != pubBenzLED) pubBenzLED.Dispose();
 
                     if (null != subVSlam) subVSlam.Dispose();
                     if (null != subRosif_pub) subRosif_pub.Dispose();

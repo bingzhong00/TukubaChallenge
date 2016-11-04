@@ -304,7 +304,7 @@ namespace Navigation
         public static double CalcHandleValue(double targetHandleRad, double nowHandleRad, ref double stearingDir, double targetDist )
         {
             // 最大ハンドル切れ角
-            const double maxStearingAng = 30.0;
+            const double maxStearingAng = CersioIO.CersioCtrl.MaxHandleAngle;
 
             // ラジアンから角度へ変換
             double tgtAng = targetHandleRad * 180.0 / Axiom.Math.Utility.PI;
@@ -341,7 +341,7 @@ namespace Navigation
             stearingDir = stearingAng;
 
             // 瞬間的に大きく切り過ぎないように調整
-            stearingAng *= 0.4;
+            //stearingAng *= 0.4;
 
             // 最大きれ角制限
             if (stearingAng > maxStearingAng) stearingAng = maxStearingAng;
