@@ -183,6 +183,7 @@ namespace Navigation
                 }
 
                 // ハンドル角を計算
+#if false
                 if (LHitLength != 0.0 && RHitLength != 0.0)
                 {
                     // 左右がHIT
@@ -202,6 +203,16 @@ namespace Navigation
                     Result = EHS_MODE.CenterPass;
                 }
                 else if (LHitLength != 0.0)
+#else
+                if (LHitLength != 0.0 && RHitLength != 0.0)
+                {
+                    // 両方ならば、近いほうを優先する
+                    if (LHitLength < RHitLength) RHitLength = 0.0;
+                    else LHitLength = 0.0;
+                }
+
+                if (LHitLength != 0.0)
+#endif
                 {
                     // 左側がHit
                     double Lx, Ly;
@@ -209,9 +220,10 @@ namespace Navigation
                     Lx = Ly = 0.0;
                     LrfValToPosition(ref Lx, ref Ly, LHitDir, LHitLength);
 
+                    // 壁から離れる距離を足しこむ
                     Lx += WallRange;
 
-                    double tgtAng = Rooting.CalcPositionToAngle(Lx, Ly);
+                    double tgtAng = 45.0;// Rooting.CalcPositionToAngle(Lx, Ly);
                     rtHandleVal = Rooting.CalcHandleValueFromAng(tgtAng, 0.0);
                     Result = EHS_MODE.LeftWallHit;
                 }
@@ -225,7 +237,7 @@ namespace Navigation
 
                     Rx -= WallRange;
 
-                    double tgtAng = Rooting.CalcPositionToAngle(Rx, Ry);
+                    double tgtAng = -45.0;//Rooting.CalcPositionToAngle(Rx, Ry);
                     rtHandleVal = Rooting.CalcHandleValueFromAng(tgtAng, 0.0);
                     Result = EHS_MODE.RightWallHit;
                 }
@@ -234,6 +246,7 @@ namespace Navigation
             // 極小値は切り捨て
             rtHandleVal = (double)((int)(rtHandleVal * 100.0)) / 100.0;
 
+            // ※LRを入れ替えて、このマイナスをはずせば意味があう? 2016.11.05
             return -rtHandleVal;
         }
 

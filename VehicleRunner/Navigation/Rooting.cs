@@ -79,7 +79,7 @@ namespace Navigation
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <returns></returns>
+        /// <returns>角度</returns>
         public static double CalcPositionToAngle(double x, double y)
         {
             Vector3 tgtVec = new Vector3(x, y, 0);

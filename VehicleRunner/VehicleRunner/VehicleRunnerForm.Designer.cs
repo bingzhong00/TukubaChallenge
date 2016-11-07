@@ -1413,10 +1413,12 @@
             // rb_LRF_LAN
             // 
             this.rb_LRF_LAN.AutoSize = true;
+            this.rb_LRF_LAN.Checked = true;
             this.rb_LRF_LAN.Location = new System.Drawing.Point(16, 51);
             this.rb_LRF_LAN.Name = "rb_LRF_LAN";
             this.rb_LRF_LAN.Size = new System.Drawing.Size(87, 16);
             this.rb_LRF_LAN.TabIndex = 28;
+            this.rb_LRF_LAN.TabStop = true;
             this.rb_LRF_LAN.Text = "ConnectLAN";
             this.rb_LRF_LAN.UseVisualStyleBackColor = true;
             this.rb_LRF_LAN.CheckedChanged += new System.EventHandler(this.rb_LRF_LAN_CheckedChanged);
@@ -1424,12 +1426,10 @@
             // rb_LRF_ROSnode
             // 
             this.rb_LRF_ROSnode.AutoSize = true;
-            this.rb_LRF_ROSnode.Checked = true;
             this.rb_LRF_ROSnode.Location = new System.Drawing.Point(16, 24);
             this.rb_LRF_ROSnode.Name = "rb_LRF_ROSnode";
             this.rb_LRF_ROSnode.Size = new System.Drawing.Size(88, 16);
             this.rb_LRF_ROSnode.TabIndex = 27;
-            this.rb_LRF_ROSnode.TabStop = true;
             this.rb_LRF_ROSnode.Text = "ConnectROS";
             this.rb_LRF_ROSnode.UseVisualStyleBackColor = true;
             this.rb_LRF_ROSnode.CheckedChanged += new System.EventHandler(this.rb_LRF_LAN_CheckedChanged);

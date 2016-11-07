@@ -50,11 +50,13 @@ namespace CersioIO
         static public double nowSendAccValue;
 
         // 最大ハンドル角
-        public const double MaxHandleAngle = 30.0;
+        // 角度から　左　1.0　～　右　-1.0の範囲に変換に使う
+        // 値が大きいほど、緩やかになる
+        public const double MaxHandleAngle = 25.0;
 
         // ハンドル、アクセル上限値
         static public double HandleRate = 1.0;
-        static public double AccRate = 0.50;
+        static public double AccRate = 0.40;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.125; // 0.15;
@@ -495,6 +497,8 @@ namespace CersioIO
             if (bForce || (ptnHeadLED != setPattern && cntHeadLED == 0))
             {
                 SendCommand("AL," + setPattern.ToString() + ",\n");
+                
+                // LED command send
                 try
                 {
                     ipc.RemoteObject.ledCommand = ledCommand[setPattern];

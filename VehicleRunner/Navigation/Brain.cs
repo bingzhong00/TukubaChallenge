@@ -330,9 +330,15 @@ namespace Navigation
                         // ばたつき防止
                         handleTgt = CersioCtrl.nowSendHandleValue + ((EHS.HandleVal - CersioCtrl.nowSendHandleValue) * CersioCtrl.HandleControlPow);
 
-                        //AccelSlowDownCnt = 5;       // 速度もさげる
+                        EBS.AccelSlowDownCnt = 5;       // 速度もさげる
                         CarCtrl.SetHeadMarkLED((int)CersioCtrl.LED_PATTERN.BLUE);
                     }
+                }
+
+                // ハンドルで曲がるときは、速度を下げる
+                if( Math.Abs( handleTgt ) > 0.25 )
+                {
+                    EBS.AccelSlowDownCnt = 5;
                 }
 
                 // スローダウン中 動作
