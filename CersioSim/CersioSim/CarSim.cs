@@ -118,14 +118,20 @@ namespace CersioSim
         /// <summary>
         /// センサー情報更新
         /// </summary>
-        public void SenserUpdate()
+        public void SenserUpdate( bool bLRF, bool bRE )
         {
-            // LRF
-            // マップ座標に変換
-            mkp.LRFdata = mrf.Sense(new MarkPoint(mkp.X, mkp.Y, mkp.Theta));
+            if (bLRF)
+            {
+                // LRF
+                // マップ座標に変換
+                mkp.LRFdata = mrf.Sense(new MarkPoint(mkp.X, mkp.Y, mkp.Theta));
+            }
 
-            // R.E.
-            CalcWheelPosToREPulse();
+            if (bRE)
+            {
+                // R.E.
+                CalcWheelPosToREPulse();
+            }
         }
 
         /// <summary>

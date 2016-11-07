@@ -65,7 +65,15 @@ namespace CersioSim
         /// </summary>
         private IpcServer ipc;
 
+        /// <summary>
+        /// MapFile
+        /// </summary>
         string defaultMapFileName = "../../../MapFile/tsukuba20161104_2/tsukuba20161104_2.xml";
+
+        /// <summary>
+        /// LRF情報を(処理しない)使わないフラグ
+        /// </summary>
+        bool bLRF_Disable = false;
 
         /// <summary>
         /// コンストラクタ
@@ -103,7 +111,7 @@ namespace CersioSim
             {
                 ipc = null;
             }
-
+            bLRF_Disable = cbLRF_Off.Checked;
             tmr_Update.Enabled = true;
         }
 
@@ -224,7 +232,7 @@ namespace CersioSim
             carSim.calcTirePos(tmr_Update.Interval);
 
             // センサー情報更新
-            carSim.SenserUpdate();
+            carSim.SenserUpdate(!bLRF_Disable, true );
 
 
             // 車輪位置
@@ -404,49 +412,51 @@ namespace CersioSim
                 lbl_CtrlHandle.Text = bSrv.ctrHandle.ToString();
             }
 
-
-            // LRFセンサー情報取得
-            for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
+            if (bLRF_Disable)
             {
-                UrgSim.lrfData[i] = (short)carSim.mkp.LRFdata[i];
-            }
-            UrgSim.numLrfData = carSim.mkp.LRFdata.Length;
-
-            // ROS-IF経由でのLRFデータ送信
-            try
-            {
-                if (ipc != null && ipc.RemoteObject.urgData.Length  > 0)
-                {
-                    int nSkip = ipc.RemoteObject.urgData.Length / carSim.mkp.LRFdata.Length;
-                    for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
-                    {
-                        for (int n = 0; n < nSkip; n++)
-                        {
-                            ipc.RemoteObject.urgData[i * nSkip + n] = carSim.mkp.LRFdata[i];
-                        }
-                    }
-
-                    //lbl_Speed.Text = "LRF:" + ipc.RemoteObject.urgData[0].ToString();
-
-                    // debug
-                    ipc.RemoteObject.vslamPlotX = carSim.mkp.LRFdata[0]; //carSim.mkp.X;
-                    ipc.RemoteObject.vslamPlotY = carSim.mkp.Y;
-                }
-            } catch ( Exception ex )
-            {
-                //
-            }
-            
-            // URGコマンド受信処理
-            if (UrgSim.readMessage())
-            {
-                lbl_URGIPTitle.ForeColor = Color.LimeGreen;
+                lbl_URGIPTitle.ForeColor = Color.LightGray;
             }
             else
             {
-                lbl_URGIPTitle.ForeColor = Color.Black;
-            }
+                // LRFセンサー情報取得
+                for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
+                {
+                    UrgSim.lrfData[i] = (short)carSim.mkp.LRFdata[i];
+                }
+                UrgSim.numLrfData = carSim.mkp.LRFdata.Length;
 
+                // ROS-IF経由でのLRFデータ送信
+                try
+                {
+                    if (ipc != null && ipc.RemoteObject.urgData.Length > 0)
+                    {
+                        int nSkip = ipc.RemoteObject.urgData.Length / carSim.mkp.LRFdata.Length;
+                        for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
+                        {
+                            for (int n = 0; n < nSkip; n++)
+                            {
+                                ipc.RemoteObject.urgData[i * nSkip + n] = carSim.mkp.LRFdata[i];
+                            }
+                        }
+
+                        //lbl_Speed.Text = "LRF:" + ipc.RemoteObject.urgData[0].ToString();
+                    }
+                }
+                catch
+                {
+                    //
+                }
+
+                // URGコマンド受信処理
+                if (UrgSim.readMessage())
+                {
+                    lbl_URGIPTitle.ForeColor = Color.LimeGreen;
+                }
+                else
+                {
+                    lbl_URGIPTitle.ForeColor = Color.Black;
+                }
+            }
         }
 
         /// <summary>
@@ -694,6 +704,16 @@ namespace CersioSim
                 LoadMapFile(dlg.FileName);
                 tmr_Update.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// LRF情報　OFF
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbLRF_Off_CheckedChanged(object sender, EventArgs e)
+        {
+            bLRF_Disable = cbLRF_Off.Checked;
         }
 
         /// <summary>

@@ -92,6 +92,7 @@
             this.lbl_URGIPTitle = new System.Windows.Forms.Label();
             this.lbl_URGIP = new System.Windows.Forms.Label();
             this.btn_CarInit = new System.Windows.Forms.Button();
+            this.cbLRF_Off = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_MsController)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tBarScale)).BeginInit();
@@ -717,11 +718,23 @@
             this.btn_CarInit.UseVisualStyleBackColor = true;
             this.btn_CarInit.Click += new System.EventHandler(this.btn_CarInit_Click);
             // 
+            // cbLRF_Off
+            // 
+            this.cbLRF_Off.AutoSize = true;
+            this.cbLRF_Off.Location = new System.Drawing.Point(464, 527);
+            this.cbLRF_Off.Name = "cbLRF_Off";
+            this.cbLRF_Off.Size = new System.Drawing.Size(65, 16);
+            this.cbLRF_Off.TabIndex = 22;
+            this.cbLRF_Off.Text = "LRF Off";
+            this.cbLRF_Off.UseVisualStyleBackColor = true;
+            this.cbLRF_Off.CheckedChanged += new System.EventHandler(this.cbLRF_Off_CheckedChanged);
+            // 
             // CersioSimForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(895, 543);
+            this.Controls.Add(this.cbLRF_Off);
             this.Controls.Add(this.btn_CarInit);
             this.Controls.Add(this.lbl_URGIP);
             this.Controls.Add(this.lbl_URGIPTitle);
@@ -827,6 +840,7 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button btn_LoadMapFile;
         private System.Windows.Forms.Button btn_CarInit;
+        private System.Windows.Forms.CheckBox cbLRF_Off;
     }
 }
 
