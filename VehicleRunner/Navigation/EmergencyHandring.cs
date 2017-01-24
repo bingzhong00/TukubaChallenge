@@ -31,12 +31,12 @@ namespace Navigation
 
         // 屋外向け
         // EHS設定 壁検知　ハンドル制御
-        // ハンドル　－が右 (左右の値が逆？らしい)
-        public const int od_stLAng = -40;     // 右側感知角度 -40～-10度
-        public const int od_edLAng = -10;
+        // ハンドル　－が右
+        public const int od_stRAng = -40;     // 右側感知角度 -40～-10度
+        public const int od_edRAng = -10;
 
-        public const int od_stRAng = 10;      // 左側感知角度 10～40度
-        public const int od_edRAng = 40;
+        public const int od_stLAng = 10;      // 左側感知角度 10～40度
+        public const int od_edLAng = 40;
 
         public const double od_MinRange = 600.0;     // 感知最小距離 [mm] 60cm
         public const double od_MaxRange = 2000.0;    // 感知最大距離 [mm] 3000cm
@@ -246,8 +246,7 @@ namespace Navigation
             // 極小値は切り捨て
             rtHandleVal = (double)((int)(rtHandleVal * 100.0)) / 100.0;
 
-            // ※LRを入れ替えて、このマイナスをはずせば意味があう? 2016.11.05
-            return -rtHandleVal;
+            return rtHandleVal;
         }
 
         /// <summary>

@@ -651,6 +651,9 @@ namespace VehicleRunner
                         LocSys.LRF.SetExtData(CersioCt.GetROS_LRFdata());
                     }
 
+                    // AMCL
+                    LocSys.Input_AMCLData(CersioCt.hwAMCL_X, CersioCt.hwAMCL_Y, CersioCt.hwAMCL_Ang);
+
                     // LED状態 画面表示
                     if (CersioCt.ptnHeadLED == -1)
                     {
@@ -979,6 +982,7 @@ namespace VehicleRunner
             LocSys.Setting.bMoveSrcSVO  = rb_MoveSVO.Checked;
             LocSys.Setting.bMoveSrcReCompus = rb_MoveREandCompus.Checked;
             LocSys.Setting.bMoveSrcPF = rb_MovePF.Checked;
+            LocSys.Setting.bMoveAMCL = rb_MoveAMCL.Checked;
         }
 
         /// <summary>
@@ -996,6 +1000,7 @@ namespace VehicleRunner
             LocSys.Setting.bDirSrcGPS = rb_DirGPS.Checked;
             LocSys.Setting.bDirSrcSVO  = rb_DirSVO.Checked;
             LocSys.Setting.bDirSrcCompus = rb_DirCompus.Checked;
+            LocSys.Setting.bDirAMCL = rb_DirAMCL.Checked;
         }
 
         /// <summary>

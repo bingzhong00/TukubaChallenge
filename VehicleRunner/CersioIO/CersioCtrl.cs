@@ -83,6 +83,11 @@ namespace CersioIO
         public double hwGPS_LandX = 0.0;
         public double hwGPS_LandY = 0.0;
 
+
+        public double hwAMCL_X = 0.0;
+        public double hwAMCL_Y = 0.0;
+        public double hwAMCL_Ang = 0.0;
+        
         /// <summary>
         /// GPS移動情報からの向き
         /// 比較的遅れる
@@ -377,8 +382,23 @@ namespace CersioIO
 
                 // Ros-IF
                 // GPS
-                ipc.RemoteObject.gpsGrandX = hwGPS_LandX;
-                ipc.RemoteObject.gpsGrandY = hwGPS_LandY;
+                try
+                {
+                    ipc.RemoteObject.gpsGrandX = hwGPS_LandX;
+                    ipc.RemoteObject.gpsGrandY = hwGPS_LandY;
+                }
+                catch { }
+            }
+
+            // 
+            try
+            {
+                hwAMCL_X = ipc.RemoteObject.amclPlotX;
+                hwAMCL_Y = ipc.RemoteObject.amclPlotY;
+                hwAMCL_Ang = ipc.RemoteObject.amclAng;
+            }
+            catch
+            {
             }
 
             // カウンタ更新
@@ -497,8 +517,6 @@ namespace CersioIO
             if (bForce || (ptnHeadLED != setPattern && cntHeadLED == 0))
             {
                 SendCommand("AL," + setPattern.ToString() + ",\n");
-                
-                // LED command send
                 try
                 {
                     ipc.RemoteObject.ledCommand = ledCommand[setPattern];

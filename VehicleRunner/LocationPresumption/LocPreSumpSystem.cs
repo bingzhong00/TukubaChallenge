@@ -71,8 +71,11 @@ namespace LocationPresumption
         public MarkPoint C1;
         /// <summary>GPS位置  (マーカー色：グリーン)</summary>
         public MarkPoint G1;
-        /// <summaryGPS差分計算</summary>
+        /// <summary>GPS差分計算</summary>
         public MarkPoint oldG1;
+
+        /// <summary>AMCL</summary>
+        public MarkPoint A1;
 
         // ログ
         List<MarkPoint> R1Log;
@@ -87,6 +90,10 @@ namespace LocationPresumption
         /// コンパスの情報があるか？
         /// </summary>
         public bool bActiveCompass = false;
+
+        public static double startMapX = 0.0;
+        public static double startMapY = 0.0;
+        public static double startMapDir = 0.0;
 
         // GPSスタート地点 
         public static double startPosGPSX = 0.0;
@@ -103,6 +110,8 @@ namespace LocationPresumption
 
         // GPSからMap変換時の(手で合わせた)スケール（計算上は必要ないはず。。）
         //const double GPStoMapScale = 60.0;
+
+        public static bool bEnableAMCL = false;
 
         // 1分の距離[mm] 1.85225Km
         const double GPSScale = 1.85225 * 1000.0 * 1000.0;
@@ -141,6 +150,11 @@ namespace LocationPresumption
             /// </summary>
             public bool bMoveSrcPF;
 
+            /// <summary>
+            /// AMCL座標
+            /// </summary>
+            public bool bMoveAMCL;
+
             // 向き
 
             /// <summary>
@@ -162,6 +176,11 @@ namespace LocationPresumption
             /// 地磁気
             /// </summary>
             public bool bDirSrcCompus;
+
+            /// <summary>
+            /// AMCL向き
+            /// </summary>
+            public bool bDirAMCL;
         }
         #endregion
 
@@ -208,6 +227,10 @@ namespace LocationPresumption
         /// <param name="stDir">角度</param>
         public void SetStartPostion(int stWldX, int stWldY, double stDir)
         {
+            startMapX = stWldX;
+            startMapY = stWldY;
+            startMapDir = stDir;
+
             MRF = new MapRangeFinder(LRF_Ctrl.LRFmaxRange_mm / MapToRealScale);    // 仮想Map用 LRFクラス
 
             worldMap.UpdateAreaCenter(stWldX, stWldY);
@@ -228,6 +251,8 @@ namespace LocationPresumption
             C1 = new MarkPoint(0, 0, stDir);
             G1 = new MarkPoint(0, 0, 0);        // GPS
             oldG1 = new MarkPoint(stWldX, stWldY, stDir);     // 
+
+            A1 = new MarkPoint(0, 0, 0);        // AMCL
 
             // パーティクルフィルター初期化
             {
@@ -441,6 +466,23 @@ namespace LocationPresumption
             bEnableGPS = true;
         }
 
+        /// <summary>
+        /// AMCL値取得
+        /// </summary>
+        /// <param name="landX"></param>
+        /// <param name="landY"></param>
+        /// <returns></returns>
+        public bool Input_AMCLData(double worldX, double worldY, double worldAng)
+        {
+            // 単位変換
+            // m -> Pixel
+            A1.X = (worldX * 1000.0) / MapToRealScale + startMapX;
+            A1.Y = (-worldY * 1000.0) / MapToRealScale + startMapY;
+            A1.Theta = (-worldAng * 180.0 / Math.PI) + startMapDir;
+
+            bEnableAMCL = true;
+            return true;
+        }
 
 
         /// <summary>
@@ -504,6 +546,11 @@ namespace LocationPresumption
                 //  RE Pulse値(移動量) & PFの向きでの座標
                 // ※未実装
             }
+            else if (Setting.bMoveAMCL)
+            {
+                R1.X = A1.X;
+                R1.Y = A1.Y;
+            }
 
             // 向き情報 更新
             if (Setting.bDirSrcRePlot)
@@ -525,6 +572,10 @@ namespace LocationPresumption
                 {
                     R1.Theta = C1.Theta;
                 }
+            }
+            else if (Setting.bDirAMCL)
+            {
+                R1.Theta = A1.Theta;
             }
 
             // 更新結果ログ保存
