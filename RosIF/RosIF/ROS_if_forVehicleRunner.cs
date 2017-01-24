@@ -339,7 +339,7 @@ namespace RosIF
                 subVSlam = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/torosif/vslam").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
-                subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/base_link").Result;
+                subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/amcl_result").Result;
                 //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
                 //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
                 subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/torosif/scan").Result;
