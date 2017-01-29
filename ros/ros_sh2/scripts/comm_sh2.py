@@ -14,16 +14,17 @@ from sensor_msgs.msg import Imu
 from sensor_msgs.msg import Joy
 
 # lsusb または ls /dev/input コマンドで確認のこと
-default_port='/dev/input/js0'
+default_port='/dev/ttyUSB0'
 port = rospy.get_param('~port', default_port)
 
 # Check your COM port and baud rate
-rospy.loginfo("Opening %s...", port)
-#try:
-#    ser = serial.Serial(port=port, baudrate=57600, timeout=1)
-#except serial.serialutil.SerialException:
-#    rospy.logerr("USB Serial not found at port "+port + ". Did you specify the correct port in the launch file?")
-    #exit
+print "Opening...", port
+
+try:
+	ser = serial.Serial(port=port, baudrate=57600, timeout=1)
+except serial.serialutil.SerialException:
+	rospy.logerr("USB Serial not found at port "+port + ". Did you specify the correct port in the launch file?")
+	exit
 #    sys.exit(0)
 
 joyX = 0.0
@@ -41,7 +42,7 @@ def joy_callback( data ):
 
 
 rospy.init_node("comm_sh2")
-pub = rospy.Publisher('sh2_encLR', Imu, queue_size=10)
+pub = rospy.Publisher('sh2_encLR', Vector3, queue_size=10)
 
 # joystick subscriber
 rospy.Subscriber("/joy", Joy, joy_callback)
@@ -75,29 +76,30 @@ def main():
 		sendByte[5] = sumcheck
 
 		# send serial
-		#for i in range(6):
-		#	ser.write(chr(sendByte[i-1]))
+		for i in range(6):
+			ser.write(chr(sendByte[i-1]))
 
 		print "joyX:",joyX, " joyY:",joyY
 		# sleep
 		r.sleep()
 				
 		# receive serial
-		#res = ser.read(10)
+		res = ser.read(10)
 		
 		# RotaryEncorder
-		#vecMsg.x = float(res[0] << 8 | res[1])
-		#vecMsg.y = float(res[2] << 8 | res[3])
-		#vecMsg.z = 0.0
+		vecMsg.x = float(ord(res[0]) << 8 | ord(res[1]))
+		vecMsg.y = float(ord(res[2]) << 8 | ord(res[3]))
+		vecMsg.z = 0.0
 		# res[4], res[5] IR Sensor
 		# res[6], res[7] Voltage
 		# res[8] Switch bit
+		print "serial:" ,vecMsg.x,",",vecMsg.y, " IR:",ord(res[4]),ord(res[5]), " volt:",ord(res[6]), ord(res[7]), " bit:",ord(res[8])
 
 		#imuMsg.header.stamp= rospy.Time.now()
 		#imuMsg.header.frame_id = 'base_imu_link'
 		#imuMsg.header.seq = seq
 		#seq = seq + 1
-		#pub.publish(vecMsg)
+		pub.publish(vecMsg)
 
 
 if __name__ == "__main__":
