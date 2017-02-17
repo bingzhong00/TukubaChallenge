@@ -7,6 +7,8 @@ import math
 import sys
 import serial
 import binascii
+import struct
+from numpy import *
 
 from std_msgs.msg import String
 from geometry_msgs.msg import Vector3
@@ -56,51 +58,170 @@ def main():
 	vecMsg = Vector3()
 	sendByte = [0,0,0,0,0,0]
 	r = rospy.Rate(10)
-
+	encR = 0
+	encL = 0
+	encRold = 0
+	encLold = 0
+	encFirstFlg = True
+	light = False
+	
 	while not rospy.is_shutdown():
 		accVal = joyY
 		hdlVal = joyX
-		accSH = int(1280 + ((accVal + 1.0) / 2.0) * 2048)
-		hdlSH = int(1280 + ((hdlVal + 1.0) / 2.0) * 2048)
-		# Handle accel
-		sendByte[0] = ((hdlSH>>8) & 0xFF)
-		sendByte[1] = (hdlSH & 0xFF)
-		sendByte[2] = ((accSH>>8) & 0xFF)
-		sendByte[3] = (accSH & 0xFF)
-		# IO
-		sendByte[4] = 0
-		# checkSum
-		sumcheck = 0
-		for i in range(5):
-			sumcheck = (sumcheck&0xFF) ^ (sendByte[i-1]&0xFF)
-		sendByte[5] = sumcheck
-
-		# send serial
-		for i in range(6):
-			ser.write(chr(sendByte[i-1]))
 
 		print "joyX:",joyX, " joyY:",joyY
-		# sleep
-		r.sleep()
-				
-		# receive serial
-		res = ser.read(10)
+
+		handle = max(-1.0, min(1.0, hdlVal))# Left = 1.0
+		handle = int(interp(handle, (-1.0,1.0),(1280., 3328.)))
+		throttle = max(-1.0, min(1.0, accVal))
+		throttle = int(interp(throttle, (-1.0,1.0),(1280., 3328.)))
+		data = struct.pack('>HHB', handle, throttle, light)
+		sum = reduce(int.__xor__, [ord(c) for c in data])
 		
-		# RotaryEncorder
-		vecMsg.x = float(ord(res[0]) << 8 | ord(res[1]))
-		vecMsg.y = float(ord(res[2]) << 8 | ord(res[3]))
-		vecMsg.z = 0.0
-		# res[4], res[5] IR Sensor
-		# res[6], res[7] Voltage
-		# res[8] Switch bit
-		print "serial:" ,vecMsg.x,",",vecMsg.y, " IR:",ord(res[4]),ord(res[5]), " volt:",ord(res[6]), ord(res[7]), " bit:",ord(res[8])
+		ser.write(data+chr(sum))
+		r.sleep()
+		reply = ser.read(10)
+		
+		if reply\
+			and len(reply)==10\
+			and reduce(int.__xor__, [ord(c) for c in reply])==0:
+				# cersio original
+				#cnt = fromstring(reply[:4], int16).byteswap()
+				#pulse_delta = (cnt - self.last_count)*array((-1,1))
+				#self.tire += pulse_delta
+				#self.angle = (self.tire[0]-self.tire[1])*self.K2
+				#dist = average(pulse_delta)*self.K1
+				#self.position += array((
+				#	sin(self.angle),
+				#	0.0,
+				#	cos(self.angle)))*dist
+				#self.linear_delta = pulse_delta*self.K1
+				#self.last_count = cnt
+				#
+				#results = struct.unpack('BBBBB', reply[4:9])
+				#self.power12v  = interp(results[0],(0, 200),(0.0, 1.0))
+				#self.power6v = interp(results[1],(0, 120),(0.0, 1.0))
+				#self.psd_left  = interp(results[2],(150, 0),(0.0, 1.0))
+				#self.psd_right = interp(results[3],(150, 0),(0.0, 1.0))
+				#left_button = results[4]&0x08==0
+				#right_button = results[4]&0x10==0
+				#yellow_button = results[4]&0x04==0
+				#blue_button = results[4]&0x02==0
+				#self.left_down = not self.left_button and left_button
+				#self.right_down = not self.right_button and right_button
+				#self.yellow_down = not self.yellow_button and yellow_button
+				#self.blue_down = not self.blue_button and blue_button
+				#self.left_button = left_button
+				#self.right_button = right_button
+				#self.yellow_button = yellow_button
+				#self.blue_button = blue_button
 
-		#imuMsg.header.stamp= rospy.Time.now()
-		#imuMsg.header.frame_id = 'base_imu_link'
-		#imuMsg.header.seq = seq
-		#seq = seq + 1
-		pub.publish(vecMsg)
+				# RotaryEncorder
+				encLR = fromstring(reply[:4], int16).byteswap()
+				encL = encLR[0]
+				encR = encLR[1]
 
+				if encFirstFlg:
+					encLold = encL
+					encRold = encR
+					encFirstFlg = False
+			
+				if(abs(encR-encRold) > 65000):
+					if(encRold > 65000):
+						encRold -= 65536
+					else:
+						encRold += 65536
+
+				if(abs(encL-encLold) > 65000):
+					if(encLold > 65000):
+						encLold -= 65536
+					else:
+						encLold += 65536
+
+				vecMsg.x = -float(encR-encRold)
+				vecMsg.y = float(encL-encLold)
+				vecMsg.z = 0.0
+
+				encRold = encR
+				encLold = encL
+
+				# res[4], res[5] Voltage
+				# res[6], res[7] IR Sensor
+				# res[8] Switch bit
+				print "serial:encR" ,encR,",encL",encL
+
+				pub.publish(vecMsg)
+				#r.sleep()
+		else:
+			print "serial no data"
+
+#		accSH = int(1280 + ((accVal + 1.0) / 2.0) * 2048)
+#		hdlSH = int(1280 + ((hdlVal + 1.0) / 2.0) * 2048)
+#		# Handle accel
+#		sendByte[0] = ((hdlSH>>8) & 0xFF)
+#		sendByte[1] = (hdlSH & 0xFF)
+#		sendByte[2] = ((accSH>>8) & 0xFF)
+#		sendByte[3] = (accSH & 0xFF)
+#		# IO
+#		sendByte[4] = 0
+#		# checkSum
+#		sumcheck = 0
+#		for i in range(5):
+#			sumcheck = (sumcheck&0xFF) ^ (sendByte[i-1]&0xFF)
+#		sendByte[5] = sumcheck
+#
+#		print "hdlSH:",hdlSH, " accSH:",accSH
+#		print "sendByte:",sendByte[0],sendByte[1],sendByte[2],sendByte[3],sendByte[5]
+#
+#		# send serial
+#		for i in range(6):
+#			ser.write(chr(sendByte[i-1]))
+#
+#		print "joyX:",joyX, " joyY:",joyY
+#		# sleep
+#		r.sleep()
+#				
+#		# receive serial
+#		res = ser.read(10)
+#		
+#		if len(res) > 8:
+#			# RotaryEncorder
+#			encL = ord(res[0]) << 8 | ord(res[1])
+#			encR = ord(res[2]) << 8 | ord(res[3])
+#
+#			if encFirstFlg:
+#				encLold = encL
+#				encRold = encR
+#				encFirstFlg = False
+#			
+#			if(abs(encR-encRold) > 65000):
+#				if(encRold > 65000):
+#					encRold -= 65536
+#				else:
+#					encRold += 65536
+#
+#			if(abs(encL-encLold) > 65000):
+#				if(encLold > 65000):
+#					encLold -= 65536
+#				else:
+#					encLold += 65536
+#
+#			vecMsg.x = -float(encR-encRold)
+#			vecMsg.y = float(encL-encLold)
+#			vecMsg.z = 0.0
+#
+#			encRold = encR
+#			encLold = encL
+#
+#			# res[4], res[5] IR Sensor
+#			# res[6], res[7] Voltage
+#			# res[8] Switch bit
+#			print "serial:encR" ,encR,",encL",encL, " IR:",ord(res[4]),ord(res[5]), " volt:",ord(res[6]), ord(res[7]), " bit:",ord(res[8])
+#
+#			pub.publish(vecMsg)
+#			#r.sleep()
+#		else:
+#			print "serial no data"
 
 if __name__ == "__main__":
 	main()
