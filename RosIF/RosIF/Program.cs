@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 using VRIpcLib;
 
@@ -13,8 +14,9 @@ namespace RosIF
         static void Main(string[] args)
         {
             // 接続情報
-            string myAddr = "192.168.1.4";
-            string roscoreAddr = "http://192.168.1.45:11311";
+            string myAddr = "192.168.1.2";
+            //string roscoreAddr = "http://192.168.1.80:11311"; // Gazebo Emu
+            string roscoreAddr = "http://192.168.1.101:11311";   // Raspberry Pi
 
             // 更新タイミング MS
             const int sleepMS = 100;
@@ -33,7 +35,45 @@ namespace RosIF
             }
 
 
-            Console.WriteLine("VehircleRunner ROS-Interface Ver0.20");
+            {
+                Console.WriteLine("自身のIPアドレスをチェック...");
+                // ホスト名を取得する
+                string hostname = Dns.GetHostName();
+
+                // ホスト名からIPアドレスを取得する
+                IPAddress[] adrList = Dns.GetHostAddresses(hostname);
+
+                if (adrList.Length == 1)
+                {
+                    myAddr = adrList[0].ToString();
+                    Console.WriteLine("自身のIPアドレスを設定:" + myAddr);
+                }
+                else
+                {
+                    bool bCheck = false;
+                    foreach (IPAddress address in adrList)
+                    {
+                        Console.WriteLine(address.ToString());
+                        if (myAddr == address.ToString())
+                        {
+                            bCheck = true;
+                        }
+                    }
+
+                    if (!bCheck)
+                    {
+                        Console.WriteLine("合致するIPアドレスがありません。:" + myAddr);
+                    }
+                    else
+                    {
+                        Console.WriteLine("IPアドレスが合致しました。:" + myAddr);
+                    }
+                }
+                Console.WriteLine("");
+            }
+
+
+            Console.WriteLine("VehircleRunner ROS-Interface Ver0.30");
             Console.WriteLine("");
 
             Console.WriteLine("Connect VehircleRunner IPC..");

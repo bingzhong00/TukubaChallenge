@@ -79,6 +79,10 @@ namespace RosIF
         // LED
         RosSharp.Topic.Publisher<RosSharp.std_msgs.String> pubBenzLED;
 
+        // cmd_vel
+        RosSharp.Topic.Publisher<RosSharp.geometry_msgs.Twist> pubCmdVel;
+
+
         // ================================================================================================
         public const int numUrgData = 1080;
 
@@ -300,6 +304,20 @@ namespace RosIF
                     var data = new RosSharp.std_msgs.String() { data = ledCommand };
                     pubBenzLED.OnNext(data);
                 }
+
+                // Publish cmd_vel
+                if (null != pubCmdVel)
+                {
+                    var data = new RosSharp.geometry_msgs.Twist()
+                    {
+                        // linear X + 前進
+                        // angular Z 左右
+                        linear = new Vector3() { x = 1.0, y = 0.0, z = 0.0 },
+                        angular = new Vector3() { x = 0.0, y = 0.0, z = 0.0 }
+                    };
+
+                    pubCmdVel.OnNext(data);
+                }
             }
             catch (Exception ex)
             {
@@ -339,7 +357,10 @@ namespace RosIF
                 subVSlam = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/torosif/vslam").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/turtle1/cmd_vel").Result;
                 //var subscriber = rosNode.SubscriberAsync<RosSharp.std_msgs.String>("/chatter").Result;
-                subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/amcl_result").Result;
+
+                //subRosif_pub = rosNode.SubscriberAsync <RosSharp.geometry_msgs.Twist> ("/rosif/amcl_result").Result;
+                subRosif_pub = rosNode.SubscriberAsync<RosSharp.geometry_msgs.Twist>("/rosif/base_link").Result;
+
                 //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/scan").Result;
                 //subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/last").Result;
                 subUrg = rosNode.SubscriberAsync<RosSharp.sensor_msgs.LaserScan>("/torosif/scan").Result;
@@ -355,6 +376,7 @@ namespace RosIF
 
                 //pubClock = rosNode.PublisherAsync<RosSharp.rosgraph_msgs.Clock>("/clock").Result;
                 pubBenzLED = rosNode.PublisherAsync<RosSharp.std_msgs.String>("/benz/led").Result;
+                pubCmdVel = rosNode.PublisherAsync<RosSharp.geometry_msgs.Twist>("/cmd_vel").Result;
 
                 // Subscribe CallBack指定
                 if (null != subVSlam) subVSlam.Subscribe(cbSubScriber_VSlam);
@@ -384,6 +406,7 @@ namespace RosIF
                     if (null != pubGPS) pubGPS.Dispose();
                     if (null != pubUrg) pubUrg.Dispose();
                     if (null != pubBenzLED) pubBenzLED.Dispose();
+                    if (null != pubCmdVel) pubCmdVel.Dispose();
 
                     if (null != subVSlam) subVSlam.Dispose();
                     if (null != subRosif_pub) subRosif_pub.Dispose();
