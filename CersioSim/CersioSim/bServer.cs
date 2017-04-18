@@ -318,7 +318,9 @@ namespace CersioSim
                 {
                     // REパルス数
                     // A1,ms,R,L
-                    sendStr += string.Format("A1,{0},{1},{2}$", nowMs, senReR, senReL);
+                    sendStr += string.Format("A1,{0},{1},{2}$", nowMs, senReR - senReR_, senReL - senReL_);
+                    senReR_ = senReR;
+                    senReL_ = senReL;
                 }
                 else if (commandStr == "A2")
                 {
@@ -372,8 +374,8 @@ namespace CersioSim
                     */
 
                     sendStr += string.Format("A4,{0},{1},{2},{3}$", nowMs,
-                                              senRePlotX_Out + senRePlotX_RstAdd,
-                                              senRePlotY_Out + senRePlotY_RstAdd,
+                                              (senRePlotY_Out + senRePlotY_RstAdd) * 0.001,
+                                              (senRePlotX_Out + senRePlotX_RstAdd) * 0.001,
                                               senReAng_Out + senReAng_RstAdd);
                 }
                 else if (commandStr == "AC")

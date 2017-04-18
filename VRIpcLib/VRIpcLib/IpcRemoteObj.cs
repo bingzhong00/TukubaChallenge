@@ -41,19 +41,17 @@ namespace VRIpcLib
         public double rePlotY { get; set; }
         public double reAng { get; set; }
 
-        // Compus
-        public double compusDir { get; set; }
-
         // RE パルス値
         public double reRpulse { get; set; }
         public double reLpulse { get; set; }
 
-        // GPS
-        public double gpsGrandX { get; set; }
-        public double gpsGrandY { get; set; }
-
         // Bentz LED
         public string ledCommand { get; set; }
+
+        // Handle,Accel
+        public double sendHandle { get; set; }
+        public double sendAccel { get; set; }
+
 
         /// <summary>
         /// 送信用
@@ -64,13 +62,6 @@ namespace VRIpcLib
         // -------------------------------------------------
         // ROS -> VR 受信情報
         // -------------------------------------------------
-        /// <summary>
-        /// v-slam
-        /// </summary>
-        public double vslamPlotX { get; set; }
-        public double vslamPlotY { get; set; }
-        public double vslamAng { get; set; }
-
         /// <summary>
         /// amcl
         /// </summary>

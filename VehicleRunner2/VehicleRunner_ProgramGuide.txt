@@ -1,0 +1,151 @@
+Auther:Terasaka
+Date:2016.07.03
+
+
+◆◆◆◆◆　　ソースファイル概要解説　　◆◆◆◆◆
+
+（ソリューションエクスプローラー表示順）
+
+プロジェクト：CersioIO
+　セルシオ(BoxPC)とのデータ通信が主
+
+　・CersioCtrl.cs
+　　主にセルシオ(BoxPC)とのデータ送受信(bServer)
+　　bServerエミュレータの切り替えもここに記述
+　　
+　　セルシオからのセンサーデータ受信
+　　セルシオへのハンドル、アクセル値を送信
+
+　・DriveIOport.cs
+    USBシリアル通信クラス
+    
+　　UsbIOportクラス
+　　　汎用USBシリアル通信クラス
+
+　　DriveIOportクラス
+　　　SH2直接　通信用
+　　　BoxPCではなく、LetsNoteに直接モータードライバーをUSBで繋ぐ場合
+
+　・IpcRemoteObj.cs
+　　ROS通信プログラムとのデータ受け渡し用　共有メモリアクセス
+　　※実装途中
+
+
+　・REconcoderInpurt.cs
+　　ロータリーエンコーダ補正計算予定
+　　※実装途中
+
+　・TCPClient.cs
+    TCP/IPソケット通信　ベースクラス
+    
+
+
+プロジェクト：LocationPresumption
+　自己位置推定計算
+
+　・BitmapAccess.cs
+    ビットマップ画像のピクセルアクセスクラス
+    （主にMAP画像アクセス）
+　
+　・GridMap.cs
+　　ビットマップ画像のピクセルを読み込み
+　　GridMapに変換してマップデータを扱うためのクラス
+
+　・KalmanFilter.cs
+　　カルマンフィルタ計算クラス
+　　※実装途中で　ローパスフィルターのみ実装
+
+　・LocPreSumpSystem.cs
+　　自己位置管理クラス
+　　
+　　各センサーからの位置情報を「MarkPoint」クラスに格納しマップ座標系で管理
+　　マップ座標系(100mmを1ピクセルを標準としているが、任意に変更可能[最小は1mm 1ピクセル])
+　　
+　　MarkPoint...マップ上でのX,Y(座標)、Theta(向き)を格納
+    座標(X,Y)は小数点以下可能
+    向き(Theta)は、度数法　-360～360を許容範囲とする。値を使う側で都合の良い範囲内に変換して使うこと。
+    　（将来的には、-180(左回り)～180(右回り)として、0を前方として統一したい）
+    
+    センサーから受け取った値を、マップ座標へ変換して、各MarkPoint(R1,G1,C1など)に格納する。
+    
+    ParticleFilterは、処理が重いので分離して、非同期動作させる予定。
+    　※現在、ParticleFilterは動作させていない。
+    
+    
+  ・LRF_Ctrl.cs
+  　LRF管理クラス
+  　LRFとの通信の確立、平均値を算出するノイズリダクション機能が動作。
+  
+  ・MapRangeFinder.cs
+  　GridMapの任意の座標で、LRFと同じセンサー値を生成するクラス。
+  　ParticleFilerで使う。
+  　ここの処理時間がParticleFilerの80～90%にあたる。（高速化を希望）
+  
+  ・MarkPoint.cs
+  　マップ上のマーカークラス
+  　センサー値のマップ座標格納に使う
+
+    座標(X,Y)は小数点以下可能
+    向き(Theta)は、度数法　-360～360を許容範囲とする。値を使う側で都合の良い範囲内に変換して使うこと。
+    　（将来的には、-180(左回り)～180(右回り)として、0を前方として統一したい）
+    
+  　LRFdataはParticleFilterで使う。
+  
+  ・Particle.cs / ParticleFiler.cs
+  　ParticleFiler演算クラス
+  　※現在、動作させていない。
+  
+  ・WorldMap.cs
+  　マップ画像のサイズに影響を受けないように、小さなマップに切り出して管理するクラス
+  　WorldMap＝マップ全体
+  　LocalMap＝マップから現在ロボットがいるところを中心に切り出した小さなマップ
+  
+  
+  
+プロジェクト：Navigation
+　ルート管理
+　
+　・Brain.cs
+　　自律走行制御クラス
+　　
+　　自己位置からルート計算して　Cersioに送信するハンドル値を求める
+　　また、LRFの情報から周囲の障害物を判別して緊急ブレーキ(EBS)、アクセル値を求める。
+　　
+　　
+
+　・Rooting.cs / RootingData.cs
+
+　　RootingData.checkPointテーブルのマップ座標を読み
+　　現在地から、目標のマップ座標への向きを計算。
+　　Cersioのハンドル値を求める。
+
+　
+
+
+プロジェクト：SCIP_library
+　URG(LRF)のSCIPプロトコル通信クラス
+　※ROSのhokuyo_nodeから取得するように変更するかもしれない。
+
+
+プロジェクト：VehicleRunner
+　Windowsフォーム管理クラス（インターフェイス）
+
+
+
+
+
+◆◆◆◆◆　クラス解説（記述予定）　◆◆◆◆◆
+LocPreSumpSystem
+
+
+
+◆◆◆◆◆　動作解説　◆◆◆◆◆
+
+◇(bServer)VehicleからのPlot情報の座標変換
+  セットした向き(ARコマンド)に関係なく、PlotX,Y座標は直進ならば(0,-1)と返して
+  座標系に向きが反映されないため、VehicleRunner内で回転計算をしている。
+  そのため、座標0,0向き0度としてVehicleをリセットして、差分を取得している。
+
+  Vehicle側で　例えば向き90度にセットして前進した場合に、X,Y=(1,0)方向へ
+  進んでくれるならこの計算は不要になる。
+

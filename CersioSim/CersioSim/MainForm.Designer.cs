@@ -753,7 +753,7 @@
             this.Controls.Add(this.lbl_HandleVal);
             this.Controls.Add(this.picbox_SimArea);
             this.Name = "CersioSimForm";
-            this.Text = "TKBC2016 Cersio Simurator";
+            this.Text = "TKCR2017 Cersio Simurator";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CersioSimForm_FormClosing);
             this.Load += new System.EventHandler(this.CersioSimForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_SimArea)).EndInit();

@@ -12,7 +12,6 @@ using System.Drawing.Drawing2D;
 
 using System.Diagnostics;
 using LocationPresumption;
-using VRIpcLib;
 using Navigation;
 
 using Axiom.Math;
@@ -63,7 +62,7 @@ namespace CersioSim
         /// <summary>
         /// ROS-IF Emu
         /// </summary>
-        private IpcServer ipc;
+        //private IpcServer ipc;
 
         /// <summary>
         /// MapFile
@@ -80,6 +79,16 @@ namespace CersioSim
         /// </summary>
         public CersioSimForm()
         {
+            {
+                //コマンドライン引数を配列で取得する
+                string[] cmds = System.Environment.GetCommandLineArgs();
+
+                if (cmds.Length > 1)
+                {
+                    defaultMapFileName = cmds[1];
+                }
+            }
+
             InitializeComponent();
 
             // マップファイル読み込み
@@ -102,15 +111,6 @@ namespace CersioSim
             // URG回線待ち
             UrgSim.OpenAsync();
 
-            // ROS-IF Emu
-            try
-            {
-                ipc = new IpcServer();
-            }
-            catch 
-            {
-                ipc = null;
-            }
             bLRF_Disable = cbLRF_Off.Checked;
             tmr_Update.Enabled = true;
         }
@@ -163,8 +163,16 @@ namespace CersioSim
         /// <returns></returns>
         private bool LoadMapFile(string loadFile )
         {
-            // 
-            mapFileData = MapData.LoadMapFile(loadFile);
+            try
+            {
+                // 
+                mapFileData = MapData.LoadMapFile(loadFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ファイルの読み込み失敗\n" + loadFile);
+                return false;
+            }
 
             //シミュレーションマップエリア
             SimAreaBmp = new Bitmap(picbox_SimArea.Width, picbox_SimArea.Height);
@@ -424,28 +432,6 @@ namespace CersioSim
                     UrgSim.lrfData[i] = (short)carSim.mkp.LRFdata[i];
                 }
                 UrgSim.numLrfData = carSim.mkp.LRFdata.Length;
-
-                // ROS-IF経由でのLRFデータ送信
-                try
-                {
-                    if (ipc != null && ipc.RemoteObject.urgData.Length > 0)
-                    {
-                        int nSkip = ipc.RemoteObject.urgData.Length / carSim.mkp.LRFdata.Length;
-                        for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
-                        {
-                            for (int n = 0; n < nSkip; n++)
-                            {
-                                ipc.RemoteObject.urgData[i * nSkip + n] = carSim.mkp.LRFdata[i];
-                            }
-                        }
-
-                        //lbl_Speed.Text = "LRF:" + ipc.RemoteObject.urgData[0].ToString();
-                    }
-                }
-                catch
-                {
-                    //
-                }
 
                 // URGコマンド受信処理
                 if (UrgSim.readMessage())

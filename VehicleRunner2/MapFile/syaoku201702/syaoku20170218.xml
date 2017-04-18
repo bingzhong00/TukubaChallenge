@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MapData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MapName>社屋マップ20170218</MapName>
+  <MapFileName>C:\Users\Raptor\Desktop\つくチャレ\プロジェクト\TukubaChallenge\VehicleRunner2\MapFile\syaoku201702\syaoku20170218.xml</MapFileName>
+  <MapImageFileName>./syaoku20170218_3rd.png</MapImageFileName>
+  <RealWidth>102.400</RealWidth>
+  <RealHeight>102.400</RealHeight>
+  <startPosition>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </startPosition>
+  <startDir>0</startDir>
+  <checkPoint>
+    <Vector3>
+      <x>1116</x>
+      <y>1053</y>
+      <z>0</z>
+    </Vector3>
+    <Vector3>
+      <x>1216</x>
+      <y>1053</y>
+      <z>0</z>
+    </Vector3>
+    <Vector3>
+      <x>1316</x>
+      <y>1048</y>
+      <z>0</z>
+    </Vector3>
+    <Vector3>
+      <x>1436</x>
+      <y>1046</y>
+      <z>0</z>
+    </Vector3>
+    <Vector3>
+      <x>1453</x>
+      <y>1076</y>
+      <z>0</z>
+    </Vector3>
+  </checkPoint>
+</MapData>

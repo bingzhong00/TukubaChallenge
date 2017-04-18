@@ -117,12 +117,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\VRIpcLib\VRIpcLib\VRIpcLib.csproj">
-      <Project>{49b18a6e-1ff5-4c96-839f-16f26826cbf3}</Project>
-      <Name>VRIpcLib</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rem exeコピー

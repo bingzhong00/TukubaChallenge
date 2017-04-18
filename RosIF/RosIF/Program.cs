@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using System.Threading.Tasks;
+using System.Threading;
 using VRIpcLib;
 
 namespace RosIF
 {
     class Program
     {
+        static ROS_if_forVehicleRunner rosifVR = new ROS_if_forVehicleRunner();
+        static bool loopFlg = true;
+
         static void Main(string[] args)
         {
             // 接続情報
@@ -21,7 +24,7 @@ namespace RosIF
             // 更新タイミング MS
             const int sleepMS = 100;
 
-            bool loopFlg = true;
+            Thread thread = null;
 
             // パラメータ取得
             // RosIF.exe 自IP roscore側IP
@@ -73,20 +76,20 @@ namespace RosIF
             }
 
 
-            Console.WriteLine("VehircleRunner ROS-Interface Ver0.30");
+            Console.WriteLine("VehircleRunner ROS-Interface Ver1.00");
             Console.WriteLine("");
 
             Console.WriteLine("Connect VehircleRunner IPC..");
             IpcServer ipc = new IpcServer();
 
-            ROS_if_forVehicleRunner rosifVR = new ROS_if_forVehicleRunner();
-
 
             // 終了イベント
-            Console.CancelKeyPress += (sender, e) => {
+            Console.CancelKeyPress += (sender, e) =>
+            {
                 Console.Clear();
                 Console.WriteLine("終了....");
 
+                // ループを抜けることで終了させる
                 loopFlg = false;
                 // trueにすると、プログラムを終了させない
                 e.Cancel = true;
@@ -95,8 +98,21 @@ namespace RosIF
             };
 
 
-            Console.WriteLine("Connect ROS... myIP:" + myAddr +" / roscore IP:" + roscoreAddr);
-            rosifVR.connect(myAddr, roscoreAddr);
+            // ROS 接続
+            Console.WriteLine("Connect ROS... myIP:" + myAddr + " / roscore IP:" + roscoreAddr);
+
+            if (!rosifVR.connect(myAddr, roscoreAddr))
+            {
+                // ROS接続失敗
+                Console.WriteLine("");
+                Console.WriteLine("***** Exit *****");
+
+                System.Threading.Thread.Sleep(3000);
+                return;
+            }
+
+            thread = new Thread(new ThreadStart(ThreadFunction));
+            thread.Start();
 
             Console.WriteLine("");
             Console.WriteLine("***** Start *****");
@@ -111,50 +127,35 @@ namespace RosIF
 #if true
                 try
                 {
+                    // IPC通信
                     if (null != ipc && null != ipc.RemoteObject)
                     {
-                        rosifVR.rePlotX = ipc.RemoteObject.rePlotX;
-                        rosifVR.rePlotY = ipc.RemoteObject.rePlotY;
-                        rosifVR.reAng = ipc.RemoteObject.reAng;
-
-                        // Compus
-                        rosifVR.compusDir = ipc.RemoteObject.compusDir;
-
-                        // RE パルス値
-                        rosifVR.reRpulse = ipc.RemoteObject.reRpulse;
-                        rosifVR.reLpulse = ipc.RemoteObject.reLpulse;
-
-                        // GPS
-                        rosifVR.gpsGrandX = ipc.RemoteObject.gpsGrandX;
-                        rosifVR.gpsGrandY = ipc.RemoteObject.gpsGrandY;
-
-
-                        /// v-slam
-                        ipc.RemoteObject.vslamPlotX = rosifVR.vslamPlotX;
-                        ipc.RemoteObject.vslamPlotY = rosifVR.vslamPlotY;
-                        ipc.RemoteObject.vslamAng = rosifVR.vslamAng;
-                        
-
-                        /// amcl-slam
-                        ipc.RemoteObject.amclPlotX = rosifVR.amclPlotX;
-                        ipc.RemoteObject.amclPlotY = rosifVR.amclPlotY;
-                        ipc.RemoteObject.amclAng  = rosifVR.amclAng;
-                        
-
-                        // URG ROS->VR SubScribe(購読)                      
-                        for (int i = 0; i < rosifVR.urg_scan.Length; i++) {
-                            ipc.RemoteObject.urgData[i] = rosifVR.urg_scan[i];
-                        }
-                        
-
-                        // URG VR->ROS Publish(配信)
-                        /*
-                        for (int i = 0; i < rosifVR.urg_scan.Length; i++)
+                        // ------------------------------------------------
+                        // ROS -> VR 受信データ
                         {
-                            rosifVR.urg_scan_send[i] = ipc.RemoteObject.urgDataSend[i];
-                            rosifVR.urg_intensities_send[i] = ipc.RemoteObject.urgIntensitiesSend[i];
+                            // amcl
+                            ipc.RemoteObject.amclPlotX = rosifVR.amclPlotX;
+                            ipc.RemoteObject.amclPlotY = rosifVR.amclPlotY;
+                            ipc.RemoteObject.amclAng = rosifVR.amclAng;
+
+                            // URG ROS->VR SubScribe(購読)                      
+                            for (int i = 0; i < rosifVR.urg_scan.Length; i++)
+                            {
+                                ipc.RemoteObject.urgData[i] = rosifVR.urg_scan[i];
+                            }
+
+                            ipc.RemoteObject.reRpulse = rosifVR.ReDirectR;
+                            ipc.RemoteObject.reLpulse = rosifVR.ReDirectL;
                         }
-                        */
+
+                        // -----------------------------------------------
+                        // VR -> ROS 送信データ
+                        {
+                            rosifVR.sendHandle = ipc.RemoteObject.sendHandle;
+                            rosifVR.sendAccel = ipc.RemoteObject.sendAccel;
+
+                            rosifVR.ledCommand = ipc.RemoteObject.ledCommand;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -168,10 +169,11 @@ namespace RosIF
                 // コンソール表示
                 {
                     Console.WriteLine("Subscribe ----------- ");
-                    Console.WriteLine("clock:" + rosifVR.rosClock.ToLongTimeString());
-                    Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamPlotZ:" + rosifVR.vslamPlotZ.ToString("f2")+"    ");
-                    Console.WriteLine("vslamAng(Degree):" + (rosifVR.vslamAng*180.0/Math.PI).ToString("f2") + "      ");
+                    //Console.WriteLine("clock:" + rosifVR.rosClock.ToLongTimeString());
+                    //Console.WriteLine("vslamPlotX:" + rosifVR.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + rosifVR.vslamPlotY.ToString("f2") + "/ vslamPlotZ:" + rosifVR.vslamPlotZ.ToString("f2")+"    ");
+                    //Console.WriteLine("vslamAng(Degree):" + (rosifVR.vslamAng*180.0/Math.PI).ToString("f2") + "      ");
                     //Console.WriteLine("vslamPlotX:" + ipc.RemoteObject.vslamPlotX.ToString("f2") + "/ vslamPlotY:" + ipc.RemoteObject.vslamPlotY.ToString("f2") + "/ vslamAng:" + rosifVR.vslamAng.ToString("f2"));
+                    Console.WriteLine("ReDirectL:" + rosifVR.ReDirectL.ToString("f2") + " / ReDirectR:" + rosifVR.ReDirectR.ToString("f2"));
                     Console.WriteLine("amclX:" + rosifVR.amclPlotX.ToString("f2") + "/ amclY:" + rosifVR.amclPlotY.ToString("f2") + "/ amclAng:" + rosifVR.amclAng.ToString("f2"));
 
                     {
@@ -184,35 +186,51 @@ namespace RosIF
                                 //urgStr += ipc.RemoteObject.urgData[(ROS_if_forVehicleRunner.numUrgData * i / 8)].ToString("f2") + ",";
                             }
                         }
-                        Console.WriteLine("urg:" + urgStr );
+                        Console.WriteLine("urg:" + urgStr);
                     }
                     Console.WriteLine("");
 
                     Console.WriteLine("Publish ------------- ");
-                    Console.WriteLine("reRpulse:" + rosifVR.reRpulse.ToString("f2") + "/ reLpulse:" + rosifVR.reLpulse.ToString("f2"));
-                    Console.WriteLine("rePlotX:" + rosifVR.rePlotX.ToString("f2") + "/ rePlotY:" + rosifVR.rePlotY.ToString("f2") + "/ reAng:" + rosifVR.reAng.ToString("f2"));
-                    Console.WriteLine("compusDir:" + rosifVR.compusDir.ToString("f2"));
-                    Console.WriteLine("gpsGrandX:" + rosifVR.gpsGrandX.ToString("f2") + "/ gpsGrandY:" + rosifVR.gpsGrandY.ToString("f2"));
+                    Console.WriteLine("Handle:" + rosifVR.sendHandle.ToString("f2") + "/ Accel:" + rosifVR.sendAccel.ToString("f2"));
+                    //Console.WriteLine("reRpulse:" + rosifVR.reRpulse.ToString("f2") + "/ reLpulse:" + rosifVR.reLpulse.ToString("f2"));
+                    //Console.WriteLine("rePlotX:" + rosifVR.rePlotX.ToString("f2") + "/ rePlotY:" + rosifVR.rePlotY.ToString("f2") + "/ reAng:" + rosifVR.reAng.ToString("f2"));
+                    //Console.WriteLine("compusDir:" + rosifVR.compusDir.ToString("f2"));
+                    //Console.WriteLine("gpsGrandX:" + rosifVR.gpsGrandX.ToString("f2") + "/ gpsGrandY:" + rosifVR.gpsGrandY.ToString("f2"));
                 }
 
                 // 送信(Publish)
-                rosifVR.Publish();
+                //rosifVR.Publish();
 
                 // カーソル位置を初期化
                 Console.SetCursorPosition(0, curStartRow);
 #endif
                 // 処理を休止
                 System.Threading.Thread.Sleep(sleepMS);
+                //System.Threading.Thread.Sleep(0);
             }
+
+            System.Threading.Thread.Sleep(100);
 
             // trueのまま抜けていたらエラー
             if (loopFlg)
             {
-                Console.WriteLine("エラー発生 アプリを終了します。");
+                Console.WriteLine("エラー発生 「loopFlg が Trueのままループを抜けている。」アプリを終了します。");
             }
 
             // 
             rosifVR.disconnect();
+        }
+
+        /// <summary>
+        /// ROS 送信ループ
+        /// </summary>
+        static void ThreadFunction()
+        {
+            while (loopFlg)
+            {
+                rosifVR.Publish();
+                System.Threading.Thread.Sleep(0);
+            }
         }
     }
 }
