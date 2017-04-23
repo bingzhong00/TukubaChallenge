@@ -488,7 +488,8 @@ namespace VehicleRunner
             }
 
             // REからのスピード表示
-            tb_RESpeed.Text = ((CersioCtrl.SpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");
+            //tb_RESpeed.Text = ((CersioCtrl.SpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");
+            tb_RESpeed.Text = (CersioCtrl.SpeedMmSec).ToString("f2");
 
 
             // ハンドル、アクセル値　表示

@@ -269,7 +269,6 @@ namespace Location
                 if (GetCheckPointDistance(nowPos) < passRange)
                 {
                     //Brain.addLogMsg += "PassTarget:" + seqIdx.ToString() +",NowDir "+getNowTargetDir().ToString()+",TgtDir "+tgtDir.ToString() + "\n";
-
                     seqIdx++;
                     calcCheckPoint();
                 }
@@ -437,7 +436,7 @@ namespace Location
             if (goalFlg) return 0;
 
             // ターゲット付近は速度を落とす
-            if (tgtDist < 3.0) return maxSpeed*0.8;
+            //if (tgtDist < 3.0) return maxSpeed*0.8;
             return maxSpeed;
         }
     }

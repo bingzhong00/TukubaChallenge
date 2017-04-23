@@ -45,6 +45,9 @@ namespace Location
         // ROS AMCL
         public MarkPoint A1;
 
+        // R.E. Plot
+        public MarkPoint E1;
+
         // ------------------------------------
         // ログ
         List<MarkPoint> R1Log;

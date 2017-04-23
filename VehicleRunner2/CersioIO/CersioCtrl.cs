@@ -47,12 +47,12 @@ namespace CersioIO
 
         // ハンドル、アクセル上限値
         static public double HandleRate = 1.0;
-        static public double AccRate = 0.20;
+        static public double AccRate = 1.0;
 
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.5;//0.125; // 0.15;
-        public const double AccControlPowUP = 0.100; // 0.15;   // 加速時は緩やかに
-        public const double AccControlPowDOWN = 0.150;
+        public const double AccControlPowUP = 0.050; // 0.15;   // 加速時は緩やかに
+        public const double AccControlPowDOWN = 0.050;
 
         // HW
         // ロータリーエンコーダ値
@@ -311,14 +311,15 @@ namespace CersioIO
         public void SendCalcHandleSpeedControl(double targetHandleVal, double targetSpeedMmSec )
         {
             double targetAccel = 0.0;
+            // 目的の速度と現在速度を比較
             double diffSpeed = (targetSpeedMmSec - SpeedMmSec);
 
             // 小さい差分は無視
-            if(Math.Abs(diffSpeed) < 5.0 ) diffSpeed = 0.0;
+            //if(Math.Abs(diffSpeed) < 5.0 ) diffSpeed = 0.0;
 
             // 時速4Km は 秒速 1100mm
             // 1100mmを差分1.0とするか？
-            targetAccel = nowSendAccValue + (diffSpeed/100.0);
+            targetAccel = nowSendAccValue + (diffSpeed*0.0002);
 
             // スピード更新カウンタ
             if (SpeedUpdateCnt > 0)
@@ -469,15 +470,12 @@ namespace CersioIO
         // -----------------------------------------------------------------------------------------
         //
         //
-        public static int SpeedMmSec = 0;   // 速度　mm/Sec
+        public static double SpeedMmSec = 0;   // 速度　mm/Sec
         int SpeedUpdateCnt = 0;
         double oldSpeedSec;         // 速度計測用 受信時間差分
 
         double oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
         double oldWheelL;              // 速度計測用　前回ロータリーエンコーダ値
-
-        // RE初期値
-        public bool bInitRePulse = true;   // 初期化要求フラグ
 
         public double emuGPSX = 134.0000;
         public double emuGPSY = 35.0000;
@@ -523,7 +521,8 @@ namespace CersioIO
                             // ロータリーエンコーダから　速度を計算
                             if (rsvCmd[i].Substring(0, 3) == "A1,")
                             {
-                                const double tiyeSize = 65.0;  // タイヤ直径 [mm]
+                                //const double tiyeSize = 65.0;  // タイヤ直径 [mm] Cersio
+                                const double tiyeSize = 240.0;  // タイヤ直径 [mm]
                                 const double OnePuls = 240.0;   // 一周のパルス数
                                 double ResiveMS;
                                 double ResReR, ResReL;
@@ -536,27 +535,22 @@ namespace CersioIO
 
                                 {
                                     double SpeedSec = (double)System.Environment.TickCount / 1000.0;
+
                                     // 0.25秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
-                                    if ((SpeedSec - oldSpeedSec) > 0.25)
+                                    //if ((SpeedSec - oldSpeedSec) > 0.25)
+                                    if ((SpeedSec - oldSpeedSec) > 0.2)
                                     {
                                         // 速度計算(非動輪を基準)
                                         double wheelPulse = ((hwRErotR - oldWheelR) + (hwRErotL - oldWheelL)) * 0.5;
+                                        //double wheelPulse = (hwRErotR - oldWheelR) * 0.5;
 
-                                        SpeedMmSec = (int)((wheelPulse / OnePuls * (Math.PI * tiyeSize)) * (SpeedSec - oldSpeedSec));
+                                        SpeedMmSec = (double)((wheelPulse / OnePuls * (Math.PI * tiyeSize)) / (SpeedSec - oldSpeedSec));
 
                                         oldSpeedSec = SpeedSec;
                                         oldWheelR = hwRErotR;
                                         oldWheelL = hwRErotL;
                                         SpeedUpdateCnt = 20;
                                     }
-                                }
-
-                                // 初回のパルス値リセット
-                                if(bInitRePulse)
-                                {
-                                    hwRErotR = 0;
-                                    hwRErotL = 0;
-                                    bInitRePulse = false;
                                 }
 
                                 // 取得した差分を加算する
