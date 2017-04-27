@@ -78,6 +78,13 @@ namespace Location
         /// </summary>
         public MapData mapData;
 
+        public enum LOCATION_SENSOR
+        {
+            NONE,
+            AMCL,
+            REPlot,
+        };
+
         // -------------------------------------------------------------------------------------------------
         //
 
@@ -113,6 +120,7 @@ namespace Location
             oldR1 = new MarkPoint(0, 0, 0);     // 距離取得用 前回位置
 
             A1 = new MarkPoint(0, 0, 0);        // ROS AMCL位置
+            E1 = new MarkPoint(0, 0, 0);        // Encoader Plot
         }
 
         /// <summary>
@@ -123,41 +131,49 @@ namespace Location
         /// <param name="rosTheta"></param>
         public void Input_ROSPosition( double rosX, double rosY, double rosTheta)
         {
-            A1.X = rosX;
-            A1.Y = rosY;
-            A1.Theta = rosTheta;
+            // 移動距離算出
+            {
+                double dx = rosX - A1.x;
+                double dy = rosY - A1.y;
+                A1.distance += Math.Sqrt(dx * dx + dy * dy);
+            }
+
+            A1.x = rosX;
+            A1.y = rosY;
+            A1.theta = rosTheta;
         }
 
         public void Reset_ROSPosition(double rosX, double rosY, double rosTheta)
         {
             Input_ROSPosition( rosX,  rosY,  rosTheta);
-
-            R1.Set(A1);
-            oldR1.Set(A1);
-            R1.distance = 0.0;
+            A1.distance = 0.0;
         }
 
         /// <summary>
-        /// 
+        /// RE Position
         /// </summary>
         /// <param name="rosX"></param>
         /// <param name="rosY"></param>
         /// <param name="rosTheta"></param>
-        public void Input_VRPosition(double rosX, double rosY, double rosTheta)
+        public void Input_REPosition(double rosX, double rosY, double rosTheta)
         {
+            // 移動距離算出
+            {
+                double dx = rosX - (E1.x / 1000.0);
+                double dy = rosY - (E1.y / 1000.0);
+                E1.distance += Math.Sqrt(dx * dx + dy * dy);
+            }
+
             // mm座標系をROS座標に変換
-            A1.X = rosX / 1000.0;
-            A1.Y = rosY / 1000.0;
-            A1.Theta = rosTheta;
+            E1.x = rosX / 1000.0;
+            E1.y = rosY / 1000.0;
+            E1.theta = rosTheta;
         }
 
-        public void Reset_VRPosition(double rosX, double rosY, double rosTheta)
+        public void Reset_REPosition(double rosX, double rosY, double rosTheta)
         {
-            Input_VRPosition(rosX, rosY, rosTheta);
-
-            R1.Set(A1);
-            oldR1.Set(A1);
-            R1.distance = 0.0;
+            Input_REPosition(rosX, rosY, rosTheta);
+            E1.distance = 0.0;
         }
 
 
@@ -165,19 +181,23 @@ namespace Location
         /// 現在位置更新
         /// 各センサー情報から、座標、向きを選択
         /// </summary>
-        public void update_NowLocation()
+        public void update_NowLocation(LOCATION_SENSOR selectLocSensor )
         {
-            R1.X = A1.X;
-            R1.Y = A1.Y;
-            R1.Theta = A1.Theta;
-
-            // 移動距離算出
+            switch (selectLocSensor)
             {
-                double dx = R1.X - oldR1.X;
-                double dy = R1.Y - oldR1.Y;
-                R1.distance += Math.Sqrt(dx * dx + dy * dy);
+                case LOCATION_SENSOR.AMCL:
+                    R1.x = A1.x;
+                    R1.y = A1.y;
+                    R1.theta = A1.theta;
+                    R1.distance = A1.distance;
+                    break;
+                case LOCATION_SENSOR.REPlot:
+                    R1.x = E1.x;
+                    R1.y = E1.y;
+                    R1.theta = E1.theta;
+                    R1.distance = E1.distance;
+                    break;
             }
-            oldR1.Set(R1);
 
             // 更新結果ログ保存
             UpdateLogData();
@@ -193,7 +213,7 @@ namespace Location
             {
                 if (R1Log.Count == 0 || !R1.IsEqual(R1Log.Last()))
                 {
-                    R1Log.Add(new MarkPoint(R1.X, R1.Y, R1.Theta));
+                    R1Log.Add(new MarkPoint(R1.x, R1.y, R1.theta));
                 }
             }
             catch (Exception ex)
@@ -215,7 +235,7 @@ namespace Location
         /// <returns></returns>
         public double GetResultLocationX()
         {
-            return R1.X;
+            return R1.x;
         }
         /// <summary>
         /// 自己位置推定座標 Y (マップ座標)
@@ -223,7 +243,7 @@ namespace Location
         /// <returns></returns>
         public double GetResultLocationY()
         {
-            return R1.Y;
+            return R1.y;
         }
 
         /// <summary>
@@ -232,7 +252,7 @@ namespace Location
         /// <returns></returns>
         public double GetResultAngle()
         {
-            return R1.Theta;
+            return R1.theta;
         }
 
         /// <summary>

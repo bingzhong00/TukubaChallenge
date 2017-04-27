@@ -37,8 +37,8 @@ namespace CersioIO
 
 
         // 最近　送信したハンドル、アクセル
-        static public double nowSendHandleValue;
-        static public double nowSendAccValue;
+        public double nowSendHandleValue;
+        public double nowSendAccValue;
 
         // 最大ハンドル角
         // 角度から　左　1.0　～　右　-1.0の範囲に変換に使う
@@ -306,16 +306,15 @@ namespace CersioIO
         /// 滑らかに動くハンドル、アクセルワークを計算する
         /// スピードで、アクセルをコントロール
         /// </summary>
-        /// <param name="targetHandleVal"></param>
-        /// <param name="targetAccelVal"></param>
-        public void SendCalcHandleSpeedControl(double targetHandleVal, double targetSpeedMmSec )
+        /// <param name="targetHandleVal">目標ハンドル</param>
+        /// <param name="targetSpeedKmHour">目標時速</param>
+        public void SendCalcHandleSpeedControl(double targetHandleVal, double targetSpeedKmHour )
         {
+            // 時速(Km/h)から秒速(mm/s)に変換
+            double targetSpeedMmSec = (targetSpeedKmHour*1000.0*1000.0) / 3600.0;
             double targetAccel = 0.0;
             // 目的の速度と現在速度を比較
             double diffSpeed = (targetSpeedMmSec - SpeedMmSec);
-
-            // 小さい差分は無視
-            //if(Math.Abs(diffSpeed) < 5.0 ) diffSpeed = 0.0;
 
             // 時速4Km は 秒速 1100mm
             // 1100mmを差分1.0とするか？
@@ -330,8 +329,8 @@ namespace CersioIO
             {
                 // スピード情報が更新されておらず、あてにならない場合
                 targetAccel = 0.0;
-                if (targetSpeedMmSec > 5.0) targetAccel = 1.0;
-                if (targetSpeedMmSec < -5.0) targetAccel = -1.0;
+                if (targetSpeedMmSec > 1.0) targetAccel = 1.0;
+                if (targetSpeedMmSec < -1.0) targetAccel = -1.0;
             }
 
             SendCalcHandleAccelControl(targetHandleVal, targetAccel);
@@ -470,7 +469,7 @@ namespace CersioIO
         // -----------------------------------------------------------------------------------------
         //
         //
-        public static double SpeedMmSec = 0;   // 速度　mm/Sec
+        public double SpeedMmSec = 0.0;   // 速度　mm/Sec
         int SpeedUpdateCnt = 0;
         double oldSpeedSec;         // 速度計測用 受信時間差分
 

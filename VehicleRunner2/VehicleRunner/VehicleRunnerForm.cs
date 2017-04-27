@@ -58,7 +58,7 @@ namespace VehicleRunner
         /// <summary>
         /// 起動時のマップファイル
         /// </summary>
-        private const string defaultMapFile = "../../../MapFile/syaoku201702/syaoku20170218.xml";
+        private const string defaultMapFile = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
 
         Random Rand = new Random();
 
@@ -135,11 +135,6 @@ namespace VehicleRunner
             // ブレイン起動
             BrainCtrl = new Brain(CersioCt, defaultMapFile);
 
-            // スタート位置
-            num_R1X.Value = (decimal)BrainCtrl.LocSys.mapData.startPosition.x;
-            num_R1Y.Value = (decimal)BrainCtrl.LocSys.mapData.startPosition.y;
-            num_R1Dir.Value = (decimal)BrainCtrl.LocSys.mapData.startDir;
-
             // マップウィンドウサイズのbmp作成
             formDraw.MakePictureBoxWorldMap( BrainCtrl.LocSys.mapBmp, picbox_AreaMap);
 
@@ -148,14 +143,6 @@ namespace VehicleRunner
             trdSensor.IsBackground = true;
             trdSensor.Priority = ThreadPriority.AboveNormal;
             trdSensor.Start();
-
-            // 位置座標更新　スレッド起動
-            /*
-            Thread trdLocalize = new Thread(new ThreadStart(ThreadLocalizationUpdate));
-            trdLocalize.IsBackground = true;
-            //trdSensor.Priority = ThreadPriority.AboveNormal;
-            trdLocalize.Start();
-            */
 
             // Accel Flag
             cb_AccelOff_CheckedChanged(this, null);
@@ -231,31 +218,21 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void picbox_AreaMap_Paint(object sender, PaintEventArgs e)
         {
-            // 書き換えＢＭＰ（追加障害物）描画
-            if (BrainCtrl.AvoidRootDispTime != null &&
-                BrainCtrl.AvoidRootDispTime > DateTime.Now )
+            if (selAreaMapMode == 0)
             {
-                // 回避イメージ描画
-                // ※わくに収まるサイズに
-                e.Graphics.DrawImage(BrainCtrl.AvoidRootImage, 0, 0);
+                // エリアマップ描画
+                formDraw.AreaMap_Draw_Area(e.Graphics, picbox_AreaMap, ref BrainCtrl.LocSys,
+                                           (viewScrollX + viewMoveAddX), (viewScrollY + viewMoveAddY));
+                //formDraw.AreaMap_Draw_Ruler(e.Graphics, ref BrainCtrl, picbox_AreaMap.Width, picbox_AreaMap.Height);
             }
-            else
+            else if (selAreaMapMode == 1)
             {
-                if (selAreaMapMode == 0)
-                {
-                    // エリアマップ描画
-                    formDraw.AreaMap_Draw_Area(e.Graphics, picbox_AreaMap, ref BrainCtrl.LocSys);
-                    //formDraw.AreaMap_Draw_Ruler(e.Graphics, ref BrainCtrl, picbox_AreaMap.Width, picbox_AreaMap.Height);
-                }
-                else if (selAreaMapMode == 1)
-                {
-                    // ワールドマップ描画
-                    formDraw.AreaMap_Draw_WorldMap(e.Graphics, ref CersioCt, ref BrainCtrl);
-                }
+                // ワールドマップ描画
+                formDraw.AreaMap_Draw_WorldMap(e.Graphics, picbox_AreaMap, ref BrainCtrl.LocSys);
+            }
 
-                // テキスト描画
-                formDraw.AreaMap_Draw_Text(e.Graphics, ref BrainCtrl, (long)updateHwCnt);
-            }
+            // テキスト描画
+            //formDraw.AreaMap_Draw_Text(e.Graphics, ref BrainCtrl, (long)updateHwCnt);
         }
 
         /// <summary>
@@ -265,10 +242,12 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void picbox_AreaMap_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 // エリア、ワールドマップ切り替え
                 selAreaMapMode = (++selAreaMapMode) % 2;
+                viewScrollX = 0;
+                viewScrollY = 0;
             }
         }
 
@@ -382,7 +361,6 @@ namespace VehicleRunner
                         lbl_RErotL.Text = CersioCt.hwRErotL.ToString("f1");
                     }
 
-#if true
                     // AMCL
                     LocSys.Input_ROSPosition(CersioCt.hwAMCL_X, CersioCt.hwAMCL_Y, CersioCt.hwAMCL_Ang);
                     if (CersioCt.bhwTrgAMCL)
@@ -391,7 +369,7 @@ namespace VehicleRunner
                         LocSys.Reset_ROSPosition(CersioCt.hwAMCL_X, CersioCt.hwAMCL_Y, CersioCt.hwAMCL_Ang);
                         CersioCt.bhwTrgAMCL = false;
                     }
-#else
+
                     // VehicleRunner Plot
                     {
                         PointD wlPos = new PointD();
@@ -404,18 +382,11 @@ namespace VehicleRunner
                         wlPos.X = (wlR.X + wlL.X) * 0.5;
                         wlPos.Y = (wlR.Y + wlL.Y) * 0.5;
 
-                        LocSys.Input_VRPosition(wlPos.X, wlPos.Y, -(reAng * 180.0 / Math.PI));
-                        if (CersioCt.bhwTrgAMCL)
-                        {
-                            // 受信再開時の初期化
-                            LocSys.Reset_VRPosition(wlPos.X, wlPos.Y, -(reAng * 180.0 / Math.PI));
-                            CersioCt.bhwTrgAMCL = false;
-                        }
+                        LocSys.Input_REPosition(wlPos.X, wlPos.Y, -(reAng * 180.0 / Math.PI));
 
                         reOldR = CersioCt.hwRErotR;
                         reOldL = CersioCt.hwRErotL;
                     }
-#endif
 
                     // LED状態 画面表示
                     if (CersioCt.LEDCtrl.ptnHeadLED == -1)
@@ -460,6 +431,7 @@ namespace VehicleRunner
                         lb_BServerConnect.BackColor = SystemColors.Window;
                     }
 
+                    lbl_CheckPoint.Text = BrainCtrl.LocSys.RTS.getCheckPointIdx().ToString();
 
                     // 送受信文字 画面表示
                     if (null != CersioCt.hwResiveStr)
@@ -475,26 +447,25 @@ namespace VehicleRunner
                 }
 
                 // マップ上の現在位置更新
-                BrainCtrl.LocSys.update_NowLocation();
+                // 現在位置を、AMCL,REPlotどちらを使うか
+                LocationSystem.LOCATION_SENSOR selSensor = (rb_SelAMCL.Checked ? LocationSystem.LOCATION_SENSOR.AMCL : LocationSystem.LOCATION_SENSOR.REPlot);
+                BrainCtrl.LocSys.update_NowLocation(selSensor);
 
                 // 自律走行(緊急ブレーキ、壁よけ含む)処理 更新
-                BrainCtrl.AutonomousProc( false,
-                                          false,
-                                          cb_InDoorMode.Checked,
-                                          bRunAutonomous);
+                BrainCtrl.AutonomousProc( cb_InDoorMode.Checked, bRunAutonomous );
 
                 // 距離計
                 tb_Trip.Text = (LocSys.GetResultDistance_mm() * (1.0 / 1000.0)).ToString("f2");
             }
 
             // REからのスピード表示
-            //tb_RESpeed.Text = ((CersioCtrl.SpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");
-            tb_RESpeed.Text = (CersioCtrl.SpeedMmSec).ToString("f2");
+            tb_RESpeed.Text = ((CersioCt.SpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");    // Km/Hour
+            //tb_RESpeed.Text = (CersioCt.SpeedMmSec).ToString("f2"); // mm/Sec
 
 
             // ハンドル、アクセル値　表示
-            tb_AccelVal.Text = CersioCtrl.nowSendAccValue.ToString("f2");
-            tb_HandleVal.Text = CersioCtrl.nowSendHandleValue.ToString("f2");
+            tb_AccelVal.Text = CersioCt.nowSendAccValue.ToString("f2");
+            tb_HandleVal.Text = CersioCt.nowSendHandleValue.ToString("f2");
 
             // 自律走行情報
             if (bRunAutonomous)
@@ -536,10 +507,6 @@ namespace VehicleRunner
             {
                 LocationSystem LocSys = BrainCtrl.LocSys;
 
-                // 現在座標から開始
-                //hwRErotR_Start = CersioCt.hwRErotR;
-                //hwRErotL_Start = CersioCt.hwRErotL;
-
                 bRunAutonomous = true;
                 cb_StartAutonomous.BackColor = Color.LimeGreen;
             }
@@ -551,20 +518,6 @@ namespace VehicleRunner
                 CersioCt.SendCommand_Stop();
                 cb_StartAutonomous.BackColor = SystemColors.Window;
             }
-        }
-
-        /// <summary>
-        /// タブ切り替え時
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            LocationSystem LocSys = BrainCtrl.LocSys;
-
-            num_R1X.Value = (int)LocSys.R1.X;
-            num_R1Y.Value = (int)LocSys.R1.Y;
-            num_R1Dir.Value = (int)LocSys.R1.Theta;
         }
 
         /// <summary>
@@ -628,6 +581,41 @@ namespace VehicleRunner
                 // 自己位置計算 再開
                 tm_Update.Enabled = true;
             }
+        }
+
+
+        bool bMouseMove = false;
+        int MouseStX, MouseStY;
+        int viewMoveAddX, viewMoveAddY;
+        int viewScrollX, viewScrollY;
+        private void picbox_AreaMap_MouseDown(object sender, MouseEventArgs e)
+        {
+            //
+            bMouseMove = true;
+            MouseStX = e.X;
+            MouseStY = e.Y;
+            viewMoveAddX = 0;
+            viewMoveAddY = 0;
+        }
+
+        private void picbox_AreaMap_MouseMove(object sender, MouseEventArgs e)
+        {
+            //
+            if (bMouseMove)
+            {
+                viewMoveAddX = (MouseStX - e.X);
+                viewMoveAddY = (MouseStY - e.Y);
+            }
+        }
+
+        private void picbox_AreaMap_MouseUp(object sender, MouseEventArgs e)
+        {
+            //
+            bMouseMove = false;
+            viewMoveAddX = 0;
+            viewMoveAddY = 0;
+            viewScrollX += (MouseStX - e.X);
+            viewScrollY += (MouseStY - e.Y);
         }
 
         /// <summary>

@@ -37,9 +37,9 @@ namespace VehicleRunner
         /// <param name="size"></param>
         static public void DrawMaker(Graphics g, float fScale, Brush brush, DrawMarkPoint robot, int size)
         {
-            double mkX = robot.X * fScale;
-            double mkY = robot.Y * fScale;
-            double mkDir = robot.Theta;
+            double mkX = robot.x * fScale;
+            double mkY = robot.y * fScale;
+            double mkDir = robot.theta;
 
             DrawMaker(g, brush, mkX, mkY, mkDir, (double)size);
         }
@@ -81,10 +81,10 @@ namespace VehicleRunner
         /// <param name="mkX"></param>
         /// <param name="mkY"></param>
         /// <param name="size"></param>
-        static public void DrawMaker(Graphics g, Brush brush, double mkX, double mkY, double size)
+        static public void DrawMakerNoDir(Graphics g, Brush brush, double mkX, double mkY, int _size)
         {
             double mkDir = 0;
-            size *= 0.5;
+            double size = (double)_size * 0.5;
 
             var P1 = new PointF(
                 (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
@@ -102,9 +102,14 @@ namespace VehicleRunner
             g.FillPolygon(brush, new PointF[] { P1, P2, P3, P4 });
         }
 
-        static public void DrawMaker(Graphics g, float fScale, Brush brush, double mkX, double mkY, double size)
+        static public void DrawMakerNoDir(Graphics g, float fScale, Brush brush, double mkX, double mkY, int size)
         {
-            DrawMaker(g, brush, mkX * fScale, mkY * fScale, size);
+            DrawMakerNoDir(g, brush, mkX * fScale, mkY * fScale, size);
+        }
+
+        static public void DrawMakerNoDir(Graphics g, Brush brush, DrawMarkPoint robot, int size = 8)
+        {
+            DrawMakerNoDir(g, brush, robot.x, robot.y, size);
         }
 
 
@@ -121,15 +126,17 @@ namespace VehicleRunner
         private void DrawMakerLine(Graphics g, float fScale, DrawMarkPoint robotA, DrawMarkPoint robotB, Pen pen, int size)
         {
             var P1 = new PointF(
-                (float)(robotA.X * fScale),
-                (float)(robotA.Y * fScale));
+                (float)(robotA.x * fScale),
+                (float)(robotA.y * fScale));
             var P2 = new PointF(
-                (float)(robotB.X * fScale),
-                (float)(robotB.Y * fScale));
+                (float)(robotB.x * fScale),
+                (float)(robotB.y * fScale));
 
             g.DrawLine(pen, P1, P2);
         }
 
+
+        float viewScaleWorld;
 
         /// <summary>
         /// PictureBoxのサイズに合わせた　ワールドマップBMP作成
@@ -153,6 +160,8 @@ namespace VehicleRunner
                 int picW = (int)(viewScale * worldBMP.Width + 0.5);
                 int picH = (int)(viewScale * worldBMP.Height + 0.5);
 
+                viewScaleWorld = viewScale;
+
                 worldMapBmp = new Bitmap(picW, picH);
                 Graphics g = Graphics.FromImage(worldMapBmp);
 
@@ -175,10 +184,8 @@ namespace VehicleRunner
         /// <param name="worldBMP"></param>
         /// <param name="picbox_AreaMap"></param>
         /// <returns></returns>
-        public Bitmap MakePictureBoxAreaMap(Bitmap worldBMP, PictureBox picbox_AreaMap, ref LocationSystem LocSys)
+        public Bitmap MakePictureBoxAreaMap(Bitmap worldBMP, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY)
         {
-            float viewScale = 1.0f;
-
             /*
             if (((float)worldBMP.Width / (float)picbox_AreaMap.Width) < ((float)worldBMP.Height / (float)picbox_AreaMap.Height))
             {
@@ -199,8 +206,8 @@ namespace VehicleRunner
                 DrawMarkPoint drawCenter = new DrawMarkPoint(LocSys.R1, LocSys);
 
                 g.ResetTransform();
-                g.TranslateTransform( (float)(-drawCenter.X - (worldBMP.Width * 0.5) + (picbox_AreaMap.Width*0.5)),
-                                      (float)(-drawCenter.Y - (worldBMP.Height * 0.5) + (picbox_AreaMap.Height * 0.5)),
+                g.TranslateTransform( (float)(-drawCenter.x - (worldBMP.Width * 0.5) + (picbox_AreaMap.Width*0.5)) - scrollX,
+                                      (float)(-drawCenter.y - (worldBMP.Height * 0.5) + (picbox_AreaMap.Height * 0.5)) - scrollY,
                                       MatrixOrder.Append);
                 //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
                 //g.ScaleTransform(viewScale, viewScale, MatrixOrder.Append);
@@ -218,40 +225,34 @@ namespace VehicleRunner
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys)
+        public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY)
         {
             Bitmap worldBMP = LocSys.mapBmp;
-            Bitmap areaBMP = MakePictureBoxAreaMap(worldBMP, picbox_AreaMap, ref LocSys);
-            float viewScale = 1.0f;
+            //Bitmap areaBMP = MakePictureBoxAreaMap(worldBMP, picbox_AreaMap, ref LocSys, scrollX, scrollY);
+            //float viewScale = 1.0f;
+
+            DrawMarkPoint drawCenter = new DrawMarkPoint(LocSys.R1, LocSys);
 
             //float olScale = (float)LocSys.AreaOverlayBmp.Width / (float)LocSys.AreaBmp.Width;
 
             // エリアマップ描画
             g.ResetTransform();
-            g.DrawImage(areaBMP, 0, 0);
-            //g.DrawImage(LocSys.AreaOverlayBmp, 0, 0);
-            //g.DrawImage(LocSys.AreaBmp, 0, 0, LocSys.AreaOverlayBmp.Width, LocSys.AreaOverlayBmp.Height);
-
-            // リアルタイム軌跡描画
-            /*
-            if (bLineTrace)
-            {
-                DrawMakerLog_Area(g, olScale, R1Log, Color.Red.R, Color.Red.G, Color.Red.B);
-            }
-            */
-
-            // 実ロボット想定位置描画
-            /*
-            DrawMaker(g, olScale, Brushes.Red,
-                      LocSys.R1.GetLocalX(),
-                      LocSys.R1.GetLocalY(),
-                      LocSys.R1.Theta, 8);
-            */
-            DrawMarkPoint drawCenter = new DrawMarkPoint(LocSys.R1, LocSys);
+            //g.DrawImage(areaBMP, 0, 0);
 
             g.ResetTransform();
-            g.TranslateTransform( (float)(-drawCenter.X + (picbox_AreaMap.Width * 0.5)),
-                                  (float)(-drawCenter.Y + (picbox_AreaMap.Height * 0.5)),
+            g.TranslateTransform((float)(-drawCenter.x - (worldBMP.Width * 0.5) + (picbox_AreaMap.Width * 0.5)) - scrollX,
+                                  (float)(-drawCenter.y - (worldBMP.Height * 0.5) + (picbox_AreaMap.Height * 0.5)) - scrollY,
+                                  MatrixOrder.Append);
+            //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
+            //g.ScaleTransform(viewScale, viewScale, MatrixOrder.Append);
+
+            g.DrawImage(worldBMP, 0, 0);
+
+            // ------------------------
+
+            g.ResetTransform();
+            g.TranslateTransform( (float)(-drawCenter.x + (picbox_AreaMap.Width * 0.5)) - scrollX,
+                                  (float)(-drawCenter.y + (picbox_AreaMap.Height * 0.5)) - scrollY,
                                   MatrixOrder.Append);
 
             // 現在位置描画
@@ -262,23 +263,25 @@ namespace VehicleRunner
             {
                 double dir = 0;
 
-                double prvPosX = LocSys.R1.X;
-                double prvPosY = LocSys.R1.Y;
+                double prvPosX = LocSys.R1.x;
+                double prvPosY = LocSys.R1.y;
 
-                for (int i = LocSys.RTS.getNowCheckPointIdx(); i < LocSys.RTS.getNumCheckPoints(); i++)
+                for (int i = LocSys.RTS.getCheckPointIdx(); i < LocSys.RTS.getNumCheckPoints(); i++)
                 {
                     Vector3 tgtPos = LocSys.RTS.getCheckPoint(i);
 
                     //BrainCtrl.RTS.getNowTargetDir(ref dir);
                     DrawMarkPoint tgtMk = new DrawMarkPoint(tgtPos.x, tgtPos.y, dir, LocSys);
 
-                    DrawMaker(g, Brushes.GreenYellow, tgtMk, 8);
+                    DrawMakerNoDir(g, Brushes.GreenYellow, tgtMk, 8);
 
                     // ターゲットまでのライン
                     DrawMakerLine(g, 1.0f,
                         new DrawMarkPoint(prvPosX, prvPosY, 0, LocSys),
                         tgtMk,
                         Pens.Olive, 1);
+
+                    g.DrawString(i.ToString("D2"), fntMini, Brushes.Green, tgtMk.x, tgtMk.y );
 
                     prvPosX = tgtPos.x;
                     prvPosY = tgtPos.y;
@@ -326,28 +329,25 @@ namespace VehicleRunner
         /// <param name="g"></param>
         /// <param name="CersioCt"></param>
         /// <param name="BrainCtrl"></param>
-        public void AreaMap_Draw_WorldMap(Graphics g, ref CersioCtrl CersioCt, ref Brain BrainCtrl)
+        public void AreaMap_Draw_WorldMap(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys)
         {
-            LocationSystem LocSys = BrainCtrl.LocSys;
-
             // 全体マップ描画
-            float viewScale;
-            double mapOffsetX = LocSys.mapBmp.Width * 0.5;
-            double mapOffsetY = LocSys.mapBmp.Height * 0.5;
+            float viewScale = 1.0f;// viewScaleWorld;
+
 
             // マップ外カラー
-            g.FillRectangle(Brushes.DarkGray, 0, 0, worldMapBmp.Width, worldMapBmp.Height);
-
-            if (((float)LocSys.mapBmp.Width / (float)worldMapBmp.Width) < ((float)LocSys.mapBmp.Height / (float)worldMapBmp.Height))
+            g.FillRectangle(Brushes.DarkGray, 0, 0, picbox_AreaMap.Width, picbox_AreaMap.Height);
+            
             {
-                viewScale = (float)(1.0 / ((float)LocSys.mapBmp.Height / (float)worldMapBmp.Height));
-            }
-            else
-            {
-                viewScale = (float)(1.0 / ((float)LocSys.mapBmp.Width / (float)worldMapBmp.Width));
-            }
+                float wdAspect = (float)LocSys.mapBmp.Width / (float)worldMapBmp.Width;
+                float htAspect = (float)LocSys.mapBmp.Height / (float)worldMapBmp.Height;
 
-            //g.ResetTransform();
+                if (wdAspect < htAspect) viewScale = (float)(1.0 / htAspect);
+                else                     viewScale = (float)(1.0 / wdAspect);
+            }
+            
+
+            g.ResetTransform();
             //g.TranslateTransform(-ctrX, -ctrY, MatrixOrder.Append);
             //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
             //g.ScaleTransform(viewScale, viewScale, MatrixOrder.Append);
@@ -357,57 +357,39 @@ namespace VehicleRunner
                 g.DrawImage(worldMapBmp, 0, 0);
             }
 
+            g.ResetTransform();
+            g.TranslateTransform( (float)(worldMapBmp.Width * 0.5),
+                                  (float)(worldMapBmp.Height * 0.5),
+                                  MatrixOrder.Append);
+
             //g.ResetTransform();
 
             // 各マーカーの位置を描画
             //LocSys.DrawWorldMap(g, viewScale);
-            DrawMaker(g, viewScale, Brushes.Red,
-                      (LocSys.R1.X + mapOffsetX),
-                      (LocSys.R1.Y + mapOffsetY),
-                      LocSys.R1.Theta,
-                      10);
+            DrawMaker(g, viewScale, Brushes.Red, new DrawMarkPoint(LocSys.R1, LocSys), 10);
 
             // ターゲット描画
-            if (null != CersioCt)
+            
             {
                 double dir = 0;
 
-                /*
-                BrainCtrl.RTS.getNowTarget(ref tgtPosX, ref tgtPosY);
-                BrainCtrl.RTS.getNowTargetDir(ref dir);
-                MarkPoint tgtMk = new MarkPoint(tgtPosX, tgtPosY, dir + 180);
+                DrawMarkPoint prvPos = new DrawMarkPoint(LocSys.R1, LocSys);
 
-                DrawMaker(g, viewScale, tgtMk, Brushes.GreenYellow, 8);
-
-                // ターゲットまでのライン
-                DrawMakerLine(g, viewScale,
-                    LocSys.R1,
-                    tgtMk,
-                    Pens.Olive, 1);
-                */
-
-                int prvPosX = (int)LocSys.R1.X;
-                int prvPosY = (int)LocSys.R1.Y;
-
-                for (int i = BrainCtrl.LocSys.RTS.getNowCheckPointIdx(); i < BrainCtrl.LocSys.RTS.getNumCheckPoints(); i++)
+                for (int i = LocSys.RTS.getCheckPointIdx(); i < LocSys.RTS.getNumCheckPoints(); i++)
                 {
-                    Vector3 tgtPos = BrainCtrl.LocSys.RTS.getCheckPoint(i);
+                    Vector3 tgtPos = LocSys.RTS.getCheckPoint(i);
                     //BrainCtrl.RTS.getNowTargetDir(ref dir);
-                    DrawMarkPoint tgtMk = new DrawMarkPoint(tgtPos.x, tgtPos.y, dir);
-
-                    //DrawMaker(g, viewScale, Brushes.GreenYellow, (tgtMk.X + mapOffsetX), (tgtMk.Y+ mapOffsetY), 8);
+                    DrawMarkPoint tgtMk = new DrawMarkPoint(tgtPos.x, tgtPos.y, dir, LocSys);
 
                     // ターゲットまでのライン
-                    DrawMakerLine(g, viewScale,
-                        new DrawMarkPoint((prvPosX + mapOffsetX), (prvPosY + mapOffsetY), 0),
-                        new DrawMarkPoint((tgtMk.X + mapOffsetX), (tgtMk.Y + mapOffsetY), 0),
-                        Pens.Olive, 1);
+                    DrawMakerLine(g, viewScale, prvPos, tgtMk, Pens.Olive, 1);
 
-                    prvPosX = (int)tgtMk.X;
-                    prvPosY = (int)tgtMk.Y;
+                    g.DrawString(i.ToString("D2"), fntMini, Brushes.Green, (int)(tgtMk.x * viewScale), (int)(tgtMk.y * viewScale));
+
+                    prvPos.x = tgtMk.x;
+                    prvPos.y = tgtMk.y;
                 }
             }
-
         }
 
 
@@ -435,7 +417,7 @@ namespace VehicleRunner
                            Brushes.Blue, Brushes.White);
                 */
                 DrawString(g, 0, drawFont.Height * 1,
-                           "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (BrainCtrl.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + BrainCtrl.LocSys.RTS.getNowCheckPointIdx().ToString()),
+                           "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (BrainCtrl.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + BrainCtrl.LocSys.RTS.getCheckPointIdx().ToString()),
                            Brushes.Blue, Brushes.White);
                 /*
                 DrawString(g, 0, drawFont.Height * 2,
@@ -468,7 +450,7 @@ namespace VehicleRunner
                     int Wd = 200;
                     int Ht = 15;
 
-                    float handleVal = (float)((Wd / 2) * (-CersioCtrl.nowSendHandleValue));
+                    float handleVal = (float)((Wd / 2) * (-CersioCt.nowSendHandleValue));
                     if (handleVal > 0)
                     {
                         g.FillRectangle(Brushes.Red, stX + Wd / 2, stY, handleVal, Ht);
@@ -489,7 +471,7 @@ namespace VehicleRunner
                     int Wd = 200;
                     int Ht = 15;
 
-                    float accVal = (float)((Wd / 2) * (CersioCtrl.nowSendAccValue));
+                    float accVal = (float)((Wd / 2) * (CersioCt.nowSendAccValue));
                     if (accVal > 0)
                     {
                         g.FillRectangle(Brushes.Red, stX + Wd / 2, stY, accVal, Ht);
@@ -515,28 +497,30 @@ namespace VehicleRunner
                 */
             }
 
+            int dirMarkBaseY = baseY + 80;
+
             // 向けたいハンドル角度
             {
                 double ang = BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
-                DrawMaker(g, Brushes.Cyan, 40, baseY + 120, ang, 12);
+                DrawMaker(g, Brushes.Cyan, 40, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, 40 - 25, baseY + 120);
-                g.DrawString("Handle", fntMini, Brushes.White, 40 - 25, baseY + 120 + 14);
+                g.DrawString("Handle", fntMini, Brushes.White, 40 - 25, dirMarkBaseY + 14);
             }
 
             // 現在の向き
             {
                 double ang = BrainCtrl.LocSys.RTS.getNowDir();
-                DrawMaker(g, Brushes.Red, 100, baseY + 120, ang, 12);
+                DrawMaker(g, Brushes.Red, 100, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, 100 - 25, baseY + 120);
-                g.DrawString("RTSNow", fntMini, Brushes.White, 100 - 25, baseY + 120 + 14);
+                g.DrawString("RTSNow", fntMini, Brushes.White, 100 - 25, dirMarkBaseY + 14);
             }
 
             // 相手の向き
             {
                 double ang = BrainCtrl.LocSys.RTS.getNowTargetDir();
-                DrawMaker(g, Brushes.Purple, 160, baseY + 120, ang, 12);
+                DrawMaker(g, Brushes.Purple, 160, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, 160 - 25, baseY + 120);
-                g.DrawString("RTSTgt", fntMini, Brushes.White, 160 - 25, baseY + 120 + 14);
+                g.DrawString("RTSTgt", fntMini, Brushes.White, 160 - 25, dirMarkBaseY + 14);
             }
         }
 

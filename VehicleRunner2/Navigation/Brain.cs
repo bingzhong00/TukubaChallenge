@@ -37,8 +37,8 @@ namespace Navigation
         /// <summary>
         /// ハンドル、アクセル操作
         /// </summary>
-        static public double handleValue;
-        static public double accValue;
+        private double handleValue;
+        private double accValue;
 
         /// <summary>
         /// 更新カウンタ
@@ -147,12 +147,10 @@ namespace Navigation
         /// <summary>
         /// 自律走行処理 定期更新
         /// </summary>
-        /// <param name="useEBS">壁回避ブレーキ</param>
-        /// <param name="useEHS">壁回避ハンドル</param>
         /// <param name="bIndoorMode">屋内モード</param>
         /// <param name="bCtrlOutput">CarCtrlに動作出力</param>
         /// <returns></returns>
-        public bool AutonomousProc( bool useEBS, bool useEHS, bool bIndoorMode, bool bCtrlOutput )
+        public bool AutonomousProc( bool bIndoorMode, bool bCtrlOutput )
         {
             // すべてのルートを回りゴールした。
             if (goalFlg)
@@ -183,18 +181,42 @@ namespace Navigation
             //EHS.SetSensorRange(bIndoorMode);
 
             // 自走処理
-            bNowBackProcess = Update(LocSys, useEBS, useEHS);
+            bNowBackProcess = ModeUpdate(LocSys);
 
-            // 走行可能状態
             if (bCtrlOutput)
             {
+                // 走行指示出力
                 // ルート計算から、目標ハンドル、目標アクセル値を送る
                 //CarCtrl.SendCalcHandleAccelControl(getHandleValue(), getAccelValue());
-                CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), 400.0 );
+                CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), 1.4);
+            }
+            else
+            {
+                // 走行指示出力しない
+                CarCtrl.nowSendAccValue = 0.0;
+                CarCtrl.nowSendHandleValue = 0.0f;
             }
 
             goalFlg = LocSys.RTS.getGoalFlg();
             return goalFlg;
+        }
+
+        /// <summary>
+        /// 自己状態確認
+        /// ※ヘルスチェック
+        /// </summary>
+        /// <returns></returns>
+        public bool SystemProc()
+        {
+            // bServer接続確認
+
+            // ROS IFで各センサー情報を確認？
+
+            // 変化のないセンサーを監視？
+
+            // バッテリーの電圧の取得
+
+            return true;
         }
 
         /// <summary>
@@ -206,7 +228,7 @@ namespace Navigation
         /// <param name="bStraightMode">直進モード</param>
         /// <returns>true...バック中(緊急動作しない)</returns>
         /// 
-        public bool Update(LocationSystem LocSys, bool useEBS, bool useEHS)
+        public bool ModeUpdate(LocationSystem LocSys)
         {
             // Rooting ------------------------------------------------------------------------------------------------
             ModeCtrl.update();
@@ -283,10 +305,10 @@ namespace Navigation
                 double handleTgt = LocSys.RTS.getHandleValue();
                 double accTgt = LocSys.RTS.getAccelValue();
 
-                // ハンドルで曲がるときは、速度を下げる
                 if( Math.Abs( handleTgt ) > 0.25 )
                 {
-                    //accTgt *= 0.75;
+                    // ハンドルで曲がるときは、速度を下げる
+                    accTgt *= 0.75;
                     //EBS.AccelSlowDownCnt = 5;
                 }
                 /*
@@ -320,6 +342,7 @@ namespace Navigation
             }
             else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.EmergencyStop)
             {
+                // 緊急停止状態
                 // 赤
                 CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.RED, true);
                 accValue = 0.0;
@@ -407,30 +430,6 @@ namespace Navigation
                 }
             }
             */
-
-            // アクセル　ブースト
-            // 進みたいときに進んでいない場合、アクセルを吹かす
-            {
-                if (accValue > 0.0 && CersioCtrl.SpeedMmSec <= 0)
-                {
-                    boostAccelCnt++;
-                }
-                else if (accValue < 0.0 && CersioCtrl.SpeedMmSec >= 0)
-                {
-                    boostAccelCnt++;
-                }
-                else
-                {
-                    boostAccelCnt = 0;
-                }
-
-                if (boostAccelCnt > 30)
-                {
-                    accValue += (double)boostAccelCnt * 0.01 * Math.Sign(accValue);
-                    //if (Math.Abs(accValue) > 1.0) accValue = Math.Sign(accValue) * 1.0;
-                }
-            }
-
 
             UpdateCnt++;
 

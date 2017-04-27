@@ -126,11 +126,19 @@ namespace Location
         // リセット
         public void ResetSeq()
         {
-            seqIdx = 0;
-            seqIdxOld = 0;
+            ResetCheckPoint(0);
             goalFlg = false;
         }
 
+        /// <summary>
+        /// チェックポイントリセット
+        /// </summary>
+        /// <param name="_setIdx"></param>
+        public void ResetCheckPoint(int _setIdx )
+        {
+            seqIdx = _setIdx;
+            seqIdxOld = _setIdx;
+        }
 
         /// <summary>
         /// 現在位置をセット
@@ -216,7 +224,7 @@ namespace Location
         /// チェックポイントのインデックス
         /// </summary>
         /// <returns></returns>
-        public int getNowCheckPointIdx()
+        public int getCheckPointIdx()
         {
             return seqIdx;
         }

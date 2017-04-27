@@ -167,7 +167,7 @@ namespace VehicleRunner
                 {
                     sw.Write("hwResiveStr:" + CersioCt.hwResiveStr + System.Environment.NewLine);
                 }
-                sw.Write("handle:" + CersioCtrl.nowSendHandleValue + " / acc:" + CersioCtrl.nowSendAccValue + System.Environment.NewLine);
+                sw.Write("handle:" + CersioCt.nowSendHandleValue + " / acc:" + CersioCt.nowSendAccValue + System.Environment.NewLine);
             }
             else
             {
@@ -177,9 +177,9 @@ namespace VehicleRunner
 
             // 位置情報
             {
-                sw.Write("R1:X " + LocSys.R1.X.ToString("f3") +
-                         "/Y " + LocSys.R1.Y.ToString("f3") +
-                         "/ Dir " + LocSys.R1.Theta.ToString("f2") +
+                sw.Write("R1:X " + LocSys.R1.x.ToString("f3") +
+                         "/Y " + LocSys.R1.y.ToString("f3") +
+                         "/ Dir " + LocSys.R1.theta.ToString("f2") +
                          System.Environment.NewLine);
             }
 
@@ -187,7 +187,7 @@ namespace VehicleRunner
             {
                 // Rooting情報
                 {
-                    sw.Write("RTS_TargetIndex:" + BrainCtrl.LocSys.RTS.getNowCheckPointIdx() + System.Environment.NewLine);
+                    sw.Write("RTS_TargetIndex:" + BrainCtrl.LocSys.RTS.getCheckPointIdx() + System.Environment.NewLine);
 
                     int tgtPosX = 0;
                     int tgtPosY = 0;

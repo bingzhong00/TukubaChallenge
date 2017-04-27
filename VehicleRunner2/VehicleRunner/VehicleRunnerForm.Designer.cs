@@ -53,12 +53,6 @@
             this.lbl_LED = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.lbl_bServerEmu = new System.Windows.Forms.Label();
-            this.num_R1Dir = new System.Windows.Forms.NumericUpDown();
-            this.num_R1Y = new System.Windows.Forms.NumericUpDown();
-            this.num_R1X = new System.Windows.Forms.NumericUpDown();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
             this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
             this.lb_BServerConnect = new System.Windows.Forms.Label();
             this.gb_DriveControl = new System.Windows.Forms.GroupBox();
@@ -75,39 +69,48 @@
             this.cb_AccelOff = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
+            this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
+            this.lbl_CheckPoint = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_R1Dir)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_R1Y)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_R1X)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
             // 
             this.picbox_AreaMap.BackColor = System.Drawing.Color.White;
+            this.picbox_AreaMap.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picbox_AreaMap.Location = new System.Drawing.Point(2, 4);
             this.picbox_AreaMap.Name = "picbox_AreaMap";
-            this.picbox_AreaMap.Size = new System.Drawing.Size(600, 600);
+            this.picbox_AreaMap.Size = new System.Drawing.Size(600, 500);
             this.picbox_AreaMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picbox_AreaMap.TabIndex = 0;
             this.picbox_AreaMap.TabStop = false;
             this.picbox_AreaMap.Paint += new System.Windows.Forms.PaintEventHandler(this.picbox_AreaMap_Paint);
             this.picbox_AreaMap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picbox_AreaMap_MouseClick);
+            this.picbox_AreaMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picbox_AreaMap_MouseDown);
+            this.picbox_AreaMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picbox_AreaMap_MouseMove);
+            this.picbox_AreaMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picbox_AreaMap_MouseUp);
             // 
             // cb_StartAutonomous
             // 
             this.cb_StartAutonomous.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_StartAutonomous.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_StartAutonomous.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_StartAutonomous.Location = new System.Drawing.Point(607, 664);
+            this.cb_StartAutonomous.Location = new System.Drawing.Point(608, 580);
             this.cb_StartAutonomous.Name = "cb_StartAutonomous";
             this.cb_StartAutonomous.Size = new System.Drawing.Size(239, 53);
             this.cb_StartAutonomous.TabIndex = 5;
-            this.cb_StartAutonomous.Text = "自律走行\r\nStart";
+            this.cb_StartAutonomous.Text = "Autonomous\r\nStart";
             this.cb_StartAutonomous.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cb_StartAutonomous.UseVisualStyleBackColor = true;
             this.cb_StartAutonomous.CheckedChanged += new System.EventHandler(this.cb_Autonomous_CheckedChanged);
@@ -115,7 +118,7 @@
             // btn_VRReset
             // 
             this.btn_VRReset.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_VRReset.Location = new System.Drawing.Point(120, 91);
+            this.btn_VRReset.Location = new System.Drawing.Point(132, 230);
             this.btn_VRReset.Name = "btn_VRReset";
             this.btn_VRReset.Size = new System.Drawing.Size(108, 30);
             this.btn_VRReset.TabIndex = 12;
@@ -127,7 +130,7 @@
             // 
             this.tb_ResiveData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_ResiveData.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_ResiveData.Location = new System.Drawing.Point(42, 95);
+            this.tb_ResiveData.Location = new System.Drawing.Point(42, 101);
             this.tb_ResiveData.Name = "tb_ResiveData";
             this.tb_ResiveData.ReadOnly = true;
             this.tb_ResiveData.Size = new System.Drawing.Size(183, 19);
@@ -138,7 +141,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label3.Location = new System.Drawing.Point(7, 95);
+            this.label3.Location = new System.Drawing.Point(11, 103);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(29, 12);
             this.label3.TabIndex = 25;
@@ -148,7 +151,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label4.Location = new System.Drawing.Point(7, 69);
+            this.label4.Location = new System.Drawing.Point(11, 74);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 12);
             this.label4.TabIndex = 26;
@@ -158,7 +161,7 @@
             // 
             this.tb_SendData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_SendData.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_SendData.Location = new System.Drawing.Point(42, 66);
+            this.tb_SendData.Location = new System.Drawing.Point(42, 72);
             this.tb_SendData.Name = "tb_SendData";
             this.tb_SendData.ReadOnly = true;
             this.tb_SendData.Size = new System.Drawing.Size(183, 19);
@@ -215,7 +218,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label7.Location = new System.Drawing.Point(364, 27);
+            this.label7.Location = new System.Drawing.Point(364, 33);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(79, 21);
             this.label7.TabIndex = 33;
@@ -225,7 +228,7 @@
             // 
             this.tb_RESpeed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_RESpeed.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_RESpeed.Location = new System.Drawing.Point(449, 17);
+            this.tb_RESpeed.Location = new System.Drawing.Point(449, 28);
             this.tb_RESpeed.Name = "tb_RESpeed";
             this.tb_RESpeed.ReadOnly = true;
             this.tb_RESpeed.Size = new System.Drawing.Size(95, 31);
@@ -237,7 +240,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label8.Location = new System.Drawing.Point(550, 31);
+            this.label8.Location = new System.Drawing.Point(550, 38);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(43, 16);
             this.label8.TabIndex = 35;
@@ -247,7 +250,7 @@
             // 
             this.lbl_RErotL.AutoSize = true;
             this.lbl_RErotL.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_RErotL.Location = new System.Drawing.Point(58, 46);
+            this.lbl_RErotL.Location = new System.Drawing.Point(58, 94);
             this.lbl_RErotL.Name = "lbl_RErotL";
             this.lbl_RErotL.Size = new System.Drawing.Size(28, 16);
             this.lbl_RErotL.TabIndex = 17;
@@ -257,7 +260,7 @@
             // 
             this.lbl_RErotR.AutoSize = true;
             this.lbl_RErotR.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_RErotR.Location = new System.Drawing.Point(185, 46);
+            this.lbl_RErotR.Location = new System.Drawing.Point(185, 94);
             this.lbl_RErotR.Name = "lbl_RErotR";
             this.lbl_RErotR.Size = new System.Drawing.Size(28, 16);
             this.lbl_RErotR.TabIndex = 16;
@@ -267,7 +270,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label17.Location = new System.Drawing.Point(9, 46);
+            this.label17.Location = new System.Drawing.Point(9, 94);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(43, 16);
             this.label17.TabIndex = 15;
@@ -277,7 +280,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label16.Location = new System.Drawing.Point(135, 46);
+            this.label16.Location = new System.Drawing.Point(135, 94);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(44, 16);
             this.label16.TabIndex = 14;
@@ -287,7 +290,7 @@
             // 
             this.lbl_REPlotDir.AutoSize = true;
             this.lbl_REPlotDir.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REPlotDir.Location = new System.Drawing.Point(75, 125);
+            this.lbl_REPlotDir.Location = new System.Drawing.Point(75, 173);
             this.lbl_REPlotDir.Name = "lbl_REPlotDir";
             this.lbl_REPlotDir.Size = new System.Drawing.Size(28, 16);
             this.lbl_REPlotDir.TabIndex = 13;
@@ -297,7 +300,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label18.Location = new System.Drawing.Point(9, 125);
+            this.label18.Location = new System.Drawing.Point(9, 173);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(55, 16);
             this.label18.TabIndex = 12;
@@ -307,7 +310,7 @@
             // 
             this.lbl_REPlotY.AutoSize = true;
             this.lbl_REPlotY.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REPlotY.Location = new System.Drawing.Point(66, 101);
+            this.lbl_REPlotY.Location = new System.Drawing.Point(66, 149);
             this.lbl_REPlotY.Name = "lbl_REPlotY";
             this.lbl_REPlotY.Size = new System.Drawing.Size(28, 16);
             this.lbl_REPlotY.TabIndex = 11;
@@ -317,7 +320,7 @@
             // 
             this.lbl_REPlotX.AutoSize = true;
             this.lbl_REPlotX.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REPlotX.Location = new System.Drawing.Point(66, 76);
+            this.lbl_REPlotX.Location = new System.Drawing.Point(66, 124);
             this.lbl_REPlotX.Name = "lbl_REPlotX";
             this.lbl_REPlotX.Size = new System.Drawing.Size(28, 16);
             this.lbl_REPlotX.TabIndex = 10;
@@ -327,7 +330,7 @@
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label15.Location = new System.Drawing.Point(9, 101);
+            this.label15.Location = new System.Drawing.Point(9, 149);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(45, 16);
             this.label15.TabIndex = 9;
@@ -337,7 +340,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label14.Location = new System.Drawing.Point(9, 76);
+            this.label14.Location = new System.Drawing.Point(9, 124);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(46, 16);
             this.label14.TabIndex = 8;
@@ -347,7 +350,7 @@
             // 
             this.lbl_LED.AutoSize = true;
             this.lbl_LED.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_LED.Location = new System.Drawing.Point(58, 21);
+            this.lbl_LED.Location = new System.Drawing.Point(58, 69);
             this.lbl_LED.Name = "lbl_LED";
             this.lbl_LED.Size = new System.Drawing.Size(28, 16);
             this.lbl_LED.TabIndex = 5;
@@ -357,7 +360,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label10.Location = new System.Drawing.Point(9, 21);
+            this.label10.Location = new System.Drawing.Point(9, 69);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(39, 16);
             this.label10.TabIndex = 0;
@@ -373,92 +376,11 @@
             this.lbl_bServerEmu.TabIndex = 30;
             this.lbl_bServerEmu.Text = "bServerエミュレーションモード";
             // 
-            // num_R1Dir
-            // 
-            this.num_R1Dir.Location = new System.Drawing.Point(62, 100);
-            this.num_R1Dir.Maximum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            0});
-            this.num_R1Dir.Minimum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            -2147483648});
-            this.num_R1Dir.Name = "num_R1Dir";
-            this.num_R1Dir.Size = new System.Drawing.Size(52, 19);
-            this.num_R1Dir.TabIndex = 42;
-            this.num_R1Dir.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // num_R1Y
-            // 
-            this.num_R1Y.Location = new System.Drawing.Point(27, 73);
-            this.num_R1Y.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.num_R1Y.Minimum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            -2147483648});
-            this.num_R1Y.Name = "num_R1Y";
-            this.num_R1Y.Size = new System.Drawing.Size(88, 19);
-            this.num_R1Y.TabIndex = 40;
-            this.num_R1Y.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // num_R1X
-            // 
-            this.num_R1X.Location = new System.Drawing.Point(28, 51);
-            this.num_R1X.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.num_R1X.Minimum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            -2147483648});
-            this.num_R1X.Name = "num_R1X";
-            this.num_R1X.Size = new System.Drawing.Size(87, 19);
-            this.num_R1X.TabIndex = 39;
-            this.num_R1X.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 105);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(31, 12);
-            this.label22.TabIndex = 41;
-            this.label22.Text = "角度:";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(8, 75);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(14, 12);
-            this.label20.TabIndex = 37;
-            this.label20.Text = "Y:";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(8, 53);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(14, 12);
-            this.label19.TabIndex = 36;
-            this.label19.Text = "X:";
-            // 
             // cb_InDoorMode
             // 
             this.cb_InDoorMode.AutoSize = true;
             this.cb_InDoorMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_InDoorMode.Location = new System.Drawing.Point(610, 630);
+            this.cb_InDoorMode.Location = new System.Drawing.Point(611, 546);
             this.cb_InDoorMode.Name = "cb_InDoorMode";
             this.cb_InDoorMode.Size = new System.Drawing.Size(101, 20);
             this.cb_InDoorMode.TabIndex = 50;
@@ -489,7 +411,7 @@
             this.gb_DriveControl.Controls.Add(this.label5);
             this.gb_DriveControl.Controls.Add(this.tb_AccelVal);
             this.gb_DriveControl.Controls.Add(this.label8);
-            this.gb_DriveControl.Location = new System.Drawing.Point(2, 613);
+            this.gb_DriveControl.Location = new System.Drawing.Point(2, 521);
             this.gb_DriveControl.Name = "gb_DriveControl";
             this.gb_DriveControl.Size = new System.Drawing.Size(600, 112);
             this.gb_DriveControl.TabIndex = 40;
@@ -510,7 +432,7 @@
             // 
             this.tb_Trip.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tb_Trip.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tb_Trip.Location = new System.Drawing.Point(449, 64);
+            this.tb_Trip.Location = new System.Drawing.Point(449, 69);
             this.tb_Trip.Name = "tb_Trip";
             this.tb_Trip.ReadOnly = true;
             this.tb_Trip.Size = new System.Drawing.Size(95, 31);
@@ -552,9 +474,10 @@
             // picbox_Indicator
             // 
             this.picbox_Indicator.BackColor = System.Drawing.Color.White;
-            this.picbox_Indicator.Location = new System.Drawing.Point(607, 4);
+            this.picbox_Indicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picbox_Indicator.Location = new System.Drawing.Point(355, 12);
             this.picbox_Indicator.Name = "picbox_Indicator";
-            this.picbox_Indicator.Size = new System.Drawing.Size(240, 160);
+            this.picbox_Indicator.Size = new System.Drawing.Size(240, 120);
             this.picbox_Indicator.TabIndex = 41;
             this.picbox_Indicator.TabStop = false;
             this.picbox_Indicator.Paint += new System.Windows.Forms.PaintEventHandler(this.picbox_Indicator_Paint);
@@ -563,7 +486,7 @@
             // 
             this.cb_ConnectBServerEmu.Appearance = System.Windows.Forms.Appearance.Button;
             this.cb_ConnectBServerEmu.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_ConnectBServerEmu.Location = new System.Drawing.Point(136, 13);
+            this.cb_ConnectBServerEmu.Location = new System.Drawing.Point(145, 37);
             this.cb_ConnectBServerEmu.Name = "cb_ConnectBServerEmu";
             this.cb_ConnectBServerEmu.Size = new System.Drawing.Size(89, 28);
             this.cb_ConnectBServerEmu.TabIndex = 45;
@@ -575,7 +498,7 @@
             // btn_MapLoad
             // 
             this.btn_MapLoad.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_MapLoad.Location = new System.Drawing.Point(120, 51);
+            this.btn_MapLoad.Location = new System.Drawing.Point(130, 51);
             this.btn_MapLoad.Name = "btn_MapLoad";
             this.btn_MapLoad.Size = new System.Drawing.Size(108, 34);
             this.btn_MapLoad.TabIndex = 47;
@@ -589,7 +512,7 @@
             this.tb_MapName.Location = new System.Drawing.Point(8, 22);
             this.tb_MapName.Name = "tb_MapName";
             this.tb_MapName.ReadOnly = true;
-            this.tb_MapName.Size = new System.Drawing.Size(217, 23);
+            this.tb_MapName.Size = new System.Drawing.Size(230, 23);
             this.tb_MapName.TabIndex = 48;
             this.tb_MapName.TabStop = false;
             // 
@@ -602,9 +525,9 @@
             this.groupBox1.Controls.Add(this.lbl_bServerEmu);
             this.groupBox1.Controls.Add(this.cb_ConnectBServerEmu);
             this.groupBox1.Controls.Add(this.lb_BServerConnect);
-            this.groupBox1.Location = new System.Drawing.Point(607, 308);
+            this.groupBox1.Location = new System.Drawing.Point(607, 103);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(240, 127);
+            this.groupBox1.Size = new System.Drawing.Size(243, 127);
             this.groupBox1.TabIndex = 31;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "bServer";
@@ -615,7 +538,7 @@
             this.cb_AccelOff.Checked = true;
             this.cb_AccelOff.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_AccelOff.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_AccelOff.Location = new System.Drawing.Point(734, 630);
+            this.cb_AccelOff.Location = new System.Drawing.Point(735, 546);
             this.cb_AccelOff.Name = "cb_AccelOff";
             this.cb_AccelOff.Size = new System.Drawing.Size(112, 20);
             this.cb_AccelOff.TabIndex = 45;
@@ -626,27 +549,28 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.num_R1Dir);
             this.groupBox2.Controls.Add(this.tb_MapName);
-            this.groupBox2.Controls.Add(this.label22);
-            this.groupBox2.Controls.Add(this.num_R1Y);
             this.groupBox2.Controls.Add(this.btn_MapLoad);
-            this.groupBox2.Controls.Add(this.label20);
-            this.groupBox2.Controls.Add(this.num_R1X);
-            this.groupBox2.Controls.Add(this.btn_VRReset);
-            this.groupBox2.Controls.Add(this.label19);
-            this.groupBox2.Location = new System.Drawing.Point(607, 170);
+            this.groupBox2.Location = new System.Drawing.Point(606, 4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(240, 132);
+            this.groupBox2.Size = new System.Drawing.Size(244, 95);
             this.groupBox2.TabIndex = 51;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Map";
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Controls.Add(this.rb_SelREPlot);
+            this.groupBox3.Controls.Add(this.rb_SelAMCL);
+            this.groupBox3.Controls.Add(this.lbl_CheckPoint);
+            this.groupBox3.Controls.Add(this.label12);
+            this.groupBox3.Controls.Add(this.numericUpDown1);
+            this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.lbl_RErotL);
             this.groupBox3.Controls.Add(this.lbl_LED);
             this.groupBox3.Controls.Add(this.lbl_RErotR);
+            this.groupBox3.Controls.Add(this.btn_VRReset);
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.label17);
             this.groupBox3.Controls.Add(this.label16);
@@ -656,18 +580,99 @@
             this.groupBox3.Controls.Add(this.lbl_REPlotX);
             this.groupBox3.Controls.Add(this.label15);
             this.groupBox3.Controls.Add(this.label14);
-            this.groupBox3.Location = new System.Drawing.Point(608, 446);
+            this.groupBox3.Location = new System.Drawing.Point(607, 238);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(239, 158);
+            this.groupBox3.Size = new System.Drawing.Size(243, 266);
             this.groupBox3.TabIndex = 52;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "状態";
+            this.groupBox3.Text = "Car Status";
+            // 
+            // rb_SelREPlot
+            // 
+            this.rb_SelREPlot.AutoSize = true;
+            this.rb_SelREPlot.Location = new System.Drawing.Point(107, 43);
+            this.rb_SelREPlot.Name = "rb_SelREPlot";
+            this.rb_SelREPlot.Size = new System.Drawing.Size(58, 16);
+            this.rb_SelREPlot.TabIndex = 48;
+            this.rb_SelREPlot.Text = "REPlot";
+            this.rb_SelREPlot.UseVisualStyleBackColor = true;
+            // 
+            // rb_SelAMCL
+            // 
+            this.rb_SelAMCL.AutoSize = true;
+            this.rb_SelAMCL.Checked = true;
+            this.rb_SelAMCL.Location = new System.Drawing.Point(12, 43);
+            this.rb_SelAMCL.Name = "rb_SelAMCL";
+            this.rb_SelAMCL.Size = new System.Drawing.Size(54, 16);
+            this.rb_SelAMCL.TabIndex = 47;
+            this.rb_SelAMCL.TabStop = true;
+            this.rb_SelAMCL.Text = "AMCL";
+            this.rb_SelAMCL.UseVisualStyleBackColor = true;
+            // 
+            // lbl_CheckPoint
+            // 
+            this.lbl_CheckPoint.AutoSize = true;
+            this.lbl_CheckPoint.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_CheckPoint.Location = new System.Drawing.Point(104, 205);
+            this.lbl_CheckPoint.Name = "lbl_CheckPoint";
+            this.lbl_CheckPoint.Size = new System.Drawing.Size(28, 16);
+            this.lbl_CheckPoint.TabIndex = 46;
+            this.lbl_CheckPoint.Text = "ND";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.BackColor = System.Drawing.Color.Yellow;
+            this.label12.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label12.Location = new System.Drawing.Point(88, 20);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(45, 16);
+            this.label12.TabIndex = 45;
+            this.label12.Text = "Benz";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(182, 207);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(52, 19);
+            this.numericUpDown1.TabIndex = 44;
+            this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label11.Location = new System.Drawing.Point(10, 205);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(88, 16);
+            this.label11.TabIndex = 43;
+            this.label11.Text = "CheckPoint:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label13.Location = new System.Drawing.Point(13, 20);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(69, 16);
+            this.label13.TabIndex = 49;
+            this.label13.Text = "CarType:";
             // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(859, 729);
+            this.ClientSize = new System.Drawing.Size(859, 654);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.cb_AccelOff);
             this.Controls.Add(this.cb_StartAutonomous);
@@ -680,14 +685,11 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner2 Ver0.20  Build:2017.04.01";
+            this.Text = "VehicleRunner2 Ver0.22  Build:2017.04.23";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VehicleRunnerForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VehicleRunnerForm_FormClosed);
             this.Load += new System.EventHandler(this.VehicleRunnerForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_R1Dir)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_R1Y)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_R1X)).EndInit();
             this.gb_DriveControl.ResumeLayout(false);
             this.gb_DriveControl.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).EndInit();
@@ -697,6 +699,7 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -735,12 +738,6 @@
         private System.Windows.Forms.Label lb_BServerConnect;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.PictureBox picbox_Indicator;
-        private System.Windows.Forms.NumericUpDown num_R1Dir;
-        private System.Windows.Forms.NumericUpDown num_R1Y;
-        private System.Windows.Forms.NumericUpDown num_R1X;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label lbl_BackProcess;
         private System.Windows.Forms.Label lbl_bServerEmu;
         private System.Windows.Forms.CheckBox cb_InDoorMode;
@@ -754,6 +751,13 @@
         private System.Windows.Forms.CheckBox cb_AccelOff;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label lbl_CheckPoint;
+        private System.Windows.Forms.RadioButton rb_SelREPlot;
+        private System.Windows.Forms.RadioButton rb_SelAMCL;
+        private System.Windows.Forms.Label label13;
     }
 }
 
