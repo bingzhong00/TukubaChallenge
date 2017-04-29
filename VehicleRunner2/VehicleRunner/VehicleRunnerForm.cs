@@ -382,7 +382,7 @@ namespace VehicleRunner
                         wlPos.X = (wlR.X + wlL.X) * 0.5;
                         wlPos.Y = (wlR.Y + wlL.Y) * 0.5;
 
-                        LocSys.Input_REPosition(wlPos.X, wlPos.Y, -(reAng * 180.0 / Math.PI));
+                        LocSys.Input_REPosition(wlPos.X, wlPos.Y, -reAng);
 
                         reOldR = CersioCt.hwRErotR;
                         reOldL = CersioCt.hwRErotL;

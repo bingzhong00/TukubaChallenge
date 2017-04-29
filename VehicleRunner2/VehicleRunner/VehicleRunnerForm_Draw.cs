@@ -18,10 +18,10 @@ namespace VehicleRunner
     class VehicleRunnerForm_Draw
     {
         /// <summary>自己位置情報　表示BMP</summary>
-        Bitmap worldMapBmp;
+        private Bitmap worldMapBmp;
 
         /// <summary>自己位置情報　表示BMP</summary>
-        public Bitmap areaMapBmp;
+        private Bitmap areaMapBmp;
 
         Font drawFont = new Font("MS UI Gothic", 16, FontStyle.Bold);
         Font fntMini = new Font("MS UI Gothic", 9);
@@ -60,14 +60,14 @@ namespace VehicleRunner
             //if (nonScl <= 1.0) nonScl = 1.0;
 
             var P1 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir)),
+                (float)(mkY + size * Math.Sin(mkDir)));
             var P2 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir - 150) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir - 150) * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir - (150.0 * Math.PI / 180.0))),
+                (float)(mkY + size * Math.Sin(mkDir - (150.0 * Math.PI / 180.0))));
             var P3 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 150) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 150) * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir + (150.0 * Math.PI / 180.0))),
+                (float)(mkY + size * Math.Sin(mkDir + (150.0 * Math.PI / 180.0))));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
         }
@@ -87,17 +87,17 @@ namespace VehicleRunner
             double size = (double)_size * 0.5;
 
             var P1 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin(mkDir * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir)),
+                (float)(mkY + size * Math.Sin(mkDir)));
             var P2 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 90) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 90) * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir + (90.0 * Math.PI / 180.0))),
+                (float)(mkY + size * Math.Sin(mkDir + (90.0 * Math.PI / 180.0))));
             var P3 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 180) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 180) * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir + (180.0 * Math.PI / 180.0))),
+                (float)(mkY + size * Math.Sin(mkDir + (180.0 * Math.PI / 180.0))));
             var P4 = new PointF(
-                (float)(mkX + size * Math.Cos((mkDir + 270) * Math.PI / 180.0)),
-                (float)(mkY + size * Math.Sin((mkDir + 270) * Math.PI / 180.0)));
+                (float)(mkX + size * Math.Cos(mkDir + (270.0 * Math.PI / 180.0))),
+                (float)(mkY + size * Math.Sin(mkDir + (270.0 * Math.PI / 180.0))));
 
             g.FillPolygon(brush, new PointF[] { P1, P2, P3, P4 });
         }
@@ -136,8 +136,6 @@ namespace VehicleRunner
         }
 
 
-        float viewScaleWorld;
-
         /// <summary>
         /// PictureBoxのサイズに合わせた　ワールドマップBMP作成
         /// </summary>
@@ -159,8 +157,6 @@ namespace VehicleRunner
             {
                 int picW = (int)(viewScale * worldBMP.Width + 0.5);
                 int picH = (int)(viewScale * worldBMP.Height + 0.5);
-
-                viewScaleWorld = viewScale;
 
                 worldMapBmp = new Bitmap(picW, picH);
                 Graphics g = Graphics.FromImage(worldMapBmp);
@@ -393,48 +389,6 @@ namespace VehicleRunner
         }
 
 
-        public void AreaMap_Draw_Text(Graphics g, ref Brain BrainCtrl, long updateHwCnt)
-        {
-            LocationSystem LocSys = BrainCtrl.LocSys;
-
-            g.ResetTransform();
-
-            try
-            {
-                // Info
-                /*
-                DrawString(g, 0, drawFont.Height * 0,
-                           "R1 X:" + ((int)(LocSys.R1.X + 0.5)).ToString("D4") +
-                           ",Y:" + ((int)(LocSys.R1.Y + 0.5)).ToString("D4") +
-                           ",角度:" + ((int)LocSys.R1.Theta).ToString("D3"),
-                           Brushes.Red, Brushes.Black);
-                */
-
-                /*
-                DrawString(g, 0, drawFont.Height * 1,
-                           "Compass:" + CersioCt.hwCompass.ToString("D3") + "/ ReDir:" + ((int)(CersioCt.hwREDir)).ToString("D3") +
-                           ",ReX:" + ((int)(CersioCt.hwREX)).ToString("D4") + ",Y:" + ((int)(CersioCt.hwREY)).ToString("D4"),
-                           Brushes.Blue, Brushes.White);
-                */
-                DrawString(g, 0, drawFont.Height * 1,
-                           "RunCnt:" + updateHwCnt.ToString("D8") + "/ Goal:" + (BrainCtrl.goalFlg ? "TRUE" : "FALSE" + "/ Cp:" + BrainCtrl.LocSys.RTS.getCheckPointIdx().ToString()),
-                           Brushes.Blue, Brushes.White);
-                /*
-                DrawString(g, 0, drawFont.Height * 2,
-                           "LocProc:" + LocPreSumpSystem.swCNT_Update.ElapsedMilliseconds +
-                           "ms /Draw:" + LocSys.swCNT_Draw.ElapsedMilliseconds +
-                           "ms /MRF:" + LocPreSumpSystem.swCNT_MRF.ElapsedMilliseconds + "ms",
-                           Brushes.Blue, Brushes.White);
-                */
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-
         /// <summary>
         /// インジケータ描画
         /// </summary>
@@ -499,28 +453,31 @@ namespace VehicleRunner
 
             int dirMarkBaseY = baseY + 80;
 
-            // 向けたいハンドル角度
-            {
-                double ang = BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
-                DrawMaker(g, Brushes.Cyan, 40, dirMarkBaseY, ang, 12);
-                g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, 40 - 25, baseY + 120);
-                g.DrawString("Handle", fntMini, Brushes.White, 40 - 25, dirMarkBaseY + 14);
-            }
-
             // 現在の向き
             {
+                int dx = 40;
                 double ang = BrainCtrl.LocSys.RTS.getNowDir();
-                DrawMaker(g, Brushes.Red, 100, dirMarkBaseY, ang, 12);
-                g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, 100 - 25, baseY + 120);
-                g.DrawString("RTSNow", fntMini, Brushes.White, 100 - 25, dirMarkBaseY + 14);
+                DrawMaker(g, Brushes.Red, dx, dirMarkBaseY, ang, 12);
+                g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
+                g.DrawString("RTSNow", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 14);
             }
 
             // 相手の向き
             {
+                int dx = 100;
                 double ang = BrainCtrl.LocSys.RTS.getNowTargetDir();
-                DrawMaker(g, Brushes.Purple, 160, dirMarkBaseY, ang, 12);
-                g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, 160 - 25, baseY + 120);
-                g.DrawString("RTSTgt", fntMini, Brushes.White, 160 - 25, dirMarkBaseY + 14);
+                DrawMaker(g, Brushes.Purple, dx, dirMarkBaseY, ang, 12);
+                g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
+                g.DrawString("RTSTgt", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 14);
+            }
+
+            // 向けたいハンドル角度
+            {
+                int dx = 160;
+                double ang = BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
+                DrawMaker(g, Brushes.Cyan, dx, dirMarkBaseY, ang, 12);
+                g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
+                g.DrawString("Handle", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 14);
             }
         }
 

@@ -54,7 +54,7 @@ namespace CersioIO
         // ２輪の移動量の差から角度を求める
         static double WheelDifferenceToDegree(double WRLng, double WLLng)
         {
-            return (((WRLng - WLLng) / (Math.PI * ShaftLength * 2.0)) * 360.0);
+            return (((WRLng - WLLng) / (Math.PI * ShaftLength * 2.0)) * Math.PI);
         }
 
 
@@ -94,21 +94,20 @@ namespace CersioIO
 
             double mov;
             double deg = REncodeDataToDegree(reWR, reWL);
-            double ang = (deg) * Math.PI / 180.0;
 
             // 右車輪 移動量
             mov = WheelRotateToLength(reWR - reOldWR);
 
-            resXYWR.X += (mov * -Math.Cos(ang));
-            resXYWR.Y += (mov * Math.Sin(ang));
+            resXYWR.X += (mov * -Math.Cos(deg));
+            resXYWR.Y += (mov * Math.Sin(deg));
 
             // 左車輪 移動量
             mov = WheelRotateToLength(reWL - reOldWL);
 
-            resXYWL.X += (mov * -Math.Cos(ang));
-            resXYWL.Y += (mov * Math.Sin(ang));
+            resXYWL.X += (mov * -Math.Cos(deg));
+            resXYWL.Y += (mov * Math.Sin(deg));
 
-            resAng = deg * Math.PI / 180.0;
+            resAng = deg;
         }
 
         /// <summary>
@@ -136,7 +135,6 @@ namespace CersioIO
             {
                 double mov;
                 double deg = REncodeDataToDegree(reWR[i], reWL[i]);
-                double ang = deg * Math.PI / 180.0;
 
                 xyWR[i] = new PointD();
                 xyWL[i] = new PointD();
@@ -144,14 +142,14 @@ namespace CersioIO
                 // 右車輪
                 mov = WheelRotateToLength(reWR[i] - reWR[i - 1]);
 
-                xyWR[i].X = xyWR[i - 1].X + (mov * -Math.Cos(ang));
-                xyWR[i].Y = xyWR[i - 1].Y + (mov * Math.Sin(ang));
+                xyWR[i].X = xyWR[i - 1].X + (mov * -Math.Cos(deg));
+                xyWR[i].Y = xyWR[i - 1].Y + (mov * Math.Sin(deg));
 
                 // 左車輪
                 mov = WheelRotateToLength(reWL[i] - reWL[i - 1]);
 
-                xyWL[i].X = xyWL[i - 1].X + (mov * -Math.Cos(ang));
-                xyWL[i].Y = xyWL[i - 1].Y + (mov * Math.Sin(ang));
+                xyWL[i].X = xyWL[i - 1].X + (mov * -Math.Cos(deg));
+                xyWL[i].Y = xyWL[i - 1].Y + (mov * Math.Sin(deg));
             }
 
             //x11 = x1 * Math.cos(alpha) - y1 * Math.sin(alpha);
