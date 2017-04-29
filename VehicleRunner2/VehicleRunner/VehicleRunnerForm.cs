@@ -413,6 +413,13 @@ namespace VehicleRunner
                     lbl_REPlotY.Text = LocSys.GetResultLocationY().ToString("F2");
                     lbl_REPlotDir.Text = LocSys.GetResultAngle().ToString("F2");
 
+                    // CheckPointIndex
+                    if (BrainCtrl.LocSys.RTS.IsCheckPointPass())
+                    {
+                        // チェックポイント通過時に表示更新
+                        numericUD_CheckPoint.Value = BrainCtrl.LocSys.RTS.getCheckPointIdx();
+                    }
+
                     // BoxPC接続状態確認
                     if (CersioCt.TCP_IsConnected())
                     {
@@ -430,8 +437,6 @@ namespace VehicleRunner
                         lb_BServerConnect.Text = "bServer 未接続";
                         lb_BServerConnect.BackColor = SystemColors.Window;
                     }
-
-                    lbl_CheckPoint.Text = BrainCtrl.LocSys.RTS.getCheckPointIdx().ToString();
 
                     // 送受信文字 画面表示
                     if (null != CersioCt.hwResiveStr)
@@ -588,6 +593,25 @@ namespace VehicleRunner
         int MouseStX, MouseStY;
         int viewMoveAddX, viewMoveAddY;
         int viewScrollX, viewScrollY;
+
+        private void numericUD_CheckPoint_Click(object sender, EventArgs e)
+        {
+            //
+            int idx = (int)numericUD_CheckPoint.Value;
+            LocationSystem LocSys = BrainCtrl.LocSys;
+            LocSys.RTS.SetCheckPoint(idx);
+        }
+
+        private void numericUD_CheckPoint_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            numericUD_CheckPoint_Click(sender, null);
+        }
+
+        private void numericUD_DebugDir_Click(object sender, EventArgs e)
+        {
+            CersioCt.hwAMCL_Ang = (double)numericUD_DebugDir.Value;
+        }
+
         private void picbox_AreaMap_MouseDown(object sender, MouseEventArgs e)
         {
             //

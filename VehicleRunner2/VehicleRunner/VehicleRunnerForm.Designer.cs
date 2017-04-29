@@ -69,20 +69,21 @@
             this.cb_AccelOff = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.numericUD_DebugDir = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
             this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
-            this.lbl_CheckPoint = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUD_CheckPoint = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).BeginInit();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -560,12 +561,12 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.numericUD_DebugDir);
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.rb_SelREPlot);
             this.groupBox3.Controls.Add(this.rb_SelAMCL);
-            this.groupBox3.Controls.Add(this.lbl_CheckPoint);
             this.groupBox3.Controls.Add(this.label12);
-            this.groupBox3.Controls.Add(this.numericUpDown1);
+            this.groupBox3.Controls.Add(this.numericUD_CheckPoint);
             this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.lbl_RErotL);
             this.groupBox3.Controls.Add(this.lbl_LED);
@@ -586,6 +587,41 @@
             this.groupBox3.TabIndex = 52;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Car Status";
+            // 
+            // numericUD_DebugDir
+            // 
+            this.numericUD_DebugDir.DecimalPlaces = 2;
+            this.numericUD_DebugDir.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numericUD_DebugDir.Location = new System.Drawing.Point(145, 170);
+            this.numericUD_DebugDir.Maximum = new decimal(new int[] {
+            314,
+            0,
+            0,
+            131072});
+            this.numericUD_DebugDir.Minimum = new decimal(new int[] {
+            314,
+            0,
+            0,
+            -2147352576});
+            this.numericUD_DebugDir.Name = "numericUD_DebugDir";
+            this.numericUD_DebugDir.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_DebugDir.TabIndex = 50;
+            this.numericUD_DebugDir.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_DebugDir.Click += new System.EventHandler(this.numericUD_DebugDir_Click);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label13.Location = new System.Drawing.Point(13, 20);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(69, 16);
+            this.label13.TabIndex = 49;
+            this.label13.Text = "CarType:";
             // 
             // rb_SelREPlot
             // 
@@ -609,16 +645,6 @@
             this.rb_SelAMCL.Text = "AMCL";
             this.rb_SelAMCL.UseVisualStyleBackColor = true;
             // 
-            // lbl_CheckPoint
-            // 
-            this.lbl_CheckPoint.AutoSize = true;
-            this.lbl_CheckPoint.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_CheckPoint.Location = new System.Drawing.Point(104, 205);
-            this.lbl_CheckPoint.Name = "lbl_CheckPoint";
-            this.lbl_CheckPoint.Size = new System.Drawing.Size(28, 16);
-            this.lbl_CheckPoint.TabIndex = 46;
-            this.lbl_CheckPoint.Text = "ND";
-            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -630,43 +656,30 @@
             this.label12.TabIndex = 45;
             this.label12.Text = "Benz";
             // 
-            // numericUpDown1
+            // numericUD_CheckPoint
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(182, 207);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            3600,
+            this.numericUD_CheckPoint.Location = new System.Drawing.Point(104, 202);
+            this.numericUD_CheckPoint.Maximum = new decimal(new int[] {
+            999,
             0,
             0,
             0});
-            this.numericUpDown1.Minimum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(52, 19);
-            this.numericUpDown1.TabIndex = 44;
-            this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_CheckPoint.Name = "numericUD_CheckPoint";
+            this.numericUD_CheckPoint.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_CheckPoint.TabIndex = 44;
+            this.numericUD_CheckPoint.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_CheckPoint.Click += new System.EventHandler(this.numericUD_CheckPoint_Click);
+            this.numericUD_CheckPoint.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericUD_CheckPoint_KeyPress);
             // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label11.Location = new System.Drawing.Point(10, 205);
+            this.label11.Location = new System.Drawing.Point(13, 202);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(88, 16);
             this.label11.TabIndex = 43;
             this.label11.Text = "CheckPoint:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label13.Location = new System.Drawing.Point(13, 20);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(69, 16);
-            this.label13.TabIndex = 49;
-            this.label13.Text = "CarType:";
             // 
             // VehicleRunnerForm
             // 
@@ -699,7 +712,8 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -752,12 +766,12 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown numericUD_CheckPoint;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label lbl_CheckPoint;
         private System.Windows.Forms.RadioButton rb_SelREPlot;
         private System.Windows.Forms.RadioButton rb_SelAMCL;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown numericUD_DebugDir;
     }
 }
 

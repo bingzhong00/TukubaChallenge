@@ -126,7 +126,7 @@ namespace Location
         // リセット
         public void ResetSeq()
         {
-            ResetCheckPoint(0);
+            SetCheckPoint(0);
             goalFlg = false;
         }
 
@@ -134,10 +134,13 @@ namespace Location
         /// チェックポイントリセット
         /// </summary>
         /// <param name="_setIdx"></param>
-        public void ResetCheckPoint(int _setIdx )
+        public void SetCheckPoint(int _setIdx )
         {
-            seqIdx = _setIdx;
-            seqIdxOld = _setIdx;
+            if (_setIdx < mapData.checkPoint.Length)
+            {
+                seqIdx = _setIdx;
+                seqIdxOld = _setIdx;
+            }
         }
 
         /// <summary>
