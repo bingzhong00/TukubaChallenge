@@ -356,8 +356,8 @@ namespace Location
         public static double CalcHandleValue(double targetHandleRad, double nowHandleRad, ref double stearingDir, double targetDist )
         {
             // ラジアンから角度へ変換
-            double tgtAng = targetHandleRad * 180.0 / Axiom.Math.Utility.PI;
-            double nowAng = nowHandleRad * 180.0 / Axiom.Math.Utility.PI;
+            double tgtAng = targetHandleRad;// * 180.0 / Axiom.Math.Utility.PI;
+            double nowAng = nowHandleRad;// * 180.0 / Axiom.Math.Utility.PI;
             double stearingAng = 0;
 
             // 向かいたい角度を計算
@@ -374,26 +374,26 @@ namespace Location
                 }
                 */
 
-                // -360～360度の差分に変換
-                stearingAng = (tgtAng % 360) - (nowAng % 360);
-                if (Math.Abs(stearingAng) > 360.0)
+                // -2PI～2PIの差分に変換
+                stearingAng = (tgtAng % (Math.PI*2.0)) - (nowAng % (Math.PI * 2.0));
+                if (Math.Abs(stearingAng) > (Math.PI * 2.0))
                 {
-                    stearingAng = (stearingAng % 360);
+                    stearingAng = (stearingAng % (Math.PI * 2.0));
                 }
 
-                // -180～180に変換
-                if (Math.Abs(stearingAng) > 180.0)
+                // -PI～PIに変換
+                if (Math.Abs(stearingAng) > Math.PI)
                 {
-                    if (stearingAng < 0.0) stearingAng = stearingAng + 360;
-                    else stearingAng = stearingAng - 360;
+                    if (stearingAng < 0.0) stearingAng = stearingAng + (Math.PI * 2.0);
+                    else stearingAng = stearingAng - (Math.PI * 2.0);
                 }
 
                 // ハンドルを切りたい角度
-                stearingDir = stearingAng * Math.PI / 180.0;
+                stearingDir = stearingAng;// * Math.PI / 180.0;
             }
 
             // 最大ハンドル切れ角
-            const double maxStearingAng = CersioIO.CersioCtrl.MaxHandleAngle;
+            const double maxStearingAng = CersioIO.CersioCtrl.MaxHandleAngle * Math.PI / 180.0;
 
             // 最大きれ角までに制限
             if (stearingAng > maxStearingAng) stearingAng = maxStearingAng;
