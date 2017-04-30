@@ -59,17 +59,35 @@ namespace VehicleRunner
             //double nonScl = size / ViewScale;
             //if (nonScl <= 1.0) nonScl = 1.0;
 
-            var P1 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir)),
-                (float)(mkY + size * Math.Sin(mkDir)));
-            var P2 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir - (150.0 * Math.PI / 180.0))),
-                (float)(mkY + size * Math.Sin(mkDir - (150.0 * Math.PI / 180.0))));
-            var P3 = new PointF(
-                (float)(mkX + size * Math.Cos(mkDir + (150.0 * Math.PI / 180.0))),
-                (float)(mkY + size * Math.Sin(mkDir + (150.0 * Math.PI / 180.0))));
+            // 枠線
+            {
+                double sizeBig = size * 1.25;
+                double centerDir = 0;
 
-            g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
+                g.DrawEllipse(Pens.LightGray,
+                               (float)(mkX - sizeBig), (float)(mkY - sizeBig),
+                               (float)sizeBig * 2.0f, (float)sizeBig * 2.0f);
+
+                // 0度基準線
+                g.DrawLine(Pens.LightGray,
+                           (float)mkX, (float)mkY,
+                           (float)(mkX + sizeBig * Math.Cos(centerDir)), (float)(mkY + sizeBig * Math.Sin(centerDir)));
+
+            }
+
+            {
+                var P1 = new PointF(
+                    (float)(mkX + size * Math.Cos(mkDir)),
+                    (float)(mkY + size * Math.Sin(mkDir)));
+                var P2 = new PointF(
+                    (float)(mkX + size * Math.Cos(mkDir - (150.0 * Math.PI / 180.0))),
+                    (float)(mkY + size * Math.Sin(mkDir - (150.0 * Math.PI / 180.0))));
+                var P3 = new PointF(
+                    (float)(mkX + size * Math.Cos(mkDir + (150.0 * Math.PI / 180.0))),
+                    (float)(mkY + size * Math.Sin(mkDir + (150.0 * Math.PI / 180.0))));
+
+                g.FillPolygon(brush, new PointF[] { P1, P2, P3 });
+            }
         }
 
         /// <summary>
@@ -182,16 +200,6 @@ namespace VehicleRunner
         /// <returns></returns>
         public Bitmap MakePictureBoxAreaMap(Bitmap worldBMP, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY)
         {
-            /*
-            if (((float)worldBMP.Width / (float)picbox_AreaMap.Width) < ((float)worldBMP.Height / (float)picbox_AreaMap.Height))
-            {
-                viewScale = (float)(1.0 / ((float)worldBMP.Height / (float)picbox_AreaMap.Height));
-            }
-            else
-            {
-                viewScale = (float)(1.0 / ((float)worldBMP.Width / (float)picbox_AreaMap.Width));
-            }
-            */
             {
                 //int picW = (int)(viewScale * worldBMP.Width + 0.5);
                 //int picH = (int)(viewScale * worldBMP.Height + 0.5);
@@ -459,7 +467,7 @@ namespace VehicleRunner
                 double ang = BrainCtrl.LocSys.RTS.getNowDir();
                 DrawMaker(g, Brushes.Red, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
-                g.DrawString("RTSNow", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 14);
+                g.DrawString("CarDir", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
             }
 
             // 相手の向き
@@ -468,7 +476,7 @@ namespace VehicleRunner
                 double ang = BrainCtrl.LocSys.RTS.getNowTargetDir();
                 DrawMaker(g, Brushes.Purple, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
-                g.DrawString("RTSTgt", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 14);
+                g.DrawString("CPTarget", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
             }
 
             // 向けたいハンドル角度
@@ -477,7 +485,7 @@ namespace VehicleRunner
                 double ang = BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
                 DrawMaker(g, Brushes.Cyan, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
-                g.DrawString("Handle", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 14);
+                g.DrawString("Handle", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
             }
         }
 

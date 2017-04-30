@@ -26,6 +26,7 @@ using System.Diagnostics;
 using Location;
 using CersioIO;
 using Navigation;
+using VRSystemConfig;
 
 namespace VehicleRunner
 {
@@ -58,7 +59,7 @@ namespace VehicleRunner
         /// <summary>
         /// 起動時のマップファイル
         /// </summary>
-        private const string defaultMapFile = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
+        private const string defaultMapFile = VRSetting.defaultMapFileName;
 
         Random Rand = new Random();
 
@@ -66,12 +67,6 @@ namespace VehicleRunner
         /// Form描画処理クラス
         /// </summary>
         private VehicleRunnerForm_Draw formDraw = new VehicleRunnerForm_Draw();
-
-        /// <summary>
-        /// ログ処理クラス
-        /// </summary>
-        private VehicleRunnerForm_Log formLog = new VehicleRunnerForm_Log();
-
 
         /// <summary>
         /// 自律走行フラグ
@@ -94,12 +89,12 @@ namespace VehicleRunner
         /// <summary>
         /// bServer IpAddr
         /// </summary>
-        private string bServerAddr = "192.168.1.101";
+        private string bServerAddr = VRSetting.bServerIPAddr;
 
         /// <summary>
         /// bServer エミュレータ
         /// </summary>
-        private string bServerEmuAddr = "127.0.0.1";
+        private string bServerEmuAddr = VRSetting.bServerEmuIPAddr;
 
         // ロータリーエンコーダ座標計算用
         private PointD wlR = new PointD();
@@ -115,8 +110,6 @@ namespace VehicleRunner
         public VehicleRunnerForm()
         {
             InitializeComponent();
-
-            formLog.init();
 
             // セルシオコントローラ初期化
             CersioCt = new CersioCtrl();
@@ -200,11 +193,6 @@ namespace VehicleRunner
 
             // タイマー停止
             tm_Update.Enabled = false;
-
-#if LOGIMAGE_MODE
-            // マップログ出力
-            formLog.Output_ImageLog(ref BrainCtrl);
-#endif
         }
 
 
@@ -483,19 +471,6 @@ namespace VehicleRunner
                 lbl_BackProcess.Text = "モニタリング モード";
             }
 
-
-#if LOGWRITE_MODE
-            // 自律走行、またはロギング中
-            if (bRunAutonomous)
-            {
-                // ログファイル出力
-                formLog.Output_VRLog(ref BrainCtrl, ref CersioCt);
-            }
-#endif  // LOGWRITE_MODE
-            
-            // ログバッファクリア
-            formLog.LogBuffer_Clear(ref BrainCtrl, ref CersioCt);
-
             // 画面描画
             PictureUpdate();
         }
@@ -612,6 +587,8 @@ namespace VehicleRunner
             CersioCt.hwAMCL_Ang = (double)numericUD_DebugDir.Value;
         }
 
+        // -----------------------------------------------------------------
+        // マップスクロール
         private void picbox_AreaMap_MouseDown(object sender, MouseEventArgs e)
         {
             //

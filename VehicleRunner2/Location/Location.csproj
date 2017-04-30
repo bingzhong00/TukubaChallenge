@@ -85,6 +85,10 @@
       <Project>{4cc8a788-6973-4a57-b47a-7a629f77b6cb}</Project>
       <Name>CersioIO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VRSystemConfig\VRSystemConfig.csproj">
+      <Project>{2625c25e-22e6-4f62-8e69-16bc68779fea}</Project>
+      <Name>VRSystemConfig</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

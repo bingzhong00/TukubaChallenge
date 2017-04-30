@@ -10,7 +10,7 @@ using System.IO;
 
 using System.Diagnostics;
 using System.Threading;
-
+using VRSystemConfig;
 
 namespace CersioIO
 {
@@ -43,16 +43,16 @@ namespace CersioIO
         // 最大ハンドル角
         // 角度から　左　1.0　～　右　-1.0の範囲に変換に使う
         // 値が大きいほど、変化が緩やかになる
-        public const double MaxHandleAngle = 20.0;
+        public const double MaxHandleAngle = VRSetting.MaxHandleAngle;
 
         // ハンドル、アクセル上限値
         static public double HandleRate = 1.0;
         static public double AccRate = 1.0;
 
         // ハンドル、アクセルの変化係数
-        public const double HandleControlPow = 0.5;//0.125; // 0.15;
-        public const double AccControlPowUP = 0.050; // 0.15;   // 加速時は緩やかに
-        public const double AccControlPowDOWN = 0.050;
+        public const double HandleControlPow = VRSetting.HandleControlPow;
+        public const double AccControlPowUP = VRSetting.AccControlPowUP;
+        public const double AccControlPowDOWN = VRSetting.AccControlPowDOWN;
 
         // HW
         // ロータリーエンコーダ値
@@ -90,22 +90,6 @@ namespace CersioIO
         // 受信文字
         public string hwResiveStr;
         public string hwSendStr;
-
-        /// <summary>
-        /// bServer IpAddr
-        /// </summary>
-        //private string bServerAddr = "192.168.1.101";
-
-        /// <summary>
-        /// bServer エミュレータ
-        /// </summary>
-        //private string bServerEmuAddr = "127.0.0.1";
-
-        /// <summary>
-        /// bServer ポートNo
-        /// </summary>
-        private int bServerPort = 50001;
-
 
         /// <summary>
         /// 
@@ -152,7 +136,7 @@ namespace CersioIO
         /// 非同期
         /// </summary>
         /// <returns></returns>
-        public void Connect_bServer_Async(string _bServerAddr, int bServerPort = 50001)
+        public void Connect_bServer_Async(string _bServerAddr, int bServerPort = VRSetting.bServerIPPort)
         {
             // 接続中なら切断
             if (TCP_IsConnected())
@@ -177,7 +161,7 @@ namespace CersioIO
         /// 同期
         /// </summary>
         /// <returns></returns>
-        public bool Connect_bServer(string _bServerAddr, int bServerPort = 50001)
+        public bool Connect_bServer(string _bServerAddr, int bServerPort = VRSetting.bServerIPPort)
         {
             // 接続中なら切断
             if (TCP_IsConnected())

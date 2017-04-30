@@ -7,7 +7,7 @@ using System.Text;
 namespace Location
 {
     /// <summary>
-    /// 位置座標
+    /// 位置座標[ROS座標]
     /// </summary>
     public class MarkPoint
     {
@@ -96,7 +96,7 @@ namespace Location
         public float x;
         /// <summary> Map座標 Y </summary>
         public float y;
-        /// <summary> 向き -180 ～ 180 </summary>
+        /// <summary> 向き -PI ～ PI </summary>
         public float theta;
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Location
         /// </summary>
         /// <param name="mkp"></param>
         /// <param name="mapScale"></param>
-        public DrawMarkPoint(MarkPoint mkp, double mapScale=1.0) : this(mkp.x * mapScale, mkp.y * mapScale, mkp.theta*180.0/Math.PI)
+        public DrawMarkPoint(MarkPoint mkp, double mapScale=1.0) : this(mkp.x * mapScale, mkp.y * mapScale, mkp.theta)
         {
         }
 
@@ -135,7 +135,7 @@ namespace Location
         {
             x = (float)(mkp.x * locSys.mToMap);
             y = (float)(mkp.y * locSys.mToMap);
-            theta = (float)(mkp.theta * 180.0 / Math.PI);
+            theta = (float)(mkp.theta);
         }
 
         /*

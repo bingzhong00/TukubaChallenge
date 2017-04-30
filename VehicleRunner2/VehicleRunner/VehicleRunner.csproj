@@ -103,8 +103,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VehicleRunnerForm_Draw.cs" />
-    <Compile Include="VehicleRunnerForm_Log.cs" />
-    <Compile Include="VRSetting.cs" />
     <EmbeddedResource Include="VehicleRunnerForm.resx">
       <DependentUpon>VehicleRunnerForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -142,6 +140,10 @@
     <ProjectReference Include="..\Navigation\Navigation.csproj">
       <Project>{c5f059b4-6d80-44c5-a199-7a5f53db9dbf}</Project>
       <Name>Navigation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VRSystemConfig\VRSystemConfig.csproj">
+      <Project>{2625c25e-22e6-4f62-8e69-16bc68779fea}</Project>
+      <Name>VRSystemConfig</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -15,11 +15,6 @@ using Axiom.Math;
  * 
  */
 
-// 角度表記区別
-// Dir / Theta..角度(度数) -180 ～ 180
-// Ang / Rad ..ラディアン -Pi ～ Pi
-
-
 
 namespace Location
 {
@@ -47,15 +42,6 @@ namespace Location
 
         // R.E. Plot
         public MarkPoint E1;
-
-        // ------------------------------------
-        // ログ
-        List<MarkPoint> R1Log;
-
-        const int LogLine_maxDrawNum = 300; // 描画数上限
-
-        //
-        public static double LRFmaxRange_mm = 30*1000;
 
         /// <summary>
         /// マップイメージファイル
@@ -106,15 +92,6 @@ namespace Location
             mToMap = 1.0 / MapTom;
 
             RTS = new Rooting(mapData,MapTom);
-
-            //AreaOverlayBmp = new Bitmap(OverlayBmpSize, OverlayBmpSize);
-
-            //WorldSize.w = mapBmp.Width;
-            //WorldSize.h = mapBmp.Height;
-
-
-            // ログ領域
-            R1Log = new List<MarkPoint>();
 
             R1 = new MarkPoint(0, 0, 0);
             oldR1 = new MarkPoint(0, 0, 0);     // 距離取得用 前回位置
@@ -198,32 +175,7 @@ namespace Location
                     R1.distance = E1.distance;
                     break;
             }
-
-            // 更新結果ログ保存
-            UpdateLogData();
         }
-
-        /// <summary>
-        /// 蓄積ログデータ更新
-        /// </summary>
-        public void UpdateLogData()
-        {
-            // 軌跡ログ
-            try
-            {
-                if (R1Log.Count == 0 || !R1.IsEqual(R1Log.Last()))
-                {
-                    R1Log.Add(new MarkPoint(R1.x, R1.y, R1.theta));
-                }
-            }
-            catch (Exception ex)
-            {
-                // ログ時のエラーは無視
-                Console.WriteLine(ex.Message);
-            }
-
-        }
-
 
 
         // -------------------------------------------------------------------------------------------------------------------------------
