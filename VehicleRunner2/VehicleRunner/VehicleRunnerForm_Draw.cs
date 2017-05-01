@@ -56,13 +56,20 @@ namespace VehicleRunner
 
         static public void DrawMaker(Graphics g, Brush brush, double mkX, double mkY, double mkDir, double size)
         {
+            DrawMaker(g, brush, mkX, mkY, mkDir, size, 0.0);
+        }
+
+        static public void DrawMaker(Graphics g, Brush brush, double mkX, double mkY, double mkDir, double size, double centerDir)
+        {
             //double nonScl = size / ViewScale;
             //if (nonScl <= 1.0) nonScl = 1.0;
+
+            mkDir += centerDir;
 
             // 枠線
             {
                 double sizeBig = size * 1.25;
-                double centerDir = 0;
+                //double centerDir = 0;
 
                 g.DrawEllipse(Pens.LightGray,
                                (float)(mkX - sizeBig), (float)(mkY - sizeBig),
@@ -191,7 +198,7 @@ namespace VehicleRunner
 
             return worldMapBmp;
         }
-
+/*
         /// <summary>
         /// エリアマップ生成
         /// </summary>
@@ -223,13 +230,13 @@ namespace VehicleRunner
 
             return areaMapBmp;
         }
-
+*/
         /// <summary>
         /// PictureBox内へのエリアマップ描画
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY)
+        public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY, int selCpIndex)
         {
             Bitmap worldBMP = LocSys.mapBmp;
             //Bitmap areaBMP = MakePictureBoxAreaMap(worldBMP, picbox_AreaMap, ref LocSys, scrollX, scrollY);
@@ -244,11 +251,11 @@ namespace VehicleRunner
             //g.DrawImage(areaBMP, 0, 0);
 
             g.ResetTransform();
-            g.TranslateTransform((float)(-drawCenter.x - (worldBMP.Width * 0.5) + (picbox_AreaMap.Width * 0.5)) - scrollX,
+            g.TranslateTransform( (float)(-drawCenter.x - (worldBMP.Width * 0.5) + (picbox_AreaMap.Width * 0.5)) - scrollX,
                                   (float)(-drawCenter.y - (worldBMP.Height * 0.5) + (picbox_AreaMap.Height * 0.5)) - scrollY,
                                   MatrixOrder.Append);
             //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
-            //g.ScaleTransform(viewScale, viewScale, MatrixOrder.Append);
+            //g.ScaleTransform(1.0f, -1.0f, MatrixOrder.Append);
 
             g.DrawImage(worldBMP, 0, 0);
 
@@ -258,15 +265,13 @@ namespace VehicleRunner
             g.TranslateTransform( (float)(-drawCenter.x + (picbox_AreaMap.Width * 0.5)) - scrollX,
                                   (float)(-drawCenter.y + (picbox_AreaMap.Height * 0.5)) - scrollY,
                                   MatrixOrder.Append);
+            //g.ScaleTransform(1.0f, -1.0f, MatrixOrder.Append);
 
             // 現在位置描画
             DrawMaker(g, Brushes.Red, new DrawMarkPoint(LocSys.R1, LocSys), 8);
 
             // チェックポイント描画
-            //if (null != CersioCt)
             {
-                double dir = 0;
-
                 double prvPosX = LocSys.R1.x;
                 double prvPosY = LocSys.R1.y;
 
@@ -275,13 +280,21 @@ namespace VehicleRunner
                     Vector3 tgtPos = LocSys.RTS.getCheckPoint(i);
 
                     //BrainCtrl.RTS.getNowTargetDir(ref dir);
-                    DrawMarkPoint tgtMk = new DrawMarkPoint(tgtPos.x, tgtPos.y, dir, LocSys);
+                    DrawMarkPoint tgtMk = new DrawMarkPoint( new MarkPoint(tgtPos.x, tgtPos.y, 0.0), LocSys);
 
-                    DrawMakerNoDir(g, Brushes.GreenYellow, tgtMk, 8);
+                    if (selCpIndex == i)
+                    {
+                        // 選択中のチェックポイント
+                        DrawMakerNoDir(g, Brushes.Purple, tgtMk, 8);
+                    }
+                    else
+                    {
+                        DrawMakerNoDir(g, Brushes.GreenYellow, tgtMk, 8);
+                    }
 
                     // ターゲットまでのライン
                     DrawMakerLine(g, 1.0f,
-                        new DrawMarkPoint(prvPosX, prvPosY, 0, LocSys),
+                        new DrawMarkPoint( new MarkPoint(prvPosX, prvPosY, 0), LocSys),
                         tgtMk,
                         Pens.Olive, 1);
 
@@ -383,7 +396,7 @@ namespace VehicleRunner
                 {
                     Vector3 tgtPos = LocSys.RTS.getCheckPoint(i);
                     //BrainCtrl.RTS.getNowTargetDir(ref dir);
-                    DrawMarkPoint tgtMk = new DrawMarkPoint(tgtPos.x, tgtPos.y, dir, LocSys);
+                    DrawMarkPoint tgtMk = new DrawMarkPoint( new MarkPoint(tgtPos.x, tgtPos.y, dir), LocSys);
 
                     // ターゲットまでのライン
                     DrawMakerLine(g, viewScale, prvPos, tgtMk, Pens.Olive, 1);
@@ -464,7 +477,7 @@ namespace VehicleRunner
             // 現在の向き
             {
                 int dx = 40;
-                double ang = BrainCtrl.LocSys.RTS.getNowDir();
+                double ang = -BrainCtrl.LocSys.RTS.getNowDir();
                 DrawMaker(g, Brushes.Red, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
                 g.DrawString("CarDir", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
@@ -473,7 +486,7 @@ namespace VehicleRunner
             // 相手の向き
             {
                 int dx = 100;
-                double ang = BrainCtrl.LocSys.RTS.getNowTargetDir();
+                double ang = -BrainCtrl.LocSys.RTS.getNowTargetDir();
                 DrawMaker(g, Brushes.Purple, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
                 g.DrawString("CPTarget", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
@@ -482,8 +495,8 @@ namespace VehicleRunner
             // 向けたいハンドル角度
             {
                 int dx = 160;
-                double ang = BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
-                DrawMaker(g, Brushes.Cyan, dx, dirMarkBaseY, ang, 12);
+                double ang = -BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
+                DrawMaker(g, Brushes.Cyan, dx, dirMarkBaseY, ang, 12, -90.0 / 180.0 * Math.PI );
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
                 g.DrawString("Handle", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
             }

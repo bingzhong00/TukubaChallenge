@@ -80,7 +80,7 @@ namespace Location
             foreach (var onePos in mapData.checkPoint)
             {
                 rosCheckPoint.Add(new Vector3( (onePos.x * scaleMapToM) - mapData.RealWidth * 0.5,
-                                               (onePos.y * scaleMapToM) - mapData.RealHeight * 0.5,
+                                               (-onePos.y * scaleMapToM) + mapData.RealHeight * 0.5,
                                                (onePos.z * scaleMapToM) ));
             }
         }
@@ -96,16 +96,16 @@ namespace Location
             vecA.Normalize();
             vecB.Normalize();
 
-            //double dir = (double)(Axiom.Math.Utility.ASin(vecA.Dot(vecB)) - Axiom.Math.Utility.HALF_PI);
-            double dir = (double)Axiom.Math.Utility.ASin(vecA.Dot(vecB));
+            //double dir = (double)Axiom.Math.Utility.ASin(vecA.Dot(vecB));
+            double dir = (double)Axiom.Math.Utility.ACos(vecA.Dot(vecB));
             Vector3 resVec = vecA.Cross(vecB);
-            if (resVec.z < 0) dir = -dir;
+            if (resVec.z > 0.0) dir = -dir;
 
             return dir;
         }
 
         /// <summary>
-        /// 座標から角度を求める (y-1が上(0.0度))
+        /// 座標から角度を求める (x+1が 0.0度)
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -113,7 +113,8 @@ namespace Location
         public static double CalcPositionToAngle(double x, double y)
         {
             Vector3 tgtVec = new Vector3(x, y, 0);
-            Vector3 nothVec = new Vector3(0, -1, 0);
+            //Vector3 nothVec = new Vector3(0, -1, 0);
+            Vector3 nothVec = new Vector3(1, 0, 0);
 
             return (VecToRad(tgtVec, nothVec));
         }
@@ -317,7 +318,8 @@ namespace Location
             // 目標方向
             {
                 Vector3 tgtVec = tgtPos - nowPos;
-                Vector3 nothVec = new Vector3(0, -1, 0);
+                //Vector3 nothVec = new Vector3(0, -1, 0);
+                Vector3 nothVec = new Vector3(1, 0, 0);
 
                 tgtDist = tgtVec.Length;
 
@@ -400,7 +402,7 @@ namespace Location
             if (stearingAng < -maxStearingAng) stearingAng = -maxStearingAng;
 
             // 角度から -1.0～1.0に変換
-            return -(stearingAng * (1.0 / maxStearingAng));
+            return stearingAng * (1.0 / maxStearingAng);
         }
 
         /// <summary>

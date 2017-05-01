@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VRSystemConfig;
 
 namespace CersioIO
 {
@@ -19,17 +20,17 @@ namespace CersioIO
         /// <summary>
         /// 車軸幅mm
         /// </summary>
-        const double ShaftLength = 150;
+        const double ShaftLength = VRSetting.AxleShaftLength;
 
         /// <summary>
-        /// ホイール直径
+        /// タイヤ直径
         /// </summary>
-        const double WheelSize = 65;
+        const double TireSize = VRSetting.TireSize;
 
         /// <summary>
         /// １回転分の分解能
         /// </summary>
-        const double OneRotValue = 240;
+        const double OneRotValue = VRSetting.OnePulse;
 
         // 回転から移動距離を出す
         // 差分
@@ -48,7 +49,7 @@ namespace CersioIO
         // 絶対値 回転量
         static double WheelRotateToLength(double rot)
         {
-            return (Math.PI * WheelSize) * rot / OneRotValue;
+            return (Math.PI * TireSize) * rot / OneRotValue;
         }
 
         // ２輪の移動量の差から角度を求める
@@ -85,11 +86,11 @@ namespace CersioIO
         {
             // 車輪　調整(ハードウェアに起因するもの)
             {
-                reWL = reWL * 0.9917;
-                reOldWL = reOldWL * 0.9917;
+                reWL = reWL * VRSetting.PulseRateL;
+                reOldWL = reOldWL * VRSetting.PulseRateL;
 
-                reWR = reWR * 1.0;
-                reOldWR = reOldWR * 1.0;
+                reWR = reWR * VRSetting.PulseRateR;
+                reOldWR = reOldWR * VRSetting.PulseRateR;
             }
 
             double mov;

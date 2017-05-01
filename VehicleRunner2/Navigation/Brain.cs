@@ -188,6 +188,8 @@ namespace Navigation
                 // 走行指示出力
                 // ルート計算から、目標ハンドル、目標アクセル値を送る
                 //CarCtrl.SendCalcHandleAccelControl(getHandleValue(), getAccelValue());
+
+                // チェックポイントに向かうハンドル、　速度1.4Kmのアクセル
                 CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), 1.4);
             }
             else

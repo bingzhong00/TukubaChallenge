@@ -175,6 +175,7 @@ namespace CersioIO
 
             // 通信接続
             objTCPSC = new TCPClient(_bServerAddr, bServerPort);
+
             // 接続開始(同期)
             return objTCPSC.Start();
         }
@@ -504,9 +505,8 @@ namespace CersioIO
                             // ロータリーエンコーダから　速度を計算
                             if (rsvCmd[i].Substring(0, 3) == "A1,")
                             {
-                                //const double tiyeSize = 65.0;  // タイヤ直径 [mm] Cersio
-                                const double tiyeSize = 240.0;  // タイヤ直径 [mm]
-                                const double OnePuls = 240.0;   // 一周のパルス数
+                                const double tireSize = VRSetting.TireSize;  // タイヤ直径 [mm]
+                                const double OnePuls = VRSetting.OnePulse;   // 一周のパルス数
                                 double ResiveMS;
                                 double ResReR, ResReL;
                                 string[] splStr = rsvCmd[i].Split(',');
@@ -519,20 +519,19 @@ namespace CersioIO
                                 {
                                     double SpeedSec = (double)System.Environment.TickCount / 1000.0;
 
-                                    // 0.25秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
-                                    //if ((SpeedSec - oldSpeedSec) > 0.25)
+                                    // 0.2秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
                                     if ((SpeedSec - oldSpeedSec) > 0.2)
                                     {
                                         // 速度計算(非動輪を基準)
                                         double wheelPulse = ((hwRErotR - oldWheelR) + (hwRErotL - oldWheelL)) * 0.5;
-                                        //double wheelPulse = (hwRErotR - oldWheelR) * 0.5;
 
-                                        SpeedMmSec = (double)((wheelPulse / OnePuls * (Math.PI * tiyeSize)) / (SpeedSec - oldSpeedSec));
+                                        SpeedMmSec = (double)((wheelPulse / OnePuls * (Math.PI * tireSize)) / (SpeedSec - oldSpeedSec));
 
                                         oldSpeedSec = SpeedSec;
                                         oldWheelR = hwRErotR;
                                         oldWheelL = hwRErotL;
-                                        SpeedUpdateCnt = 20;
+
+                                        SpeedUpdateCnt = 20;    // 速度情報　更新カウンタ (0になると古い情報として使わない)
                                     }
                                 }
 
@@ -611,9 +610,9 @@ namespace CersioIO
                                 double.TryParse(splStr[3], out ResiveY);  // ROS World座標Y m
                                 double.TryParse(splStr[4], out ResiveRad);  // 向き -2PI 2PI
 
-                                hwAMCL_Ang = -ResiveRad;
                                 hwAMCL_X = ResiveX;
-                                hwAMCL_Y = -ResiveY;
+                                hwAMCL_Y = ResiveY;
+                                hwAMCL_Ang = ResiveRad;
 
                                 if (!bhwAMCL)
                                 {

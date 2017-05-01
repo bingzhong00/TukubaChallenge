@@ -177,6 +177,36 @@ namespace Location
             }
         }
 
+        /// <summary>
+        /// 指定ROS座標に近いチェックポイントを返す
+        /// </summary>
+        /// <param name="mapX"></param>
+        /// <param name="mapY"></param>
+        /// <returns></returns>
+        public int GetCheckPointIndex(double rosX, double rosY)
+        {
+            Vector3 checkPos = new Vector3(rosX, rosY, 0.0);
+
+            double minLen = 999.0;
+            int idx = -1;
+            for (int i = RTS.getCheckPointIdx(); i < RTS.getNumCheckPoints(); i++)
+            {
+                Vector3 tgtPos = RTS.getCheckPoint(i);
+                double tgtLen = (tgtPos - checkPos).Length;
+
+                // 一番近いチェックポイントをさがす
+                if (tgtLen < minLen)
+                {
+                    minLen = tgtLen;
+                    idx = i;
+                }
+            }
+
+            // 1m以内ならそのインデックスを返す
+            if (minLen < 1.0) return idx;
+            return -1;
+        }
+
 
         // -------------------------------------------------------------------------------------------------------------------------------
         // 自己位置推定結果

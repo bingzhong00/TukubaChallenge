@@ -27,6 +27,7 @@ using Location;
 using CersioIO;
 using Navigation;
 using VRSystemConfig;
+using Axiom.Math;
 
 namespace VehicleRunner
 {
@@ -115,15 +116,7 @@ namespace VehicleRunner
             CersioCt = new CersioCtrl();
 
             // bServer Emu 接続開始
-            if (CersioCt.Connect_bServer(bServerEmuAddr))
-            {
-                // bServerエミュレーション表記
-                lbl_bServerEmu.Visible = true;
-            }
-            else
-            {
-                lbl_bServerEmu.Visible = false;
-            }
+            CersioCt.Connect_bServer(bServerEmuAddr);
 
             // ブレイン起動
             BrainCtrl = new Brain(CersioCt, defaultMapFile);
@@ -197,7 +190,14 @@ namespace VehicleRunner
 
 
         // Draw -------------------------------------------------------------------------------------------
-        int selAreaMapMode = 0;
+        enum MAP_MODE
+        {
+            AREA_MAP = 0,
+            WORLD_MAP,
+            MAX
+        };
+
+        MAP_MODE selAreaMapMode = MAP_MODE.AREA_MAP;
 
         /// <summary>
         /// エリアマップ描画
@@ -206,14 +206,15 @@ namespace VehicleRunner
         /// <param name="e"></param>
         private void picbox_AreaMap_Paint(object sender, PaintEventArgs e)
         {
-            if (selAreaMapMode == 0)
+            if (selAreaMapMode == MAP_MODE.AREA_MAP)
             {
                 // エリアマップ描画
                 formDraw.AreaMap_Draw_Area(e.Graphics, picbox_AreaMap, ref BrainCtrl.LocSys,
-                                           (viewScrollX + viewMoveAddX), (viewScrollY + viewMoveAddY));
+                                           (viewScrollX + viewMoveAddX), (viewScrollY + viewMoveAddY),
+                                           selCpIndex );
                 //formDraw.AreaMap_Draw_Ruler(e.Graphics, ref BrainCtrl, picbox_AreaMap.Width, picbox_AreaMap.Height);
             }
-            else if (selAreaMapMode == 1)
+            else if (selAreaMapMode == MAP_MODE.WORLD_MAP)
             {
                 // ワールドマップ描画
                 formDraw.AreaMap_Draw_WorldMap(e.Graphics, picbox_AreaMap, ref BrainCtrl.LocSys);
@@ -233,7 +234,7 @@ namespace VehicleRunner
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 // エリア、ワールドマップ切り替え
-                selAreaMapMode = (++selAreaMapMode) % 2;
+                selAreaMapMode = (MAP_MODE)(((int)selAreaMapMode+1) % (int)MAP_MODE.MAX);
                 viewScrollX = 0;
                 viewScrollY = 0;
             }
@@ -471,6 +472,10 @@ namespace VehicleRunner
                 lbl_BackProcess.Text = "モニタリング モード";
             }
 
+            // bServerエミュレーション表記
+            if (CersioCt.TCP_GetConnectedAddr() == bServerEmuAddr) lbl_bServerEmu.Visible = true;
+            else                                                   lbl_bServerEmu.Visible = false;
+
             // 画面描画
             PictureUpdate();
         }
@@ -498,41 +503,6 @@ namespace VehicleRunner
                 CersioCt.SendCommand_Stop();
                 cb_StartAutonomous.BackColor = SystemColors.Window;
             }
-        }
-
-        /// <summary>
-        /// bServerエミュレータ切り替え
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void cb_ConnectBServerEmu_CheckedChanged(object sender, EventArgs e)
-        {
-            string connectAddr = bServerAddr;
-
-            if (cb_ConnectBServerEmu.Checked)
-            {
-                if (null == processCarEmu || processCarEmu.HasExited)
-                {
-                    // エミュレータ起動
-                    string stCurrentDir = System.IO.Directory.GetCurrentDirectory();
-                    stCurrentDir = stCurrentDir.Substring(0, stCurrentDir.IndexOf("\\VehicleRunner2"));
-                    processCarEmu = Process.Start(stCurrentDir + "\\VehicleRunner2\\CersioSim\\bin\\Release\\CersioSim.exe", BrainCtrl.LocSys.mapData.MapFileName);
-                }
-
-                // bServerエミュレーション表記
-                lbl_bServerEmu.Visible = true;
-
-                // エミュレータIPアドレス
-                connectAddr = bServerEmuAddr;
-            }
-            else
-            {
-                // bServerエミュレーション表記
-                lbl_bServerEmu.Visible = false;
-            }
-
-            // bServer接続
-            CersioCt.Connect_bServer_Async(connectAddr);
         }
 
         /// <summary>
@@ -587,36 +557,115 @@ namespace VehicleRunner
             CersioCt.hwAMCL_Ang = (double)numericUD_DebugDir.Value;
         }
 
+        private void numericUD_DebugX_Click(object sender, EventArgs e)
+        {
+            // 
+            CersioCt.hwAMCL_X = (double)numericUD_DebugX.Value;
+        }
+
+        private void numericUD_DebugY_Click(object sender, EventArgs e)
+        {
+            //
+            CersioCt.hwAMCL_Y = (double)numericUD_DebugY.Value;
+        }
+
         // -----------------------------------------------------------------
         // マップスクロール
         private void picbox_AreaMap_MouseDown(object sender, MouseEventArgs e)
         {
-            //
-            bMouseMove = true;
-            MouseStX = e.X;
-            MouseStY = e.Y;
-            viewMoveAddX = 0;
-            viewMoveAddY = 0;
+            if (e.Button == MouseButtons.Left && selAreaMapMode == MAP_MODE.AREA_MAP)
+            {
+                //
+                bMouseMove = true;
+                MouseStX = e.X;
+                MouseStY = e.Y;
+                viewMoveAddX = 0;
+                viewMoveAddY = 0;
+            }
         }
+
+        /// <summary>
+        /// bServer Emu接続
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_bServerEmu_Click(object sender, EventArgs e)
+        {
+            string connectAddr = bServerAddr;
+
+            if (null == processCarEmu || processCarEmu.HasExited)
+            {
+                if (Process.GetProcessesByName("CersioSim").Length == 0)
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+
+                    // エミュレータ起動
+                    string stCurrentDir = System.IO.Directory.GetCurrentDirectory();
+                    stCurrentDir = stCurrentDir.Substring(0, stCurrentDir.IndexOf("\\VehicleRunner2"));
+                    processCarEmu = Process.Start(stCurrentDir + "\\VehicleRunner2\\CersioSim\\bin\\Release\\CersioSim.exe", BrainCtrl.LocSys.mapData.MapFileName);
+
+                    // 通信状態まで待つ
+                    Application.DoEvents();
+                    processCarEmu.WaitForInputIdle();
+                    System.Threading.Thread.Sleep(6000);
+
+                    Cursor.Current = Cursors.Default;
+                }
+            }
+
+            // エミュレータIPアドレス
+            connectAddr = bServerEmuAddr;
+
+            // bServer接続
+            CersioCt.Connect_bServer_Async(connectAddr);
+        }
+
+
+        /// <summary>
+        /// 選択中チェックポイント
+        /// </summary>
+        int selCpIndex = -1;
 
         private void picbox_AreaMap_MouseMove(object sender, MouseEventArgs e)
         {
-            //
-            if (bMouseMove)
+            if (e.Button == MouseButtons.Left)
             {
-                viewMoveAddX = (MouseStX - e.X);
-                viewMoveAddY = (MouseStY - e.Y);
+                //
+                if (bMouseMove)
+                {
+                    viewMoveAddX = (MouseStX - e.X);
+                    viewMoveAddY = (MouseStY - e.Y);
+                }
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+            }
+            else
+            {
+                if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                {
+                    LocationSystem LocSys = BrainCtrl.LocSys;
+                    int msPosX = e.X - (picbox_AreaMap.Width / 2) + viewScrollX;
+                    int msPosY = e.Y - (picbox_AreaMap.Height / 2) + viewScrollY;
+                    MarkPoint _checkPos = new MarkPoint(new DrawMarkPoint(msPosX, msPosY, 0.0), LocSys);
+
+                    selCpIndex = LocSys.GetCheckPointIndex(_checkPos.x, _checkPos.y);
+                }
             }
         }
 
         private void picbox_AreaMap_MouseUp(object sender, MouseEventArgs e)
         {
             //
+            if (e.Button == MouseButtons.Left && selAreaMapMode == MAP_MODE.AREA_MAP)
+            {
+                viewMoveAddX = 0;
+                viewMoveAddY = 0;
+                viewScrollX += (MouseStX - e.X);
+                viewScrollY += (MouseStY - e.Y);
+            }
             bMouseMove = false;
-            viewMoveAddX = 0;
-            viewMoveAddY = 0;
-            viewScrollX += (MouseStX - e.X);
-            viewScrollY += (MouseStY - e.Y);
+            selCpIndex = -1;
         }
 
         /// <summary>

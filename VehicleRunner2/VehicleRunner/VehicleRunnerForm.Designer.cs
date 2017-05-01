@@ -62,7 +62,6 @@
             this.lbl_BackProcess = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.picbox_Indicator = new System.Windows.Forms.PictureBox();
-            this.cb_ConnectBServerEmu = new System.Windows.Forms.CheckBox();
             this.btn_MapLoad = new System.Windows.Forms.Button();
             this.tb_MapName = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -77,6 +76,9 @@
             this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.btn_bServerEmu = new System.Windows.Forms.Button();
+            this.numericUD_DebugX = new System.Windows.Forms.NumericUpDown();
+            this.numericUD_DebugY = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
@@ -86,6 +88,8 @@
             this.groupBox3.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugY)).BeginInit();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -485,19 +489,6 @@
             this.picbox_Indicator.TabStop = false;
             this.picbox_Indicator.Paint += new System.Windows.Forms.PaintEventHandler(this.picbox_Indicator_Paint);
             // 
-            // cb_ConnectBServerEmu
-            // 
-            this.cb_ConnectBServerEmu.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cb_ConnectBServerEmu.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_ConnectBServerEmu.Location = new System.Drawing.Point(145, 37);
-            this.cb_ConnectBServerEmu.Name = "cb_ConnectBServerEmu";
-            this.cb_ConnectBServerEmu.Size = new System.Drawing.Size(89, 28);
-            this.cb_ConnectBServerEmu.TabIndex = 45;
-            this.cb_ConnectBServerEmu.Text = "Emu接続";
-            this.cb_ConnectBServerEmu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cb_ConnectBServerEmu.UseVisualStyleBackColor = true;
-            this.cb_ConnectBServerEmu.CheckedChanged += new System.EventHandler(this.cb_ConnectBServerEmu_CheckedChanged);
-            // 
             // btn_MapLoad
             // 
             this.btn_MapLoad.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -521,12 +512,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btn_bServerEmu);
             this.groupBox1.Controls.Add(this.tb_SendData);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.tb_ResiveData);
             this.groupBox1.Controls.Add(this.lbl_bServerEmu);
-            this.groupBox1.Controls.Add(this.cb_ConnectBServerEmu);
             this.groupBox1.Controls.Add(this.lb_BServerConnect);
             this.groupBox1.Location = new System.Drawing.Point(607, 103);
             this.groupBox1.Name = "groupBox1";
@@ -610,6 +601,8 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.numericUD_DebugY);
+            this.panel1.Controls.Add(this.numericUD_DebugX);
             this.panel1.Controls.Add(this.numericUD_DebugDir);
             this.panel1.Controls.Add(this.rb_SelAMCL);
             this.panel1.Controls.Add(this.rb_SelREPlot);
@@ -632,7 +625,7 @@
             0,
             0,
             65536});
-            this.numericUD_DebugDir.Location = new System.Drawing.Point(135, 78);
+            this.numericUD_DebugDir.Location = new System.Drawing.Point(163, 78);
             this.numericUD_DebugDir.Maximum = new decimal(new int[] {
             314,
             0,
@@ -692,6 +685,66 @@
             this.label12.TabIndex = 45;
             this.label12.Text = "Benz";
             // 
+            // btn_bServerEmu
+            // 
+            this.btn_bServerEmu.Location = new System.Drawing.Point(163, 42);
+            this.btn_bServerEmu.Name = "btn_bServerEmu";
+            this.btn_bServerEmu.Size = new System.Drawing.Size(75, 23);
+            this.btn_bServerEmu.TabIndex = 31;
+            this.btn_bServerEmu.Text = "Emu接続";
+            this.btn_bServerEmu.UseVisualStyleBackColor = true;
+            this.btn_bServerEmu.Click += new System.EventHandler(this.btn_bServerEmu_Click);
+            // 
+            // numericUD_DebugX
+            // 
+            this.numericUD_DebugX.DecimalPlaces = 2;
+            this.numericUD_DebugX.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUD_DebugX.Location = new System.Drawing.Point(163, 28);
+            this.numericUD_DebugX.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUD_DebugX.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.numericUD_DebugX.Name = "numericUD_DebugX";
+            this.numericUD_DebugX.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_DebugX.TabIndex = 51;
+            this.numericUD_DebugX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_DebugX.Click += new System.EventHandler(this.numericUD_DebugX_Click);
+            // 
+            // numericUD_DebugY
+            // 
+            this.numericUD_DebugY.DecimalPlaces = 2;
+            this.numericUD_DebugY.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUD_DebugY.Location = new System.Drawing.Point(163, 53);
+            this.numericUD_DebugY.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUD_DebugY.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.numericUD_DebugY.Name = "numericUD_DebugY";
+            this.numericUD_DebugY.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_DebugY.TabIndex = 52;
+            this.numericUD_DebugY.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_DebugY.Click += new System.EventHandler(this.numericUD_DebugY_Click);
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -727,6 +780,8 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugY)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -768,7 +823,6 @@
         private System.Windows.Forms.Label lbl_BackProcess;
         private System.Windows.Forms.Label lbl_bServerEmu;
         private System.Windows.Forms.CheckBox cb_InDoorMode;
-        private System.Windows.Forms.CheckBox cb_ConnectBServerEmu;
         private System.Windows.Forms.Button btn_MapLoad;
         private System.Windows.Forms.TextBox tb_MapName;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -786,6 +840,9 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown numericUD_DebugDir;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btn_bServerEmu;
+        private System.Windows.Forms.NumericUpDown numericUD_DebugY;
+        private System.Windows.Forms.NumericUpDown numericUD_DebugX;
     }
 }
 

@@ -16,7 +16,24 @@ namespace VRSystemConfig
         /// <summary>
         /// 
         /// </summary>
-       // public const Cersio carType;
+        // public const Cersio carType;
+#if true
+        // Betz
+        public const string CarName = "Benz";
+        public const double TireSize = 240.0;   // タイヤ直径 [mm]
+        public const double OnePulse = 240.0;   // １周のパルス値
+        public const double PulseRateL = 1.0;   // 左車輪のパルス値の係数
+        public const double PulseRateR = 1.0;   // 右車輪のパルス値の係数
+        public const double AxleShaftLength = 550.0;   // アクスルシャフト長さ [mm]（左右の車輪のシャフトの長さ）
+#else
+        // Cersio
+        public const string CarName = "Cersio";
+        public const double TireSize = 65.0;   // タイヤ直径 [mm]
+        public const double OnePulse = 240.0;   // １周のパルス値
+        public const double PulseRateL = 0.9917;   // 左車輪のパルス値の係数
+        public const double PulseRateR = 1.0;   // 右車輪のパルス値の係数
+        public const double AxleShaftLength = 150.0; // アクスルシャフト長さ [mm]（左右の車輪のシャフトの長さ）
+#endif
 
         /// <summary>
         /// bServer IP Address
@@ -57,7 +74,7 @@ namespace VRSystemConfig
         public const double MaxHandleAngle = 20.0;
 
         // ハンドル、アクセルの変化係数
-        public const double HandleControlPow = 0.5;
+        public const double HandleControlPow = 0.10;
         /// <summary> 加速時の緩やかさ </summary>
         public const double AccControlPowUP = 0.050;
         /// <summary> 減速時の緩やかさ </summary>

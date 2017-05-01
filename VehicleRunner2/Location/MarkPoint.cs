@@ -40,6 +40,17 @@ namespace Location
         }
 
         /// <summary>
+        /// マップ座標系からROS座標へ変換
+        /// </summary>
+        /// <param name="drwp"></param>
+        public MarkPoint(DrawMarkPoint drwp, LocationSystem locSys)
+        {
+            x = (double)(drwp.x * (1.0/locSys.mToMap));
+            y = (double)(-drwp.y * (1.0/locSys.mToMap));
+            theta = (double)(-drwp.theta);
+        }
+
+        /// <summary>
         /// 他のマーカとの距離を返す
         /// </summary>
         /// <param name="B"></param>
@@ -105,25 +116,11 @@ namespace Location
         /// <param name="_x">座標x</param>
         /// <param name="_y">座標y</param>
         /// <param name="_theta">向き角度</param>
-        /// <param name="_wdmap">ワールドマップ情報</param>
         public DrawMarkPoint(double _x, double _y, double _theta)
         {
             x = (float)_x;
             y = (float)_y;
             theta = (float)_theta;
-        }
-
-        public DrawMarkPoint(double _x, double _y, double _theta, LocationSystem locSys) : this(new MarkPoint(_x, _y, _theta), locSys)
-        {
-        }
-
-        /// <summary>
-        /// ROS座標からマップ座標系へ変換
-        /// </summary>
-        /// <param name="mkp"></param>
-        /// <param name="mapScale"></param>
-        public DrawMarkPoint(MarkPoint mkp, double mapScale=1.0) : this(mkp.x * mapScale, mkp.y * mapScale, mkp.theta)
-        {
         }
 
         /// <summary>
@@ -134,13 +131,9 @@ namespace Location
         public DrawMarkPoint(MarkPoint mkp, LocationSystem locSys)
         {
             x = (float)(mkp.x * locSys.mToMap);
-            y = (float)(mkp.y * locSys.mToMap);
-            theta = (float)(mkp.theta);
+            y = (float)(-mkp.y * locSys.mToMap);
+            theta = (float)(-mkp.theta);
         }
 
-        /*
-        public DrawMarkPoint(DrawMarkPoint mkp) : this(mkp.X, mkp.Y, mkp.Theta)
-        {
-        }*/
     }
-    }
+}
