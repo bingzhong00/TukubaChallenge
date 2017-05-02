@@ -75,7 +75,7 @@
             this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
             this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             this.label13 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
+            this.lbl_CarName = new System.Windows.Forms.Label();
             this.btn_bServerEmu = new System.Windows.Forms.Button();
             this.numericUD_DebugX = new System.Windows.Forms.NumericUpDown();
             this.numericUD_DebugY = new System.Windows.Forms.NumericUpDown();
@@ -584,7 +584,7 @@
             // 
             this.groupBox3.Controls.Add(this.panel1);
             this.groupBox3.Controls.Add(this.label13);
-            this.groupBox3.Controls.Add(this.label12);
+            this.groupBox3.Controls.Add(this.lbl_CarName);
             this.groupBox3.Controls.Add(this.lbl_RErotL);
             this.groupBox3.Controls.Add(this.lbl_LED);
             this.groupBox3.Controls.Add(this.lbl_RErotR);
@@ -674,16 +674,16 @@
             this.label13.TabIndex = 49;
             this.label13.Text = "CarType:";
             // 
-            // label12
+            // lbl_CarName
             // 
-            this.label12.AutoSize = true;
-            this.label12.BackColor = System.Drawing.Color.Yellow;
-            this.label12.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label12.Location = new System.Drawing.Point(88, 20);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(45, 16);
-            this.label12.TabIndex = 45;
-            this.label12.Text = "Benz";
+            this.lbl_CarName.AutoSize = true;
+            this.lbl_CarName.BackColor = System.Drawing.Color.Yellow;
+            this.lbl_CarName.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_CarName.Location = new System.Drawing.Point(88, 20);
+            this.lbl_CarName.Name = "lbl_CarName";
+            this.lbl_CarName.Size = new System.Drawing.Size(45, 16);
+            this.lbl_CarName.TabIndex = 45;
+            this.lbl_CarName.Text = "Benz";
             // 
             // btn_bServerEmu
             // 
@@ -832,7 +832,7 @@
         private System.Windows.Forms.CheckBox cb_AccelOff;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label lbl_CarName;
         private System.Windows.Forms.NumericUpDown numericUD_CheckPoint;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.RadioButton rb_SelREPlot;

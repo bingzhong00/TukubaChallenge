@@ -11,25 +11,26 @@ using System.Diagnostics;
 
 using LocationPresumption;
 
+// +Yを上方向
+// ※0度を X+方向にする。
+
 namespace CersioSim
 {
     public class CarSim
     {
         // センサー系シミュレート変数
         // car senser emu
-        public MapRangeFinder mrf;
         public MarkPoint mkp = new MarkPoint(0, 0, 0);
-        public double PixelScale = 100.0;
-
 
         // 走行系シミュレート変数
+        const double mm2m = 1.0 / 1000.0;
         // car drive emu
-        const double carWidth = 450.0;     // 左右のタイヤ間の距離 mm
+        const double carWidth = 550.0 * mm2m;     // 左右のタイヤ間の距離 mm
         const double carWidthHf = carWidth / 2.0;
-        const double carHeight = 450.0;    // ホイールベース
+        const double carHeight = 550.0 * mm2m;    // ホイールベース
 
-        const double carTireSize = 120.0 * 2.0;    // タイヤ直径 見やすく2倍
-        const double carTireSizeHf = carTireSize / 2.0;
+        const double carTireSize = 240.0 * mm2m;    // タイヤ直径
+        const double carTireDispSizeHf = carTireSize / 2.0 * 1.5;   // 表示表現サイズ
 
         // 
         // 各タイヤの初期位置
@@ -59,15 +60,6 @@ namespace CersioSim
         // ロータリーエンコーダ パルス値
         public double wheelPulseR = 0.0;
         public double wheelPulseL = 0.0;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="_pixelScale"></param>
-        public CarSim(double _pixelScale)
-        {
-            PixelScale = _pixelScale;
-        }
 
         /// <summary>
         /// クルマ初期化
@@ -120,28 +112,11 @@ namespace CersioSim
         /// </summary>
         public void SenserUpdate( bool bLRF, bool bRE )
         {
-            if (bLRF)
-            {
-                // LRF
-                // マップ座標に変換
-                mkp.LRFdata = mrf.Sense(new MarkPoint(mkp.X, mkp.Y, mkp.Theta));
-            }
-
             if (bRE)
             {
                 // R.E.
                 CalcWheelPosToREPulse();
             }
-        }
-
-        /// <summary>
-        /// MAP初期化
-        /// </summary>
-        /// <param name="fname"></param>
-        public void MapInit(Bitmap mapBmp)
-        {
-            // 30m
-            mrf = new MapRangeFinder((30 * 1000), PixelScale, mapBmp);
         }
 
         /// <summary>
@@ -182,7 +157,7 @@ namespace CersioSim
             long difMS = timeTick; //DateTime.Now.Millisecond - oldMS;
             //double moveRad = (wdCarAng + carHandleAng) * Math.PI / 180.0;
 
-            double moveLength = ((double)((4 * 1000 * 1000) / 60 / 60) / 1000.0);      // 単位時間内の移動量 時速4Km計算
+            double moveLength = (4.0 * 1000.0) / (60*60*1000);      // 1ミリ秒の移動量 時速4Km計算
 
             // 時間辺りの移動量を求める
             moveLength = moveLength * -carAccVal * (double)difMS;
@@ -295,7 +270,7 @@ namespace CersioSim
         /// </summary>
         public void CalcWheelPosToREPulse()
         {
-            const double WheelSize = 175;//172;    // ホイール直径
+            const double WheelSize = carTireSize;//172;    // ホイール直径
             const double OneRotValue = 240;   // １回転分の分解能
 
             Vector3 wheelLmov, wheelRmov;
@@ -331,7 +306,26 @@ namespace CersioSim
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="col"></param>
+        /// <param name="cx"></param>
+        /// <param name="cy"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        /// <param name="rad"></param>
+        /// <param name="scale"></param>
+        private void DrawCarParts(Graphics g, Pen col, double cx, double cy, double x1, double y1, double x2, double y2, double rad, double scale)
+        {
 
+            g.DrawLine( col,
+                        (float)((cx + (Math.Cos(rad) * x1) - (Math.Sin(rad) * y1)) * scale), (float)((cy + (Math.Sin(rad) * x1) + (Math.Cos(rad) * y1))* scale),
+                        (float)((cx + (Math.Cos(rad) * x2) - (Math.Sin(rad) * y2)) * scale), (float)((cy + (Math.Sin(rad) * x1) + (Math.Cos(rad) * y2)) * scale));
+        }
 
         /// <summary>
         /// クルマ描画
@@ -341,27 +335,63 @@ namespace CersioSim
         /// <param name="ViewScale"></param>
         /// <param name="viewX"></param>
         /// <param name="viewY"></param>
-        public void DrawCar(Graphics g, double ScaleRealToPixel, double ViewScale, double viewX, double viewY)
+        public void DrawCar(Graphics g, double ScaleRealToPixel)
         {
             // 左右車輪間のライン、前後車軸間のライン
             // クルマの向きと同じ角度で、車輪位置にタイヤライン (フロントはクルマの向き+ハンドル角)
 
-            Vector3 carVec = new Vector3(0.0, carHeight, 0.0);
-            //Quaternion rotRQt = new Quaternion();
-            //rotRQt.RollInDegrees = wdCarAng;
-            //carVec = rotRQt.ToRotationMatrix() * carVec;
-
-            // 後輪が軸が正解？
-
-            g.ResetTransform();
-            g.ScaleTransform((float)ScaleRealToPixel, (float)ScaleRealToPixel);
-            g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
-            g.ScaleTransform((float)ViewScale, (float)ViewScale, MatrixOrder.Append);
-
-
-            g.TranslateTransform((float)wdCarF.x, (float)wdCarF.y, MatrixOrder.Prepend);
+            g.TranslateTransform((float)(wdCarF.x * ScaleRealToPixel), (float)(wdCarF.y * ScaleRealToPixel), MatrixOrder.Prepend);
             g.RotateTransform((float)wdCarAng, MatrixOrder.Prepend);
 
+            // 車軸
+            DrawCarParts(g, Pens.Red,
+                          0.0, 0.0,
+                          0.0, carHeight,
+                          0.0, 0.0f,
+                          0.0*Math.PI/180.0, ScaleRealToPixel);
+
+            // 前輪軸
+            DrawCarParts(g, Pens.Red,
+                          0.0, 0.0,
+                          -carWidthHf, 0.0,
+                          carWidthHf, 0.0,
+                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+
+            // 後輪軸
+            DrawCarParts(g, Pens.Red,
+                          0.0, carHeight,
+                          -carWidthHf, 0.0,
+                          carWidthHf, 0.0,
+                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+
+            // 後輪タイヤ
+            DrawCarParts(g, Pens.Red,
+                          0.0, carHeight,
+                          -carWidthHf, -carTireDispSizeHf,
+                          -carWidthHf, carTireDispSizeHf,
+                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+
+            DrawCarParts(g, Pens.Red,
+                          0.0, carHeight,
+                          carWidthHf, -carTireDispSizeHf,
+                          carWidthHf, carTireDispSizeHf,
+                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+
+            // 前輪左
+            DrawCarParts(g, Pens.Green,
+                          -carWidthHf, 0.0,
+                          0.0f, -carTireDispSizeHf,
+                          0.0f, carTireDispSizeHf,
+                          carHandleAng * Math.PI / 180.0, ScaleRealToPixel);
+
+            // 前輪右
+            DrawCarParts(g, Pens.Blue,
+                          carWidthHf, 0.0,
+                          0.0f, -carTireDispSizeHf,
+                          0.0f, carTireDispSizeHf,
+                          carHandleAng * Math.PI / 180.0, ScaleRealToPixel);
+
+            /*
             // 車軸
             g.DrawLine(Pens.Red,
                         0.0f, -carVec.y,
@@ -411,6 +441,7 @@ namespace CersioSim
             g.DrawLine(Pens.Red,
                         0.0f, (float)-carTireSizeHf,
                         0.0f, (float)carTireSizeHf);
+            */
         }
 
     }

@@ -162,6 +162,9 @@ namespace VehicleRunner
             tm_Update.Enabled = true;
 
             //tm_SendCom.Enabled = true;
+
+            // 設定されている車
+            lbl_CarName.Text = VRSetting.CarName;
         }
 
         /// <summary>

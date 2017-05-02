@@ -257,6 +257,7 @@ namespace VehicleRunner
             //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
             //g.ScaleTransform(1.0f, -1.0f, MatrixOrder.Append);
 
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.DrawImage(worldBMP, 0, 0);
 
             // ------------------------

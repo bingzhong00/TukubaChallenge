@@ -26,8 +26,8 @@ namespace CersioSim
 
         public MapData mapFileData;
 
-        // mm からピクセルへの変換
-        double ScalePixelToReal;    // mmを１ピクセルとする
+        // m からピクセルへの変換
+        double ScalePixelToReal;    // mを１ピクセルとする
         double ScaleRealToPixel;
 
         CarSim carSim;
@@ -67,7 +67,7 @@ namespace CersioSim
         /// <summary>
         /// MapFile
         /// </summary>
-        string defaultMapFileName = "../../../MapFile/tsukuba20161104_2/tsukuba20161104_2.xml";
+        string defaultMapFileName = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
 
         /// <summary>
         /// LRF情報を(処理しない)使わないフラグ
@@ -125,7 +125,7 @@ namespace CersioSim
             tb_MapName.Text = mapFileData.MapName;
             tb_MapFileName.Text = Path.GetFileName(mapFileData.MapFileName);
             tb_MapImageFileName.Text = Path.GetFileName(mapFileData.MapImageFileName);
-            tb_MapPixelScale.Text = ((int)ScalePixelToReal).ToString() + "mm";
+            tb_MapPixelScale.Text = ((int)ScalePixelToReal).ToString() + "m";
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace CersioSim
             MapBmp = new Bitmap(mapFileData.MapImageFileName);
 
             // ピクセルスケール計算
-            ScalePixelToReal = mapFileData.RealWidth / MapBmp.Width;    // １ピクセルを何mmにするか
+            ScalePixelToReal = mapFileData.RealWidth / MapBmp.Width;    // １ピクセルを何mにするか
             ScaleRealToPixel = 1.0 / ScalePixelToReal;
 
             SimCarInit();
@@ -209,9 +209,8 @@ namespace CersioSim
             // シムカー生成
             carPos = new MarkPoint(carInitPos.X, carInitPos.Y, carInitPos.Theta);
 
-            carSim = new CarSim(ScalePixelToReal);
+            carSim = new CarSim();
             carSim.CarInit(carInitPos);
-            carSim.MapInit(MapBmp);
         }
 
         /// <summary>
@@ -424,25 +423,6 @@ namespace CersioSim
             {
                 lbl_URGIPTitle.ForeColor = Color.LightGray;
             }
-            else
-            {
-                // LRFセンサー情報取得
-                for (int i = 0; i < carSim.mkp.LRFdata.Length; i++)
-                {
-                    UrgSim.lrfData[i] = (short)carSim.mkp.LRFdata[i];
-                }
-                UrgSim.numLrfData = carSim.mkp.LRFdata.Length;
-
-                // URGコマンド受信処理
-                if (UrgSim.readMessage())
-                {
-                    lbl_URGIPTitle.ForeColor = Color.LimeGreen;
-                }
-                else
-                {
-                    lbl_URGIPTitle.ForeColor = Color.Black;
-                }
-            }
         }
 
         /// <summary>
@@ -453,39 +433,54 @@ namespace CersioSim
             Graphics g = Graphics.FromImage(SimAreaBmp);
             double pixScale = ScaleRealToPixel * viewScale;
 
-            g.ResetTransform();
-            g.FillRectangle(Brushes.Black, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
-            //g.DrawImage(MapBmp, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
-            
-            g.TranslateTransform((float)(-viewX * viewScale), (float)(-viewY * viewScale), MatrixOrder.Append);
-            g.ScaleTransform((float)(viewScale), (float)(viewScale));
-
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            g.DrawImage(MapBmp, 0, 0);
-
-            g.ResetTransform();
-            g.ScaleTransform((float)pixScale, (float)pixScale);
-
-            // グリッド線 (0.5倍以下なら表示しない)
-            if( pixScale > ScaleRealToPixel*0.5 )
+            // マップ描画
             {
-                for (int x = 0; x <= (int)((SimAreaBmp.Width / pixScale) / 1000.0); x++)
-                {
-                    int dx = (x * 1000) + (((int)((-viewX * ScalePixelToReal) + 0.5)) % 1000);
-                    g.DrawLine(Pens.DarkGray, dx, 0, dx, (int)(SimAreaBmp.Height / pixScale));
-                }
-                for (int y = 0; y <= (int)((SimAreaBmp.Height / pixScale) / 1000.0); y++)
-                {
-                    int dy = (y * 1000) + (((int)((-viewY * ScalePixelToReal) + 0.5)) % 1000);
-                    g.DrawLine(Pens.DarkGray, 0, dy, (int)(SimAreaBmp.Width / pixScale), dy);
-                }
+                g.ResetTransform();
+                g.FillRectangle(Brushes.Black, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
+                //g.DrawImage(MapBmp, 0, 0, SimAreaBmp.Width, SimAreaBmp.Height);
+
+                g.TranslateTransform((float)(-(viewX + (MapBmp.Width / 2)) * viewScale),
+                                      (float)(-(viewY + (MapBmp.Height / 2)) * viewScale), MatrixOrder.Append);
+
+                g.ScaleTransform((float)(viewScale), (float)(viewScale));
+
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.DrawImage(MapBmp, 0, 0);
             }
 
+            // グリッド線描画
+            {
+                /*
+                g.ResetTransform();
+                g.ScaleTransform((float)pixScale, (float)pixScale);
 
-            g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
+                // 1m区切り グリッド線 (0.5倍以下なら表示しない)
+                if( pixScale > ScaleRealToPixel*0.5 )
+                {
+                    for (int x = 0; x <= (int)(SimAreaBmp.Width / pixScale); x++)
+                    {
+                        int dx = x + ((int)((-viewX * ScalePixelToReal) + 0.5));
+                        g.DrawLine(Pens.DarkGray, dx, 0, dx, (int)(SimAreaBmp.Height / pixScale));
+                    }
+                    for (int y = 0; y <= (int)(SimAreaBmp.Height / pixScale); y++)
+                    {
+                        int dy = y + ((int)((-viewY * ScalePixelToReal) + 0.5));
+                        g.DrawLine(Pens.DarkGray, 0, dy, (int)(SimAreaBmp.Width / pixScale), dy);
+                    }
+                }
+                */
+            }
 
-            carSim.DrawCar(g, ScaleRealToPixel, viewScale, viewX, viewY);
+            // クルマ描画
+            {
+                g.ResetTransform();
+                g.TranslateTransform((float)(-viewX * viewScale), (float)(-viewY * viewScale), MatrixOrder.Append);
+                g.ScaleTransform((float)viewScale, (float)viewScale);
+
+                carSim.DrawCar(g, ScaleRealToPixel);
+            }
             
+
             g.Dispose();
         }
 
