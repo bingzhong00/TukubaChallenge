@@ -37,13 +37,13 @@ namespace Location
 
         // CheckPoint --------------------------------------
         int seqIdx = 0;         // チェックポイントインデックス
-        int seqIdxOld = 0;      
+        int seqIdxOld = -1;      
         bool goalFlg = false;   // ゴールしたか？
 
         /// <summary>
-        /// チェックポイントを通過した瞬間
+        /// チェックポイントを更新した瞬間
         /// </summary>
-        bool bCheckPointPass = false;
+        bool bCheckPointTrg = false;
 
         /// <summary>
         /// チェックポイントに近づく距離(半径) [m]
@@ -83,6 +83,9 @@ namespace Location
                                                (-onePos.y * scaleMapToM) + mapData.RealHeight * 0.5,
                                                (onePos.z * scaleMapToM) ));
             }
+
+            ResetSeq();
+            bCheckPointTrg = true;
         }
 
         /// <summary>
@@ -110,13 +113,13 @@ namespace Location
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns>角度</returns>
-        public static double CalcPositionToAngle(double x, double y)
+        public static double WorldVectorToRad(double x, double y)
         {
             Vector3 tgtVec = new Vector3(x, y, 0);
             //Vector3 nothVec = new Vector3(0, -1, 0);
-            Vector3 nothVec = new Vector3(1, 0, 0);
+            Vector3 eastVec = new Vector3(1, 0, 0);
 
-            return (VecToRad(tgtVec, nothVec));
+            return (VecToRad(tgtVec, eastVec));
         }
 
 
@@ -133,7 +136,7 @@ namespace Location
         }
 
         /// <summary>
-        /// チェックポイントリセット
+        /// チェックポイントセット
         /// </summary>
         /// <param name="_setIdx"></param>
         public void SetCheckPoint(int _setIdx )
@@ -141,8 +144,14 @@ namespace Location
             if (_setIdx < mapData.checkPoint.Length)
             {
                 seqIdx = _setIdx;
-                seqIdxOld = _setIdx;
             }
+
+            // 更新されたか？
+            if (seqIdxOld != seqIdx)
+            {
+                bCheckPointTrg = true;
+            }
+            seqIdxOld = seqIdx;
         }
 
         /// <summary>
@@ -159,18 +168,9 @@ namespace Location
             nowPos.y = posY;
         }
 
-        /// <summary>
-        /// 現在位置を取得
-        /// ワールドマップ座標
-        /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="dir"></param>
-        public void getNowPostion(out int posX, out int posY, out double dir)
+        public Vector3 getNowCheckPoint()
         {
-            dir = nowDir;
-            posX = (int)nowPos.x;
-            posY = (int)nowPos.y;
+            return getCheckPoint(seqIdx);
         }
 
         /// <summary>
@@ -188,6 +188,17 @@ namespace Location
                 resVec.y = rosCheckPoint[_seqIdx].y;//mapData.checkPoint[_seqIdx].y;
             }
             return resVec;
+        }
+
+        /// <summary>
+        /// チェックポイントでの目標向きを求める
+        /// 次のチェックポイントへのむき
+        /// </summary>
+        /// <returns></returns>
+        public double getCheckPointPoseDir()
+        {
+            Vector3 dirVec = getCheckPoint(seqIdx+1) - getNowCheckPoint();
+            return WorldVectorToRad(dirVec.x, dirVec.y);
         }
 
         /// <summary>
@@ -249,9 +260,9 @@ namespace Location
         /// チェックポイント通過したか？
         /// </summary>
         /// <returns></returns>
-        public bool IsCheckPointPass()
+        public bool TrgCheckPoint()
         {
-            return bCheckPointPass;
+            return bCheckPointTrg;
         }
 
 
@@ -260,7 +271,7 @@ namespace Location
         /// </summary>
         public void calcRooting()
         {
-            bCheckPointPass = false;
+            bCheckPointTrg = false;
 
             // ゴールしてたら計算しない
             if (goalFlg) return;
@@ -275,18 +286,11 @@ namespace Location
                 if (GetCheckPointDistance(nowPos) < passRange)
                 {
                     //Brain.addLogMsg += "PassTarget:" + seqIdx.ToString() +",NowDir "+getNowTargetDir().ToString()+",TgtDir "+tgtDir.ToString() + "\n";
-                    seqIdx++;
+                    SetCheckPoint(seqIdx+1);
                     calcCheckPoint();
                 }
             }
 #endif
-
-            // 更新されたか？
-            if (seqIdxOld != seqIdx)
-            {
-                bCheckPointPass = true;
-            }
-            seqIdxOld = seqIdx;
         }
 
         /// <summary>
@@ -304,7 +308,8 @@ namespace Location
                 double dist = (getCheckPoint(seqIdx) - nowPos).Length;
 
                 if (dist > touchRange) break;
-                seqIdx++;
+                SetCheckPoint(seqIdx + 1);
+
                 if (seqIdx >= mapData.checkPoint.Count())
                 {
                     goalFlg = true;
@@ -335,7 +340,6 @@ namespace Location
         /// <returns></returns>
         private double GetCheckPointDistance( Vector3 vPos )
         {
-            //return (mapData.checkPoint[seqIdx] - nowPos).Length;
             return (rosCheckPoint[seqIdx] - nowPos).Length;
         }
 

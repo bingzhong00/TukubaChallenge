@@ -406,7 +406,7 @@ namespace VehicleRunner
                     lbl_REPlotDir.Text = LocSys.GetResultAngle().ToString("F2");
 
                     // CheckPointIndex
-                    if (BrainCtrl.LocSys.RTS.IsCheckPointPass())
+                    if (BrainCtrl.LocSys.RTS.TrgCheckPoint())
                     {
                         // チェックポイント通過時に表示更新
                         numericUD_CheckPoint.Value = BrainCtrl.LocSys.RTS.getCheckPointIdx();

@@ -363,36 +363,22 @@ namespace CersioIO
             }
         }
 
-        //--------------------------------------------------------------------------------------------------------------
-        // bServerコマンド送信
-        /*
-        private List<string> SendCommandList = new List<string>();
-
         /// <summary>
-        /// コマンド分割送信
+        /// チェックポイント送信
         /// </summary>
-        private void SendCommandQue()
+        /// <param name="_cpX"></param>
+        /// <param name="_cpY"></param>
+        /// <param name="_cpDir"></param>
+        public void SetCommandAP(double _cpX, double _cpY, double _cpDir )
         {
             if (TCP_IsConnected())
             {
-                // 先頭から順に送信
-                while (SendCommandList.Count > 0)
-                {
-                    string sendMsg = SendCommandList[0];
-                    TCP_SendCommand(sendMsg);
-                    Thread.Sleep(10);
-
-                    if (SendCommandList.Count > 0)
-                    {
-                        SendCommandList.RemoveAt(0);
-                    }
-                }
+                SendCommand("AP," + _cpX.ToString("f") + "," + _cpY.ToString("f") + "," + _cpDir.ToString("f") + "\n");
             }
-
-            // 接続されていないなら、リストをクリア
-            SendCommandList.Clear();
         }
-        */
+
+        //--------------------------------------------------------------------------------------------------------------
+        // bServerコマンド送信
 
         /// <summary>
         /// 送信コマンド受付
@@ -401,9 +387,6 @@ namespace CersioIO
         /// <param name="comStr"></param>
         public void SendCommand( string comStr )
         {
-            // キューに積む
-            //SendCommandList.Add(comStr);
-
             TCP_SendCommand(comStr);
         }
 

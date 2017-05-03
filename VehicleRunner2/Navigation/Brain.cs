@@ -56,6 +56,11 @@ namespace Navigation
         /// </summary>
         public bool bRevisionRequest = false;
 
+        /// <summary> bServer接続状態フラグ </summary>
+        private bool bServerConnectFlg = false;
+        /// <summary> bServer接続タイミング　トリガ </summary>
+        private bool trg_bServerConnect = false;
+
         /// <summary>
         /// EBS 緊急ブレーキ
         /// </summary>
@@ -175,6 +180,14 @@ namespace Navigation
             else
             {
                 backCnt = 0;
+
+                // チェックポイントをROSへ指示
+                if (LocSys.RTS.TrgCheckPoint() || trg_bServerConnect)
+                {
+                    Vector3 checkPnt = LocSys.RTS.getNowCheckPoint();
+
+                    CarCtrl.SetCommandAP(checkPnt.x, checkPnt.y, LocSys.RTS.getCheckPointPoseDir());
+                }
             }
 
             // ハンドルレンジ設定
@@ -199,6 +212,10 @@ namespace Navigation
                 CarCtrl.nowSendHandleValue = 0.0f;
             }
 
+            trg_bServerConnect = false;
+            if (!bServerConnectFlg && CarCtrl.TCP_IsConnected()) trg_bServerConnect = true;
+
+            bServerConnectFlg = CarCtrl.TCP_IsConnected();
             goalFlg = LocSys.RTS.getGoalFlg();
             return goalFlg;
         }
@@ -248,7 +265,7 @@ namespace Navigation
                 LocSys.RTS.calcRooting();
 
                 // チェックポイント通過をLEDで伝える
-                if (LocSys.RTS.IsCheckPointPass())
+                if (LocSys.RTS.TrgCheckPoint())
                 {
                     CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.WHITE_FLASH, true);
                 }
