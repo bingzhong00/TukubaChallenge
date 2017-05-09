@@ -431,13 +431,15 @@ namespace VehicleRunner
                     }
 
                     // 送受信文字 画面表示
-                    if (null != CersioCt.hwResiveStr)
+                    if (!string.IsNullOrEmpty(CersioCt.hwResiveStr))
                     {
                         tb_ResiveData.Text = CersioCt.hwResiveStr.Replace('\n', ' ');
+                        CersioCt.hwResiveStr = "";
                     }
-                    if (null != CersioCt.hwSendStr)
+                    if (!string.IsNullOrEmpty(CersioCt.hwSendStr))
                     {
                         tb_SendData.Text = CersioCt.hwSendStr.Replace('\n', ' ');
+                        CersioCt.hwSendStr = "";
                     }
 
                     updateHwCnt++;
