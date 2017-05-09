@@ -79,7 +79,7 @@ namespace CersioSim
                 // 車体のベクトル
                 Quaternion rotRQt = new Quaternion();
                 rotRQt.RollInDegrees = wdCarAng;
-                carVec.y = carHeight;
+                carVec.x = -carHeight;
                 carVec = rotRQt.ToRotationMatrix() * carVec;
 
                 wdCarR = new Vector3(carVec.x + posx, carVec.y + posy, carVec.z);
@@ -137,11 +137,11 @@ namespace CersioSim
 
             if (double.IsNaN(dir))
             {
-                Debug.Write("NAn");
+                Debug.WriteLine("Math Error!! NAn Occurd");
             }
 
             Vector3 resVec = vecA.Cross(vecB);
-            if (resVec.z > 0) dir = -dir;
+            if (resVec.z < 0) dir = -dir;
 
             return dir;
         }
@@ -160,28 +160,29 @@ namespace CersioSim
             double moveLength = (4.0 * 1000.0) / (60*60*1000);      // 1ミリ秒の移動量 時速4Km計算
 
             // 時間辺りの移動量を求める
-            moveLength = moveLength * -carAccVal * (double)difMS;
+            moveLength = moveLength * carAccVal * (double)difMS;
 
             oldMS = DateTime.Now.Millisecond;
 
             {
+                // 車の行きたいベクトル
                 Vector3 moveVec = new Vector3();
                 Quaternion rotQt = new Quaternion();
 
                 rotQt.RollInDegrees = wdCarAng + carHandleAng;
-                moveVec.y = moveLength;
+                moveVec.x = moveLength;
                 moveVec = rotQt.ToRotationMatrix() * moveVec;
 
                 // ハンドリングの影響を加えて、クルマの向きを求める
 #if true
                 {
-                    Vector3 carVec = new Vector3();
+                    Vector3 carVec = new Vector3(1.0, 0.0,0.0);
                     Vector3 movedcarVec = new Vector3();
 
-                    // 車体のベクトル
+                    // 車体の向きベクトル
                     Quaternion rotRQt = new Quaternion();
                     rotRQt.RollInDegrees = wdCarAng;
-                    carVec.y = carHeight;
+                    //carVec.x = carHeight;
                     carVec = rotRQt.ToRotationMatrix() * carVec;
 
                     movedcarVec = carVec + moveVec;
@@ -196,12 +197,16 @@ namespace CersioSim
             // クルマの向きに対する移動を求める
             {
                 Quaternion rotQt = new Quaternion();
-                Vector3 moveVec = new Vector3();
+                Vector3 moveVec = new Vector3(moveLength,0.0,0.0);
 
                 rotQt.RollInDegrees = wdCarAng;
-                moveVec.y = moveLength;
                 moveVec = rotQt.ToRotationMatrix() * moveVec;
 
+                if (moveVec.IsInvalid)
+                {
+                    // error
+                    moveVec += moveVec;
+                }
                 // フロント中心軸を移動量分加算
                 wdCarF += moveVec;
 
@@ -225,8 +230,8 @@ namespace CersioSim
                 Vector3 wheelLvec = new Vector3();
 
                 // 前輪位置 算出
-                wheelFRvec.x = carWidthHf;
-                wheelFLvec.x = -carWidthHf;
+                wheelFLvec.y = carWidthHf;
+                wheelFRvec.y = -carWidthHf;
 
                 wheelFRvec = rotQt.ToRotationMatrix() * wheelFRvec;
                 wheelFLvec = rotQt.ToRotationMatrix() * wheelFLvec;
@@ -235,18 +240,18 @@ namespace CersioSim
                 wdFL = wheelFLvec + wdCarF;
 
                 // バック側　中心位置
-                shaftVec.y = carHeight;
+                shaftVec.x = -carHeight;
                 shaftVec = rotQt.ToRotationMatrix() * shaftVec;
                 shaftVec += wdCarF;
 
                 wdCarR = shaftVec;
 
                 // 後輪位置算出
-                wheelRvec.y = carHeight;
-                wheelRvec.x = carWidthHf;
+                wheelRvec.x = carHeight;
+                wheelRvec.y = -carWidthHf;
 
-                wheelLvec.y = carHeight;
-                wheelLvec.x = -carWidthHf;
+                wheelLvec.x = carHeight;
+                wheelLvec.y = carWidthHf;
 
                 wheelRvec = rotQt.ToRotationMatrix() * wheelRvec;
                 wheelLvec = rotQt.ToRotationMatrix() * wheelLvec;
@@ -282,7 +287,7 @@ namespace CersioSim
                 Vector3 moveVec = new Vector3();
 
                 rotQt.RollInDegrees = wdCarAng;
-                moveVec.y = 1.0;
+                moveVec.x = 1.0;
                 moveVec = rotQt.ToRotationMatrix() * moveVec;
 
                 // 移動差分から、移動量を求める
@@ -294,10 +299,10 @@ namespace CersioSim
                                                  wdRR.y - wdRROld.y,
                                                  wdRR.z - wdRROld.z);
 
-                if (moveVec.Dot(wheelLmov) > 0.0) signL = -1.0;
-                else signL = 1.0;
-                if (moveVec.Dot(wheelRmov) > 0.0) signR = -1.0;
-                else signR = 1.0;
+                if (moveVec.Dot(wheelLmov) > 0.0) signL = 1.0;
+                else signL = -1.0;
+                if (moveVec.Dot(wheelRmov) > 0.0) signR = 1.0;
+                else signR = -1.0;
             }
 
             // 移動量(長さ) / ホイール１回転の長さ * １回転のパルス数
@@ -319,12 +324,12 @@ namespace CersioSim
         /// <param name="y2"></param>
         /// <param name="rad"></param>
         /// <param name="scale"></param>
-        private void DrawCarParts(Graphics g, Pen col, double cx, double cy, double x1, double y1, double x2, double y2, double rad, double scale)
+        private void DrawCarParts(Graphics g, Pen col, double cx, double cy, double x1, double y1, double x2, double y2, double ang, double scale)
         {
-
+            double rad = ang * Math.PI / 180.0;
             g.DrawLine( col,
                         (float)((cx + (Math.Cos(rad) * x1) - (Math.Sin(rad) * y1)) * scale), (float)((cy + (Math.Sin(rad) * x1) + (Math.Cos(rad) * y1))* scale),
-                        (float)((cx + (Math.Cos(rad) * x2) - (Math.Sin(rad) * y2)) * scale), (float)((cy + (Math.Sin(rad) * x1) + (Math.Cos(rad) * y2)) * scale));
+                        (float)((cx + (Math.Cos(rad) * x2) - (Math.Sin(rad) * y2)) * scale), (float)((cy + (Math.Sin(rad) * x2) + (Math.Cos(rad) * y2)) * scale));
         }
 
         /// <summary>
@@ -346,102 +351,51 @@ namespace CersioSim
             // 車軸
             DrawCarParts(g, Pens.Red,
                           0.0, 0.0,
-                          0.0, carHeight,
-                          0.0, 0.0f,
-                          0.0*Math.PI/180.0, ScaleRealToPixel);
+                          0.0, 0.0,
+                          -carHeight, 0.0f,
+                          0.0, ScaleRealToPixel);
 
             // 前輪軸
             DrawCarParts(g, Pens.Red,
                           0.0, 0.0,
-                          -carWidthHf, 0.0,
-                          carWidthHf, 0.0,
-                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+                          0.0, -carWidthHf,
+                          0.0, carWidthHf,
+                          0.0, ScaleRealToPixel);
 
             // 後輪軸
             DrawCarParts(g, Pens.Red,
-                          0.0, carHeight,
-                          -carWidthHf, 0.0,
-                          carWidthHf, 0.0,
-                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+                          -carHeight, 0.0,
+                          0.0, -carWidthHf,
+                          0.0, carWidthHf,
+                          0.0, ScaleRealToPixel);
 
             // 後輪タイヤ
             DrawCarParts(g, Pens.Red,
-                          0.0, carHeight,
-                          -carWidthHf, -carTireDispSizeHf,
-                          -carWidthHf, carTireDispSizeHf,
-                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+                          -carHeight, 0.0,
+                          -carTireDispSizeHf, -carWidthHf,
+                          carTireDispSizeHf, -carWidthHf,
+                          0.0, ScaleRealToPixel);
 
             DrawCarParts(g, Pens.Red,
-                          0.0, carHeight,
-                          carWidthHf, -carTireDispSizeHf,
-                          carWidthHf, carTireDispSizeHf,
-                          0.0 * Math.PI / 180.0, ScaleRealToPixel);
+                          -carHeight, 0.0,
+                          -carTireDispSizeHf, carWidthHf,
+                          carTireDispSizeHf, carWidthHf,
+                          0.0, ScaleRealToPixel);
 
             // 前輪左
             DrawCarParts(g, Pens.Green,
-                          -carWidthHf, 0.0,
-                          0.0f, -carTireDispSizeHf,
-                          0.0f, carTireDispSizeHf,
-                          carHandleAng * Math.PI / 180.0, ScaleRealToPixel);
+                          0.0, -carWidthHf,
+                          -carTireDispSizeHf, 0.0,
+                          carTireDispSizeHf, 0.0,
+                          carHandleAng, ScaleRealToPixel);
 
             // 前輪右
             DrawCarParts(g, Pens.Blue,
-                          carWidthHf, 0.0,
-                          0.0f, -carTireDispSizeHf,
-                          0.0f, carTireDispSizeHf,
-                          carHandleAng * Math.PI / 180.0, ScaleRealToPixel);
+                          0.0, carWidthHf,
+                          -carTireDispSizeHf, 0.0f,
+                          carTireDispSizeHf, 0.0f,
+                          carHandleAng, ScaleRealToPixel);
 
-            /*
-            // 車軸
-            g.DrawLine(Pens.Red,
-                        0.0f, -carVec.y,
-                        carVec.x, 0.0f);
-
-            // 前輪軸
-            g.DrawLine(Pens.Red,
-                        (float)-carWidthHf, -carVec.y,
-                        (float)carWidthHf, -carVec.y);
-
-            // 後輪軸
-            g.DrawLine(Pens.Red,
-                        (float)-carWidthHf, 0.0f,
-                        (float)carWidthHf, 0.0f);
-
-            // 後輪タイヤ
-            g.DrawLine(Pens.Red,
-                        (float)-carWidthHf, (float)-carTireSizeHf,
-                        (float)-carWidthHf, (float)+carTireSizeHf);
-
-            g.DrawLine(Pens.Red,
-                        (float)+carWidthHf, (float)-carTireSizeHf,
-                        (float)+carWidthHf, (float)+carTireSizeHf);
-
-            // 前輪左
-            g.TranslateTransform((float)-carWidthHf, (float)-carVec.y, MatrixOrder.Prepend);
-            g.RotateTransform((float)carHandleAng, MatrixOrder.Prepend);
-
-            g.DrawLine(Pens.Red,
-                        0.0f, (float)-carTireSizeHf,
-                        0.0f, (float)carTireSizeHf);
-
-            // 前輪右
-            g.ResetTransform();
-            g.ScaleTransform((float)ScaleRealToPixel, (float)ScaleRealToPixel);
-            g.TranslateTransform((float)-viewX, (float)-viewY, MatrixOrder.Append);
-            g.ScaleTransform((float)ViewScale, (float)ViewScale, MatrixOrder.Append);
-
-
-            g.TranslateTransform((float)wdCarF.x, (float)wdCarF.y, MatrixOrder.Prepend);
-            g.RotateTransform((float)wdCarAng, MatrixOrder.Prepend);
-
-            //
-            g.TranslateTransform((float)carWidthHf, (float)-carVec.y, MatrixOrder.Prepend);
-            g.RotateTransform((float)carHandleAng, MatrixOrder.Prepend);
-
-            g.DrawLine(Pens.Red,
-                        0.0f, (float)-carTireSizeHf,
-                        0.0f, (float)carTireSizeHf);
-            */
         }
 
     }

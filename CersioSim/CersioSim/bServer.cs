@@ -337,8 +337,8 @@ namespace CersioSim
                 }
                 else if (commandStr == "A4")
                 {
-                    // ロータリーエンコーダ　絶対値
-                    // 開始時　真北基準
+                    // AMCLプロット座標   
+                    // 0度　 東向き  → X+ ↑Y+
                     /*
                         * コマンド
                         A4
@@ -346,37 +346,16 @@ namespace CersioSim
                         戻り値
                         A4,絶対座標X,絶対座標Y,絶対座標上での向きR$
 
-                        絶対座標X[mm]
-                        絶対座標Y[mm]
+                        ROS座標X[m]
+                        ROS座標Y[m]
                         絶対座標上での向き[rad]　-2π～2π
                         浮動小数点です。
                         */
-                    /*
-                    senRePlotX_Out = (senRePlotX - senRePlotX_Rst + senRePlotX_RstAdd);
-                    senRePlotY_Out = (senRePlotY - senRePlotY_Rst + senRePlotY_RstAdd);
-                    senReAng_Out = (senReAng - senReAng_Rst + senReAng_RstAdd);
-                    */
-                    /*
-                    {
-                        double resAng = 0.0;
-
-
-                        // ※ここではなくMainFormで計算すべきか
-                        // 結果をFromに表示も必要
-                        REncoderToMap.CalcWheelPlotXY(ref plotWheelR, ref plotWheelL, ref resAng,
-                                                      senReR, senReL,
-                                                      senReR_, senReL_);
-
-                        senRePlotX_Out = ((plotWheelR.X + plotWheelL.X) * 0.5) + senRePlotX_RstAdd;
-                        senRePlotY_Out = ((plotWheelR.Y + plotWheelL.Y) * 0.5) + senRePlotY_RstAdd;
-                        senReAng_Out = resAng + senReAng_RstAdd;
-                    }
-                    */
 
                     sendStr += string.Format("A4,{0},{1},{2},{3}$", nowMs,
-                                              (senRePlotY_Out + senRePlotY_RstAdd) * 0.001,
-                                              (senRePlotX_Out + senRePlotX_RstAdd) * 0.001,
-                                              senReAng_Out + senReAng_RstAdd);
+                                              senRePlotX_Out,
+                                              senRePlotY_Out,
+                                              senReAng_Out);
                 }
                 else if (commandStr == "AC")
                 {

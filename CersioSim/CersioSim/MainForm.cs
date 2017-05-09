@@ -230,8 +230,8 @@ namespace CersioSim
             lbl_HandleVal.Text = "ハンドル:" + carSim.carHandleAng.ToString("F2");
             lbl_AccVal.Text = "アクセル:" + carSim.carAccVal.ToString("F2");
 
-            lbl_CarX.Text = "carX:" + ((double)carSim.mkp.X * ScaleRealToPixel).ToString("F2");
-            lbl_CarY.Text = "carY:" + ((double)carSim.mkp.Y * ScaleRealToPixel).ToString("F2");
+            lbl_CarX.Text = "carPixelX:" + ((double)carSim.mkp.X * ScaleRealToPixel).ToString("F2");
+            lbl_CarY.Text = "carPixelY:" + ((double)carSim.mkp.Y * ScaleRealToPixel).ToString("F2");
             lbl_Speed.Text = "Speed(Km):" + ((double)(4.0 * carSim.carAccVal)).ToString("F2");
 
             // CarSim更新
@@ -290,22 +290,6 @@ namespace CersioSim
                     // 受信コントロール情報
                     // アクセル、ハンドル値 セット
                     carSim.carHandleAng = -bSrv.ctrHandle * 30.0;
-                    /*
-                     * ステアリングの遅れをシミュレーション
-                    {
-                        const double stearingSpeed = 2.0;
-                        double tgtHandle = -bSrv.ctrHandle * 30.0;
-
-                        if (carSim.carHandleAng < tgtHandle) carSim.carHandleAng += stearingSpeed;
-                        else carSim.carHandleAng -= stearingSpeed;
-
-                        if (Math.Abs(carSim.carHandleAng - tgtHandle) < stearingSpeed)
-                        {
-                            carSim.carHandleAng = tgtHandle;
-                        }
-                    }
-                    */
-
                     carSim.carAccVal = bSrv.ctrAccel;
                 }
             }
@@ -359,12 +343,12 @@ namespace CersioSim
                                                   bSrv.senReR_, bSrv.senReL_);
 
                     // 現在位置を両輪の中心点で計算
-                    bSrv.senRePlotX_Out = ((bSrv.plotWheelR.X + bSrv.plotWheelL.X) * 0.5);
-                    bSrv.senRePlotY_Out = ((bSrv.plotWheelR.Y + bSrv.plotWheelL.Y) * 0.5);
-
-                    // 座標系を実機にあわせる
-                    bSrv.senRePlotY_Out = -bSrv.senRePlotY_Out;
-                    bSrv.senReAng_Out = resAng;
+                    //bSrv.senRePlotX_Out = ((bSrv.plotWheelR.X + bSrv.plotWheelL.X) * 0.5);
+                    //bSrv.senRePlotY_Out = -((bSrv.plotWheelR.Y + bSrv.plotWheelL.Y) * 0.5);
+                    //bSrv.senReAng_Out = resAng;
+                    bSrv.senRePlotX_Out = carSim.wdCarF.x;
+                    bSrv.senRePlotY_Out = -carSim.wdCarF.y;
+                    bSrv.senReAng_Out = -carSim.wdCarAng * Math.PI / 180.0;
                 }
 
                 // 電子コンパス
