@@ -122,8 +122,121 @@ namespace Location
             return (VecToRad(tgtVec, eastVec));
         }
 
+        /// <summary>
+        /// A,B２点を結ぶ直線上でPにもっとも近い点を探す
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="P">現在位置</param>
+        /// <returns></returns>
+        Vector3 nearestPoint(Vector3 A, Vector3 B, Vector3 P)
+        {
+            Vector3 a = new Vector3();
+            Vector3 b = new Vector3();
+            double r;
 
-        
+            a.x = B.x - A.x;
+            a.y = B.y - A.y;
+            b.x = P.x - A.x;
+            b.y = P.y - A.y;
+
+            r = (a.x * b.x + a.y * b.y) / (a.x * a.x + a.y * a.y);
+
+            if (r <= 0.0)
+            {
+                // Aより手前
+                return A;
+            }
+            else if (r >= 1.0)
+            {
+                // Bより奥
+                return B;
+            }
+            else
+            {
+                Vector3 result = new Vector3();
+                result.x = A.x + r * a.x;
+                result.y = A.y + r * a.y;
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="P"></param>
+        /// <returns></returns>
+        Vector3 nearestAHeadPoint(Vector3 A, Vector3 B, Vector3 P, double aheadLength )
+        {
+            Vector3 a = new Vector3();
+            Vector3 b = new Vector3();
+            double r;
+
+            a.x = B.x - A.x;
+            a.y = B.y - A.y;
+            b.x = P.x - A.x;
+            b.y = P.y - A.y;
+
+            r = (a.x * b.x + a.y * b.y) / (a.x * a.x + a.y * a.y);
+
+
+            Vector3 result = new Vector3();
+
+            if (r <= 0.0)
+            {
+                // Aより手前
+                // AからaHead分前に進んだ場所
+                result.x = A.x + (aheadLength * a.x);
+                result.y = A.y + (aheadLength * a.y);
+                return result;
+            }
+            else if (r >= 1.0)
+            {
+                // Bより奥
+                // BからaHead分前に進んだ場所
+                result.x = B.x + (aheadLength * a.x);
+                result.y = B.y + (aheadLength * a.y);
+                return result;
+            }
+            else
+            {
+                // A->Bへの直線上の最寄りの点からAhead分進んだ場所
+                result.x = A.x + ((r + aheadLength) * a.x);
+                result.y = A.y + ((r + aheadLength) * a.y);
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// チェックポイントショートカット判定
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="P"></param>
+        /// <returns></returns>
+        bool JadgeCheckPointPass(Vector3 A, Vector3 B, Vector3 P)
+        {
+            Vector3 a = new Vector3();
+            Vector3 b = new Vector3();
+            double r;
+
+            a.x = B.x - A.x;
+            a.y = B.y - A.y;
+            b.x = P.x - A.x;
+            b.y = P.y - A.y;
+
+            r = (a.x * b.x + a.y * b.y) / (a.x * a.x + a.y * a.y);
+
+            if (r >= 1.0)
+            {
+                // Bより奥
+                return true;
+            }
+            return false;
+        }
+
         // ・チェックポイントリスト
         // ・ポイント追加、削除
 
@@ -182,11 +295,14 @@ namespace Location
         {
             Vector3 resVec = new Vector3();
 
-            if (_seqIdx < mapData.checkPoint.Length)
+            if (_seqIdx < 0) _seqIdx = 0;
+            if (_seqIdx >= rosCheckPoint.Count)
             {
-                resVec.x = rosCheckPoint[_seqIdx].x;// mapData.checkPoint[_seqIdx].x;
-                resVec.y = rosCheckPoint[_seqIdx].y;//mapData.checkPoint[_seqIdx].y;
+                _seqIdx = rosCheckPoint.Count - 1;
             }
+
+            resVec.x = rosCheckPoint[_seqIdx].x;
+            resVec.y = rosCheckPoint[_seqIdx].y;
             return resVec;
         }
 
@@ -276,11 +392,15 @@ namespace Location
             // ゴールしてたら計算しない
             if (goalFlg) return;
 
-            calcCheckPoint();
-
             // チェックポイント短絡　判定
             // ターゲットがある程度の範囲内で、向きが大幅に違う場合パスする。
 #if CHECKPOINT_PASS
+#if true
+            if (JadgeCheckPointPass(getCheckPoint(seqIdx-1), getCheckPoint(seqIdx), nowPos))
+            {
+                SetCheckPoint(seqIdx + 1);
+            }
+#else
             if (Math.Abs(getNowTargetDir() - nowDir) > passOverDir)
             {
                 if (GetCheckPointDistance(nowPos) < passRange)
@@ -291,6 +411,9 @@ namespace Location
                 }
             }
 #endif
+#endif
+            // 
+            calcCheckPoint();
         }
 
         /// <summary>
@@ -300,16 +423,19 @@ namespace Location
         private bool calcCheckPoint()
         {
             // ゴールしてたら計算しない
-            if (goalFlg || seqIdx >= mapData.checkPoint.Count()) return true;
+            if (goalFlg || seqIdx >= mapData.checkPoint.Count())
+            {
+                goalFlg = true;
+                return true;
+            }
 
-            // 次のチェックポイントにすすむか？
-            for (int i = 0; i < mapData.checkPoint.Count(); i++)
+            // チェックポイントに到達したか？
             {
                 double dist = (getCheckPoint(seqIdx) - nowPos).Length;
 
-                if (dist > touchRange) break;
-                SetCheckPoint(seqIdx + 1);
+                if (dist < touchRange) SetCheckPoint(seqIdx + 1);
 
+                // ゴール判定
                 if (seqIdx >= mapData.checkPoint.Count())
                 {
                     goalFlg = true;
@@ -318,7 +444,10 @@ namespace Location
             }
 
             // 目標座標
-            tgtPos = getCheckPoint(seqIdx);
+            //tgtPos = getCheckPoint(seqIdx);
+
+            // チェックポイント間の直線上の2m先をターゲットとする
+            tgtPos = nearestAHeadPoint(getCheckPoint(seqIdx - 1), getCheckPoint(seqIdx), nowPos, 2.0);
 
             // 目標方向
             {
