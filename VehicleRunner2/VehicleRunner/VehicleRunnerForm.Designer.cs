@@ -65,20 +65,23 @@
             this.btn_MapLoad = new System.Windows.Forms.Button();
             this.tb_MapName = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btn_bServerEmu = new System.Windows.Forms.Button();
             this.cb_AccelOff = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.numericUD_CheckPoint = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.numericUD_DebugY = new System.Windows.Forms.NumericUpDown();
+            this.numericUD_DebugX = new System.Windows.Forms.NumericUpDown();
             this.numericUD_DebugDir = new System.Windows.Forms.NumericUpDown();
             this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
             this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             this.label13 = new System.Windows.Forms.Label();
             this.lbl_CarName = new System.Windows.Forms.Label();
-            this.btn_bServerEmu = new System.Windows.Forms.Button();
-            this.numericUD_DebugX = new System.Windows.Forms.NumericUpDown();
-            this.numericUD_DebugY = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
@@ -87,9 +90,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).BeginInit();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -519,12 +522,22 @@
             this.groupBox1.Controls.Add(this.tb_ResiveData);
             this.groupBox1.Controls.Add(this.lbl_bServerEmu);
             this.groupBox1.Controls.Add(this.lb_BServerConnect);
-            this.groupBox1.Location = new System.Drawing.Point(607, 103);
+            this.groupBox1.Location = new System.Drawing.Point(608, 178);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(243, 127);
             this.groupBox1.TabIndex = 31;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "bServer";
+            // 
+            // btn_bServerEmu
+            // 
+            this.btn_bServerEmu.Location = new System.Drawing.Point(163, 42);
+            this.btn_bServerEmu.Name = "btn_bServerEmu";
+            this.btn_bServerEmu.Size = new System.Drawing.Size(75, 23);
+            this.btn_bServerEmu.TabIndex = 31;
+            this.btn_bServerEmu.Text = "Emu接続";
+            this.btn_bServerEmu.UseVisualStyleBackColor = true;
+            this.btn_bServerEmu.Click += new System.EventHandler(this.btn_bServerEmu_Click);
             // 
             // cb_AccelOff
             // 
@@ -543,6 +556,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button2);
+            this.groupBox2.Controls.Add(this.button1);
+            this.groupBox2.Controls.Add(this.checkBox1);
             this.groupBox2.Controls.Add(this.tb_MapName);
             this.groupBox2.Controls.Add(this.btn_MapLoad);
             this.groupBox2.Controls.Add(this.numericUD_CheckPoint);
@@ -550,10 +566,39 @@
             this.groupBox2.Controls.Add(this.btn_VRReset);
             this.groupBox2.Location = new System.Drawing.Point(606, 4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(244, 95);
+            this.groupBox2.Size = new System.Drawing.Size(245, 168);
             this.groupBox2.TabIndex = 51;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Map";
+            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(161, 100);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 51;
+            this.button2.Text = "削減";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(161, 139);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 50;
+            this.button1.Text = "保存";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(8, 100);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(48, 16);
+            this.checkBox1.TabIndex = 49;
+            this.checkBox1.Text = "編集";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // numericUD_CheckPoint
             // 
@@ -591,9 +636,9 @@
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.label17);
             this.groupBox3.Controls.Add(this.label16);
-            this.groupBox3.Location = new System.Drawing.Point(607, 238);
+            this.groupBox3.Location = new System.Drawing.Point(608, 311);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(243, 266);
+            this.groupBox3.Size = new System.Drawing.Size(243, 231);
             this.groupBox3.TabIndex = 52;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Car Status";
@@ -616,6 +661,56 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(225, 109);
             this.panel1.TabIndex = 53;
+            // 
+            // numericUD_DebugY
+            // 
+            this.numericUD_DebugY.DecimalPlaces = 2;
+            this.numericUD_DebugY.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUD_DebugY.Location = new System.Drawing.Point(163, 53);
+            this.numericUD_DebugY.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUD_DebugY.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.numericUD_DebugY.Name = "numericUD_DebugY";
+            this.numericUD_DebugY.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_DebugY.TabIndex = 52;
+            this.numericUD_DebugY.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_DebugY.Click += new System.EventHandler(this.numericUD_DebugY_Click);
+            // 
+            // numericUD_DebugX
+            // 
+            this.numericUD_DebugX.DecimalPlaces = 2;
+            this.numericUD_DebugX.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUD_DebugX.Location = new System.Drawing.Point(163, 28);
+            this.numericUD_DebugX.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUD_DebugX.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.numericUD_DebugX.Name = "numericUD_DebugX";
+            this.numericUD_DebugX.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_DebugX.TabIndex = 51;
+            this.numericUD_DebugX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_DebugX.Click += new System.EventHandler(this.numericUD_DebugX_Click);
             // 
             // numericUD_DebugDir
             // 
@@ -685,66 +780,6 @@
             this.lbl_CarName.TabIndex = 45;
             this.lbl_CarName.Text = "Benz";
             // 
-            // btn_bServerEmu
-            // 
-            this.btn_bServerEmu.Location = new System.Drawing.Point(163, 42);
-            this.btn_bServerEmu.Name = "btn_bServerEmu";
-            this.btn_bServerEmu.Size = new System.Drawing.Size(75, 23);
-            this.btn_bServerEmu.TabIndex = 31;
-            this.btn_bServerEmu.Text = "Emu接続";
-            this.btn_bServerEmu.UseVisualStyleBackColor = true;
-            this.btn_bServerEmu.Click += new System.EventHandler(this.btn_bServerEmu_Click);
-            // 
-            // numericUD_DebugX
-            // 
-            this.numericUD_DebugX.DecimalPlaces = 2;
-            this.numericUD_DebugX.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
-            this.numericUD_DebugX.Location = new System.Drawing.Point(163, 28);
-            this.numericUD_DebugX.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numericUD_DebugX.Minimum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            -2147483648});
-            this.numericUD_DebugX.Name = "numericUD_DebugX";
-            this.numericUD_DebugX.Size = new System.Drawing.Size(52, 19);
-            this.numericUD_DebugX.TabIndex = 51;
-            this.numericUD_DebugX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.numericUD_DebugX.Click += new System.EventHandler(this.numericUD_DebugX_Click);
-            // 
-            // numericUD_DebugY
-            // 
-            this.numericUD_DebugY.DecimalPlaces = 2;
-            this.numericUD_DebugY.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
-            this.numericUD_DebugY.Location = new System.Drawing.Point(163, 53);
-            this.numericUD_DebugY.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numericUD_DebugY.Minimum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            -2147483648});
-            this.numericUD_DebugY.Name = "numericUD_DebugY";
-            this.numericUD_DebugY.Size = new System.Drawing.Size(52, 19);
-            this.numericUD_DebugY.TabIndex = 52;
-            this.numericUD_DebugY.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.numericUD_DebugY.Click += new System.EventHandler(this.numericUD_DebugY_Click);
-            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -762,7 +797,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner2 Ver0.22  Build:2017.04.23";
+            this.Text = "VehicleRunner2 Ver0.23  Build:2017.06.03";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VehicleRunnerForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VehicleRunnerForm_FormClosed);
             this.Load += new System.EventHandler(this.VehicleRunnerForm_Load);
@@ -779,9 +814,9 @@
             this.groupBox3.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUD_DebugDir)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -843,6 +878,9 @@
         private System.Windows.Forms.Button btn_bServerEmu;
         private System.Windows.Forms.NumericUpDown numericUD_DebugY;
         private System.Windows.Forms.NumericUpDown numericUD_DebugX;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button button2;
     }
 }
 

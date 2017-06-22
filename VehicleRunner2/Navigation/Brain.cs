@@ -12,6 +12,7 @@ using CersioIO;
 using Axiom.Math;       // Vector3D計算ライブラリ
 
 using System.Drawing;
+using VRSystemConfig;
 
 namespace Navigation
 {
@@ -203,7 +204,7 @@ namespace Navigation
                 //CarCtrl.SendCalcHandleAccelControl(getHandleValue(), getAccelValue());
 
                 // チェックポイントに向かうハンドル、　速度1.4Kmのアクセル
-                CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), 1.4);
+                CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), VRSetting.AccSpeedKm );
             }
             else
             {

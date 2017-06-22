@@ -77,6 +77,10 @@ namespace Location
 
             // チェックポイント　マップ座標から実座標へ変換
             rosCheckPoint = new List<Vector3>();
+            rosCheckPoint.Add(new Vector3((mapData.startPosition.x * scaleMapToM) - mapData.RealWidth * 0.5,
+                                           (-mapData.startPosition.y * scaleMapToM) + mapData.RealHeight * 0.5,
+                                           (mapData.startPosition.z * scaleMapToM)));
+
             foreach (var onePos in mapData.checkPoint)
             {
                 rosCheckPoint.Add(new Vector3( (onePos.x * scaleMapToM) - mapData.RealWidth * 0.5,
@@ -162,7 +166,7 @@ namespace Location
         }
 
         /// <summary>
-        /// 
+        /// ２点の直線上で、ahead分先に進んだ地点を返す
         /// </summary>
         /// <param name="A"></param>
         /// <param name="B"></param>
@@ -183,30 +187,40 @@ namespace Location
 
 
             Vector3 result = new Vector3();
+            Vector3 ABvecNorm = new Vector3();
+            double ABvecLeng = a.Length;
+            ABvecNorm.x = a.x / ABvecLeng;
+            ABvecNorm.y = a.y / ABvecLeng;
+
 
             if (r <= 0.0)
             {
                 // Aより手前
                 // AからaHead分前に進んだ場所
-                result.x = A.x + (aheadLength * a.x);
-                result.y = A.y + (aheadLength * a.y);
-                return result;
+                result.x = A.x + (aheadLength * ABvecNorm.x);
+                result.y = A.y + (aheadLength * ABvecNorm.y);
             }
             else if (r >= 1.0)
             {
                 // Bより奥
                 // BからaHead分前に進んだ場所
-                result.x = B.x + (aheadLength * a.x);
-                result.y = B.y + (aheadLength * a.y);
-                return result;
+                result.x = B.x + (aheadLength * ABvecNorm.x);
+                result.y = B.y + (aheadLength * ABvecNorm.y);
             }
             else
             {
                 // A->Bへの直線上の最寄りの点からAhead分進んだ場所
-                result.x = A.x + ((r + aheadLength) * a.x);
-                result.y = A.y + ((r + aheadLength) * a.y);
-                return result;
+                double vecLeng = ((r * ABvecLeng) + aheadLength);
+                result.x = A.x + (vecLeng * ABvecNorm.x);
+                result.y = A.y + (vecLeng * ABvecNorm.y);
             }
+
+            // B[目標地点] より先に進まない
+            if (nearestPoint(A, B, result) == B)
+            {
+                return B;
+            }
+            return result;
         }
 
         /// <summary>
@@ -244,7 +258,7 @@ namespace Location
         // リセット
         public void ResetSeq()
         {
-            SetCheckPoint(0);
+            SetCheckPoint(1);
             goalFlg = false;
         }
 
@@ -315,6 +329,15 @@ namespace Location
         {
             Vector3 dirVec = getCheckPoint(seqIdx+1) - getNowCheckPoint();
             return WorldVectorToRad(dirVec.x, dirVec.y);
+        }
+
+        /// <summary>
+        /// 現在の目標地点
+        /// </summary>
+        /// <returns></returns>
+        public Vector3 getNowTargetPositon()
+        {
+            return tgtPos;
         }
 
         /// <summary>

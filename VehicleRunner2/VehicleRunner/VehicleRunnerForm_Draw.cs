@@ -306,39 +306,53 @@ namespace VehicleRunner
                 }
             }
 
-        }
-/*
-        /// <summary>
-        /// 方眼紙モード
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="BrainCtrl"></param>
-        public void AreaMap_Draw_Ruler(Graphics g, ref Brain BrainCtrl, int canvWidth, int canvHeight )
-        {
-            LocationSystem LocSys = BrainCtrl.LocSys;
-            int toRulerSize = 50;  // 5mのピクセル数
-
-            int dfX = LocSys.worldMap.GetWorldX(0) % toRulerSize;
-            int dfY = LocSys.worldMap.GetWorldY(0) % toRulerSize;
-
-            // 横線
-            for( int iy=0; iy< canvHeight / toRulerSize; iy++ )
+            // ターゲット描画
             {
-                var P1 = new PointF(0.0f, (float)(iy * toRulerSize));
-                var P2 = new PointF((float)canvWidth, (float)(iy * toRulerSize));
+                Vector3 nowtgtPos = LocSys.RTS.getNowTargetPositon();
+                DrawMarkPoint tgtMk = new DrawMarkPoint(new MarkPoint(nowtgtPos.x, nowtgtPos.y, 0.0), LocSys);
 
-                g.DrawLine(Pens.LightGray, P1, P2);
-            }
-            // 縦線
-            for (int ix = 0; ix < canvWidth / toRulerSize; ix++)
-            {
-                var P1 = new PointF((float)(ix* toRulerSize), 0.0f);
-                var P2 = new PointF((float)(ix * toRulerSize), (float)canvHeight);
+                DrawMakerNoDir(g, Brushes.DeepPink, tgtMk, 6);
 
-                g.DrawLine(Pens.LightGray, P1, P2);
+                // ターゲットまでのライン
+                DrawMakerLine(g, 1.0f,
+                    new DrawMarkPoint(LocSys.R1, LocSys),
+                    tgtMk,
+                    Pens.DeepPink, 1);
             }
+
         }
-*/
+        /*
+                /// <summary>
+                /// 方眼紙モード
+                /// </summary>
+                /// <param name="g"></param>
+                /// <param name="BrainCtrl"></param>
+                public void AreaMap_Draw_Ruler(Graphics g, ref Brain BrainCtrl, int canvWidth, int canvHeight )
+                {
+                    LocationSystem LocSys = BrainCtrl.LocSys;
+                    int toRulerSize = 50;  // 5mのピクセル数
+
+                    int dfX = LocSys.worldMap.GetWorldX(0) % toRulerSize;
+                    int dfY = LocSys.worldMap.GetWorldY(0) % toRulerSize;
+
+                    // 横線
+                    for( int iy=0; iy< canvHeight / toRulerSize; iy++ )
+                    {
+                        var P1 = new PointF(0.0f, (float)(iy * toRulerSize));
+                        var P2 = new PointF((float)canvWidth, (float)(iy * toRulerSize));
+
+                        g.DrawLine(Pens.LightGray, P1, P2);
+                    }
+                    // 縦線
+                    for (int ix = 0; ix < canvWidth / toRulerSize; ix++)
+                    {
+                        var P1 = new PointF((float)(ix* toRulerSize), 0.0f);
+                        var P2 = new PointF((float)(ix * toRulerSize), (float)canvHeight);
+
+                        g.DrawLine(Pens.LightGray, P1, P2);
+                    }
+                }
+        */
         //static int areaMapDrawCnt = 0;
 
         /// <summary>
@@ -386,8 +400,7 @@ namespace VehicleRunner
             //LocSys.DrawWorldMap(g, viewScale);
             DrawMaker(g, viewScale, Brushes.Red, new DrawMarkPoint(LocSys.R1, LocSys), 10);
 
-            // ターゲット描画
-            
+            // チェックポイント描画
             {
                 double dir = 0;
 

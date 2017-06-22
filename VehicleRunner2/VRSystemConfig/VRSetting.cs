@@ -58,7 +58,8 @@ namespace VRSystemConfig
         /// <summary>
         /// 起動時のマップファイル名
         /// </summary>
-        public const string defaultMapFileName = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
+        //public const string defaultMapFileName = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
+        public const string defaultMapFileName = "../../../MapFile/refure201706/refure20170603.xml";
 
         /// <summary>
         /// チェックポイントに近づく距離(半径) [m]
@@ -79,6 +80,9 @@ namespace VRSystemConfig
         public const double AccControlPowUP = 0.050;
         /// <summary> 減速時の緩やかさ </summary>
         public const double AccControlPowDOWN = 0.050;
+
+        /// <summary> 移動速度[km] </summary>
+        public const double AccSpeedKm = 1.4;
 
         /*
                 /// <summary>

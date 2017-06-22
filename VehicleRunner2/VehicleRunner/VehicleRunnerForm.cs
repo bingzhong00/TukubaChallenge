@@ -164,7 +164,7 @@ namespace VehicleRunner
             //tm_SendCom.Enabled = true;
 
             // 設定されている車
-            lbl_CarName.Text = VRSetting.CarName;
+            lbl_CarName.Text = VRSetting.CarName; 
         }
 
         /// <summary>
@@ -625,6 +625,10 @@ namespace VehicleRunner
             CersioCt.Connect_bServer_Async(connectAddr);
         }
 
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
 
         /// <summary>
         /// 選択中チェックポイント

@@ -136,8 +136,8 @@ namespace Location
         {
             // 移動距離算出
             {
-                double dx = rosX - (E1.x / 1000.0);
-                double dy = rosY - (E1.y / 1000.0);
+                double dx = (rosX / 1000.0) - E1.x;
+                double dy = (rosY / 1000.0) - E1.y;
                 E1.distance += Math.Sqrt(dx * dx + dy * dy);
             }
 

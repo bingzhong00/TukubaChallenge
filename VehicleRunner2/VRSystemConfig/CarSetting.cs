@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 
 namespace VRSystemConfig
 {
-    /*
-    static public class CarSetting
+    public class CarSetting
     {
-        static string carName;
+        public string CarName;
     }
-
-    static CarSetting Cersio = { carName = ""; }
+    /*
+    static public class CarType {
+        CarSetting Cersio( carName = "" );
+    }
     */
-    
-    static public class Cersio // : CarSetting
+
+
+    static public class Cersio
     {
-        static string carName = "Cersio";
+        static string CarName = "Cersio";
     }
 
     static public class Benz // : CarSetting
     {
-        static string carName = "Benz";
+        static string CarName = "Benz";
     }
-
 
 }

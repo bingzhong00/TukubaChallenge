@@ -97,13 +97,13 @@ namespace CersioIO
             double deg = REncodeDataToDegree(reWR, reWL);
 
             // 右車輪 移動量
-            mov = WheelRotateToLength(reWR - reOldWR);
+            mov = -WheelRotateToLength(reWR - reOldWR);
 
             resXYWR.X += (mov * -Math.Cos(deg));
             resXYWR.Y += (mov * Math.Sin(deg));
 
             // 左車輪 移動量
-            mov = WheelRotateToLength(reWL - reOldWL);
+            mov = -WheelRotateToLength(reWL - reOldWL);
 
             resXYWL.X += (mov * -Math.Cos(deg));
             resXYWL.Y += (mov * Math.Sin(deg));
