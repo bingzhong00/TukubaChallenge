@@ -60,7 +60,7 @@ namespace VRSystemConfig
         /// 起動時のマップファイル名
         /// </summary>
         //public const string defaultMapFileName = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
-        public const string defaultMapFileName = "../../../MapFile/refure201706/refure20170603.xml";
+        public const string defaultMapFileName = "../../../MapFile/husky/check_point20170806_215906.xml";
 
         /// <summary>
         /// チェックポイントに近づく距離(半径) [m]
@@ -76,7 +76,7 @@ namespace VRSystemConfig
         public const double MaxHandleAngle = 20.0;
 
         // ハンドル、アクセルの変化係数
-        public const double HandleControlPow = 0.10;
+        public const double HandleControlPow = 0.25;//0.10;
         /// <summary> 加速時の緩やかさ </summary>
         public const double AccControlPowUP = 0.050;
         /// <summary> 減速時の緩やかさ </summary>

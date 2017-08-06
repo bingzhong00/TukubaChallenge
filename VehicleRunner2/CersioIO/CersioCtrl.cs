@@ -1,5 +1,6 @@
 ﻿//#define EMULATOR_MODE  // bServer エミュレーション起動
 
+#define SPEED_FROM_TF  // TF座標からスピードを算出
 
 using System;
 using System.Collections.Generic;
@@ -498,17 +499,20 @@ namespace CersioIO
                             // ロータリーエンコーダから　速度を計算
                             if (rsvCmd[i].Substring(0, 3) == "A1,")
                             {
-                                const double tireSize = VRSetting.TireSize;  // タイヤ直径 [mm]
-                                const double OnePuls = VRSetting.OnePulse;   // 一周のパルス数
                                 double ResiveMS;
                                 double ResReR, ResReL;
                                 string[] splStr = rsvCmd[i].Split(',');
+
+                                if (splStr.Length < 4) continue;
 
                                 // 0 A1
                                 double.TryParse(splStr[1], out ResiveMS);        // 小数点付き 秒
                                 double.TryParse(splStr[2], out ResReR);        // Right Wheel
                                 double.TryParse(splStr[3], out ResReL);        // Left Wheel
 
+#if !SPEED_FROM_TF
+                                const double tireSize = VRSetting.TireSize;  // タイヤ直径 [mm]
+                                const double OnePuls = VRSetting.OnePulse;   // 一周のパルス数
                                 {
                                     double SpeedSec = (double)System.Environment.TickCount / 1000.0;
 
@@ -527,7 +531,7 @@ namespace CersioIO
                                         SpeedUpdateCnt = 20;    // 速度情報　更新カウンタ (0になると古い情報として使わない)
                                     }
                                 }
-
+#endif
                                 // 取得した差分を加算する
                                 hwRErotR += ResReR;
                                 hwRErotL += ResReL;
@@ -543,6 +547,8 @@ namespace CersioIO
                                 double ResiveMS;
                                 int ResiveCmp;
                                 string[] splStr = rsvCmd[i].Split(',');
+
+                                if (splStr.Length < 3) continue;
 
                                 // splStr[0] "A2"
                                 // ミリ秒取得
@@ -561,17 +567,16 @@ namespace CersioIO
                                 string[] splStr = rsvCmd[i].Split(',');
 
                                 // データが足らないことがある
-                                if (splStr.Length >= 4)
-                                {
-                                    // splStr[0] "A3"
-                                    // ミリ秒取得
-                                    double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
+                                if (splStr.Length < 4) continue;
 
-                                    double.TryParse(splStr[2], out ResiveLandX);   // GPS値
-                                    double.TryParse(splStr[3], out ResiveLandY);
-                                    //bhwGPS = true;
-                                    //bhwUsbGPS = false;
-                                }
+                                // splStr[0] "A3"
+                                // ミリ秒取得
+                                double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
+
+                                double.TryParse(splStr[2], out ResiveLandX);   // GPS値
+                                double.TryParse(splStr[3], out ResiveLandY);
+                                //bhwGPS = true;
+                                //bhwUsbGPS = false;
                             }
                             else if (rsvCmd[i].Substring(0, 3) == "A4,")
                             {
@@ -595,6 +600,7 @@ namespace CersioIO
                                 double ResiveRad;
 
                                 string[] splStr = rsvCmd[i].Split(',');
+                                if (splStr.Length < 5) continue;
 
                                 // splStr[0] "A4"
                                 // ミリ秒取得
@@ -606,6 +612,29 @@ namespace CersioIO
                                 hwAMCL_X = ResiveX;
                                 hwAMCL_Y = ResiveY;
                                 hwAMCL_Ang = ResiveRad;
+
+#if SPEED_FROM_TF
+                                {
+                                    double SpeedSec = (double)System.Environment.TickCount / 1000.0;
+
+                                    // 0.2秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
+                                    if ((SpeedSec - oldSpeedSec) > 0.2)
+                                    {
+                                        // 速度計算(非動輪を基準)
+                                        double dx = (hwAMCL_X * 1000.0) - (oldWheelR * 1000.0);
+                                        double dy = (hwAMCL_Y * 1000.0) - (oldWheelL * 1000.0);
+                                        double dist = Math.Sqrt(dx * dx + dy * dy);
+
+                                        SpeedMmSec = (double)(dist / (SpeedSec - oldSpeedSec));
+
+                                        oldSpeedSec = SpeedSec;
+                                        oldWheelR = hwAMCL_X;
+                                        oldWheelL = hwAMCL_Y;
+
+                                        SpeedUpdateCnt = 20;    // 速度情報　更新カウンタ (0になると古い情報として使わない)
+                                    }
+                                }
+#endif
 
                                 if (!bhwAMCL)
                                 {
@@ -626,7 +655,9 @@ namespace CersioIO
                                 string[] splStr = rsvCmd[i].Split(',');
 
                                 // splStr[0] "M0"
-                                if (splStr.Length >= 8)
+                                if (splStr.Length < 8) continue;
+
+
                                 {
                                     // ミリ秒取得
                                     double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える

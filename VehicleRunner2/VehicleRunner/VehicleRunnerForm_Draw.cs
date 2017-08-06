@@ -441,7 +441,7 @@ namespace VehicleRunner
                     int Wd = 200;
                     int Ht = 15;
 
-                    float handleVal = (float)((Wd / 2) * (-CersioCt.nowSendHandleValue));
+                    float handleVal = (float)((Wd / 2) * (CersioCt.nowSendHandleValue));
                     if (handleVal > 0)
                     {
                         g.FillRectangle(Brushes.Red, stX + Wd / 2, stY, handleVal, Ht);
@@ -465,11 +465,13 @@ namespace VehicleRunner
                     float accVal = (float)((Wd / 2) * (CersioCt.nowSendAccValue));
                     if (accVal > 0)
                     {
-                        g.FillRectangle(Brushes.Red, stX + Wd / 2, stY, accVal, Ht);
+                        // 前進
+                        g.FillRectangle(Brushes.GreenYellow, stX + Wd / 2, stY, accVal, Ht);
                     }
                     else
                     {
-                        g.FillRectangle(Brushes.Red, stX + Wd / 2 + accVal, stY, -accVal, Ht);
+                        // 後退
+                        g.FillRectangle(Brushes.Yellow, stX + Wd / 2 + accVal, stY, -accVal, Ht);
                     }
                     g.DrawRectangle(Pens.White, stX, stY, Wd, Ht);
                     g.DrawLine(Pens.White, stX + Wd / 2, stY, stX + Wd / 2, stY + Ht);

@@ -80,10 +80,10 @@ namespace Location
         /// <param name="fnameMapBmp"></param>
         /// <param name="worldWith">実際のマップサイズ mm</param>
         /// <param name="worldHeight">実際のマップサイズ mm</param>
-        public LocationSystem(string _mapFileName)
+        public LocationSystem(MapData _mapData)
         {
             // 
-            mapData = MapData.LoadMapFile(_mapFileName);
+            mapData = _mapData;
 
             mapBmp = new Bitmap(mapData.MapImageFileName);
 

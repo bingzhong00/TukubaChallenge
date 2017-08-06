@@ -74,11 +74,6 @@ namespace VehicleRunner
         /// </summary>
         public bool bRunAutonomous = false;
 
-        /// <summary>
-        /// エミュ プロセス
-        /// </summary>
-        Process processCarEmu = null;
-
         // ハードウェア用 周期の短いカウンタ
         private int updateHwCnt = 0;
 
@@ -119,7 +114,7 @@ namespace VehicleRunner
             CersioCt.Connect_bServer(bServerEmuAddr);
 
             // ブレイン起動
-            BrainCtrl = new Brain(CersioCt, defaultMapFile);
+            BrainCtrl = new Brain(CersioCt, MapData.LoadMapFile(defaultMapFile));
 
             // マップウィンドウサイズのbmp作成
             formDraw.MakePictureBoxWorldMap( BrainCtrl.LocSys.mapBmp, picbox_AreaMap);
@@ -451,7 +446,8 @@ namespace VehicleRunner
                 BrainCtrl.LocSys.update_NowLocation(selSensor);
 
                 // 自律走行(緊急ブレーキ、壁よけ含む)処理 更新
-                BrainCtrl.AutonomousProc( cb_InDoorMode.Checked, bRunAutonomous );
+                double speedKmh = (double)numericUpDownCtrlSpeed.Value;
+                BrainCtrl.AutonomousProc( cb_InDoorMode.Checked, bRunAutonomous, speedKmh );
 
                 // 距離計
                 tb_Trip.Text = (LocSys.GetResultDistance_mm() * (1.0 / 1000.0)).ToString("f2");
@@ -479,10 +475,6 @@ namespace VehicleRunner
             {
                 lbl_BackProcess.Text = "モニタリング モード";
             }
-
-            // bServerエミュレーション表記
-            if (CersioCt.TCP_GetConnectedAddr() == bServerEmuAddr) lbl_bServerEmu.Visible = true;
-            else                                                   lbl_bServerEmu.Visible = false;
 
             // 画面描画
             PictureUpdate();
@@ -514,7 +506,7 @@ namespace VehicleRunner
         }
 
         /// <summary>
-        /// Map選択
+        /// Mapファイル読み込み選択
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -528,7 +520,7 @@ namespace VehicleRunner
                 tm_Update.Enabled = false;
 
                 // Mapロード
-                BrainCtrl = new Brain(CersioCt, dlg.FileName);
+                BrainCtrl = new Brain(CersioCt, MapData.LoadMapFile(dlg.FileName));
 
                 // マップウィンドウサイズのbmp作成
                 formDraw.MakePictureBoxWorldMap(BrainCtrl.LocSys.mapBmp, picbox_AreaMap);
@@ -540,7 +532,6 @@ namespace VehicleRunner
                 tm_Update.Enabled = true;
             }
         }
-
 
         bool bMouseMove = false;
         int MouseStX, MouseStY;
@@ -558,23 +549,6 @@ namespace VehicleRunner
         private void numericUD_CheckPoint_KeyPress(object sender, KeyPressEventArgs e)
         {
             numericUD_CheckPoint_Click(sender, null);
-        }
-
-        private void numericUD_DebugDir_Click(object sender, EventArgs e)
-        {
-            CersioCt.hwAMCL_Ang = (double)numericUD_DebugDir.Value;
-        }
-
-        private void numericUD_DebugX_Click(object sender, EventArgs e)
-        {
-            // 
-            CersioCt.hwAMCL_X = (double)numericUD_DebugX.Value;
-        }
-
-        private void numericUD_DebugY_Click(object sender, EventArgs e)
-        {
-            //
-            CersioCt.hwAMCL_Y = (double)numericUD_DebugY.Value;
         }
 
         // -----------------------------------------------------------------
@@ -600,26 +574,6 @@ namespace VehicleRunner
         private void btn_bServerEmu_Click(object sender, EventArgs e)
         {
             string connectAddr = bServerAddr;
-
-            if (null == processCarEmu || processCarEmu.HasExited)
-            {
-                if (Process.GetProcessesByName("CersioSim").Length == 0)
-                {
-                    Cursor.Current = Cursors.WaitCursor;
-
-                    // エミュレータ起動
-                    string stCurrentDir = System.IO.Directory.GetCurrentDirectory();
-                    stCurrentDir = stCurrentDir.Substring(0, stCurrentDir.IndexOf("\\VehicleRunner2"));
-                    processCarEmu = Process.Start(stCurrentDir + "\\VehicleRunner2\\CersioSim\\bin\\Release\\CersioSim.exe", BrainCtrl.LocSys.mapData.MapFileName);
-
-                    // 通信状態まで待つ
-                    Application.DoEvents();
-                    processCarEmu.WaitForInputIdle();
-                    System.Threading.Thread.Sleep(6000);
-
-                    Cursor.Current = Cursors.Default;
-                }
-            }
 
             // エミュレータIPアドレス
             connectAddr = bServerEmuAddr;
@@ -652,6 +606,7 @@ namespace VehicleRunner
                 tm_Update.Enabled = true;
             }
         }
+
 
         /// <summary>
         /// 選択中チェックポイント
