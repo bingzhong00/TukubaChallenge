@@ -69,6 +69,13 @@ namespace CersioIO
         public double hwAMCL_Y = 0.0;
         public double hwAMCL_Ang = 0.0;
 
+        // ROS move_base
+        public double hwMVBS_X = 0.0;
+        public double hwMVBS_Y = 0.0;
+        public double hwMVBS_Ang = 0.0;
+
+        
+
         /// <summary>
         /// AMCLを受信している
         /// </summary>
@@ -251,10 +258,13 @@ namespace CersioIO
 
                 // センサーデータ要求コマンド送信
                 // ロータリーエンコーダ値(回転累計)
-                SendCommand("A1" + "\n");
+                SendCommand("A1" + ",\n");
 
                 // ロータリーエンコーダ　絶対値取得
-                SendCommand("A4" + "\n");
+                SendCommand("A4" + ",\n");
+
+                // /MoveBase/cmd_vel値　取得
+                SendCommand("M0" + ",\n");
 
                 // コマンド送信
                 //SendCommandQue();
@@ -327,7 +337,7 @@ namespace CersioIO
         /// <param name="dir"></param>
         public void SendCommand_RE_OneRotatePulse_Reset(double wheelL, double wheelR)
         {
-            SendCommand("EP," + wheelL.ToString("f") + "," + wheelR.ToString("f") + "\n");
+            SendCommand("EP," + wheelL.ToString("f") + "," + wheelR.ToString("f") + ",\n");
         }
 
         /// <summary>
@@ -351,7 +361,7 @@ namespace CersioIO
             if (TCP_IsConnected())
             {
                 // LAN接続
-                SendCommand("AC," + sendHandle.ToString("f2") + "," + sendAccel.ToString("f2") + "\n");
+                SendCommand("AC," + sendHandle.ToString("f2") + "," + sendAccel.ToString("f3") + ",\n");
             }
             else if (null != UsbMotorDriveIO)
             {
@@ -373,7 +383,7 @@ namespace CersioIO
         {
             if (TCP_IsConnected())
             {
-                SendCommand("AP," + _cpX.ToString("f") + "," + _cpY.ToString("f") + "," + _cpDir.ToString("f") + "\n");
+                SendCommand("AP," + _cpX.ToString("f3") + "," + _cpY.ToString("f3") + "," + _cpDir.ToString("f3") + ",\n");
             }
         }
 
@@ -603,6 +613,35 @@ namespace CersioIO
                                     bhwTrgAMCL = true;
                                 }
                                 bhwAMCL = true;
+                            }
+                            else if (rsvCmd[i].Substring(0, 3) == "M0,")
+                            {
+                                // movebase情報
+                                // M0, LinierX, LinierY, LinierZ, AngleX, AngleY, AngleZ $
+                                double ResiveMS;
+
+                                double ResiveX;
+                                double ResiveY;
+                                double ResiveRad;
+                                string[] splStr = rsvCmd[i].Split(',');
+
+                                // splStr[0] "M0"
+                                if (splStr.Length >= 8)
+                                {
+                                    // ミリ秒取得
+                                    double.TryParse(splStr[1], out ResiveMS); // ms? 万ミリ秒に思える
+
+                                    double.TryParse(splStr[2], out ResiveX);  // ROS Linier X 
+                                    double.TryParse(splStr[3], out ResiveY);  // ROS Linier Y
+                                    //double.TryParse(splStr[4], out ResiveX);  // ROS Linier Z
+                                    //double.TryParse(splStr[5], out ResiveRad);  // Ros AnglerX
+                                    //double.TryParse(splStr[6], out ResiveRad);  // Ros AnglerY
+                                    double.TryParse(splStr[7], out ResiveRad);  // Ros AnglerZ
+
+                                    hwMVBS_X = ResiveX;
+                                    hwMVBS_Y = ResiveY;
+                                    hwMVBS_Ang = ResiveRad;
+                                }
                             }
 
                         }

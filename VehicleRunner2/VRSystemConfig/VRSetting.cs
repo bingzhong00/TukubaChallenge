@@ -38,7 +38,8 @@ namespace VRSystemConfig
         /// <summary>
         /// bServer IP Address
         /// </summary>
-        public const string bServerIPAddr = "192.168.1.101";
+        //public const string bServerIPAddr = "192.168.1.101";
+        public const string bServerIPAddr = "192.168.1.46";  // dynabook emu
 
         /// <summary>
         /// bServer エミュレータ IP Address

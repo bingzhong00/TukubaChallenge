@@ -185,9 +185,8 @@ namespace Navigation
                 // チェックポイントをROSへ指示
                 if (LocSys.RTS.TrgCheckPoint() || trg_bServerConnect)
                 {
-                    Vector3 checkPnt = LocSys.RTS.getNowCheckPoint();
-
-                    CarCtrl.SetCommandAP(checkPnt.x, checkPnt.y, LocSys.RTS.getCheckPointPoseDir());
+                    Vector3 checkPnt = LocSys.RTS.GetCheckPointToWayPoint();// LocSys.RTS.getNowCheckPoint();
+                    CarCtrl.SetCommandAP(checkPnt.x, checkPnt.y, checkPnt.z );
                 }
             }
 
@@ -204,7 +203,22 @@ namespace Navigation
                 //CarCtrl.SendCalcHandleAccelControl(getHandleValue(), getAccelValue());
 
                 // チェックポイントに向かうハンドル、　速度1.4Kmのアクセル
-                CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), VRSetting.AccSpeedKm );
+                // CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), VRSetting.AccSpeedKm );
+
+                // 走行指示出力
+                // move_base計算から、目標ハンドル、目標アクセル値を送る
+                //CarCtrl.SendCalcHandleAccelControl(CarCtrl.hwMVBS_Ang, getAccelValue());
+
+                double moveAng = -CarCtrl.hwMVBS_Ang;// * 0.3; 
+                if (CarCtrl.hwMVBS_X >= 0.5)
+                {
+                    //CarCtrl.SendCalcHandleSpeedControl(moveAng, VRSetting.AccSpeedKm);
+                    CarCtrl.SendCalcHandleAccelControl(moveAng, getAccelValue()*0.5);
+                }
+                else
+                {
+                    CarCtrl.SendCalcHandleAccelControl(moveAng, 0.0f);
+                }
             }
             else
             {
@@ -217,7 +231,7 @@ namespace Navigation
             if (!bServerConnectFlg && CarCtrl.TCP_IsConnected()) trg_bServerConnect = true;
 
             bServerConnectFlg = CarCtrl.TCP_IsConnected();
-            goalFlg = LocSys.RTS.getGoalFlg();
+            goalFlg = LocSys.RTS.GetGoalFlg();
             return goalFlg;
         }
 
@@ -258,12 +272,12 @@ namespace Navigation
                 // ルート進行
                 // ルート算定
                 // 現在座標更新
-                LocSys.RTS.setNowPostion(LocSys.GetResultLocationX(),
+                LocSys.RTS.SetNowPostion(LocSys.GetResultLocationX(),
                                   LocSys.GetResultLocationY(),
                                   LocSys.GetResultAngle());
 
                 // ルート計算
-                LocSys.RTS.calcRooting();
+                LocSys.RTS.CalcRooting();
 
                 // チェックポイント通過をLEDで伝える
                 if (LocSys.RTS.TrgCheckPoint())
@@ -322,8 +336,8 @@ namespace Navigation
                 // 通常時
 
                 // ルートにそったハンドル、アクセル値を取得
-                double handleTgt = LocSys.RTS.getHandleValue();
-                double accTgt = LocSys.RTS.getAccelValue();
+                double handleTgt = LocSys.RTS.GetHandleValue();
+                double accTgt = LocSys.RTS.GetAccelValue();
 
                 if( Math.Abs( handleTgt ) > 0.25 )
                 {

@@ -409,7 +409,7 @@ namespace VehicleRunner
                     if (BrainCtrl.LocSys.RTS.TrgCheckPoint())
                     {
                         // チェックポイント通過時に表示更新
-                        numericUD_CheckPoint.Value = BrainCtrl.LocSys.RTS.getCheckPointIdx();
+                        numericUD_CheckPoint.Value = BrainCtrl.LocSys.RTS.GetCheckPointIdx();
                     }
 
                     // BoxPC接続状態確認
@@ -465,6 +465,9 @@ namespace VehicleRunner
             // ハンドル、アクセル値　表示
             tb_AccelVal.Text = CersioCt.nowSendAccValue.ToString("f2");
             tb_HandleVal.Text = CersioCt.nowSendHandleValue.ToString("f2");
+
+            labelMoveBaseX.Text = CersioCt.hwMVBS_X.ToString("f2");
+            labelMoveBaseAng.Text = CersioCt.hwMVBS_Ang.ToString("f2");
 
             // 自律走行情報
             if (bRunAutonomous)
@@ -625,9 +628,29 @@ namespace VehicleRunner
             CersioCt.Connect_bServer_Async(connectAddr);
         }
 
-        private void groupBox2_Enter(object sender, EventArgs e)
+        /// <summary>
+        /// マップ保存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonMapSave_Click(object sender, EventArgs e)
         {
+            SaveFileDialog dlg = new SaveFileDialog();
 
+            dlg.FileName = BrainCtrl.LocSys.mapData.MapFileName;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                // 自己位置計算 一時停止
+                tm_Update.Enabled = false;
+
+                BrainCtrl.LocSys.mapData.MapFileName = dlg.FileName;
+
+                BrainCtrl.LocSys.mapData.SaveMapFile(dlg.FileName);
+
+                // 自己位置計算 再開
+                tm_Update.Enabled = true;
+            }
         }
 
         /// <summary>

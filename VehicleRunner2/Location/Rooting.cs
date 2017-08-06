@@ -16,6 +16,12 @@ namespace Location
     /// </summary>
     public class Rooting
     {
+        // TodoList.
+        /*
+         * ・現在位置、向きなどはパラメータでもらうようにして
+         * 　このクラスでは保持、管理しないようにする。
+         */ 
+
         double tgtDir;      // 目的の方向
         double tgtDist;     // 目的地までの距離
         Vector3 tgtPos;     // 目的の座標
@@ -68,7 +74,8 @@ namespace Location
         public List<Vector3> rosCheckPoint;
 
         /// <summary>
-        /// 
+        /// コンストラクタ
+        /// マップデータからルート情報を生成
         /// </summary>
         /// <param name="_mapData"></param>
         public Rooting(MapData _mapData, double scaleMapToM)
@@ -90,6 +97,32 @@ namespace Location
 
             ResetSeq();
             bCheckPointTrg = true;
+        }
+
+        /// <summary>
+        /// 現在のチェックポイントデータからMapDataを生成
+        /// </summary>
+        /// <param name="scaleMapToM"></param>
+        /// <returns></returns>
+        public MapData GetMapdata(double scaleMapToM)
+        {
+            MapData outputMapdata = new MapData();
+            outputMapdata = mapData;
+
+            // チェックポイント　マップ座標から実座標へ変換
+            outputMapdata.startPosition.x = (rosCheckPoint[0].x / scaleMapToM) + mapData.RealWidth * 0.5;
+            outputMapdata.startPosition.y = (-rosCheckPoint[0].y / scaleMapToM) - mapData.RealWidth * 0.5;
+            outputMapdata.startPosition.z = (rosCheckPoint[0].z / scaleMapToM);
+
+            outputMapdata.checkPoint = new Vector3[rosCheckPoint.Count-1];
+            for(int i=1;  i<rosCheckPoint.Count; i++ )
+            {
+                outputMapdata.checkPoint[i-1].x = (rosCheckPoint[i].x / scaleMapToM) + mapData.RealWidth * 0.5;
+                outputMapdata.checkPoint[i-1].y = (-rosCheckPoint[i].y / scaleMapToM) - mapData.RealWidth * 0.5;
+                outputMapdata.checkPoint[i-1].z = (rosCheckPoint[i].z / scaleMapToM);
+            }
+
+            return outputMapdata;
         }
 
         /// <summary>
@@ -117,13 +150,18 @@ namespace Location
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns>角度</returns>
-        public static double WorldVectorToRad(double x, double y)
+        public static double WorldPosToRad(double x, double y)
         {
             Vector3 tgtVec = new Vector3(x, y, 0);
             //Vector3 nothVec = new Vector3(0, -1, 0);
             Vector3 eastVec = new Vector3(1, 0, 0);
 
             return (VecToRad(tgtVec, eastVec));
+        }
+        
+        public static double WorldVectorToRad(Vector3 srcVec)
+        {
+            return (VecToRad(srcVec, new Vector3(1, 0, 0)));
         }
 
         /// <summary>
@@ -263,7 +301,7 @@ namespace Location
         }
 
         /// <summary>
-        /// チェックポイントセット
+        /// チェックポイントインデックス変更
         /// </summary>
         /// <param name="_setIdx"></param>
         public void SetCheckPoint(int _setIdx )
@@ -288,16 +326,16 @@ namespace Location
         /// <param name="posX"></param>
         /// <param name="posY"></param>
         /// <param name="dir"></param>
-        public void setNowPostion(double posX, double posY, double dir)
+        public void SetNowPostion(double posX, double posY, double dir)
         {
             nowDir = dir;
             nowPos.x = posX;
             nowPos.y = posY;
         }
 
-        public Vector3 getNowCheckPoint()
+        public Vector3 GetNowCheckPoint()
         {
-            return getCheckPoint(seqIdx);
+            return GetCheckPoint(seqIdx);
         }
 
         /// <summary>
@@ -305,7 +343,7 @@ namespace Location
         /// </summary>
         /// <param name="_seqIdx"></param>
         /// <returns></returns>
-        public Vector3 getCheckPoint(int _seqIdx)
+        public Vector3 GetCheckPoint(int _seqIdx)
         {
             Vector3 resVec = new Vector3();
 
@@ -325,17 +363,30 @@ namespace Location
         /// 次のチェックポイントへのむき
         /// </summary>
         /// <returns></returns>
-        public double getCheckPointPoseDir()
+        public Vector3 GetCheckPointToWayPoint(int cpIdx)
         {
-            Vector3 dirVec = getCheckPoint(seqIdx+1) - getNowCheckPoint();
-            return WorldVectorToRad(dirVec.x, dirVec.y);
+            if ((cpIdx + 1) == mapData.checkPoint.Length)
+            {
+                // ゴールひとつ手前
+                // まっすぐゴールに向かう
+                return CalcWayPoint(GetCheckPoint(cpIdx - 1), GetCheckPoint(cpIdx));
+            }
+            else
+            {
+                return CalcWayPoint(GetCheckPoint(cpIdx - 1), GetCheckPoint(cpIdx), GetCheckPoint(cpIdx + 1));
+            }
+        }
+
+        public Vector3 GetCheckPointToWayPoint()
+        {
+            return GetCheckPointToWayPoint(seqIdx);
         }
 
         /// <summary>
         /// 現在の目標地点
         /// </summary>
         /// <returns></returns>
-        public Vector3 getNowTargetPositon()
+        public Vector3 GetNowTargetPositon()
         {
             return tgtPos;
         }
@@ -344,7 +395,7 @@ namespace Location
         /// 目標への角度
         /// </summary>
         /// <param name="dir"></param>
-        public double getNowTargetDir()
+        public double GetNowTargetDir()
         {
             return tgtDir;
         }
@@ -354,7 +405,7 @@ namespace Location
         /// 現在の向き
         /// </summary>
         /// <returns>角度</returns>
-        public double getNowDir()
+        public double GetNowDir()
         {
             return nowDir;
         }
@@ -363,7 +414,7 @@ namespace Location
         /// 目的方向へのハンドルの角度(向けたい方向)
         /// </summary>
         /// <returns>角度</returns>
-        public double getNowTargetStearingDir()
+        public double GetNowTargetStearingDir()
         {
             return tgtStearingDir;
         }
@@ -372,7 +423,7 @@ namespace Location
         /// チェックポイントのインデックス
         /// </summary>
         /// <returns></returns>
-        public int getCheckPointIdx()
+        public int GetCheckPointIdx()
         {
             return seqIdx;
         }
@@ -381,7 +432,7 @@ namespace Location
         /// チェックポイントの数
         /// </summary>
         /// <returns></returns>
-        public int getNumCheckPoints()
+        public int GetNumCheckPoints()
         {
             return mapData.checkPoint.Length;
         }
@@ -390,7 +441,7 @@ namespace Location
         /// ゴールしたか？
         /// </summary>
         /// <returns></returns>
-        public bool getGoalFlg()
+        public bool GetGoalFlg()
         {
             return goalFlg;
         }
@@ -408,7 +459,7 @@ namespace Location
         /// <summary>
         /// チェックポイント間ルーティング
         /// </summary>
-        public void calcRooting()
+        public void CalcRooting()
         {
             bCheckPointTrg = false;
 
@@ -418,32 +469,20 @@ namespace Location
             // チェックポイント短絡　判定
             // ターゲットがある程度の範囲内で、向きが大幅に違う場合パスする。
 #if CHECKPOINT_PASS
-#if true
-            if (JadgeCheckPointPass(getCheckPoint(seqIdx-1), getCheckPoint(seqIdx), nowPos))
+            if (JadgeCheckPointPass(GetCheckPoint(seqIdx-1), GetCheckPoint(seqIdx), nowPos))
             {
                 SetCheckPoint(seqIdx + 1);
             }
-#else
-            if (Math.Abs(getNowTargetDir() - nowDir) > passOverDir)
-            {
-                if (GetCheckPointDistance(nowPos) < passRange)
-                {
-                    //Brain.addLogMsg += "PassTarget:" + seqIdx.ToString() +",NowDir "+getNowTargetDir().ToString()+",TgtDir "+tgtDir.ToString() + "\n";
-                    SetCheckPoint(seqIdx+1);
-                    calcCheckPoint();
-                }
-            }
-#endif
 #endif
             // 
-            calcCheckPoint();
+            CalcCheckPoint();
         }
 
         /// <summary>
         /// チェックポイントを探す
         /// </summary>
         /// <returns>ゴール判定</returns>
-        private bool calcCheckPoint()
+        private bool CalcCheckPoint()
         {
             // ゴールしてたら計算しない
             if (goalFlg || seqIdx >= mapData.checkPoint.Count())
@@ -454,7 +493,7 @@ namespace Location
 
             // チェックポイントに到達したか？
             {
-                double dist = (getCheckPoint(seqIdx) - nowPos).Length;
+                double dist = (GetCheckPoint(seqIdx) - nowPos).Length;
 
                 if (dist < touchRange) SetCheckPoint(seqIdx + 1);
 
@@ -470,7 +509,7 @@ namespace Location
             //tgtPos = getCheckPoint(seqIdx);
 
             // チェックポイント間の直線上の2m先をターゲットとする
-            tgtPos = nearestAHeadPoint(getCheckPoint(seqIdx - 1), getCheckPoint(seqIdx), nowPos, 2.0);
+            tgtPos = nearestAHeadPoint(GetCheckPoint(seqIdx - 1), GetCheckPoint(seqIdx), nowPos, 2.0);
 
             // 目標方向
             {
@@ -486,13 +525,81 @@ namespace Location
         }
         
         /// <summary>
-        /// 現在のチェックポイントまでの距離
+        /// 現在位置から、指定のチェックポイントまでの距離
         /// </summary>
         /// <param name="vPos"></param>
         /// <returns></returns>
-        private double GetCheckPointDistance( Vector3 vPos )
+        private double GetCheckPointDistance( int cpIndex )
         {
-            return (rosCheckPoint[seqIdx] - nowPos).Length;
+            return (rosCheckPoint[cpIndex] - nowPos).Length;
+        }
+
+        /// <summary>
+        /// ３つのチェックポイントから中間のチェックポイント通過時の向きを返す
+        /// </summary>
+        /// <param name="cpPrev"></param>
+        /// <param name="cpNow"></param>
+        /// <param name="cpNext"></param>
+        /// <returns></returns>
+        public double Calc3CheckPointAngle(Vector3 cpPrev, Vector3 cpNow, Vector3 cpNext)
+        {
+            Vector3 vec1 = cpNow - cpPrev;
+            Vector3 vec2 = cpNext - cpNow;
+
+            return WorldVectorToRad((vec1 + vec2));
+        }
+
+        public double Calc2CheckPointAngle(Vector3 cpPrev, Vector3 cpNow)
+        {
+            Vector3 vec1 = cpNow - cpPrev;
+            return WorldVectorToRad(vec1);
+        }
+
+        // ROS用　ウェイポイント作成
+        public Vector3 CalcWayPoint( Vector3 cpPrev, Vector3 cpNow, Vector3 cpNext)
+        {
+            double angle = Calc3CheckPointAngle(cpPrev, cpNow, cpNext);
+            return new Vector3(cpNow.x, cpNow.y, angle);
+        }
+
+        // ROS用　ウェイポイント作成 ゴール直前
+        public Vector3 CalcWayPoint(Vector3 cpPrev, Vector3 cpNow )
+        {
+            double angle = Calc2CheckPointAngle(cpPrev, cpNow);
+            return new Vector3(cpNow.x, cpNow.y, angle);
+        }
+
+        /// <summary>
+        /// チェックポイント削減
+        /// </summary>
+        /// <param name="reductAngleRange">許容角度</param>
+        /// <returns></returns>
+        public int CheckPointReduction(double reductAngleRange)
+        {
+            if (rosCheckPoint.Count < 2) return rosCheckPoint.Count;
+
+            List<Vector3> newCp = new List<Vector3>();
+            double cpAngle;
+
+            // スタート地点格納
+            newCp.Add(rosCheckPoint[0]);
+            cpAngle = Calc2CheckPointAngle(rosCheckPoint[0], rosCheckPoint[1]);
+            for (int i=1; i<rosCheckPoint.Count-1; i++ )
+            {
+                double wkAngle = Calc2CheckPointAngle(rosCheckPoint[i], rosCheckPoint[i+1]);
+
+                // 許容角度以上の差があればチェックポイント格納
+                if (Math.Abs(wkAngle - cpAngle) > reductAngleRange)
+                {
+                    newCp.Add(rosCheckPoint[i]);
+                    cpAngle = wkAngle;
+                }
+            }
+            // ゴール地点格納
+            newCp.Add(rosCheckPoint[rosCheckPoint.Count - 1]);
+
+            rosCheckPoint = newCp;
+            return rosCheckPoint.Count;
         }
 
 
@@ -500,7 +607,7 @@ namespace Location
         /// ハンドリング
         /// </summary>
         /// <returns></returns>
-        public double getHandleValue()
+        public double GetHandleValue()
         {
             return CalcHandleValue( tgtDir, nowDir, ref tgtStearingDir, tgtDist);
         }
@@ -565,7 +672,7 @@ namespace Location
         /// アクセル値計算
         /// </summary>
         /// <returns></returns>
-        public double getAccelValue()
+        public double GetAccelValue()
         {
             const double maxSpeed = 1.0;
 

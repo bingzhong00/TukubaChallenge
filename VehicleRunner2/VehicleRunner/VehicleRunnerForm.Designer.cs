@@ -68,9 +68,10 @@
             this.btn_bServerEmu = new System.Windows.Forms.Button();
             this.cb_AccelOff = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ButtonCheckPointReduction = new System.Windows.Forms.Button();
+            this.ButtonMapSave = new System.Windows.Forms.Button();
             this.numericUD_CheckPoint = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -82,11 +83,15 @@
             this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             this.label13 = new System.Windows.Forms.Label();
             this.lbl_CarName = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.labelMoveBaseX = new System.Windows.Forms.Label();
+            this.labelMoveBaseAng = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -128,9 +133,9 @@
             // btn_VRReset
             // 
             this.btn_VRReset.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn_VRReset.Location = new System.Drawing.Point(179, 62);
+            this.btn_VRReset.Location = new System.Drawing.Point(180, 56);
             this.btn_VRReset.Name = "btn_VRReset";
-            this.btn_VRReset.Size = new System.Drawing.Size(62, 25);
+            this.btn_VRReset.Size = new System.Drawing.Size(61, 25);
             this.btn_VRReset.TabIndex = 12;
             this.btn_VRReset.Text = "リセット";
             this.btn_VRReset.UseVisualStyleBackColor = true;
@@ -360,7 +365,7 @@
             // 
             this.lbl_LED.AutoSize = true;
             this.lbl_LED.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_LED.Location = new System.Drawing.Point(61, 50);
+            this.lbl_LED.Location = new System.Drawing.Point(197, 20);
             this.lbl_LED.Name = "lbl_LED";
             this.lbl_LED.Size = new System.Drawing.Size(28, 16);
             this.lbl_LED.TabIndex = 5;
@@ -370,7 +375,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label10.Location = new System.Drawing.Point(12, 50);
+            this.label10.Location = new System.Drawing.Point(155, 20);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(39, 16);
             this.label10.TabIndex = 0;
@@ -556,60 +561,72 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.button1);
-            this.groupBox2.Controls.Add(this.checkBox1);
+            this.groupBox2.Controls.Add(this.groupBox4);
             this.groupBox2.Controls.Add(this.tb_MapName);
-            this.groupBox2.Controls.Add(this.btn_MapLoad);
             this.groupBox2.Controls.Add(this.numericUD_CheckPoint);
-            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.btn_MapLoad);
             this.groupBox2.Controls.Add(this.btn_VRReset);
+            this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Location = new System.Drawing.Point(606, 4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(245, 168);
             this.groupBox2.TabIndex = 51;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Map";
-            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
-            // button2
+            // groupBox4
             // 
-            this.button2.Location = new System.Drawing.Point(161, 100);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 51;
-            this.button2.Text = "削減";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(161, 139);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 50;
-            this.button1.Text = "保存";
-            this.button1.UseVisualStyleBackColor = true;
+            this.groupBox4.Controls.Add(this.checkBox1);
+            this.groupBox4.Controls.Add(this.ButtonCheckPointReduction);
+            this.groupBox4.Controls.Add(this.ButtonMapSave);
+            this.groupBox4.Location = new System.Drawing.Point(8, 99);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(228, 63);
+            this.groupBox4.TabIndex = 52;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "チェックポイント編集";
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(8, 100);
+            this.checkBox1.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.checkBox1.Location = new System.Drawing.Point(144, 13);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(48, 16);
+            this.checkBox1.Size = new System.Drawing.Size(52, 17);
             this.checkBox1.TabIndex = 49;
             this.checkBox1.Text = "編集";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // ButtonCheckPointReduction
+            // 
+            this.ButtonCheckPointReduction.Location = new System.Drawing.Point(6, 34);
+            this.ButtonCheckPointReduction.Name = "ButtonCheckPointReduction";
+            this.ButtonCheckPointReduction.Size = new System.Drawing.Size(75, 23);
+            this.ButtonCheckPointReduction.TabIndex = 51;
+            this.ButtonCheckPointReduction.Text = "削減";
+            this.ButtonCheckPointReduction.UseVisualStyleBackColor = true;
+            // 
+            // ButtonMapSave
+            // 
+            this.ButtonMapSave.Location = new System.Drawing.Point(144, 34);
+            this.ButtonMapSave.Name = "ButtonMapSave";
+            this.ButtonMapSave.Size = new System.Drawing.Size(75, 23);
+            this.ButtonMapSave.TabIndex = 50;
+            this.ButtonMapSave.Text = "保存";
+            this.ButtonMapSave.UseVisualStyleBackColor = true;
+            this.ButtonMapSave.Click += new System.EventHandler(this.ButtonMapSave_Click);
+            // 
             // numericUD_CheckPoint
             // 
-            this.numericUD_CheckPoint.Location = new System.Drawing.Point(99, 65);
+            this.numericUD_CheckPoint.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.numericUD_CheckPoint.Location = new System.Drawing.Point(99, 56);
             this.numericUD_CheckPoint.Maximum = new decimal(new int[] {
             999,
             0,
             0,
             0});
             this.numericUD_CheckPoint.Name = "numericUD_CheckPoint";
-            this.numericUD_CheckPoint.Size = new System.Drawing.Size(52, 19);
+            this.numericUD_CheckPoint.Size = new System.Drawing.Size(75, 23);
             this.numericUD_CheckPoint.TabIndex = 44;
             this.numericUD_CheckPoint.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUD_CheckPoint.Click += new System.EventHandler(this.numericUD_CheckPoint_Click);
@@ -619,7 +636,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label11.Location = new System.Drawing.Point(5, 65);
+            this.label11.Location = new System.Drawing.Point(5, 61);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(88, 16);
             this.label11.TabIndex = 43;
@@ -627,6 +644,9 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.labelMoveBaseAng);
+            this.groupBox3.Controls.Add(this.labelMoveBaseX);
+            this.groupBox3.Controls.Add(this.label12);
             this.groupBox3.Controls.Add(this.panel1);
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.lbl_CarName);
@@ -780,6 +800,36 @@
             this.lbl_CarName.TabIndex = 45;
             this.lbl_CarName.Text = "Benz";
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label12.Location = new System.Drawing.Point(12, 50);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(80, 16);
+            this.label12.TabIndex = 54;
+            this.label12.Text = "moveBase:";
+            // 
+            // labelMoveBaseX
+            // 
+            this.labelMoveBaseX.AutoSize = true;
+            this.labelMoveBaseX.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.labelMoveBaseX.Location = new System.Drawing.Point(98, 50);
+            this.labelMoveBaseX.Name = "labelMoveBaseX";
+            this.labelMoveBaseX.Size = new System.Drawing.Size(28, 16);
+            this.labelMoveBaseX.TabIndex = 55;
+            this.labelMoveBaseX.Text = "ND";
+            // 
+            // labelMoveBaseAng
+            // 
+            this.labelMoveBaseAng.AutoSize = true;
+            this.labelMoveBaseAng.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.labelMoveBaseAng.Location = new System.Drawing.Point(188, 50);
+            this.labelMoveBaseAng.Name = "labelMoveBaseAng";
+            this.labelMoveBaseAng.Size = new System.Drawing.Size(28, 16);
+            this.labelMoveBaseAng.TabIndex = 56;
+            this.labelMoveBaseAng.Text = "ND";
+            // 
             // VehicleRunnerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -797,7 +847,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner2 Ver0.23  Build:2017.06.03";
+            this.Text = "VehicleRunner2 Ver0.30  Build:2017.07.25";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VehicleRunnerForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VehicleRunnerForm_FormClosed);
             this.Load += new System.EventHandler(this.VehicleRunnerForm_Load);
@@ -809,6 +859,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -878,9 +930,13 @@
         private System.Windows.Forms.Button btn_bServerEmu;
         private System.Windows.Forms.NumericUpDown numericUD_DebugY;
         private System.Windows.Forms.NumericUpDown numericUD_DebugX;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ButtonMapSave;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button ButtonCheckPointReduction;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label labelMoveBaseAng;
+        private System.Windows.Forms.Label labelMoveBaseX;
+        private System.Windows.Forms.Label label12;
     }
 }
 

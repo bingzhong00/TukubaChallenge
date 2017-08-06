@@ -276,39 +276,41 @@ namespace VehicleRunner
                 double prvPosX = LocSys.R1.x;
                 double prvPosY = LocSys.R1.y;
 
-                for (int i = LocSys.RTS.getCheckPointIdx(); i < LocSys.RTS.getNumCheckPoints(); i++)
+                for (int i = LocSys.RTS.GetCheckPointIdx(); i < LocSys.RTS.GetNumCheckPoints(); i++)
                 {
-                    Vector3 tgtPos = LocSys.RTS.getCheckPoint(i);
+                    //Vector3 checkPnt = LocSys.RTS.GetCheckPoint(i);
+                    Vector3 checkPnt = LocSys.RTS.GetCheckPointToWayPoint(i);
 
                     //BrainCtrl.RTS.getNowTargetDir(ref dir);
-                    DrawMarkPoint tgtMk = new DrawMarkPoint( new MarkPoint(tgtPos.x, tgtPos.y, 0.0), LocSys);
+                    DrawMarkPoint checkPntMk = new DrawMarkPoint( new MarkPoint(checkPnt.x, checkPnt.y, 0.0), LocSys);
+                    checkPntMk.theta = -checkPnt.z;
 
                     if (selCpIndex == i)
                     {
                         // 選択中のチェックポイント
-                        DrawMakerNoDir(g, Brushes.Purple, tgtMk, 8);
+                        DrawMaker(g, Brushes.Purple, checkPntMk, 8);
                     }
                     else
                     {
-                        DrawMakerNoDir(g, Brushes.GreenYellow, tgtMk, 8);
+                        DrawMaker(g, Brushes.GreenYellow, checkPntMk, 8);
                     }
 
                     // ターゲットまでのライン
                     DrawMakerLine(g, 1.0f,
                         new DrawMarkPoint( new MarkPoint(prvPosX, prvPosY, 0), LocSys),
-                        tgtMk,
+                        checkPntMk,
                         Pens.Olive, 1);
 
-                    g.DrawString(i.ToString("D2"), fntMini, Brushes.Green, tgtMk.x, tgtMk.y );
+                    g.DrawString(i.ToString("D2"), fntMini, Brushes.Green, checkPntMk.x, checkPntMk.y );
 
-                    prvPosX = tgtPos.x;
-                    prvPosY = tgtPos.y;
+                    prvPosX = checkPnt.x;
+                    prvPosY = checkPnt.y;
                 }
             }
 
-            // ターゲット描画
+            // ターゲット描画(ハンドル操作がVRの場合)
             {
-                Vector3 nowtgtPos = LocSys.RTS.getNowTargetPositon();
+                Vector3 nowtgtPos = LocSys.RTS.GetNowTargetPositon();
                 DrawMarkPoint tgtMk = new DrawMarkPoint(new MarkPoint(nowtgtPos.x, nowtgtPos.y, 0.0), LocSys);
 
                 DrawMakerNoDir(g, Brushes.DeepPink, tgtMk, 6);
@@ -406,9 +408,9 @@ namespace VehicleRunner
 
                 DrawMarkPoint prvPos = new DrawMarkPoint(LocSys.R1, LocSys);
 
-                for (int i = LocSys.RTS.getCheckPointIdx(); i < LocSys.RTS.getNumCheckPoints(); i++)
+                for (int i = LocSys.RTS.GetCheckPointIdx(); i < LocSys.RTS.GetNumCheckPoints(); i++)
                 {
-                    Vector3 tgtPos = LocSys.RTS.getCheckPoint(i);
+                    Vector3 tgtPos = LocSys.RTS.GetCheckPoint(i);
                     //BrainCtrl.RTS.getNowTargetDir(ref dir);
                     DrawMarkPoint tgtMk = new DrawMarkPoint( new MarkPoint(tgtPos.x, tgtPos.y, dir), LocSys);
 
@@ -491,7 +493,7 @@ namespace VehicleRunner
             // 現在の向き
             {
                 int dx = 40;
-                double ang = -BrainCtrl.LocSys.RTS.getNowDir();
+                double ang = -BrainCtrl.LocSys.RTS.GetNowDir();
                 DrawMaker(g, Brushes.Red, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
                 g.DrawString("CarDir", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
@@ -500,7 +502,7 @@ namespace VehicleRunner
             // 相手の向き
             {
                 int dx = 100;
-                double ang = -BrainCtrl.LocSys.RTS.getNowTargetDir();
+                double ang = -BrainCtrl.LocSys.RTS.GetNowTargetDir();
                 DrawMaker(g, Brushes.Purple, dx, dirMarkBaseY, ang, 12);
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
                 g.DrawString("CPTarget", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);
@@ -509,7 +511,7 @@ namespace VehicleRunner
             // 向けたいハンドル角度
             {
                 int dx = 160;
-                double ang = -BrainCtrl.LocSys.RTS.getNowTargetStearingDir();
+                double ang = -BrainCtrl.LocSys.RTS.GetNowTargetStearingDir();
                 DrawMaker(g, Brushes.Cyan, dx, dirMarkBaseY, ang, 12, -90.0 / 180.0 * Math.PI );
                 g.DrawString(ang.ToString("F1"), fntMini, Brushes.White, dx - 25, baseY + 120);
                 g.DrawString("Handle", fntMini, Brushes.White, dx - 25, dirMarkBaseY + 20);

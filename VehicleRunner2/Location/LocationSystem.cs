@@ -189,9 +189,9 @@ namespace Location
 
             double minLen = 999.0;
             int idx = -1;
-            for (int i = RTS.getCheckPointIdx(); i < RTS.getNumCheckPoints(); i++)
+            for (int i = RTS.GetCheckPointIdx(); i < RTS.GetNumCheckPoints(); i++)
             {
-                Vector3 tgtPos = RTS.getCheckPoint(i);
+                Vector3 tgtPos = RTS.GetCheckPoint(i);
                 double tgtLen = (tgtPos - checkPos).Length;
 
                 // 一番近いチェックポイントをさがす
