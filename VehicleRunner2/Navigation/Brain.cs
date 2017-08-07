@@ -158,7 +158,7 @@ namespace Navigation
         /// <param name="bIndoorMode">屋内モード</param>
         /// <param name="bCtrlOutput">CarCtrlに動作出力</param>
         /// <returns></returns>
-        public bool AutonomousProc( bool bIndoorMode, bool bCtrlOutput, double SpeedKmh )
+        public bool AutonomousProc( bool bRunAutonomous, bool bIndoorMode, bool bCtrlOutput, double SpeedKmh )
         {
             // すべてのルートを回りゴールした。
             if (goalFlg)
@@ -184,7 +184,7 @@ namespace Navigation
             {
                 backCnt = 0;
 
-                // チェックポイントをROSへ指示
+                // チェックポイントをROSへ指示(bServer接続時も配信)
                 if (LocSys.RTS.TrgCheckPoint() || trg_bServerConnect)
                 {
                     Vector3 checkPnt = LocSys.RTS.GetCheckPointToWayPoint();// LocSys.RTS.getNowCheckPoint();
@@ -196,20 +196,11 @@ namespace Navigation
             //EHS.SetSensorRange(bIndoorMode);
 
             // 自走処理
-            bNowBackProcess = ModeUpdate(LocSys);
+            bNowBackProcess = ModeUpdate(LocSys, bRunAutonomous);
 
             if (bCtrlOutput)
             {
                 // 走行指示出力
-                // ルート計算から、目標ハンドル、目標アクセル値を送る
-                //CarCtrl.SendCalcHandleAccelControl(getHandleValue(), getAccelValue());
-
-                // チェックポイントに向かうハンドル、　速度1.4Kmのアクセル
-                // CarCtrl.SendCalcHandleSpeedControl(getHandleValue(), VRSetting.AccSpeedKm );
-
-                // 走行指示出力
-                // move_base計算から、目標ハンドル、目標アクセル値を送る
-                //CarCtrl.SendCalcHandleAccelControl(CarCtrl.hwMVBS_Ang, getAccelValue());
 
                 // ROSの回転角度から、Benzハンドル角度の上限に合わせる
                 double angLimit = (CarCtrl.hwMVBS_Ang * 180.0 / Math.PI);
@@ -222,14 +213,17 @@ namespace Navigation
                 if (CarCtrl.hwMVBS_X >= 0.5)
                 {
                     // move_baseから前進指示の場合
-                    CarCtrl.SendCalcHandleSpeedControl(moveAng, VRSetting.AccSpeedKm);
+                    CarCtrl.CalcHandleAccelSlowControl( moveAng, CarCtrl.CalcSpeedControl(VRSetting.AccSpeedKm) );
                     //CarCtrl.SendCalcHandleAccelControl(moveAng, getAccelValue()*0.5);
                 }
                 else
                 {
                     // move_baseから停止状態
-                    CarCtrl.SendCalcHandleAccelControl(moveAng, 0.0f);
+                    CarCtrl.CalcHandleAccelSlowControl( moveAng, 0.0f);
                 }
+
+                // ACコマンド送信
+                CarCtrl.SetCommandAC(CarCtrl.nowSendHandleValue, CarCtrl.nowSendAccValue);
             }
             else
             {
@@ -238,11 +232,13 @@ namespace Navigation
                 CarCtrl.nowSendHandleValue = 0.0f;
             }
 
+            // 接続トリガ取得
             trg_bServerConnect = false;
             if (!bServerConnectFlg && CarCtrl.TCP_IsConnected()) trg_bServerConnect = true;
 
             bServerConnectFlg = CarCtrl.TCP_IsConnected();
-            goalFlg = LocSys.RTS.GetGoalFlg();
+
+            goalFlg = LocSys.RTS.GetGoalStatus();
             return goalFlg;
         }
 
@@ -273,7 +269,7 @@ namespace Navigation
         /// <param name="bStraightMode">直進モード</param>
         /// <returns>true...バック中(緊急動作しない)</returns>
         /// 
-        public bool ModeUpdate(LocationSystem LocSys)
+        public bool ModeUpdate(LocationSystem LocSys, bool bRunAutonomous )
         {
             // Rooting ------------------------------------------------------------------------------------------------
             ModeCtrl.update();
@@ -288,7 +284,7 @@ namespace Navigation
                                   LocSys.GetResultAngle());
 
                 // ルート計算
-                LocSys.RTS.CalcRooting();
+                LocSys.RTS.CalcRooting(bRunAutonomous);
 
                 // チェックポイント通過をLEDで伝える
                 if (LocSys.RTS.TrgCheckPoint())

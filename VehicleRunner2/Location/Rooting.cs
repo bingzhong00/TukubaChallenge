@@ -296,7 +296,7 @@ namespace Location
         // リセット
         public void ResetSeq()
         {
-            SetCheckPoint(1);
+            SetCheckPointIndex(1);
             goalFlg = false;
         }
 
@@ -304,7 +304,7 @@ namespace Location
         /// チェックポイントインデックス変更
         /// </summary>
         /// <param name="_setIdx"></param>
-        public void SetCheckPoint(int _setIdx )
+        public void SetCheckPointIndex(int _setIdx )
         {
             if (_setIdx < mapData.checkPoint.Length)
             {
@@ -358,6 +358,32 @@ namespace Location
             return resVec;
         }
 
+        /// <summary>
+        /// チェックポイント更新
+        /// </summary>
+        /// <param name="_seqIdx"></param>
+        /// <param name="pos"></param>
+        public void SetCheckPoint(int _seqIdx, Vector3 pos )
+        {
+            if (_seqIdx < 0 || _seqIdx >= rosCheckPoint.Count) return;
+
+            rosCheckPoint.Remove(rosCheckPoint[_seqIdx]);
+            rosCheckPoint.Insert( _seqIdx, new Vector3(pos.x, pos.y, pos.z));
+        }
+
+        public void AddCheckPoint(int _seqIdx, Vector3 pos)
+        {
+            if (_seqIdx < 0 || _seqIdx >= rosCheckPoint.Count) return;
+
+            rosCheckPoint.Insert(_seqIdx, new Vector3(pos.x, pos.y, pos.z));
+        }
+        public void RemoveCheckPoint(int _seqIdx )
+        {
+            if (_seqIdx < 0 || _seqIdx >= rosCheckPoint.Count) return;
+
+            rosCheckPoint.Remove(rosCheckPoint[_seqIdx]);
+        }
+        
         /// <summary>
         /// チェックポイントでの目標向きを求める
         /// 次のチェックポイントへのむき
@@ -441,7 +467,7 @@ namespace Location
         /// ゴールしたか？
         /// </summary>
         /// <returns></returns>
-        public bool GetGoalFlg()
+        public bool GetGoalStatus()
         {
             return goalFlg;
         }
@@ -459,7 +485,7 @@ namespace Location
         /// <summary>
         /// チェックポイント間ルーティング
         /// </summary>
-        public void CalcRooting()
+        public void CalcRooting(bool bCheckPointPass )
         {
             bCheckPointTrg = false;
 
@@ -468,12 +494,13 @@ namespace Location
 
             // チェックポイント短絡　判定
             // ターゲットがある程度の範囲内で、向きが大幅に違う場合パスする。
-#if CHECKPOINT_PASS
-            if (JadgeCheckPointPass(GetCheckPoint(seqIdx-1), GetCheckPoint(seqIdx), nowPos))
+            if (bCheckPointPass)
             {
-                SetCheckPoint(seqIdx + 1);
+                if (JadgeCheckPointPass(GetCheckPoint(seqIdx - 1), GetCheckPoint(seqIdx), nowPos))
+                {
+                    SetCheckPointIndex(seqIdx + 1);
+                }
             }
-#endif
             // 
             CalcCheckPoint();
         }
@@ -493,20 +520,25 @@ namespace Location
 
             // チェックポイントに到達したか？
             {
+                // チェックポイントとの距離を計算
                 double dist = (GetCheckPoint(seqIdx) - nowPos).Length;
 
-                if (dist < touchRange) SetCheckPoint(seqIdx + 1);
-
-                // ゴール判定
-                if (seqIdx >= mapData.checkPoint.Count())
+                if (dist < touchRange)
                 {
-                    goalFlg = true;
-                    return true;
+                    int nextSeqIdx = seqIdx + 1;
+
+                    // ゴール判定
+                    if (nextSeqIdx >= mapData.checkPoint.Count())
+                    {
+                        goalFlg = true;
+                        return true;
+                    }
+                    else
+                    {
+                        SetCheckPointIndex(nextSeqIdx);
+                    }
                 }
             }
-
-            // 目標座標
-            //tgtPos = getCheckPoint(seqIdx);
 
             // チェックポイント間の直線上の2m先をターゲットとする
             tgtPos = nearestAHeadPoint(GetCheckPoint(seqIdx - 1), GetCheckPoint(seqIdx), nowPos, 2.0);

@@ -47,6 +47,16 @@ namespace VehicleRunner
             //end
         };
 
+        // Gridの配列
+        enum GeridRow : int {
+             CarType = 0,
+             LED,
+             RE,
+             Plot,
+             MoveBase,
+             CmdVel,
+        };
+
         /// <summary>
         /// セルシオ管理 クラス
         /// </summary>
@@ -145,6 +155,14 @@ namespace VehicleRunner
             // 表示位置指定
             this.SetDesktopLocation(0, 0);
 
+            dataGridViewReceiveData.Rows.Add("CarType", VRSetting.CarName, "", "");
+            dataGridViewReceiveData.Rows.Add("LED", "", "", "");
+            dataGridViewReceiveData.Rows.Add("RotaryEnc", "L:", "R:", "");
+            dataGridViewReceiveData.Rows.Add("Plot(tf)", "", "", "");
+            dataGridViewReceiveData.Rows.Add("MoveBase", "", "", "");
+            dataGridViewReceiveData.Rows.Add("CmdVel", "", "", "");
+
+
             // マップ名設定
             tb_MapName.Text = BrainCtrl.LocSys.mapData.MapName;
 
@@ -156,10 +174,8 @@ namespace VehicleRunner
             // 位置管理定期処理タイマー起動
             tm_Update.Enabled = true;
 
-            //tm_SendCom.Enabled = true;
-
-            // 設定されている車
-            lbl_CarName.Text = VRSetting.CarName; 
+            groupBoxModifi.Enabled = checkBoxCheckPointModifi.Checked;
+            
         }
 
         /// <summary>
@@ -344,8 +360,10 @@ namespace VehicleRunner
                     // ロータリーエンコーダ（タイヤ回転数）情報
                     if (CersioCt.bhwRE)
                     {
-                        lbl_RErotR.Text = CersioCt.hwRErotR.ToString("f1");
-                        lbl_RErotL.Text = CersioCt.hwRErotL.ToString("f1");
+                        //lbl_RErotR.Text = CersioCt.hwRErotR.ToString("f1");
+                        //lbl_RErotL.Text = CersioCt.hwRErotL.ToString("f1");
+                        dataGridViewReceiveData.Rows[(int)GeridRow.RE].Cells[1].Value = "L:" + CersioCt.hwRErotL.ToString("f1");
+                        dataGridViewReceiveData.Rows[(int)GeridRow.RE].Cells[2].Value = "R:" + CersioCt.hwRErotR.ToString("f1");
                     }
 
                     // AMCL
@@ -378,7 +396,8 @@ namespace VehicleRunner
                     // LED状態 画面表示
                     if (CersioCt.LEDCtrl.ptnHeadLED == -1)
                     {
-                        lbl_LED.Text = "ND";
+                        //lbl_LED.Text = "ND";
+                        dataGridViewReceiveData.Rows[(int)GeridRow.LED].Cells[1].Value = "None";
                     }
                     else
                     {
@@ -389,16 +408,21 @@ namespace VehicleRunner
                             ledStr += "," + LEDControl.LEDMessage[CersioCt.LEDCtrl.ptnHeadLED];
                         }
 
+                        dataGridViewReceiveData.Rows[(int)GeridRow.LED].Cells[1].Value = ledStr;
+                        /*
                         if (!ledStr.Equals(lbl_LED.Text))
                         {
                             lbl_LED.Text = ledStr;
-                        }
+                        }*/
                     }
 
                     // 現在座標 表示
-                    lbl_REPlotX.Text = LocSys.GetResultLocationX().ToString("F2");
-                    lbl_REPlotY.Text = LocSys.GetResultLocationY().ToString("F2");
-                    lbl_REPlotDir.Text = LocSys.GetResultAngle().ToString("F2");
+                    //lbl_REPlotX.Text = LocSys.GetResultLocationX().ToString("F2");
+                    //lbl_REPlotY.Text = LocSys.GetResultLocationY().ToString("F2");
+                    //lbl_REPlotDir.Text = LocSys.GetResultAngle().ToString("F2");
+                    dataGridViewReceiveData.Rows[(int)GeridRow.Plot].Cells[1].Value = LocSys.GetResultLocationX().ToString("F2");
+                    dataGridViewReceiveData.Rows[(int)GeridRow.Plot].Cells[2].Value = LocSys.GetResultLocationY().ToString("F2");
+                    dataGridViewReceiveData.Rows[(int)GeridRow.Plot].Cells[3].Value = LocSys.GetResultAngle().ToString("F2");
 
                     // CheckPointIndex
                     if (BrainCtrl.LocSys.RTS.TrgCheckPoint())
@@ -447,13 +471,13 @@ namespace VehicleRunner
 
                 // 自律走行(緊急ブレーキ、壁よけ含む)処理 更新
                 double speedKmh = (double)numericUpDownCtrlSpeed.Value;
-                BrainCtrl.AutonomousProc( cb_InDoorMode.Checked, bRunAutonomous, speedKmh );
+                BrainCtrl.AutonomousProc(bRunAutonomous, cb_InDoorMode.Checked, bRunAutonomous, speedKmh );
 
                 // 距離計
                 tb_Trip.Text = (LocSys.GetResultDistance_mm() * (1.0 / 1000.0)).ToString("f2");
             }
 
-            // REからのスピード表示
+            // スピード表示
             tb_RESpeed.Text = ((CersioCt.SpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");    // Km/Hour
             //tb_RESpeed.Text = (CersioCt.SpeedMmSec).ToString("f2"); // mm/Sec
 
@@ -462,8 +486,16 @@ namespace VehicleRunner
             tb_AccelVal.Text = CersioCt.nowSendAccValue.ToString("f2");
             tb_HandleVal.Text = CersioCt.nowSendHandleValue.ToString("f2");
 
-            labelMoveBaseX.Text = CersioCt.hwMVBS_X.ToString("f2");
-            labelMoveBaseAng.Text = CersioCt.hwMVBS_Ang.ToString("f2");
+            //labelMoveBaseX.Text = CersioCt.hwMVBS_X.ToString("f2");
+            //labelMoveBaseAng.Text = CersioCt.hwMVBS_Ang.ToString("f2");
+
+            dataGridViewReceiveData.Rows[(int)GeridRow.MoveBase].Cells[1].Value = CersioCt.hwMVBS_X.ToString("f2");
+            dataGridViewReceiveData.Rows[(int)GeridRow.MoveBase].Cells[2].Value = CersioCt.hwMVBS_Y.ToString("f2");
+            dataGridViewReceiveData.Rows[(int)GeridRow.MoveBase].Cells[3].Value = CersioCt.hwMVBS_Ang.ToString("f2");
+
+            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[1].Value = CersioCt.nowSendAccValue.ToString("f2");
+            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[2].Value = "0.00";
+            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[3].Value = CersioCt.nowSendHandleValue.ToString("f2");
 
             // 自律走行情報
             if (bRunAutonomous)
@@ -543,27 +575,12 @@ namespace VehicleRunner
             //
             int idx = (int)numericUD_CheckPoint.Value;
             LocationSystem LocSys = BrainCtrl.LocSys;
-            LocSys.RTS.SetCheckPoint(idx);
+            LocSys.RTS.SetCheckPointIndex(idx);
         }
 
         private void numericUD_CheckPoint_KeyPress(object sender, KeyPressEventArgs e)
         {
             numericUD_CheckPoint_Click(sender, null);
-        }
-
-        // -----------------------------------------------------------------
-        // マップスクロール
-        private void picbox_AreaMap_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left && selAreaMapMode == MAP_MODE.AREA_MAP)
-            {
-                //
-                bMouseMove = true;
-                MouseStX = e.X;
-                MouseStY = e.Y;
-                viewMoveAddX = 0;
-                viewMoveAddY = 0;
-            }
         }
 
         /// <summary>
@@ -608,10 +625,85 @@ namespace VehicleRunner
         }
 
 
+        // -----------------------------------------------------------------
+        // マップスクロール
+        private void picbox_AreaMap_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && selAreaMapMode == MAP_MODE.AREA_MAP)
+            {
+                //どの修飾子キー(Shift、Ctrl、およびAlt)が押されているか
+                /*
+                if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    Console.WriteLine("Shiftキーが押されています。");
+                if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    Console.WriteLine("Ctrlキーが押されています。");
+                if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
+                    Console.WriteLine("Altキーが押されています。");
+                */
+                if (checkBoxCheckPointModifi.Checked)
+                {
+                    LocationSystem LocSys = BrainCtrl.LocSys;
+                    int msPosX = e.X - (picbox_AreaMap.Width / 2) + viewScrollX;
+                    int msPosY = e.Y - (picbox_AreaMap.Height / 2) + viewScrollY;
+                    MarkPoint mouseRosPos = new MarkPoint(new DrawMarkPoint(msPosX, msPosY, 0.0), LocSys);
+
+                    if ( (Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    {
+                        // 移動チェックポイント選択
+                        selCpIndex = LocSys.GetCheckPointIndex(mouseRosPos.x, mouseRosPos.y);
+                        if (selCpIndex != -1)
+                        {
+                            // 移動チェックポイント取得
+                            moveCpPos = LocSys.RTS.GetCheckPoint(selCpIndex);
+                        }
+                    }
+                    else if (radioButtonPointAdd.Checked)
+                    {
+                        // チェックポイント新規追加
+                        Vector3 baseCpPos = new Vector3(mouseRosPos.x, mouseRosPos.y, 0.0);
+
+                        LocSys.RTS.AddCheckPoint((int)numericUD_CheckPoint.Value, baseCpPos);
+                    }
+                    else if (radioButtonPointDelete.Checked)
+                    {
+                        // チェックポイント削除
+                        Vector3 baseCpPos = new Vector3(mouseRosPos.x, mouseRosPos.y, 0.0);
+
+                        selCpIndex = LocSys.GetCheckPointIndex(mouseRosPos.x, mouseRosPos.y);
+                        if (selCpIndex != -1)
+                        {
+                            LocSys.RTS.RemoveCheckPoint(selCpIndex);
+                        }
+                        selCpIndex = -1;
+                    }
+                    else
+                    {
+                        // スクロール
+                        bMouseMove = true;
+                    }
+                }
+                else
+                {
+                    // スクロール
+                    bMouseMove = true;
+                }
+
+                MouseStX = e.X;
+                MouseStY = e.Y;
+                viewMoveAddX = 0;
+                viewMoveAddY = 0;
+            }
+        }
+
         /// <summary>
         /// 選択中チェックポイント
         /// </summary>
         int selCpIndex = -1;
+
+        /// <summary>
+        /// 移動前チェックポイント
+        /// </summary>
+        Vector3 moveCpPos;
 
         private void picbox_AreaMap_MouseMove(object sender, MouseEventArgs e)
         {
@@ -623,6 +715,31 @@ namespace VehicleRunner
                     viewMoveAddX = (MouseStX - e.X);
                     viewMoveAddY = (MouseStY - e.Y);
                 }
+                else if (selCpIndex != -1)
+                {
+                    LocationSystem LocSys = BrainCtrl.LocSys;
+                    
+                    int msPosX = (e.X - MouseStX);
+                    int msPosY = (e.Y - MouseStY);
+                    MarkPoint _checkPos = new MarkPoint(new DrawMarkPoint(msPosX, msPosY, 0.0), LocSys);
+
+                    Vector3 baseCpPos = new Vector3((moveCpPos.x + _checkPos.x)
+                                                  , (moveCpPos.y + _checkPos.y)
+                                                  , 0.0);
+
+                    /*
+                    Vector3 baseCpPos = new Vector3( (moveCpPos.x + -(MouseStX - e.X) * LocSys.MapTom)
+                                                   , (moveCpPos.y + (MouseStY - e.Y) * LocSys.MapTom)
+                                                   , 0.0 );
+                    */
+
+                    Vector3 nowCpPos = LocSys.RTS.GetCheckPoint(selCpIndex);
+
+                    if (nowCpPos != baseCpPos)
+                    {
+                        LocSys.RTS.SetCheckPoint(selCpIndex, baseCpPos);
+                    }
+                }
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -631,12 +748,6 @@ namespace VehicleRunner
             {
                 if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
                 {
-                    LocationSystem LocSys = BrainCtrl.LocSys;
-                    int msPosX = e.X - (picbox_AreaMap.Width / 2) + viewScrollX;
-                    int msPosY = e.Y - (picbox_AreaMap.Height / 2) + viewScrollY;
-                    MarkPoint _checkPos = new MarkPoint(new DrawMarkPoint(msPosX, msPosY, 0.0), LocSys);
-
-                    selCpIndex = LocSys.GetCheckPointIndex(_checkPos.x, _checkPos.y);
                 }
             }
         }
@@ -646,10 +757,13 @@ namespace VehicleRunner
             //
             if (e.Button == MouseButtons.Left && selAreaMapMode == MAP_MODE.AREA_MAP)
             {
-                viewMoveAddX = 0;
-                viewMoveAddY = 0;
-                viewScrollX += (MouseStX - e.X);
-                viewScrollY += (MouseStY - e.Y);
+                if (bMouseMove)
+                {
+                    viewMoveAddX = 0;
+                    viewMoveAddY = 0;
+                    viewScrollX += (MouseStX - e.X);
+                    viewScrollY += (MouseStY - e.Y);
+                }
             }
             bMouseMove = false;
             selCpIndex = -1;
@@ -665,5 +779,16 @@ namespace VehicleRunner
             if (cb_AccelOff.Checked) CersioCt.bSendAccel = false;
             else CersioCt.bSendAccel = true;
         }
+
+        /// <summary>
+        /// 編集ボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBoxCheckPointModifi_CheckedChanged(object sender, EventArgs e)
+        {
+            groupBoxModifi.Enabled = checkBoxCheckPointModifi.Checked;
+        }
+
     }
 }

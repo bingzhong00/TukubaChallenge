@@ -40,21 +40,12 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tb_RESpeed = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.lbl_RErotL = new System.Windows.Forms.Label();
-            this.lbl_RErotR = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.lbl_REPlotDir = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.lbl_REPlotY = new System.Windows.Forms.Label();
-            this.lbl_REPlotX = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.lbl_LED = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
             this.lb_BServerConnect = new System.Windows.Forms.Label();
             this.gb_DriveControl = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.numericUpDownCtrlSpeed = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.tb_Trip = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -65,41 +56,32 @@
             this.tb_MapName = new System.Windows.Forms.TextBox();
             this.cb_AccelOff = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.numericUD_CheckPoint = new System.Windows.Forms.NumericUpDown();
             this.checkBoxCheckPointModifi = new System.Windows.Forms.CheckBox();
+            this.groupBoxModifi = new System.Windows.Forms.GroupBox();
+            this.radioButtonPointDelete = new System.Windows.Forms.RadioButton();
+            this.radioButtonPointMove = new System.Windows.Forms.RadioButton();
+            this.radioButtonPointAdd = new System.Windows.Forms.RadioButton();
             this.ButtonCheckPointReduction = new System.Windows.Forms.Button();
             this.ButtonCheckPointFileSave = new System.Windows.Forms.Button();
-            this.numericUD_CheckPoint = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.labelMoveBaseAng = new System.Windows.Forms.Label();
-            this.labelMoveBaseX = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.lbl_CarName = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
-            this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
-            this.radioButtonPointAdd = new System.Windows.Forms.RadioButton();
-            this.radioButtonPointMove = new System.Windows.Forms.RadioButton();
-            this.radioButtonPointDelete = new System.Windows.Forms.RadioButton();
             this.dataGridViewReceiveData = new System.Windows.Forms.DataGridView();
             this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.numericUpDownCtrlSpeed = new System.Windows.Forms.NumericUpDown();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
+            this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCtrlSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).BeginInit();
+            this.groupBoxModifi.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewReceiveData)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCtrlSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // picbox_AreaMap
@@ -263,126 +245,6 @@
             this.label8.TabIndex = 35;
             this.label8.Text = "km/h";
             // 
-            // lbl_RErotL
-            // 
-            this.lbl_RErotL.AutoSize = true;
-            this.lbl_RErotL.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_RErotL.Location = new System.Drawing.Point(58, 63);
-            this.lbl_RErotL.Name = "lbl_RErotL";
-            this.lbl_RErotL.Size = new System.Drawing.Size(28, 16);
-            this.lbl_RErotL.TabIndex = 17;
-            this.lbl_RErotL.Text = "ND";
-            // 
-            // lbl_RErotR
-            // 
-            this.lbl_RErotR.AutoSize = true;
-            this.lbl_RErotR.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_RErotR.Location = new System.Drawing.Point(185, 63);
-            this.lbl_RErotR.Name = "lbl_RErotR";
-            this.lbl_RErotR.Size = new System.Drawing.Size(28, 16);
-            this.lbl_RErotR.TabIndex = 16;
-            this.lbl_RErotR.Text = "ND";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label17.Location = new System.Drawing.Point(9, 63);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(43, 16);
-            this.label17.TabIndex = 15;
-            this.label17.Text = "Re L:";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label16.Location = new System.Drawing.Point(135, 63);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(44, 16);
-            this.label16.TabIndex = 14;
-            this.label16.Text = "Re R:";
-            // 
-            // lbl_REPlotDir
-            // 
-            this.lbl_REPlotDir.AutoSize = true;
-            this.lbl_REPlotDir.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REPlotDir.Location = new System.Drawing.Point(76, 133);
-            this.lbl_REPlotDir.Name = "lbl_REPlotDir";
-            this.lbl_REPlotDir.Size = new System.Drawing.Size(28, 16);
-            this.lbl_REPlotDir.TabIndex = 13;
-            this.lbl_REPlotDir.Text = "ND";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label18.Location = new System.Drawing.Point(10, 133);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(55, 16);
-            this.label18.TabIndex = 12;
-            this.label18.Text = "plotDir:";
-            // 
-            // lbl_REPlotY
-            // 
-            this.lbl_REPlotY.AutoSize = true;
-            this.lbl_REPlotY.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REPlotY.Location = new System.Drawing.Point(67, 109);
-            this.lbl_REPlotY.Name = "lbl_REPlotY";
-            this.lbl_REPlotY.Size = new System.Drawing.Size(28, 16);
-            this.lbl_REPlotY.TabIndex = 11;
-            this.lbl_REPlotY.Text = "ND";
-            // 
-            // lbl_REPlotX
-            // 
-            this.lbl_REPlotX.AutoSize = true;
-            this.lbl_REPlotX.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_REPlotX.Location = new System.Drawing.Point(67, 84);
-            this.lbl_REPlotX.Name = "lbl_REPlotX";
-            this.lbl_REPlotX.Size = new System.Drawing.Size(28, 16);
-            this.lbl_REPlotX.TabIndex = 10;
-            this.lbl_REPlotX.Text = "ND";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label15.Location = new System.Drawing.Point(10, 109);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(45, 16);
-            this.label15.TabIndex = 9;
-            this.label15.Text = "plotY:";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label14.Location = new System.Drawing.Point(10, 84);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(46, 16);
-            this.label14.TabIndex = 8;
-            this.label14.Text = "plotX:";
-            // 
-            // lbl_LED
-            // 
-            this.lbl_LED.AutoSize = true;
-            this.lbl_LED.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_LED.Location = new System.Drawing.Point(194, 8);
-            this.lbl_LED.Name = "lbl_LED";
-            this.lbl_LED.Size = new System.Drawing.Size(28, 16);
-            this.lbl_LED.TabIndex = 5;
-            this.lbl_LED.Text = "ND";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label10.Location = new System.Drawing.Point(152, 8);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(39, 16);
-            this.label10.TabIndex = 0;
-            this.label10.Text = "LED:";
-            // 
             // cb_InDoorMode
             // 
             this.cb_InDoorMode.AutoSize = true;
@@ -427,6 +289,57 @@
             this.gb_DriveControl.TabIndex = 40;
             this.gb_DriveControl.TabStop = false;
             this.gb_DriveControl.Text = "DriveControl";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label20.Location = new System.Drawing.Point(368, 30);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(84, 13);
+            this.label20.TabIndex = 47;
+            this.label20.Text = "ControlSpeed";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label19.Location = new System.Drawing.Point(553, 27);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(43, 16);
+            this.label19.TabIndex = 46;
+            this.label19.Text = "km/h";
+            // 
+            // numericUpDownCtrlSpeed
+            // 
+            this.numericUpDownCtrlSpeed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.numericUpDownCtrlSpeed.DecimalPlaces = 1;
+            this.numericUpDownCtrlSpeed.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.numericUpDownCtrlSpeed.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numericUpDownCtrlSpeed.Location = new System.Drawing.Point(452, 18);
+            this.numericUpDownCtrlSpeed.Maximum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.numericUpDownCtrlSpeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numericUpDownCtrlSpeed.Name = "numericUpDownCtrlSpeed";
+            this.numericUpDownCtrlSpeed.Size = new System.Drawing.Size(95, 31);
+            this.numericUpDownCtrlSpeed.TabIndex = 45;
+            this.numericUpDownCtrlSpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDownCtrlSpeed.Value = new decimal(new int[] {
+            13,
+            0,
+            0,
+            65536});
             // 
             // label2
             // 
@@ -531,7 +444,7 @@
             this.groupBox2.Controls.Add(this.numericUD_CheckPoint);
             this.groupBox2.Controls.Add(this.checkBoxCheckPointModifi);
             this.groupBox2.Controls.Add(this.btn_VRReset);
-            this.groupBox2.Controls.Add(this.groupBox4);
+            this.groupBox2.Controls.Add(this.groupBoxModifi);
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.tb_MapName);
             this.groupBox2.Controls.Add(this.btn_MapLoad);
@@ -542,19 +455,21 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Map";
             // 
-            // groupBox4
+            // numericUD_CheckPoint
             // 
-            this.groupBox4.Controls.Add(this.radioButtonPointDelete);
-            this.groupBox4.Controls.Add(this.radioButtonPointMove);
-            this.groupBox4.Controls.Add(this.radioButtonPointAdd);
-            this.groupBox4.Controls.Add(this.ButtonCheckPointReduction);
-            this.groupBox4.Controls.Add(this.ButtonCheckPointFileSave);
-            this.groupBox4.Location = new System.Drawing.Point(8, 109);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(298, 84);
-            this.groupBox4.TabIndex = 52;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "チェックポイント編集";
+            this.numericUD_CheckPoint.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.numericUD_CheckPoint.Location = new System.Drawing.Point(152, 53);
+            this.numericUD_CheckPoint.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
+            this.numericUD_CheckPoint.Name = "numericUD_CheckPoint";
+            this.numericUD_CheckPoint.Size = new System.Drawing.Size(75, 23);
+            this.numericUD_CheckPoint.TabIndex = 44;
+            this.numericUD_CheckPoint.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUD_CheckPoint.Click += new System.EventHandler(this.numericUD_CheckPoint_Click);
+            this.numericUD_CheckPoint.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericUD_CheckPoint_KeyPress);
             // 
             // checkBoxCheckPointModifi
             // 
@@ -566,6 +481,53 @@
             this.checkBoxCheckPointModifi.TabIndex = 49;
             this.checkBoxCheckPointModifi.Text = "編集モード";
             this.checkBoxCheckPointModifi.UseVisualStyleBackColor = true;
+            this.checkBoxCheckPointModifi.CheckedChanged += new System.EventHandler(this.checkBoxCheckPointModifi_CheckedChanged);
+            // 
+            // groupBoxModifi
+            // 
+            this.groupBoxModifi.Controls.Add(this.radioButtonPointDelete);
+            this.groupBoxModifi.Controls.Add(this.radioButtonPointMove);
+            this.groupBoxModifi.Controls.Add(this.radioButtonPointAdd);
+            this.groupBoxModifi.Controls.Add(this.ButtonCheckPointReduction);
+            this.groupBoxModifi.Controls.Add(this.ButtonCheckPointFileSave);
+            this.groupBoxModifi.Location = new System.Drawing.Point(8, 109);
+            this.groupBoxModifi.Name = "groupBoxModifi";
+            this.groupBoxModifi.Size = new System.Drawing.Size(298, 84);
+            this.groupBoxModifi.TabIndex = 52;
+            this.groupBoxModifi.TabStop = false;
+            this.groupBoxModifi.Text = "チェックポイント編集";
+            // 
+            // radioButtonPointDelete
+            // 
+            this.radioButtonPointDelete.AutoSize = true;
+            this.radioButtonPointDelete.Location = new System.Drawing.Point(11, 58);
+            this.radioButtonPointDelete.Name = "radioButtonPointDelete";
+            this.radioButtonPointDelete.Size = new System.Drawing.Size(47, 16);
+            this.radioButtonPointDelete.TabIndex = 54;
+            this.radioButtonPointDelete.Text = "削除";
+            this.radioButtonPointDelete.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonPointMove
+            // 
+            this.radioButtonPointMove.AutoSize = true;
+            this.radioButtonPointMove.Checked = true;
+            this.radioButtonPointMove.Location = new System.Drawing.Point(11, 38);
+            this.radioButtonPointMove.Name = "radioButtonPointMove";
+            this.radioButtonPointMove.Size = new System.Drawing.Size(104, 16);
+            this.radioButtonPointMove.TabIndex = 53;
+            this.radioButtonPointMove.TabStop = true;
+            this.radioButtonPointMove.Text = "移動(Ctrl+Drag)";
+            this.radioButtonPointMove.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonPointAdd
+            // 
+            this.radioButtonPointAdd.AutoSize = true;
+            this.radioButtonPointAdd.Location = new System.Drawing.Point(11, 18);
+            this.radioButtonPointAdd.Name = "radioButtonPointAdd";
+            this.radioButtonPointAdd.Size = new System.Drawing.Size(71, 16);
+            this.radioButtonPointAdd.TabIndex = 52;
+            this.radioButtonPointAdd.Text = "新規追加";
+            this.radioButtonPointAdd.UseVisualStyleBackColor = true;
             // 
             // ButtonCheckPointReduction
             // 
@@ -586,22 +548,6 @@
             this.ButtonCheckPointFileSave.UseVisualStyleBackColor = true;
             this.ButtonCheckPointFileSave.Click += new System.EventHandler(this.ButtonMapSave_Click);
             // 
-            // numericUD_CheckPoint
-            // 
-            this.numericUD_CheckPoint.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.numericUD_CheckPoint.Location = new System.Drawing.Point(152, 53);
-            this.numericUD_CheckPoint.Maximum = new decimal(new int[] {
-            999,
-            0,
-            0,
-            0});
-            this.numericUD_CheckPoint.Name = "numericUD_CheckPoint";
-            this.numericUD_CheckPoint.Size = new System.Drawing.Size(75, 23);
-            this.numericUD_CheckPoint.TabIndex = 44;
-            this.numericUD_CheckPoint.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.numericUD_CheckPoint.Click += new System.EventHandler(this.numericUD_CheckPoint_Click);
-            this.numericUD_CheckPoint.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericUD_CheckPoint_KeyPress);
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -615,9 +561,10 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.dataGridViewReceiveData);
+            this.groupBox3.Controls.Add(this.rb_SelAMCL);
             this.groupBox3.Controls.Add(this.tb_SendData);
+            this.groupBox3.Controls.Add(this.rb_SelREPlot);
             this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Controls.Add(this.panel1);
             this.groupBox3.Controls.Add(this.lb_BServerConnect);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.tb_ResiveData);
@@ -628,220 +575,79 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "ROS Status";
             // 
-            // labelMoveBaseAng
-            // 
-            this.labelMoveBaseAng.AutoSize = true;
-            this.labelMoveBaseAng.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.labelMoveBaseAng.Location = new System.Drawing.Point(185, 38);
-            this.labelMoveBaseAng.Name = "labelMoveBaseAng";
-            this.labelMoveBaseAng.Size = new System.Drawing.Size(28, 16);
-            this.labelMoveBaseAng.TabIndex = 56;
-            this.labelMoveBaseAng.Text = "ND";
-            // 
-            // labelMoveBaseX
-            // 
-            this.labelMoveBaseX.AutoSize = true;
-            this.labelMoveBaseX.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.labelMoveBaseX.Location = new System.Drawing.Point(95, 38);
-            this.labelMoveBaseX.Name = "labelMoveBaseX";
-            this.labelMoveBaseX.Size = new System.Drawing.Size(28, 16);
-            this.labelMoveBaseX.TabIndex = 55;
-            this.labelMoveBaseX.Text = "ND";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label12.Location = new System.Drawing.Point(9, 38);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(80, 16);
-            this.label12.TabIndex = 54;
-            this.label12.Text = "moveBase:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label13.Location = new System.Drawing.Point(10, 8);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(69, 16);
-            this.label13.TabIndex = 49;
-            this.label13.Text = "CarType:";
-            // 
-            // lbl_CarName
-            // 
-            this.lbl_CarName.AutoSize = true;
-            this.lbl_CarName.BackColor = System.Drawing.Color.Yellow;
-            this.lbl_CarName.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_CarName.Location = new System.Drawing.Point(85, 8);
-            this.lbl_CarName.Name = "lbl_CarName";
-            this.lbl_CarName.Size = new System.Drawing.Size(45, 16);
-            this.lbl_CarName.TabIndex = 45;
-            this.lbl_CarName.Text = "Benz";
-            // 
-            // panel1
-            // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.labelMoveBaseAng);
-            this.panel1.Controls.Add(this.rb_SelAMCL);
-            this.panel1.Controls.Add(this.rb_SelREPlot);
-            this.panel1.Controls.Add(this.labelMoveBaseX);
-            this.panel1.Controls.Add(this.label14);
-            this.panel1.Controls.Add(this.lbl_REPlotDir);
-            this.panel1.Controls.Add(this.label12);
-            this.panel1.Controls.Add(this.label18);
-            this.panel1.Controls.Add(this.lbl_REPlotX);
-            this.panel1.Controls.Add(this.label13);
-            this.panel1.Controls.Add(this.lbl_CarName);
-            this.panel1.Controls.Add(this.lbl_REPlotY);
-            this.panel1.Controls.Add(this.label15);
-            this.panel1.Controls.Add(this.lbl_RErotL);
-            this.panel1.Controls.Add(this.label16);
-            this.panel1.Controls.Add(this.label17);
-            this.panel1.Controls.Add(this.lbl_LED);
-            this.panel1.Controls.Add(this.label10);
-            this.panel1.Controls.Add(this.lbl_RErotR);
-            this.panel1.Location = new System.Drawing.Point(6, 89);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(300, 227);
-            this.panel1.TabIndex = 53;
-            // 
-            // rb_SelAMCL
-            // 
-            this.rb_SelAMCL.AutoSize = true;
-            this.rb_SelAMCL.Checked = true;
-            this.rb_SelAMCL.Location = new System.Drawing.Point(168, 133);
-            this.rb_SelAMCL.Name = "rb_SelAMCL";
-            this.rb_SelAMCL.Size = new System.Drawing.Size(54, 16);
-            this.rb_SelAMCL.TabIndex = 47;
-            this.rb_SelAMCL.TabStop = true;
-            this.rb_SelAMCL.Text = "AMCL";
-            this.rb_SelAMCL.UseVisualStyleBackColor = true;
-            // 
-            // rb_SelREPlot
-            // 
-            this.rb_SelREPlot.AutoSize = true;
-            this.rb_SelREPlot.Location = new System.Drawing.Point(247, 133);
-            this.rb_SelREPlot.Name = "rb_SelREPlot";
-            this.rb_SelREPlot.Size = new System.Drawing.Size(58, 16);
-            this.rb_SelREPlot.TabIndex = 48;
-            this.rb_SelREPlot.Text = "REPlot";
-            this.rb_SelREPlot.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonPointAdd
-            // 
-            this.radioButtonPointAdd.AutoSize = true;
-            this.radioButtonPointAdd.Location = new System.Drawing.Point(11, 18);
-            this.radioButtonPointAdd.Name = "radioButtonPointAdd";
-            this.radioButtonPointAdd.Size = new System.Drawing.Size(71, 16);
-            this.radioButtonPointAdd.TabIndex = 52;
-            this.radioButtonPointAdd.TabStop = true;
-            this.radioButtonPointAdd.Text = "新規追加";
-            this.radioButtonPointAdd.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonPointMove
-            // 
-            this.radioButtonPointMove.AutoSize = true;
-            this.radioButtonPointMove.Location = new System.Drawing.Point(11, 38);
-            this.radioButtonPointMove.Name = "radioButtonPointMove";
-            this.radioButtonPointMove.Size = new System.Drawing.Size(47, 16);
-            this.radioButtonPointMove.TabIndex = 53;
-            this.radioButtonPointMove.TabStop = true;
-            this.radioButtonPointMove.Text = "移動";
-            this.radioButtonPointMove.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonPointDelete
-            // 
-            this.radioButtonPointDelete.AutoSize = true;
-            this.radioButtonPointDelete.Location = new System.Drawing.Point(11, 58);
-            this.radioButtonPointDelete.Name = "radioButtonPointDelete";
-            this.radioButtonPointDelete.Size = new System.Drawing.Size(47, 16);
-            this.radioButtonPointDelete.TabIndex = 54;
-            this.radioButtonPointDelete.TabStop = true;
-            this.radioButtonPointDelete.Text = "削除";
-            this.radioButtonPointDelete.UseVisualStyleBackColor = true;
-            // 
             // dataGridViewReceiveData
             // 
+            this.dataGridViewReceiveData.AllowUserToAddRows = false;
+            this.dataGridViewReceiveData.AllowUserToDeleteRows = false;
+            this.dataGridViewReceiveData.AllowUserToResizeColumns = false;
+            this.dataGridViewReceiveData.AllowUserToResizeRows = false;
             this.dataGridViewReceiveData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewReceiveData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnType,
             this.Column1,
-            this.Column2});
-            this.dataGridViewReceiveData.Location = new System.Drawing.Point(6, 99);
+            this.Column2,
+            this.Column3});
+            this.dataGridViewReceiveData.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dataGridViewReceiveData.Location = new System.Drawing.Point(3, 89);
+            this.dataGridViewReceiveData.MultiSelect = false;
             this.dataGridViewReceiveData.Name = "dataGridViewReceiveData";
+            this.dataGridViewReceiveData.ReadOnly = true;
+            this.dataGridViewReceiveData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridViewReceiveData.RowTemplate.Height = 21;
-            this.dataGridViewReceiveData.Size = new System.Drawing.Size(297, 206);
+            this.dataGridViewReceiveData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.dataGridViewReceiveData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dataGridViewReceiveData.Size = new System.Drawing.Size(303, 199);
             this.dataGridViewReceiveData.TabIndex = 28;
-            this.dataGridViewReceiveData.Visible = false;
             // 
             // ColumnType
             // 
             this.ColumnType.HeaderText = "型";
             this.ColumnType.Name = "ColumnType";
+            this.ColumnType.ReadOnly = true;
+            this.ColumnType.Width = 80;
             // 
             // Column1
             // 
             this.Column1.HeaderText = "x";
             this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
             this.Column1.Width = 60;
             // 
             // Column2
             // 
             this.Column2.HeaderText = "y";
             this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
             this.Column2.Width = 60;
             // 
-            // numericUpDownCtrlSpeed
+            // Column3
             // 
-            this.numericUpDownCtrlSpeed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.numericUpDownCtrlSpeed.DecimalPlaces = 1;
-            this.numericUpDownCtrlSpeed.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.numericUpDownCtrlSpeed.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.numericUpDownCtrlSpeed.Location = new System.Drawing.Point(452, 18);
-            this.numericUpDownCtrlSpeed.Maximum = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.numericUpDownCtrlSpeed.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.numericUpDownCtrlSpeed.Name = "numericUpDownCtrlSpeed";
-            this.numericUpDownCtrlSpeed.Size = new System.Drawing.Size(95, 31);
-            this.numericUpDownCtrlSpeed.TabIndex = 45;
-            this.numericUpDownCtrlSpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.numericUpDownCtrlSpeed.Value = new decimal(new int[] {
-            15,
-            0,
-            0,
-            65536});
+            this.Column3.HeaderText = "Angle";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 60;
             // 
-            // label19
+            // rb_SelREPlot
             // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label19.Location = new System.Drawing.Point(553, 27);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(43, 16);
-            this.label19.TabIndex = 46;
-            this.label19.Text = "km/h";
+            this.rb_SelREPlot.AutoSize = true;
+            this.rb_SelREPlot.Location = new System.Drawing.Point(85, 306);
+            this.rb_SelREPlot.Name = "rb_SelREPlot";
+            this.rb_SelREPlot.Size = new System.Drawing.Size(58, 16);
+            this.rb_SelREPlot.TabIndex = 48;
+            this.rb_SelREPlot.Text = "REPlot";
+            this.rb_SelREPlot.UseVisualStyleBackColor = true;
             // 
-            // label20
+            // rb_SelAMCL
             // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label20.Location = new System.Drawing.Point(368, 30);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(84, 13);
-            this.label20.TabIndex = 47;
-            this.label20.Text = "ControlSpeed";
+            this.rb_SelAMCL.AutoSize = true;
+            this.rb_SelAMCL.Checked = true;
+            this.rb_SelAMCL.Location = new System.Drawing.Point(6, 306);
+            this.rb_SelAMCL.Name = "rb_SelAMCL";
+            this.rb_SelAMCL.Size = new System.Drawing.Size(54, 16);
+            this.rb_SelAMCL.TabIndex = 47;
+            this.rb_SelAMCL.TabStop = true;
+            this.rb_SelAMCL.Text = "AMCL";
+            this.rb_SelAMCL.UseVisualStyleBackColor = true;
             // 
             // VehicleRunnerForm
             // 
@@ -866,18 +672,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).EndInit();
             this.gb_DriveControl.ResumeLayout(false);
             this.gb_DriveControl.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCtrlSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Indicator)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUD_CheckPoint)).EndInit();
+            this.groupBoxModifi.ResumeLayout(false);
+            this.groupBoxModifi.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewReceiveData)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCtrlSpeed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -900,18 +704,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox tb_RESpeed;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label lbl_LED;
-        private System.Windows.Forms.Label lbl_REPlotDir;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label lbl_REPlotY;
-        private System.Windows.Forms.Label lbl_REPlotX;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label lbl_RErotL;
-        private System.Windows.Forms.Label lbl_RErotR;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.GroupBox gb_DriveControl;
         private System.Windows.Forms.Label lb_BServerConnect;
         private System.Windows.Forms.Label label9;
@@ -926,30 +718,25 @@
         private System.Windows.Forms.CheckBox cb_AccelOff;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label lbl_CarName;
         private System.Windows.Forms.NumericUpDown numericUD_CheckPoint;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.RadioButton rb_SelREPlot;
-        private System.Windows.Forms.RadioButton rb_SelAMCL;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button ButtonCheckPointFileSave;
         private System.Windows.Forms.CheckBox checkBoxCheckPointModifi;
         private System.Windows.Forms.Button ButtonCheckPointReduction;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Label labelMoveBaseAng;
-        private System.Windows.Forms.Label labelMoveBaseX;
-        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.GroupBox groupBoxModifi;
         private System.Windows.Forms.RadioButton radioButtonPointDelete;
         private System.Windows.Forms.RadioButton radioButtonPointMove;
         private System.Windows.Forms.RadioButton radioButtonPointAdd;
         private System.Windows.Forms.DataGridView dataGridViewReceiveData;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.NumericUpDown numericUpDownCtrlSpeed;
         private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.RadioButton rb_SelAMCL;
+        private System.Windows.Forms.RadioButton rb_SelREPlot;
     }
 }
 

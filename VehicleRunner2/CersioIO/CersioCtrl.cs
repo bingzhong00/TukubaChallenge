@@ -61,10 +61,6 @@ namespace CersioIO
         public double hwRErotL = 0.0;
         public bool bhwRE = false;
 
-        // ロータリーエンコーダ開始値
-        private double hwRErotR_Start = 0;
-        private double hwRErotL_Start = 0;
-
         // ROS tf 座標
         public double hwAMCL_X = 0.0;
         public double hwAMCL_Y = 0.0;
@@ -100,7 +96,7 @@ namespace CersioIO
         public string hwSendStr;
 
         /// <summary>
-        /// 
+        /// LEDコントローラ
         /// </summary>
         public LEDControl LEDCtrl;
 
@@ -199,7 +195,7 @@ namespace CersioIO
                 System.Threading.Thread.Sleep(250);
 
                 // 動力停止
-                TCP_SendCommand("AC,0.0,0.0\n");
+                TCP_SendCommand("AC,0.0,0.0,\n");
                 System.Threading.Thread.Sleep(50);
 
                 // LEDを戻す
@@ -283,7 +279,7 @@ namespace CersioIO
         /// </summary>
         /// <param name="targetHandleVal"></param>
         /// <param name="targetAccelVal"></param>
-        public void SendCalcHandleAccelControl(double targetHandleVal, double targetAccelVal)
+        public void CalcHandleAccelSlowControl(double targetHandleVal, double targetAccelVal)
         {
             double handleTgt = targetHandleVal * HandleRate;
             double accTgt = targetAccelVal * AccRate;
@@ -294,17 +290,14 @@ namespace CersioIO
             // アクセル　加速時、減速時で係数を変更
             nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));
 
-            // ACコマンド送信
-            SetCommandAC(nowSendHandleValue, nowSendAccValue);
         }
 
         /// <summary>
         /// 滑らかに動くハンドル、アクセルワークを計算する
         /// スピードで、アクセルをコントロール
         /// </summary>
-        /// <param name="targetHandleVal">目標ハンドル</param>
         /// <param name="targetSpeedKmHour">目標時速</param>
-        public void SendCalcHandleSpeedControl(double targetHandleVal, double targetSpeedKmHour )
+        public double CalcSpeedControl( double targetSpeedKmHour )
         {
             // 時速(Km/h)から秒速(mm/s)に変換
             double targetSpeedMmSec = (targetSpeedKmHour*1000.0*1000.0) / 3600.0;
@@ -329,7 +322,7 @@ namespace CersioIO
                 if (targetSpeedMmSec < -1.0) targetAccel = -1.0;
             }
 
-            SendCalcHandleAccelControl(targetHandleVal, targetAccel);
+            return targetAccel;
         }
 
         /// <summary>
