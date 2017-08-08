@@ -608,7 +608,7 @@ namespace VehicleRunner
         {
             SaveFileDialog dlg = new SaveFileDialog();
 
-            dlg.FileName = BrainCtrl.LocSys.mapData.MapFileName;
+            dlg.FileName = System.IO.Path.GetFileName(BrainCtrl.LocSys.mapData.MapFileName);
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
@@ -617,7 +617,8 @@ namespace VehicleRunner
 
                 BrainCtrl.LocSys.mapData.MapFileName = dlg.FileName;
 
-                BrainCtrl.LocSys.mapData.SaveMapFile(dlg.FileName);
+                MapData outputMap = BrainCtrl.LocSys.RTS.GetMapdata( BrainCtrl.LocSys.MapTom );
+                outputMap.SaveMapFile(dlg.FileName);
 
                 // 自己位置計算 再開
                 tm_Update.Enabled = true;
@@ -647,7 +648,7 @@ namespace VehicleRunner
                     int msPosY = e.Y - (picbox_AreaMap.Height / 2) + viewScrollY;
                     MarkPoint mouseRosPos = new MarkPoint(new DrawMarkPoint(msPosX, msPosY, 0.0), LocSys);
 
-                    if ( (Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    if (radioButtonPointMove.Checked)
                     {
                         // 移動チェックポイント選択
                         selCpIndex = LocSys.GetCheckPointIndex(mouseRosPos.x, mouseRosPos.y);
@@ -655,6 +656,11 @@ namespace VehicleRunner
                         {
                             // 移動チェックポイント取得
                             moveCpPos = LocSys.RTS.GetCheckPoint(selCpIndex);
+                        }
+                        else
+                        {
+                            // スクロール
+                            bMouseMove = true;
                         }
                     }
                     else if (radioButtonPointAdd.Checked)

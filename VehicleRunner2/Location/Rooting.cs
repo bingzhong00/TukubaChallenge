@@ -104,21 +104,21 @@ namespace Location
         /// </summary>
         /// <param name="scaleMapToM"></param>
         /// <returns></returns>
-        public MapData GetMapdata(double scaleMapToM)
+        public MapData GetMapdata(double scaleMapToM )
         {
             MapData outputMapdata = new MapData();
             outputMapdata = mapData;
 
             // チェックポイント　マップ座標から実座標へ変換
-            outputMapdata.startPosition.x = (rosCheckPoint[0].x / scaleMapToM) + mapData.RealWidth * 0.5;
-            outputMapdata.startPosition.y = (-rosCheckPoint[0].y / scaleMapToM) - mapData.RealWidth * 0.5;
+            outputMapdata.startPosition.x = ((rosCheckPoint[0].x + mapData.RealWidth * 0.5) / scaleMapToM);
+            outputMapdata.startPosition.y = -((rosCheckPoint[0].y - mapData.RealHeight * 0.5) / scaleMapToM);
             outputMapdata.startPosition.z = (rosCheckPoint[0].z / scaleMapToM);
 
             outputMapdata.checkPoint = new Vector3[rosCheckPoint.Count-1];
             for(int i=1;  i<rosCheckPoint.Count; i++ )
             {
-                outputMapdata.checkPoint[i-1].x = (rosCheckPoint[i].x / scaleMapToM) + mapData.RealWidth * 0.5;
-                outputMapdata.checkPoint[i-1].y = (-rosCheckPoint[i].y / scaleMapToM) - mapData.RealWidth * 0.5;
+                outputMapdata.checkPoint[i-1].x = ((rosCheckPoint[i].x + mapData.RealWidth * 0.5) / scaleMapToM);
+                outputMapdata.checkPoint[i-1].y = -((rosCheckPoint[i].y - mapData.RealHeight * 0.5) / scaleMapToM);
                 outputMapdata.checkPoint[i-1].z = (rosCheckPoint[i].z / scaleMapToM);
             }
 
@@ -306,7 +306,7 @@ namespace Location
         /// <param name="_setIdx"></param>
         public void SetCheckPointIndex(int _setIdx )
         {
-            if (_setIdx < mapData.checkPoint.Length)
+            if (_setIdx < GetNumCheckPoints())
             {
                 seqIdx = _setIdx;
             }
@@ -391,7 +391,8 @@ namespace Location
         /// <returns></returns>
         public Vector3 GetCheckPointToWayPoint(int cpIdx)
         {
-            if ((cpIdx + 1) == mapData.checkPoint.Length)
+            //if ((cpIdx + 1) == mapData.checkPoint.Length)
+            if ((cpIdx + 1) == rosCheckPoint.Count)
             {
                 // ゴールひとつ手前
                 // まっすぐゴールに向かう
@@ -460,7 +461,7 @@ namespace Location
         /// <returns></returns>
         public int GetNumCheckPoints()
         {
-            return mapData.checkPoint.Length;
+            return rosCheckPoint.Count;// mapData.checkPoint.Length;
         }
 
         /// <summary>
@@ -512,7 +513,7 @@ namespace Location
         private bool CalcCheckPoint()
         {
             // ゴールしてたら計算しない
-            if (goalFlg || seqIdx >= mapData.checkPoint.Count())
+            if (goalFlg || seqIdx >= GetNumCheckPoints())
             {
                 goalFlg = true;
                 return true;
@@ -528,7 +529,7 @@ namespace Location
                     int nextSeqIdx = seqIdx + 1;
 
                     // ゴール判定
-                    if (nextSeqIdx >= mapData.checkPoint.Count())
+                    if (nextSeqIdx >= GetNumCheckPoints())
                     {
                         goalFlg = true;
                         return true;
