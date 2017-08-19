@@ -55,6 +55,16 @@ namespace Navigation
 
         private DateTime ActSetTime;
 
+        private double ActSetDistance;
+
+        private double PassDistance;
+
+        /// <summary>
+        /// バック開始カウンタ
+        /// </summary>
+        public int BeckStartCnt = 0;
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -89,14 +99,17 @@ namespace Navigation
         /// 
         /// </summary>
         /// <returns></returns>
-        public bool update()
+        public bool Update(double distanceMm )
         {
             ActModeCnt++;
             if (ActModeOld != ActMode)
             {
                 ActModeOld = ActMode;
                 ActModeCnt = 0;
+                ActSetDistance = distanceMm;
             }
+            // Actになってからの移動距離
+            PassDistance = distanceMm - ActSetDistance;
 
             switch (ActMode)
             {
@@ -121,9 +134,18 @@ namespace Navigation
         /// </summary>
         /// <param name="sec"></param>
         /// <returns></returns>
-        public bool GetModePassSeconds(int sec )
+        public int GetModePassSeconds()
         {
-            return (DateTime.Now > ActSetTime.AddSeconds(sec));
+            return (int)((DateTime.Now - ActSetTime).TotalSeconds);
+        }
+
+        /// <summary>
+        /// モードになってからの距離
+        /// </summary>
+        /// <returns></returns>
+        public double PassDistanceMm()
+        {
+            return PassDistance;
         }
 
         // ※ルーティング実行

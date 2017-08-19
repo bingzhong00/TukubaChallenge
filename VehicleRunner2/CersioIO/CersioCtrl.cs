@@ -38,8 +38,8 @@ namespace CersioIO
 
 
         // 最近　送信したハンドル、アクセル
-        public double nowSendHandleValue;
-        public double nowSendAccValue;
+        public double nowHandleValue;
+        public double nowAccValue;
 
         // 最大ハンドル角
         // 角度から　左　1.0　～　右　-1.0の範囲に変換に使う
@@ -83,13 +83,13 @@ namespace CersioIO
         public bool bhwTrgAMCL = false;
 
         // 送信 ハンドル・アクセル値
-        private double sendHandle = 0.0;
-        private double sendAccel = 0.0;
+        public double sendHandleValue = 0.0;
+        public double sendAccelValue = 0.0;
 
         /// <summary>
         /// アクセル情報送信 フラグ
         /// </summary>
-        public bool bSendAccel = true;
+        public bool bSendAC = true;
 
         // 受信文字
         public string hwResiveStr;
@@ -202,8 +202,8 @@ namespace CersioIO
                 TCP_SendCommand("AL,0,\n");
                 System.Threading.Thread.Sleep(50);
 
-                sendHandle = 0.0;
-                sendAccel = 0.0;
+                sendHandleValue = 0.0;
+                sendAccelValue = 0.0;
             }
         }
 
@@ -279,17 +279,16 @@ namespace CersioIO
         /// </summary>
         /// <param name="targetHandleVal"></param>
         /// <param name="targetAccelVal"></param>
-        public void CalcHandleAccelSlowControl(double targetHandleVal, double targetAccelVal)
+        public void CalcHandleAccelControl(double targetHandleVal, double targetAccelVal)
         {
             double handleTgt = targetHandleVal * HandleRate;
             double accTgt = targetAccelVal * AccRate;
-            double diffAcc = (accTgt - nowSendAccValue);
+            double diffAcc = (accTgt - nowAccValue);
 
             // ハンドル操作を徐々に目的値に変更する
-            nowSendHandleValue += (handleTgt - nowSendHandleValue) * HandleControlPow;
+            nowHandleValue += (handleTgt - nowHandleValue) * HandleControlPow;
             // アクセル　加速時、減速時で係数を変更
-            nowSendAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));
-
+            nowAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));
         }
 
         /// <summary>
@@ -297,17 +296,19 @@ namespace CersioIO
         /// スピードで、アクセルをコントロール
         /// </summary>
         /// <param name="targetSpeedKmHour">目標時速</param>
-        public double CalcSpeedControl( double targetSpeedKmHour )
+        public double CalcAccelFromSpeed( double targetSpeedKmHour, bool bForward )
         {
             // 時速(Km/h)から秒速(mm/s)に変換
             double targetSpeedMmSec = (targetSpeedKmHour*1000.0*1000.0) / 3600.0;
             double targetAccel = 0.0;
             // 目的の速度と現在速度を比較
-            double diffSpeed = (targetSpeedMmSec - SpeedMmSec);
+            double diffSpeed = (targetSpeedMmSec - nowSpeedMmSec);
 
             // 時速4Km は 秒速 1100mm
             // 1100mmを差分1.0とするか？
-            targetAccel = nowSendAccValue + (diffSpeed*0.0002);
+            // スピードからアクセル値に変換
+            double addAccel = (diffSpeed * 0.0002);
+            targetAccel = nowAccValue + ((bForward) ? addAccel : -addAccel);
 
             // スピード更新カウンタ
             if (SpeedUpdateCnt > 0)
@@ -341,29 +342,29 @@ namespace CersioIO
         /// <param name="_sendAcc"></param>
         public void SetCommandAC( double _sendHandle, double _sendAcc )
         {
-            sendHandle = _sendHandle;
-
-            if (bSendAccel)
+            if (bSendAC)
             {
-                sendAccel = _sendAcc;
+                sendAccelValue = _sendAcc;
+                sendHandleValue = _sendHandle;
+
+                if (TCP_IsConnected())
+                {
+                    // LAN接続
+                    SendCommand("AC," + sendHandleValue.ToString("f2") + "," + sendAccelValue.ToString("f3") + ",\n");
+                }
+                else if (null != UsbMotorDriveIO)
+                {
+                    // USB接続時
+                    if (UsbMotorDriveIO.IsConnect())
+                    {
+                        UsbMotorDriveIO.Send_AC_Command(sendHandleValue, sendAccelValue);
+                    }
+                }
             }
             else
             {
-                sendAccel = 0.0;
-            }
-
-            if (TCP_IsConnected())
-            {
-                // LAN接続
-                SendCommand("AC," + sendHandle.ToString("f2") + "," + sendAccel.ToString("f3") + ",\n");
-            }
-            else if (null != UsbMotorDriveIO)
-            {
-                // USB接続時
-                if (UsbMotorDriveIO.IsConnect())
-                {
-                    UsbMotorDriveIO.Send_AC_Command(sendHandle, sendAccel);
-                }
+                sendAccelValue = 0.0;
+                sendHandleValue = 0.0;
             }
         }
 
@@ -377,7 +378,7 @@ namespace CersioIO
         {
             if (TCP_IsConnected())
             {
-                SendCommand("AP," + _cpX.ToString("f3") + "," + _cpY.ToString("f3") + "," + _cpDir.ToString("f3") + ",\n");
+                SendCommand("AG," + _cpX.ToString("f3") + "," + _cpY.ToString("f3") + "," + _cpDir.ToString("f3") + ",\n");
             }
         }
 
@@ -441,7 +442,7 @@ namespace CersioIO
         // -----------------------------------------------------------------------------------------
         //
         //
-        public double SpeedMmSec = 0.0;   // 速度　mm/Sec
+        public double nowSpeedMmSec = 0.0;   // 速度　mm/Sec
         int SpeedUpdateCnt = 0;
         double oldSpeedSec;         // 速度計測用 受信時間差分
 
@@ -618,7 +619,7 @@ namespace CersioIO
                                         double dy = (hwAMCL_Y * 1000.0) - (oldWheelL * 1000.0);
                                         double dist = Math.Sqrt(dx * dx + dy * dy);
 
-                                        SpeedMmSec = (double)(dist / (SpeedSec - oldSpeedSec));
+                                        nowSpeedMmSec = (double)(dist / (SpeedSec - oldSpeedSec));
 
                                         oldSpeedSec = SpeedSec;
                                         oldWheelR = hwAMCL_X;

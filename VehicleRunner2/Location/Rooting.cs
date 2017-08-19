@@ -373,9 +373,16 @@ namespace Location
 
         public void AddCheckPoint(int _seqIdx, Vector3 pos)
         {
-            if (_seqIdx < 0 || _seqIdx >= rosCheckPoint.Count) return;
+            if (_seqIdx < 0 ) return;
 
-            rosCheckPoint.Insert(_seqIdx, new Vector3(pos.x, pos.y, pos.z));
+            if (_seqIdx >= rosCheckPoint.Count)
+            {
+                rosCheckPoint.Add( new Vector3(pos.x, pos.y, pos.z) );
+            }
+            else
+            {
+                rosCheckPoint.Insert(_seqIdx, new Vector3(pos.x, pos.y, pos.z));
+            }
         }
         public void RemoveCheckPoint(int _seqIdx )
         {
@@ -605,7 +612,7 @@ namespace Location
         /// <summary>
         /// チェックポイント削減
         /// </summary>
-        /// <param name="reductAngleRange">許容角度</param>
+        /// <param name="reductAngleRange">許容角度 radian </param>
         /// <returns></returns>
         public int CheckPointReduction(double reductAngleRange)
         {

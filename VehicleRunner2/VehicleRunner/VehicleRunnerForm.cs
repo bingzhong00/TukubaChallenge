@@ -175,7 +175,8 @@ namespace VehicleRunner
             tm_Update.Enabled = true;
 
             groupBoxModifi.Enabled = checkBoxCheckPointModifi.Checked;
-            
+
+            numericUpDownCtrlSpeed.Value = (decimal)VRSetting.AccSpeedKm;
         }
 
         /// <summary>
@@ -225,7 +226,8 @@ namespace VehicleRunner
                 // エリアマップ描画
                 formDraw.AreaMap_Draw_Area(e.Graphics, picbox_AreaMap, ref BrainCtrl.LocSys,
                                            (viewScrollX + viewMoveAddX), (viewScrollY + viewMoveAddY),
-                                           selCpIndex );
+                                           selCpIndex,
+                                           !cb_MoveBaseControl.Checked );
                 //formDraw.AreaMap_Draw_Ruler(e.Graphics, ref BrainCtrl, picbox_AreaMap.Width, picbox_AreaMap.Height);
             }
             else if (selAreaMapMode == MAP_MODE.WORLD_MAP)
@@ -471,20 +473,20 @@ namespace VehicleRunner
 
                 // 自律走行(緊急ブレーキ、壁よけ含む)処理 更新
                 double speedKmh = (double)numericUpDownCtrlSpeed.Value;
-                BrainCtrl.AutonomousProc(bRunAutonomous, cb_InDoorMode.Checked, bRunAutonomous, speedKmh );
+                BrainCtrl.AutonomousProc(bRunAutonomous, cb_MoveBaseControl.Checked, speedKmh );
 
                 // 距離計
                 tb_Trip.Text = (LocSys.GetResultDistance_mm() * (1.0 / 1000.0)).ToString("f2");
             }
 
             // スピード表示
-            tb_RESpeed.Text = ((CersioCt.SpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");    // Km/Hour
+            tb_RESpeed.Text = ((CersioCt.nowSpeedMmSec*3600.0)/(1000.0*1000.0)).ToString("f2");    // Km/Hour
             //tb_RESpeed.Text = (CersioCt.SpeedMmSec).ToString("f2"); // mm/Sec
 
 
-            // ハンドル、アクセル値　表示
-            tb_AccelVal.Text = CersioCt.nowSendAccValue.ToString("f2");
-            tb_HandleVal.Text = CersioCt.nowSendHandleValue.ToString("f2");
+            // ACコマンド送信した ハンドル、アクセル値　表示
+            tb_AccelVal.Text = CersioCt.sendAccelValue.ToString("f2");
+            tb_HandleVal.Text = CersioCt.sendHandleValue.ToString("f2");
 
             //labelMoveBaseX.Text = CersioCt.hwMVBS_X.ToString("f2");
             //labelMoveBaseAng.Text = CersioCt.hwMVBS_Ang.ToString("f2");
@@ -493,9 +495,9 @@ namespace VehicleRunner
             dataGridViewReceiveData.Rows[(int)GeridRow.MoveBase].Cells[2].Value = CersioCt.hwMVBS_Y.ToString("f2");
             dataGridViewReceiveData.Rows[(int)GeridRow.MoveBase].Cells[3].Value = CersioCt.hwMVBS_Ang.ToString("f2");
 
-            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[1].Value = CersioCt.nowSendAccValue.ToString("f2");
+            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[1].Value = CersioCt.nowAccValue.ToString("f2");
             dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[2].Value = "0.00";
-            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[3].Value = CersioCt.nowSendHandleValue.ToString("f2");
+            dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[3].Value = CersioCt.nowHandleValue.ToString("f2");
 
             // 自律走行情報
             if (bRunAutonomous)
@@ -648,7 +650,7 @@ namespace VehicleRunner
                     int msPosY = e.Y - (picbox_AreaMap.Height / 2) + viewScrollY;
                     MarkPoint mouseRosPos = new MarkPoint(new DrawMarkPoint(msPosX, msPosY, 0.0), LocSys);
 
-                    if (radioButtonPointMove.Checked)
+                    if (radioButtonPointMove.Checked && (Control.ModifierKeys & Keys.Control) == Keys.Control )
                     {
                         // 移動チェックポイント選択
                         selCpIndex = LocSys.GetCheckPointIndex(mouseRosPos.x, mouseRosPos.y);
@@ -710,6 +712,17 @@ namespace VehicleRunner
         /// 移動前チェックポイント
         /// </summary>
         Vector3 moveCpPos;
+
+        /// <summary>
+        /// チェックポイント削減
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonCheckPointReduction_Click(object sender, EventArgs e)
+        {
+            LocationSystem LocSys = BrainCtrl.LocSys;
+            LocSys.RTS.CheckPointReduction(10.0 * Math.PI / 180.0);
+        }
 
         private void picbox_AreaMap_MouseMove(object sender, MouseEventArgs e)
         {
@@ -776,14 +789,13 @@ namespace VehicleRunner
         }
 
         /// <summary>
-        /// アクセルOff ボタン
+        /// cmdvel出力
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void cb_AccelOff_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_AccelOff.Checked) CersioCt.bSendAccel = false;
-            else CersioCt.bSendAccel = true;
+            CersioCt.bSendAC = cb_OutputCmdVel.Checked;
         }
 
         /// <summary>

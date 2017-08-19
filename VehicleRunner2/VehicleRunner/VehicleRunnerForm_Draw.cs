@@ -236,7 +236,7 @@ namespace VehicleRunner
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY, int selCpIndex)
+        public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY, int selCpIndex, bool bHandleTarget)
         {
             Bitmap worldBMP = LocSys.mapBmp;
             //Bitmap areaBMP = MakePictureBoxAreaMap(worldBMP, picbox_AreaMap, ref LocSys, scrollX, scrollY);
@@ -309,6 +309,7 @@ namespace VehicleRunner
             }
 
             // ターゲット描画(ハンドル操作がVRの場合)
+            if(bHandleTarget)
             {
                 Vector3 nowtgtPos = LocSys.RTS.GetNowTargetPositon();
                 DrawMarkPoint tgtMk = new DrawMarkPoint(new MarkPoint(nowtgtPos.x, nowtgtPos.y, 0.0), LocSys);
@@ -441,7 +442,7 @@ namespace VehicleRunner
                     int Wd = 200;
                     int Ht = 15;
 
-                    float handleVal = (float)((Wd / 2) * (CersioCt.nowSendHandleValue));
+                    float handleVal = (float)((Wd / 2) * (-CersioCt.nowHandleValue));
                     if (handleVal > 0)
                     {
                         g.FillRectangle(Brushes.Red, stX + Wd / 2, stY, handleVal, Ht);
@@ -462,7 +463,7 @@ namespace VehicleRunner
                     int Wd = 200;
                     int Ht = 15;
 
-                    float accVal = (float)((Wd / 2) * (CersioCt.nowSendAccValue));
+                    float accVal = (float)((Wd / 2) * (CersioCt.nowAccValue));
                     if (accVal > 0)
                     {
                         // 前進

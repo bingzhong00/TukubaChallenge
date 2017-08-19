@@ -40,7 +40,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tb_RESpeed = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.cb_InDoorMode = new System.Windows.Forms.CheckBox();
+            this.cb_MoveBaseControl = new System.Windows.Forms.CheckBox();
             this.lb_BServerConnect = new System.Windows.Forms.Label();
             this.gb_DriveControl = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -54,7 +54,7 @@
             this.picbox_Indicator = new System.Windows.Forms.PictureBox();
             this.btn_MapLoad = new System.Windows.Forms.Button();
             this.tb_MapName = new System.Windows.Forms.TextBox();
-            this.cb_AccelOff = new System.Windows.Forms.CheckBox();
+            this.cb_OutputCmdVel = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.numericUD_CheckPoint = new System.Windows.Forms.NumericUpDown();
             this.checkBoxCheckPointModifi = new System.Windows.Forms.CheckBox();
@@ -71,8 +71,8 @@
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             this.rb_SelAMCL = new System.Windows.Forms.RadioButton();
+            this.rb_SelREPlot = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_AreaMap)).BeginInit();
             this.gb_DriveControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCtrlSpeed)).BeginInit();
@@ -245,16 +245,18 @@
             this.label8.TabIndex = 35;
             this.label8.Text = "km/h";
             // 
-            // cb_InDoorMode
+            // cb_MoveBaseControl
             // 
-            this.cb_InDoorMode.AutoSize = true;
-            this.cb_InDoorMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_InDoorMode.Location = new System.Drawing.Point(614, 557);
-            this.cb_InDoorMode.Name = "cb_InDoorMode";
-            this.cb_InDoorMode.Size = new System.Drawing.Size(101, 20);
-            this.cb_InDoorMode.TabIndex = 50;
-            this.cb_InDoorMode.Text = "屋内モード";
-            this.cb_InDoorMode.UseVisualStyleBackColor = true;
+            this.cb_MoveBaseControl.AutoSize = true;
+            this.cb_MoveBaseControl.Checked = true;
+            this.cb_MoveBaseControl.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_MoveBaseControl.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_MoveBaseControl.Location = new System.Drawing.Point(614, 557);
+            this.cb_MoveBaseControl.Name = "cb_MoveBaseControl";
+            this.cb_MoveBaseControl.Size = new System.Drawing.Size(138, 20);
+            this.cb_MoveBaseControl.TabIndex = 50;
+            this.cb_MoveBaseControl.Text = "MoveBase入力";
+            this.cb_MoveBaseControl.UseVisualStyleBackColor = true;
             // 
             // lb_BServerConnect
             // 
@@ -426,18 +428,20 @@
             this.tb_MapName.TabIndex = 48;
             this.tb_MapName.TabStop = false;
             // 
-            // cb_AccelOff
+            // cb_OutputCmdVel
             // 
-            this.cb_AccelOff.AutoSize = true;
-            this.cb_AccelOff.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cb_AccelOff.Location = new System.Drawing.Point(736, 555);
-            this.cb_AccelOff.Name = "cb_AccelOff";
-            this.cb_AccelOff.Size = new System.Drawing.Size(112, 20);
-            this.cb_AccelOff.TabIndex = 45;
-            this.cb_AccelOff.Text = "アクセルOFF";
-            this.cb_AccelOff.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cb_AccelOff.UseVisualStyleBackColor = true;
-            this.cb_AccelOff.CheckedChanged += new System.EventHandler(this.cb_AccelOff_CheckedChanged);
+            this.cb_OutputCmdVel.AutoSize = true;
+            this.cb_OutputCmdVel.Checked = true;
+            this.cb_OutputCmdVel.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_OutputCmdVel.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cb_OutputCmdVel.Location = new System.Drawing.Point(806, 557);
+            this.cb_OutputCmdVel.Name = "cb_OutputCmdVel";
+            this.cb_OutputCmdVel.Size = new System.Drawing.Size(114, 20);
+            this.cb_OutputCmdVel.TabIndex = 45;
+            this.cb_OutputCmdVel.Text = "cmdvel出力";
+            this.cb_OutputCmdVel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cb_OutputCmdVel.UseVisualStyleBackColor = true;
+            this.cb_OutputCmdVel.CheckedChanged += new System.EventHandler(this.cb_AccelOff_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -537,6 +541,7 @@
             this.ButtonCheckPointReduction.TabIndex = 51;
             this.ButtonCheckPointReduction.Text = "削減";
             this.ButtonCheckPointReduction.UseVisualStyleBackColor = true;
+            this.ButtonCheckPointReduction.Click += new System.EventHandler(this.ButtonCheckPointReduction_Click);
             // 
             // ButtonCheckPointFileSave
             // 
@@ -627,27 +632,27 @@
             this.Column3.ReadOnly = true;
             this.Column3.Width = 60;
             // 
-            // rb_SelREPlot
-            // 
-            this.rb_SelREPlot.AutoSize = true;
-            this.rb_SelREPlot.Location = new System.Drawing.Point(85, 306);
-            this.rb_SelREPlot.Name = "rb_SelREPlot";
-            this.rb_SelREPlot.Size = new System.Drawing.Size(58, 16);
-            this.rb_SelREPlot.TabIndex = 48;
-            this.rb_SelREPlot.Text = "REPlot";
-            this.rb_SelREPlot.UseVisualStyleBackColor = true;
-            // 
             // rb_SelAMCL
             // 
             this.rb_SelAMCL.AutoSize = true;
             this.rb_SelAMCL.Checked = true;
             this.rb_SelAMCL.Location = new System.Drawing.Point(6, 306);
             this.rb_SelAMCL.Name = "rb_SelAMCL";
-            this.rb_SelAMCL.Size = new System.Drawing.Size(54, 16);
+            this.rb_SelAMCL.Size = new System.Drawing.Size(82, 16);
             this.rb_SelAMCL.TabIndex = 47;
             this.rb_SelAMCL.TabStop = true;
-            this.rb_SelAMCL.Text = "AMCL";
+            this.rb_SelAMCL.Text = "ROS tf Plot";
             this.rb_SelAMCL.UseVisualStyleBackColor = true;
+            // 
+            // rb_SelREPlot
+            // 
+            this.rb_SelREPlot.AutoSize = true;
+            this.rb_SelREPlot.Location = new System.Drawing.Point(107, 306);
+            this.rb_SelREPlot.Name = "rb_SelREPlot";
+            this.rb_SelREPlot.Size = new System.Drawing.Size(86, 16);
+            this.rb_SelREPlot.TabIndex = 48;
+            this.rb_SelREPlot.Text = "VR R.E. Plot";
+            this.rb_SelREPlot.UseVisualStyleBackColor = true;
             // 
             // VehicleRunnerForm
             // 
@@ -655,17 +660,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(930, 649);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.cb_AccelOff);
+            this.Controls.Add(this.cb_OutputCmdVel);
             this.Controls.Add(this.cb_StartAutonomous);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.cb_InDoorMode);
+            this.Controls.Add(this.cb_MoveBaseControl);
             this.Controls.Add(this.picbox_Indicator);
             this.Controls.Add(this.gb_DriveControl);
             this.Controls.Add(this.picbox_AreaMap);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.KeyPreview = true;
             this.Name = "VehicleRunnerForm";
-            this.Text = "VehicleRunner2 Ver0.30  Build:2017.07.25";
+            this.Text = "VehicleRunner2 Ver0.35  Build:2017.08.18";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VehicleRunnerForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VehicleRunnerForm_FormClosed);
             this.Load += new System.EventHandler(this.VehicleRunnerForm_Load);
@@ -709,13 +714,13 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.PictureBox picbox_Indicator;
         private System.Windows.Forms.Label lbl_BackProcess;
-        private System.Windows.Forms.CheckBox cb_InDoorMode;
+        private System.Windows.Forms.CheckBox cb_MoveBaseControl;
         private System.Windows.Forms.Button btn_MapLoad;
         private System.Windows.Forms.TextBox tb_MapName;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tb_Trip;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox cb_AccelOff;
+        private System.Windows.Forms.CheckBox cb_OutputCmdVel;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.NumericUpDown numericUD_CheckPoint;

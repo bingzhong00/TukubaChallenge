@@ -38,8 +38,9 @@ namespace VRSystemConfig
         /// <summary>
         /// bServer IP Address
         /// </summary>
-        //public const string bServerIPAddr = "192.168.1.101";
-        public const string bServerIPAddr = "192.168.1.46";  // dynabook emu
+        public const string bServerIPAddr = "192.168.1.101";
+        //public const string bServerIPAddr = "192.168.1.46";  // dynabook emu
+        //public const string bServerIPAddr = "192.168.1.32";  // dynabook emu
 
         /// <summary>
         /// bServer エミュレータ IP Address
@@ -52,15 +53,16 @@ namespace VRSystemConfig
         public const int bServerIPPort = 50001;
 
         /// <summary> ハンドル上限値 </summary>
-        public const double HandleLimit = 1.0;
+        //public const double HandleLimit = 1.0;
         /// <summary> アクセル上限値 </summary>
-        public const double AccLimit = 0.5;
+        //public const double AccLimit = 1.0;
 
         /// <summary>
         /// 起動時のマップファイル名
         /// </summary>
         //public const string defaultMapFileName = "../../../MapFile/utsubo20160812/utsubo20160812.xml";
-        public const string defaultMapFileName = "../../../MapFile/husky/check_point20170806_215906.xml";
+        public const string defaultMapFileName = "../../../MapFile/refure201708/refure20170811.xml";
+        //public const string defaultMapFileName = "../../../MapFile/husky/check_point20170806_215906b.xml";
 
         /// <summary>
         /// チェックポイントに近づく距離(半径) [m]
@@ -78,12 +80,12 @@ namespace VRSystemConfig
         // ハンドル、アクセルの変化係数
         public const double HandleControlPow = 0.25;//0.10;
         /// <summary> 加速時の緩やかさ </summary>
-        public const double AccControlPowUP = 0.050;
+        public const double AccControlPowUP = 0.080;//0.050;
         /// <summary> 減速時の緩やかさ </summary>
-        public const double AccControlPowDOWN = 0.050;
+        public const double AccControlPowDOWN = 0.100;//0.050;
 
         /// <summary> 移動速度[km] </summary>
-        public const double AccSpeedKm = 1.4;
+        public const double AccSpeedKm = 1.1;
 
         /*
                 /// <summary>

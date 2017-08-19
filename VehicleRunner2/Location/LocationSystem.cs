@@ -187,7 +187,7 @@ namespace Location
         {
             Vector3 checkPos = new Vector3(rosX, rosY, 0.0);
 
-            double minLen = 999.0;
+            double minLen = 999999.0;
             int idx = -1;
             for (int i = RTS.GetCheckPointIdx(); i < RTS.GetNumCheckPoints(); i++)
             {
@@ -203,8 +203,9 @@ namespace Location
             }
 
             // 1m以内ならそのインデックスを返す
-            if (minLen < 1.0) return idx;
-            return -1;
+            //if (minLen < 1.0) return idx;
+            //else -1;
+            return idx;
         }
 
 
