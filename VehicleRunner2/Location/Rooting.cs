@@ -359,7 +359,7 @@ namespace Location
         }
 
         /// <summary>
-        /// チェックポイント更新
+        /// チェックポイント変更
         /// </summary>
         /// <param name="_seqIdx"></param>
         /// <param name="pos"></param>
@@ -371,12 +371,18 @@ namespace Location
             rosCheckPoint.Insert( _seqIdx, new Vector3(pos.x, pos.y, pos.z));
         }
 
+        /// <summary>
+        /// チェックポイント追加
+        /// </summary>
+        /// <param name="_seqIdx"></param>
+        /// <param name="pos"></param>
         public void AddCheckPoint(int _seqIdx, Vector3 pos)
         {
             if (_seqIdx < 0 ) return;
 
             if (_seqIdx >= rosCheckPoint.Count)
             {
+                // 最後尾に追加
                 rosCheckPoint.Add( new Vector3(pos.x, pos.y, pos.z) );
             }
             else
@@ -384,6 +390,11 @@ namespace Location
                 rosCheckPoint.Insert(_seqIdx, new Vector3(pos.x, pos.y, pos.z));
             }
         }
+
+        /// <summary>
+        /// チェックポイント削除
+        /// </summary>
+        /// <param name="_seqIdx"></param>
         public void RemoveCheckPoint(int _seqIdx )
         {
             if (_seqIdx < 0 || _seqIdx >= rosCheckPoint.Count) return;

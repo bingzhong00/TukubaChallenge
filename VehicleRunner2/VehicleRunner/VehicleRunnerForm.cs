@@ -55,6 +55,7 @@ namespace VehicleRunner
              Plot,
              MoveBase,
              CmdVel,
+             ActionMode,
         };
 
         /// <summary>
@@ -161,6 +162,7 @@ namespace VehicleRunner
             dataGridViewReceiveData.Rows.Add("Plot(tf)", "", "", "");
             dataGridViewReceiveData.Rows.Add("MoveBase", "", "", "");
             dataGridViewReceiveData.Rows.Add("CmdVel", "", "", "");
+            dataGridViewReceiveData.Rows.Add("Action", "", "", "");
 
 
             // マップ名設定
@@ -499,6 +501,7 @@ namespace VehicleRunner
             dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[2].Value = "0.00";
             dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[3].Value = CersioCt.nowHandleValue.ToString("f2");
 
+            dataGridViewReceiveData.Rows[(int)GeridRow.ActionMode].Cells[1].Value = BrainCtrl.ModeCtrl.GetActionModeString();
             // 自律走行情報
             if (bRunAutonomous)
             {

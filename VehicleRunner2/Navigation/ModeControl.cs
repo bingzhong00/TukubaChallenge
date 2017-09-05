@@ -62,7 +62,7 @@ namespace Navigation
         /// <summary>
         /// バック開始カウンタ
         /// </summary>
-        public int BeckStartCnt = 0;
+        //public int BeckStartCnt = 0;
 
 
         /// <summary>
@@ -72,6 +72,15 @@ namespace Navigation
         public ActionMode GetActionMode()
         {
             return ActMode;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public int GetActionCount()
+        {
+            return ActModeCnt;
         }
 
         /// <summary>

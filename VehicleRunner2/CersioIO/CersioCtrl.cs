@@ -374,7 +374,7 @@ namespace CersioIO
         /// <param name="_cpX"></param>
         /// <param name="_cpY"></param>
         /// <param name="_cpDir"></param>
-        public void SetCommandAP(double _cpX, double _cpY, double _cpDir )
+        public void SetCommandAG(double _cpX, double _cpY, double _cpDir )
         {
             if (TCP_IsConnected())
             {
@@ -609,10 +609,11 @@ namespace CersioIO
 
 #if SPEED_FROM_TF
                                 {
-                                    double SpeedSec = (double)System.Environment.TickCount / 1000.0;
+                                    double SpeedSec = (double)System.Environment.TickCount * 0.001; // / 1000.0;
 
                                     // 0.2秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
-                                    if ((SpeedSec - oldSpeedSec) > 0.2)
+                                    //if ((SpeedSec - oldSpeedSec) > 0.2)
+                                    if ((SpeedSec - oldSpeedSec) >= 0.5)
                                     {
                                         // 速度計算(非動輪を基準)
                                         double dx = (hwAMCL_X * 1000.0) - (oldWheelR * 1000.0);
