@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 
 using Axiom.Math;
+using DmitryBrant.ImageFormats;
 
 /* Todo
  * 
@@ -85,13 +86,17 @@ namespace Location
             // 
             mapData = _mapData;
 
-            mapBmp = new Bitmap(mapData.MapImageFileName);
+            mapBmp = BitmapExtensions.Load(mapData.MapImageFileName);
+            if (null == mapBmp)
+            {
+                mapBmp = new Bitmap(mapData.MapImageFileName);
+            }
 
-            // スケール算出
-            MapTom = (mapData.RealWidth / (double)mapBmp.Width);     // 実サイズ（m）/ピクセル数　＝　１ピクセルを何mとするか
+            // スケール
+            MapTom = mapData.Resolution; // (mapData.RealWidth / (double)mapBmp.Width);     // 実サイズ（m）/ピクセル数　＝　１ピクセルを何mとするか
             mToMap = 1.0 / MapTom;
 
-            RTS = new Rooting(mapData,MapTom);
+            RTS = new Rooting(mapData);
 
             R1 = new MarkPoint(0, 0, 0);
             oldR1 = new MarkPoint(0, 0, 0);     // 距離取得用 前回位置

@@ -49,7 +49,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.tb_Trip = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.lbl_BackProcess = new System.Windows.Forms.Label();
+            this.lbl_ActionMode = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.picbox_Indicator = new System.Windows.Forms.PictureBox();
             this.btn_MapLoad = new System.Windows.Forms.Button();
@@ -276,7 +276,7 @@
             this.gb_DriveControl.Controls.Add(this.label2);
             this.gb_DriveControl.Controls.Add(this.tb_Trip);
             this.gb_DriveControl.Controls.Add(this.label1);
-            this.gb_DriveControl.Controls.Add(this.lbl_BackProcess);
+            this.gb_DriveControl.Controls.Add(this.lbl_ActionMode);
             this.gb_DriveControl.Controls.Add(this.label9);
             this.gb_DriveControl.Controls.Add(this.label7);
             this.gb_DriveControl.Controls.Add(this.tb_HandleVal);
@@ -375,16 +375,16 @@
             this.label1.TabIndex = 42;
             this.label1.Text = "TRIP";
             // 
-            // lbl_BackProcess
+            // lbl_ActionMode
             // 
-            this.lbl_BackProcess.AutoSize = true;
-            this.lbl_BackProcess.BackColor = System.Drawing.Color.Yellow;
-            this.lbl_BackProcess.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lbl_BackProcess.Location = new System.Drawing.Point(182, 77);
-            this.lbl_BackProcess.Name = "lbl_BackProcess";
-            this.lbl_BackProcess.Size = new System.Drawing.Size(96, 16);
-            this.lbl_BackProcess.TabIndex = 41;
-            this.lbl_BackProcess.Text = "バック動作中";
+            this.lbl_ActionMode.AutoSize = true;
+            this.lbl_ActionMode.BackColor = System.Drawing.Color.Yellow;
+            this.lbl_ActionMode.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lbl_ActionMode.Location = new System.Drawing.Point(182, 77);
+            this.lbl_ActionMode.Name = "lbl_ActionMode";
+            this.lbl_ActionMode.Size = new System.Drawing.Size(96, 16);
+            this.lbl_ActionMode.TabIndex = 41;
+            this.lbl_ActionMode.Text = "バック動作中";
             // 
             // label9
             // 
@@ -713,7 +713,7 @@
         private System.Windows.Forms.Label lb_BServerConnect;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.PictureBox picbox_Indicator;
-        private System.Windows.Forms.Label lbl_BackProcess;
+        private System.Windows.Forms.Label lbl_ActionMode;
         private System.Windows.Forms.CheckBox cb_MoveBaseControl;
         private System.Windows.Forms.Button btn_MapLoad;
         private System.Windows.Forms.TextBox tb_MapName;

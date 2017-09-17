@@ -232,28 +232,28 @@ namespace VehicleRunner
         }
 */
         /// <summary>
-        /// PictureBox内へのエリアマップ描画
+        /// PictureBox内へのマップ描画(等倍)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void AreaMap_Draw_Area(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY, int selCpIndex, bool bHandleTarget)
         {
             Bitmap worldBMP = LocSys.mapBmp;
+            MapData mapData = LocSys.mapData;
             //Bitmap areaBMP = MakePictureBoxAreaMap(worldBMP, picbox_AreaMap, ref LocSys, scrollX, scrollY);
             //float viewScale = 1.0f;
 
             DrawMarkPoint drawCenter = new DrawMarkPoint(LocSys.R1, LocSys);
 
-            //float olScale = (float)LocSys.AreaOverlayBmp.Width / (float)LocSys.AreaBmp.Width;
+            // センターを左下にずらす Width x 0.1, Height x 0.1
+            double viewCenterX = GetMapWndowCenterX(picbox_AreaMap);// (picbox_AreaMap.Width * 0.5) - (picbox_AreaMap.Width * 0.1);
+            double viewCenterY = GetMapWndowCenterY(picbox_AreaMap);//(picbox_AreaMa.pHeight * 0.5) + (picbox_AreaMap.Height * 0.1);
 
             // エリアマップ描画
             g.ResetTransform();
-            //g.DrawImage(areaBMP, 0, 0);
-
-            g.ResetTransform();
-            g.TranslateTransform( (float)(-drawCenter.x - (worldBMP.Width * 0.5) + (picbox_AreaMap.Width * 0.5)) - scrollX,
-                                  (float)(-drawCenter.y - (worldBMP.Height * 0.5) + (picbox_AreaMap.Height * 0.5)) - scrollY,
-                                  MatrixOrder.Append);
+            g.TranslateTransform((float)(-drawCenter.x + (mapData.MapOrign.x / mapData.Resolution) + viewCenterX) - scrollX,
+                                 (float)(-drawCenter.y + (mapData.MapOrign.y / mapData.Resolution) + viewCenterY) - scrollY,
+                                 MatrixOrder.Append);
             //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
             //g.ScaleTransform(1.0f, -1.0f, MatrixOrder.Append);
 
@@ -263,8 +263,8 @@ namespace VehicleRunner
             // ------------------------
 
             g.ResetTransform();
-            g.TranslateTransform( (float)(-drawCenter.x + (picbox_AreaMap.Width * 0.5)) - scrollX,
-                                  (float)(-drawCenter.y + (picbox_AreaMap.Height * 0.5)) - scrollY,
+            g.TranslateTransform( (float)(-drawCenter.x + viewCenterX) - scrollX,
+                                  (float)(-drawCenter.y + viewCenterY) - scrollY,
                                   MatrixOrder.Append);
             //g.ScaleTransform(1.0f, -1.0f, MatrixOrder.Append);
 
@@ -358,16 +358,27 @@ namespace VehicleRunner
         */
         //static int areaMapDrawCnt = 0;
 
+        public double GetMapWndowCenterX(PictureBox picbox_AreaMap)
+        {
+            return (picbox_AreaMap.Width * 0.5) - (picbox_AreaMap.Width * 0.1);
+        }
+        public double GetMapWndowCenterY(PictureBox picbox_AreaMap)
+        {
+            return (picbox_AreaMap.Height * 0.5) + (picbox_AreaMap.Height * 0.1);
+        }
+
+
         /// <summary>
         /// PictureBox内へのワールドマップ描画
         /// </summary>
         /// <param name="g"></param>
         /// <param name="CersioCt"></param>
         /// <param name="BrainCtrl"></param>
-        public void AreaMap_Draw_WorldMap(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys)
+        public void AreaMap_Draw_WorldMap(Graphics g, PictureBox picbox_AreaMap, ref LocationSystem LocSys, int scrollX, int scrollY)
         {
             // 全体マップ描画
             float viewScale = 1.0f;// viewScaleWorld;
+            MapData mapData = LocSys.mapData;
 
 
             // マップ外カラー
@@ -386,6 +397,9 @@ namespace VehicleRunner
             //g.TranslateTransform(-ctrX, -ctrY, MatrixOrder.Append);
             //g.RotateTransform((float)layer.wAng, MatrixOrder.Append);
             //g.ScaleTransform(viewScale, viewScale, MatrixOrder.Append);
+            g.TranslateTransform( (float)(-scrollX),
+                                  (float)(-scrollY),
+                                  MatrixOrder.Append);
 
             if (null != worldMapBmp)
             {
@@ -393,8 +407,8 @@ namespace VehicleRunner
             }
 
             g.ResetTransform();
-            g.TranslateTransform( (float)(worldMapBmp.Width * 0.5),
-                                  (float)(worldMapBmp.Height * 0.5),
+            g.TranslateTransform( (float)(-(mapData.MapOrign.x / mapData.Resolution) * viewScale) - scrollX,
+                                  (float)(-(mapData.MapOrign.y / mapData.Resolution) * viewScale) - scrollY,
                                   MatrixOrder.Append);
 
             //g.ResetTransform();

@@ -87,9 +87,6 @@ namespace Navigation
 
         //public DateTime AvoidRootDispTime;
 
-
-        public MapData nowMapData;
-
         // バック開始判定カウンタ
         private int BackStartCnt;
 
@@ -102,38 +99,33 @@ namespace Navigation
         /// コンストラクタ
         /// </summary>
         /// <param name="ceCtrl"></param>
-        public Brain(CersioCtrl ceCtrl, MapData mapData)
+        public Brain(CersioCtrl ceCtrl)
         {
             CarCtrl = ceCtrl;
-            nowMapData = mapData;
-            Reset();
-
-            // チェックポイントへ向かう
-            ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
         }
 
         /// <summary>
-        /// 
+        /// 初期化
         /// </summary>
-        public void Reset()
+        public void Init(MapData mapData)
         {
             ModeCtrl = new ModeControl();
+            // チェックポイントへ向かう
+            ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
 
             // Locpresump
             //  マップ画像ファイル名、実サイズの横[mm], 実サイズ縦[mm] (北向き基準)
-            LocSys = new LocationSystem(nowMapData);
-
+            LocSys = new LocationSystem(mapData);
             UpdateCnt = 0;
 
             // 現在座標リセット
-            Reset_StartPosition( true );
-
+            Reset_Rooting( true );
         }
 
         /// <summary>
-        /// 座標情報をセット
+        /// ルーティング情報をリセット
         /// </summary>
-        public void Reset_StartPosition( bool bResetSeq )
+        public void Reset_Rooting( bool bResetSeq )
         {
             // ゴール判定 フラグOff
             goalFlg = false;

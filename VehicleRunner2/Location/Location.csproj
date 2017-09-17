@@ -49,6 +49,10 @@
       <HintPath>..\packages\Axiom.0.8.3376.12322\lib\net35\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ImageFormats, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageFormats.1.0.0\lib\net45\ImageFormats.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

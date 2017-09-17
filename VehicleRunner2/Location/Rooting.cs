@@ -78,21 +78,22 @@ namespace Location
         /// マップデータからルート情報を生成
         /// </summary>
         /// <param name="_mapData"></param>
-        public Rooting(MapData _mapData, double scaleMapToM)
+        public Rooting(MapData _mapData)
         {
+            double pixelToM = _mapData.Resolution;
             mapData = _mapData;
 
             // チェックポイント　マップ座標から実座標へ変換
             rosCheckPoint = new List<Vector3>();
-            rosCheckPoint.Add(new Vector3((mapData.startPosition.x * scaleMapToM) - mapData.RealWidth * 0.5,
-                                           (-mapData.startPosition.y * scaleMapToM) + mapData.RealHeight * 0.5,
-                                           (mapData.startPosition.z * scaleMapToM)));
+            rosCheckPoint.Add(new Vector3(  ((mapData.startPosition.x * pixelToM) /*+ mapData.MapOrign.x*/),
+                                           -((mapData.startPosition.y * pixelToM) /*+ mapData.MapOrign.y*/),
+                                            ((mapData.startPosition.z * pixelToM) /*+ mapData.MapOrign.z*/)));
 
             foreach (var onePos in mapData.checkPoint)
             {
-                rosCheckPoint.Add(new Vector3( (onePos.x * scaleMapToM) - mapData.RealWidth * 0.5,
-                                               (-onePos.y * scaleMapToM) + mapData.RealHeight * 0.5,
-                                               (onePos.z * scaleMapToM) ));
+                rosCheckPoint.Add(new Vector3(  ((onePos.x * pixelToM)/* + mapData.MapOrign.x*/),
+                                               -((onePos.y * pixelToM)/* + mapData.MapOrign.y*/),
+                                                ((onePos.z * pixelToM)/* + mapData.MapOrign.z*/)));
             }
 
             ResetSeq();
@@ -104,22 +105,23 @@ namespace Location
         /// </summary>
         /// <param name="scaleMapToM"></param>
         /// <returns></returns>
-        public MapData GetMapdata(double scaleMapToM )
+        public MapData GetMapdata()
         {
+            double scaleMapToM = mapData.Resolution;
             MapData outputMapdata = new MapData();
             outputMapdata = mapData;
 
             // チェックポイント　マップ座標から実座標へ変換
-            outputMapdata.startPosition.x = ((rosCheckPoint[0].x + mapData.RealWidth * 0.5) / scaleMapToM);
-            outputMapdata.startPosition.y = -((rosCheckPoint[0].y - mapData.RealHeight * 0.5) / scaleMapToM);
-            outputMapdata.startPosition.z = (rosCheckPoint[0].z / scaleMapToM);
+            outputMapdata.startPosition.x = ((rosCheckPoint[0].x /* - mapData.MapOrign.x*/) / scaleMapToM);
+            outputMapdata.startPosition.y = ((-rosCheckPoint[0].y /* - mapData.MapOrign.y*/) / scaleMapToM);
+            outputMapdata.startPosition.z = ((rosCheckPoint[0].z /* - mapData.MapOrign.z*/) / scaleMapToM);
 
             outputMapdata.checkPoint = new Vector3[rosCheckPoint.Count-1];
             for(int i=1;  i<rosCheckPoint.Count; i++ )
             {
-                outputMapdata.checkPoint[i-1].x = ((rosCheckPoint[i].x + mapData.RealWidth * 0.5) / scaleMapToM);
-                outputMapdata.checkPoint[i-1].y = -((rosCheckPoint[i].y - mapData.RealHeight * 0.5) / scaleMapToM);
-                outputMapdata.checkPoint[i-1].z = (rosCheckPoint[i].z / scaleMapToM);
+                outputMapdata.checkPoint[i-1].x = ((rosCheckPoint[i].x /* - mapData.MapOrign.x*/) / scaleMapToM);
+                outputMapdata.checkPoint[i-1].y = ((-rosCheckPoint[i].y /* - mapData.MapOrign.y*/) / scaleMapToM);
+                outputMapdata.checkPoint[i-1].z = ((rosCheckPoint[i].z /* - mapData.MapOrign.z*/) / scaleMapToM);
             }
 
             return outputMapdata;
@@ -409,7 +411,6 @@ namespace Location
         /// <returns></returns>
         public Vector3 GetCheckPointToWayPoint(int cpIdx)
         {
-            //if ((cpIdx + 1) == mapData.checkPoint.Length)
             if ((cpIdx + 1) == rosCheckPoint.Count)
             {
                 // ゴールひとつ手前
@@ -624,7 +625,7 @@ namespace Location
         /// チェックポイント削減
         /// </summary>
         /// <param name="reductAngleRange">許容角度 radian </param>
-        /// <returns></returns>
+        /// <returns>削減後、チェックポイント数</returns>
         public int CheckPointReduction(double reductAngleRange)
         {
             if (rosCheckPoint.Count < 2) return rosCheckPoint.Count;
@@ -691,7 +692,7 @@ namespace Location
                 */
 
                 // -2PI～2PIの差分に変換
-                stearingAng = (tgtAng % (Math.PI*2.0)) - (nowAng % (Math.PI * 2.0));
+            	stearingAng = (tgtAng % (Math.PI*2.0)) - (nowAng % (Math.PI * 2.0));
                 if (Math.Abs(stearingAng) > (Math.PI * 2.0))
                 {
                     stearingAng = (stearingAng % (Math.PI * 2.0));

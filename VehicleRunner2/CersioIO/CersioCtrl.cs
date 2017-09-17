@@ -1,6 +1,6 @@
 ﻿//#define EMULATOR_MODE  // bServer エミュレーション起動
 
-#define SPEED_FROM_TF  // TF座標からスピードを算出
+//#define SPEED_FROM_TF  // TF座標からスピードを算出
 
 using System;
 using System.Collections.Generic;
@@ -449,6 +449,8 @@ namespace CersioIO
         double oldWheelR;              // 速度計測用　前回ロータリーエンコーダ値
         double oldWheelL;              // 速度計測用　前回ロータリーエンコーダ値
 
+        public double nowLengthMm = 0.0;   // 移動量　mm
+
         public double emuGPSX = 134.0000;
         public double emuGPSY = 35.0000;
 
@@ -515,8 +517,10 @@ namespace CersioIO
                                     {
                                         // 速度計算(非動輪を基準)
                                         double wheelPulse = ((hwRErotR - oldWheelR) + (hwRErotL - oldWheelL)) * 0.5;
+                                        double moveLength = (wheelPulse / OnePuls * (Math.PI * tireSize));
 
-                                        SpeedMmSec = (double)((wheelPulse / OnePuls * (Math.PI * tireSize)) / (SpeedSec - oldSpeedSec));
+                                        nowSpeedMmSec = (double)moveLength / (SpeedSec - oldSpeedSec);
+                                        nowLengthMm += moveLength;
 
                                         oldSpeedSec = SpeedSec;
                                         oldWheelR = hwRErotR;

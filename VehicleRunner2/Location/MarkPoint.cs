@@ -45,8 +45,8 @@ namespace Location
         /// <param name="drwp"></param>
         public MarkPoint(DrawMarkPoint drwp, LocationSystem locSys)
         {
-            x = (double)(drwp.x * (1.0/locSys.mToMap));
-            y = (double)(-drwp.y * (1.0/locSys.mToMap));
+            x = (double)(drwp.x * locSys.MapTom);
+            y = (double)(-drwp.y * locSys.MapTom);
             theta = (double)(-drwp.theta);
         }
 

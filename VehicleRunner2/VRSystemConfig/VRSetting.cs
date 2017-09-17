@@ -60,7 +60,8 @@ namespace VRSystemConfig
         /// <summary>
         /// 起動時のマップファイル名
         /// </summary>
-        public const string defaultMapFileName = "../../../MapFile/utsubo20170820/utubo201708201520b.xml";
+        public const string defaultMapFileName = "../../../MapFile/kandai20170909/kandai201709091132.xml";
+        //public const string defaultMapFileName = "../../../MapFile/utsubo20170820/utubo201708201520b.xml";
         //public const string defaultMapFileName = "../../../MapFile/refure201708/refure20170811.xml";
         //public const string defaultMapFileName = "../../../MapFile/husky/check_point20170806_215906b.xml";
 
@@ -85,7 +86,7 @@ namespace VRSystemConfig
         public const double AccControlPowDOWN = 0.100;//0.050;
 
         /// <summary> 移動速度[km] </summary>
-        public const double AccSpeedKm = 1.3;
+        public const double AccSpeedKm = 2.0;
 
         /*
                 /// <summary>
