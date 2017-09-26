@@ -35,7 +35,7 @@ def run():
 	pubGoal = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=40)
 	rospy.Subscriber("/sh2_encLR", Vector3, odom_callback)
 	rospy.Subscriber("/rosif/base_link", Twist, baselink_callback)
-	rospy.Subscriber("/cmd_vec_movebase", Twist, cmdvelmovebase_callback)
+	rospy.Subscriber("/move_base/cmd_vel", Twist, cmdvelmovebase_callback)
 
 	rospy.loginfo("Start bserver")
 
@@ -73,7 +73,7 @@ def run():
 			goalMsg.pose.orientation.z = q[2]
 			goalMsg.pose.orientation.w = q[3]
 			goalMsg.header.stamp= rospy.Time.now()
-			goalMsg.header.frame_id = 'base_imu_link'
+			goalMsg.header.frame_id = 'map'
 			goalMsg.header.seq = seq
 			seq = seq + 1
 			pubGoal.publish(goalMsg)

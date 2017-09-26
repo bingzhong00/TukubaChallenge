@@ -179,7 +179,7 @@ class Bserver:
             data = ds[jj]
 
 	    if data:
-	      print cnt, data, len(datas)
+	      #print cnt, data, len(datas)
 	      cnt = cnt + 1
 	      try: 
 		# RE pulse
@@ -226,9 +226,9 @@ class Bserver:
 		  connection.sendall(self.ans+"$")
 		  flg = 1
 		# MoveBase x,y dir
-		if "B1" in data:
-		  self.mkans ("B1")          
-		  self.ans = self.ans + "," + str(self.mvX) + "," + str(self.mvY) + "," + str(self.mvAng )
+		if "M0" in data:
+		  self.mkans ("M0")          
+		  self.ans = self.ans + "," + str(self.mvX) + "," + str(self.mvY) + ",0,0,0," + str(self.mvAng )
 		  connection.sendall(self.ans+"$")
 		  flg = 1
 
@@ -238,7 +238,7 @@ class Bserver:
 		    dats = cmd.split(",")
 
 		    if len(dats) >= 3:
-		      self.handle = -float(dats[1]) # Handle
+		      self.handle = float(dats[1]) # Handle
 		      self.throttle = float(dats[2]) # Throttle
 		      self.mkans ("AC")          
 		      connection.sendall(self.ans+","+str(self.handle)+","+str(self.throttle)+"$")
@@ -246,7 +246,7 @@ class Bserver:
 		      flg = 1
 
         # Recive CheckPoint
-		if "AP" in data:
+		if "AG" in data:
 		    cmd = data[0:data.find("\n")]
 		    dats = cmd.split(",")
 
@@ -254,9 +254,9 @@ class Bserver:
 		      self.cpX = float(dats[1]) # x
 		      self.cpY = float(dats[2]) # y
 		      self.cpYaw = float(dats[3]) # dir yaw
-		      self.mkans ("AP")          
+		      self.mkans ("AG")          
 		      connection.sendall(self.ans+","+str(self.cpX)+","+str(self.cpY)+","+str(self.cpYaw)+"$")
-		      #print "        bsrv ap" + str(dats[1]) + "  " + str(dats[2]) + "  " + str(dats[3])
+		      print "        bsrv AG, x:" + str(dats[1]) + "  y:" + str(dats[2]) + "  ang:" + str(dats[3])
 		      flg = 1
 		      self.rcp_flg = 1
 
@@ -310,9 +310,9 @@ class Bserver:
 		  datas=""
 		  continue
      
-	    else:
-	      print >> sys.stderr, 'no more data from', client_address
-              break
+	    #else:
+	      #print >> sys.stderr, 'no more data from', client_address
+              #break
 
       except socket.error, msg:
         connection.close()
