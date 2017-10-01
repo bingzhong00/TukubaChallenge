@@ -21,19 +21,25 @@ namespace CersioIO
         7 スマイル               ゴール時
         8 ハザード               回避、徐行時
         9 緑ＬＥＤぐるぐる       BoxPC起動時
+
+
+        2017.09.26
+        パターン１：青色でニコちゃんマーク		        想定：ゴール時
+        パターン２：黄色で（正面から見て）右半分光る	想定：左折時
+        パターン３：黄色で（正面から見て）左半分光る	想定：右折時
+        パターン４：青色で光がグルグル			        想定：平常運転時
+        パターン５：黄色で全点滅			            想定：警告時
+        パターン６：赤色で全点滅			            想定：異常時
         */
         public enum LED_PATTERN
         {
-            Normal = 0,     // 0 通常表示
-            RED,            // 1 全赤
-            GREEN,          // 2 全緑
-            BLUE,           // 3 全青
-            WHITE_FLASH,    // 4 白黒点滅回転
-            UnKnown1,       // 5 ?点滅回転
-            UnKnown2,       // 6 ?点滅回転
-            SMILE,          // 7 スマイル 
-            HAZERD,         // 8 ハザード
-            ROT_GREEN,      // 9 緑ＬＥＤぐるぐる
+            None = 0,
+            SMILE,          // 1 青色でニコちゃんマーク
+            RightTurn,      // 2 黄色で（正面から見て）左半分光る
+            LeftTurn,       // 3 黄色で（正面から見て）右半分光る
+            Normal,         // 4 通常表示
+            Warning,        // 5 黄色で全点滅 ハザード
+            RedAlart,       // 6 赤色で全点滅 異常時
         };
         public int ptnHeadLED = -1;
         private int cntHeadLED = 0;

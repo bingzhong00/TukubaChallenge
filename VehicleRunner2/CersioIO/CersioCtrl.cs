@@ -512,8 +512,8 @@ namespace CersioIO
                                 {
                                     double SpeedSec = (double)System.Environment.TickCount / 1000.0;
 
-                                    // 0.2秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
-                                    if ((SpeedSec - oldSpeedSec) > 0.2)
+                                    // 0.25秒以上の経過時間があれば計算 (あまりに瞬間的な値では把握しにくいため)
+                                    if ((SpeedSec - oldSpeedSec) > 0.25)
                                     {
                                         // 速度計算(非動輪を基準)
                                         double wheelPulse = ((hwRErotR - oldWheelR) + (hwRErotL - oldWheelL)) * 0.5;

@@ -37,6 +37,11 @@ namespace Navigation
             EmergencyStop,
 
             /// <summary>
+            /// 異常停止
+            /// </summary>
+            StackStop,
+
+            /// <summary>
             /// 袋小路脱出バック動作
             /// </summary>
             MoveBack,

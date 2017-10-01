@@ -60,10 +60,7 @@ namespace VRSystemConfig
         /// <summary>
         /// 起動時のマップファイル名
         /// </summary>
-        public const string defaultMapFileName = "../../../MapFile/kandai20170909/kandai201709091132.xml";
-        //public const string defaultMapFileName = "../../../MapFile/utsubo20170820/utubo201708201520b.xml";
-        //public const string defaultMapFileName = "../../../MapFile/refure201708/refure20170811.xml";
-        //public const string defaultMapFileName = "../../../MapFile/husky/check_point20170806_215906b.xml";
+        public const string defaultMapFileName = "../../../MapFile/utubo20170929/check_point20170930_165008.xml";
 
         /// <summary>
         /// チェックポイントに到達したと判定するく距離(半径) [m]
