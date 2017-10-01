@@ -139,8 +139,8 @@ namespace Location
                                 orignWord = orignWord.Substring(1,orignWord.Length-2); // [ ] 削除
                                 var xyzWords = orignWord.Split(',');
 
-                                mapFile.MapOrign.x = double.Parse(xyzWords[0]);
-                                mapFile.MapOrign.y = double.Parse(xyzWords[1]);
+                                mapFile.MapOrign.x = -(mapFile.RealWidth + double.Parse(xyzWords[0]));
+                                mapFile.MapOrign.y = -(mapFile.RealHeight + double.Parse(xyzWords[1]));
                                 mapFile.MapOrign.z = double.Parse(xyzWords[2]);
                             }
                             else if (readWords[0].Trim().ToLower() == "negate")
