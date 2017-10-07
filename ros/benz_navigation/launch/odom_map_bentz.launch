@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<launch>
+  <param name="pub_map_odom_transform" value="true"/> 
+  <param name="map_frame" value="map"/> 
+  <param name="base_frame" value="base_frame"/> 
+  <param name="odom_frame" value="odom"/>
+
+  <!-- LRF(urg) -->
+<!--
+   <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/scan">
+    <param name="ip_address" value="192.168.1.10"/>
+  </node>
+ -->
+
+  <!-- reverse LRF(urg) -->
+  <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/reverse/scan">
+    <param name="ip_address" value="192.168.1.10"/>
+  </node>
+  <node pkg="rosif" type="urg_reverse.py" name="urg_reverse"/>
+
+  <!-- tf -->
+<!--
+  <node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="0 0 0 0 0 0 /map /odom 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_footprint_2_base_link" args="0 0 0 0 0 0 /odom /base_link 100"/> 
+-->
+  <node pkg="tf" type="static_transform_publisher" name="base_link_2_base_stabilized_link" args="0 0 0 0 0 0 /base_link /base_stabilized 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_stablized_2_base_frame" args="0 0 0 0 0 0 /base_stabilized /base_frame 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 0 /base_frame /laser 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 /base_frame /nav 100"/>
+
+  <!-- map file -->
+  <arg name="map_file" default="$(find benz_navigation)/maps/syaoku20170820.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!-- ekf_localization -->
+<!--
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+    <rosparam command="load" file="$(find amcl_example)/launch/localization.yaml" />
+  </node>
+-->
+
+  <!-- RotaryEncorder to odom -->
+  <node pkg="benz_navigation" type="wheel_odometry_benz.py" name="wheel_odometry_benz"/>
+
+
+  <!-- amcl (timed launch mapfile load wait) -->
+<!-- does not worked
+　 <include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+    <arg name="time" value="2" />
+    <arg name="pkg" value="amcl_example" />
+    <arg name="file" value="amcl_diff.launch" />
+    <arg name="node_name" value="amcl_diff" />
+    <arg name="value" value="output:=screen" />
+  </include>
+-->
+
+</launch>
