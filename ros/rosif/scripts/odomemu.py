@@ -12,13 +12,13 @@ from std_msgs.msg import *
 
 onePluseLength = 0.15 * math.pi # タイヤ1周の長さ (m)
 carWidth = 0.45 # シャーシ幅
-carTurnLength = 2.0 # 車の回転半径
+carTurnLength = 4.0 #2.0 # 車の回転半径
 cmdvel_ang = 0.0
 cmdvel_move = 0.0
 moveR = 0.0
 moveL = 0.0
 
-oneSecMove = ((4.0*1000.0*30.0) / (60.0*60.0))#((4.0*1000.0) / (60.0*60.0))
+oneSecMove = ((4.0*1000.0 * 120.0) / (60.0*60.0))#((4.0*1000.0) / (60.0*60.0))
 
 
 def cmdvel_callback(data):
@@ -28,7 +28,7 @@ def cmdvel_callback(data):
 	cmdvel_ang = data.angular.z
 
 
-rospy.init_node('odom_emu')
+rospy.init_node('odomsim')
 
 #rospy.wait_for_service('spawn')
 #spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
@@ -48,6 +48,9 @@ if __name__ == '__main__':
 
 		#ハンドル操作による差分
 		dirdiff = 1.0 - (abs(cmdvel_ang)*((carTurnLength-carWidth)/carTurnLength))
+		if dirdiff < 0.8:
+			dirdiff = 0.8
+
 		moveVel = cmdvel_move * oneSecMove * 0.1 # 100msの移動量
 		diffR = 1.0
 		diffL = 1.0

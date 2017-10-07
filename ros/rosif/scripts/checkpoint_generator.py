@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	
 	now = datetime.now()
 	fname_head = "check_point{0:%Y%m%d_%H%M%S}".format(now)
-	fname = fname_head + ".yaml"
+	fname = fname_head + ".xmll"
 	f = open( fname, "w" )
 
 	rospy.loginfo("create file %s", fname)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 	f.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
 	f.write("<MapData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n")
 	f.write("\t<MapName>"+mapname+"</MapName>\n")
-	f.write("\t<MapYamlFileName>"+fname+"</MapYamlFileName>\n")
+	f.write("\t<MapYamlFileName>"+fname_head + ".yaml"+"</MapYamlFileName>\n")
 
 	while map_dataGet == False and rospy.is_shutdown() == False:
 		rate.sleep()
