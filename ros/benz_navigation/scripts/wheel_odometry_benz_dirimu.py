@@ -10,13 +10,15 @@ from geometry_msgs.msg import TransformStamped
 from numpy import *
 from tf.transformations import quaternion_from_euler
 import tf
+from sensor_msgs.msg import Imu
+import string
 
 #=========Initial Parameter=============
 D_RIGHT=1.200 #0.245462	# 右パルスの移動量 m? Pulse ratio of the right wheel encoder
 D_LEFT =1.198 #0.243768 	# 左パルスの移動量 m? (大きいほど移動量増える)Pulse ratio of the left wheel encoder
 GR=1.0 #100.0			# パルス値を割る値1 Gear ratio
 PR=100.0 #32.0 			# パルス値を割る値2 Pulse ratio of encoders
-TREAD=0.95 #0.90 #0.80 #1.00	# 左右の移動量の差から角度に変換する値(小さいほど急激に変化) Tread
+TREAD=1.0 #0.25 #1.002405	# 左右の移動量の差から角度に変換する値(小さいほど急激に変化) Tread
 
 rs=[0,0]; #pluse store
 u=array([0,0]);
@@ -29,12 +31,33 @@ encRold = 0
 
 angularOld = 0.0
 handleYow = 0.0
+imuYow = 0.0
+imuYowOld = 0.0
 
 # tfにも出力
 bc = tf.TransformBroadcaster()
 listener = tf.TransformListener() 
 
 #result=open('odo.txt','w')
+
+def imu_callback(data):
+	global imuYow
+	global imuYowOld
+	e = tf.transformations.euler_from_quaternion((data.orientation.x,data.orientation.y,data.orientation.z,data.orientation.w))
+	imuYow += (e[2] - imuYowOld)
+	imuYowOld = e[2]
+
+def imuserial_callback(data):
+	global imuYow
+	global imuYowOld
+	rospy.loginfo(data)
+	words = string.split(data.data,",")    # Fields split
+	yaw = -float(words[9]) - 180.0
+	yaw = PItoPI(yaw*pi/180.0)
+	imuYow += PItoPI(yaw - imuYowOld)
+	imuYowOld = yaw
+
+
 
 def cmdvel_callback(data):
 	global angularOld
@@ -47,6 +70,8 @@ def talker():
 	rospy.Subscriber("/cmd_vel", Twist, cmdvel_callback)
 	rospy.Subscriber("/benz/raspi/encR", Int64, odom_callbackR)
 	rospy.Subscriber("/benz/raspi/encL", Int64, odom_callbackL)
+	#rospy.Subscriber("/imu", Imu, imu_callback)
+	rospy.Subscriber("/imu/serial", String, imuserial_callback)
 	pub = rospy.Publisher('/odom', Odometry, queue_size=10 )
 
 	odo=Odometry()
@@ -135,18 +160,22 @@ def talker():
 # u[0] move vec
 # u[1] dir 
 def calc_input(rs):
+	global imuYow
 	u=array([0,0]);
 	vr=rs[0]/(GR*PR)*pi*D_RIGHT
 	vl=rs[1]/(GR*PR)*pi*D_LEFT
 	v=(vr+vl)/2.0
-	yawrate=(vr-vl)/(TREAD/2.0)
-	u=array([v,yawrate])
+	#yawrate=(vr-vl)/(TREAD/2.0)
+	#u=array([v,yawrate])
+	u=array([v,imuYow*9.50])
+	imuYow = 0.0
 	return u
 
 # x[0] x
 # x[1] y
 # x[2] dir
 def MotionModel(x,u,dt):
+	global imuYowOld
 	F=eye(3)
 	B=array([[dt*cos(x[2]),0],
 			[dt*sin(x[2]),0],

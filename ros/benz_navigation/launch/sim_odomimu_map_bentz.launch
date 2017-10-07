@@ -23,7 +23,7 @@
   <arg name="map_file" default="$(find amcl_example)/maps/tkch20161104_1142.yaml"/>
   <arg name="map_file" default="$(find amcl_example)/maps/mymap7.yaml"/>
 -->
-  <arg name="map_file" default="$(find benz_navigation)/maps/utubo20170929BCourse3.yaml"/>
+  <arg name="map_file" default="$(find benz_navigation)/maps/utubo20170929BCourse4.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <!-- ekf_localization -->
@@ -34,6 +34,6 @@
 -->
 
   <!-- RotaryEncorder to odom -->
-  <node pkg="benz_navigation" type="wheel_odometry_benz.py" name="wheel_odometry_benz"/>
+  <node pkg="benz_navigation" type="wheel_odometry_benz_dirimu.py" name="wheel_odometry_benz_dirimu"/>
 
 </launch>

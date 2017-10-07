@@ -28,7 +28,7 @@ def cmdvel_callback(data):
 	cmdvel_ang = data.angular.z
 
 
-rospy.init_node('odomsim')
+rospy.init_node('odomemu')
 
 #rospy.wait_for_service('spawn')
 #spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)

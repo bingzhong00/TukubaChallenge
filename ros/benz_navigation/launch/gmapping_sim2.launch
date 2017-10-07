@@ -6,19 +6,9 @@
   <param name="base_frame" value="base_frame"/> 
   <param name="odom_frame" value="odom"/>
 
+  <param name="/use_sim_time" value="true"/>
+
   <arg name="scan_topic" default="scan" />
-
-  <!-- LRF(urg) -->
-<!-- 
-  <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/scan">
-    <param name="ip_address" value="192.168.1.10"/>
-  </node>
--->
-
-  <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/reverse/scan">
-    <param name="ip_address" value="192.168.1.10"/>
-  </node>
-  <node pkg="rosif" type="urg_reverse.py" name="urg_reverse"/>
 
   <!-- tf -->
 <!--
@@ -28,7 +18,25 @@
   <node pkg="tf" type="static_transform_publisher" name="base_link_2_base_stabilized_link" args="0 0 0 0 0 0 /base_link /base_stabilized 100"/> 
   <node pkg="tf" type="static_transform_publisher" name="base_stablized_2_base_frame" args="0 0 0 0 0 0 /base_stabilized /base_frame 100"/> 
   <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 0 /base_frame /laser 100"/> 
+  <!-- <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 3.1415 /base_frame /laser 100"/>  -->
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_rear_link" args="-1.05 0 0 3.1415 0 0 /base_frame /laser_rear 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_marged_link" args="0 0 0 0 0 0 /base_frame /merged_lrf 100"/>
   <node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 /base_frame /nav 100"/>
+
+  <!-- LRF(urg) for default frameid -->
+  <node pkg="rosif" type="urg_scanframe.py" name="urg_scanframe"/>
+
+  <!-- ScanMarger -->
+  <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+    <param name="destination_frame" value="/merged_lrf"/>
+    <param name="cloud_destination_topic" value="/merged_cloud"/>
+    <param name="scan_destination_topic" value="/scan"/>
+    <param name="laserscan_topics" value ="/base_scan /base_scan2" /> <!-- LIST OF THE LASER SCAN TOPICS TO SUBSCRIBE -->
+    <param name="angle_min" type="double" value="-3.14" />
+    <param name="angle_max" type="double" value="3.14" />
+    <param name="range_max" type="double" value="60.0" />
+    <param name="range_min" type="double" value="0.13" />
+  </node>
 
   <!-- ekf_localization -->
 <!--
@@ -40,6 +48,7 @@
   <!-- RotaryEncorder to odom -->
   <node pkg="benz_navigation" type="wheel_odometry_benz.py" name="wheel_odometry_benz"/>
 
+  <!-- gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
     <rosparam>
       odom_frame: odom
@@ -49,7 +58,7 @@
       map_update_interval: 0.5 # Publish new map
 
       maxUrange: 25.5 # Should be just less than sensor range
-      maxRange: 26.1 # Should be just greater than sensor range
+      maxRange: 30.1 # Should be just greater than sensor range
       particles: 100 # Increased from 80
 
       # Update frequencies
@@ -82,6 +91,5 @@
     </rosparam>
     <remap from="scan" to="$(arg scan_topic)"/>
   </node>
-
 
 </launch>
