@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	
 	now = datetime.now()
 	fname_head = "check_point{0:%Y%m%d_%H%M%S}".format(now)
-	fname = fname_head + ".xmll"
+	fname = fname_head + ".xml"
 	f = open( fname, "w" )
 
 	rospy.loginfo("create file %s", fname)
