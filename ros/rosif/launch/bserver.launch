@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- bServer -->
+  <node pkg="rosif" type="comm_bserver.py" name="comm_bserver" output="screen"/>
+
+  <!-- baselink publish -->
+  <node pkg="rosif" type="baselink_pub.py" name="baselink_pub"/>
+
+</launch>
