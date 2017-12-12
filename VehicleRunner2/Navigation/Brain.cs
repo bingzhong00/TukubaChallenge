@@ -78,6 +78,9 @@ namespace Navigation
 
         // ログ 追記事項出力
         public static string addLogMsg;
+        public int noPowerTrainCnt;
+        public int noFowrdCnt;
+        private double backHandle;
 
 
         /// <summary>
@@ -86,9 +89,6 @@ namespace Navigation
         //public Bitmap AvoidRootImage;
 
         //public DateTime AvoidRootDispTime;
-
-        // バック開始判定カウンタ
-        private int BackStartCnt;
 
         // ===========================================================================================================
 
@@ -135,7 +135,7 @@ namespace Navigation
         }
 
         /// <summary>
-        /// 自律走行処理 定期更新
+        /// 自律走行処理 定期更新(100ms)
         /// </summary>
         /// <param name="bRunAutonomous"></param>
         /// <param name="bMoveBaseCtrl"></param>
@@ -153,10 +153,11 @@ namespace Navigation
             {
                 CarCtrl.nowAccValue = 0.0;
                 CarCtrl.nowHandleValue = 0.0f;
-
+                // 停止
                 CarCtrl.SetCommandAC(0.0, 0.0);
+
                 // スマイル
-                CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.SMILE);
+                CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Smile);
 
                 return goalFlg;
             }
@@ -184,11 +185,16 @@ namespace Navigation
                     CarCtrl.SetCommandAC(0.0, 0.0);
                     CarCtrl.nowAccValue = 0.0;
                     CarCtrl.nowHandleValue = 0.0;
+                    noFowrdCnt = 0;
+                    noPowerTrainCnt = 0;
                 }
             }
 
-            // 自走モード処理
-            ModeUpdate(bRunAutonomous);
+            // LED指示
+            LedUpdate(bRunAutonomous);
+
+            // モード更新
+            ModeCtrl.Update(LocSys.GetResultDistance_mm());
 
             // ルート計算
             LocSys.RTS.CalcRooting(bRunAutonomous);
@@ -205,13 +211,15 @@ namespace Navigation
 
                 double moveAng = -(angLimit / 30.0);//-CarCtrl.hwMVBS_Ang;// * 0.3; 
                 */
-                double moveAng = CarCtrl.hwMVBS_Ang *2.0;// * 0.3;//-CarCtrl.hwMVBS_Ang;// * 0.3; 
+                double moveAng = CarCtrl.hwMVBS_Ang *2.0; 
 
                 if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.CheckPoint)
                 {
+                    // モード：チェックポイント目指す
+
                     if (bMoveBaseCtrl)
                     {
-                        // move_base 移動
+                        // move_baseコントロール
                         if (CarCtrl.hwMVBS_X > 0.0)
                         {
                             // move_baseから前進指示の場合
@@ -222,10 +230,17 @@ namespace Navigation
 
                             CarCtrl.CalcHandleAccelControl(moveAng, CarCtrl.CalcAccelFromSpeed(SpeedKmh * speedRate, true));
                             //CarCtrl.SendCalcHandleAccelControl(moveAng, getAccelValue()*0.5);
+                            ModeCtrl.TmpCnt = 0;
                         }
                         else
                         {
-                            ModeCtrl.SetActionMode(ModeControl.ActionMode.EmergencyStop);
+                            // move_baseから前進指示なし
+                            ModeCtrl.TmpCnt++;
+                            // 0.5秒
+                            if (ModeCtrl.TmpCnt > 5)
+                            {
+                                ModeCtrl.SetActionMode(ModeControl.ActionMode.EmergencyStop);
+                            }
                         }
 
                         // ACコマンド送信
@@ -233,11 +248,11 @@ namespace Navigation
                     }
                     else
                     {
+                        // VR コントロール
                         // ルートにそったハンドル、アクセル値を取得
                         double handleTgt = LocSys.RTS.GetHandleValue();
                         //double accTgt = LocSys.RTS.GetAccelValue();
 
-                        // move_baseから前進指示の場合
                         double speedRate = 1.0;
 
                         // ハンドルで曲がるときは、速度を下げる
@@ -249,15 +264,59 @@ namespace Navigation
                         CarCtrl.SetCommandAC(CarCtrl.nowHandleValue, CarCtrl.nowAccValue);
                     }
 
+                    // 共通処理
+
+                    // 動輪の状態確認
+                    if (CarCtrl.sendAccelValue >= 0.1)
+                    {
+                        // 動力出力指示にかかわらず、(速度50mm/s以下)
+                        if (CarCtrl.nowSpeedMmSec <= 50.0)
+                        {
+                            // スタック(前進不能)カウンタ
+                            noFowrdCnt++;
+                            if (noFowrdCnt > 1000)
+                            {
+                                // バックで脱出を試みる
+                                ModeCtrl.SetActionMode(ModeControl.ActionMode.MoveBack);
+                                CarCtrl.nowAccValue = 0.0;
+                                noFowrdCnt = 0;
+                            }
+
+                            // 動力出力指示にかかわらずほぼ静止(速度10mm/s以下)
+                            if (CarCtrl.nowSpeedMmSec <= 10.0)
+                            {
+                                // 動力カット状態カウンタ
+                                noPowerTrainCnt++;
+
+                                // 10秒以上経過
+                                if (noPowerTrainCnt > 100 )
+                                {
+                                    // 出力0%から再スタート
+                                    CarCtrl.nowAccValue = 0.0;
+                                    noPowerTrainCnt = 0;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // 指示どおり走行している状態
+                            noPowerTrainCnt = 0;
+                            noFowrdCnt = 0;
+                        }
+                    }
+                    else
+                    {
+                        // 指示通り静止している状態
+                    }
+
                 }
                 else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.EmergencyStop)
                 {
                     if (ModeCtrl.GetActionCount() < 5)
                     {
-                        // 減速 10%
+                        // 徐行
                         CarCtrl.nowAccValue = 0.1;
                         CarCtrl.CalcHandleAccelControl(moveAng, CarCtrl.nowAccValue);
-                        BackStartCnt = 0;
                     }
                     else
                     {
@@ -265,27 +324,37 @@ namespace Navigation
                         //double speedRate = CarCtrl.hwMVBS_X;
                         //speedRate *= 0.75;
 
-                        // その場、回転
-                        if (Math.Abs(CarCtrl.hwMVBS_Ang) >= 0.01)
+                        if (CarCtrl.hwMVBS_X > 0.0)
                         {
-                            // 減速 [0.5km/h]
-                            //CarCtrl.CalcHandleAccelControl(0.0, 0.0);
-                            CarCtrl.CalcHandleAccelControl(moveAng, CarCtrl.CalcAccelFromSpeed(0.25, true));
-
-                            BackStartCnt++;
-                            if (BackStartCnt > 20)
-                            {
-                                // Back モード変更
-                                ModeCtrl.SetActionMode(ModeControl.ActionMode.MoveBack);
-                                BackStartCnt = 0;
-                                CarCtrl.nowAccValue = 0.0;
-                            }
+                            // 徐行解除
+                            ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
                         }
                         else
                         {
-                            // 停止
-                            CarCtrl.CalcHandleAccelControl(0.0, 0.0);
-                            BackStartCnt = 0;
+                            ModeCtrl.TmpCnt++;
+
+                            // その場、回転
+                            if (Math.Abs(CarCtrl.hwMVBS_Ang) >= 0.01)
+                            {
+                                // 減速 [0.5km/h]
+                                //CarCtrl.CalcHandleAccelControl(0.0, 0.0);
+                                CarCtrl.CalcHandleAccelControl(moveAng, CarCtrl.CalcAccelFromSpeed(0.25, true));
+
+                                if (ModeCtrl.TmpCnt > 20)
+                                {
+                                    // Back モード変更
+                                    ModeCtrl.SetActionMode(ModeControl.ActionMode.MoveBack);
+                                    CarCtrl.nowAccValue = 0.0;
+                                }
+                            }
+                            else
+                            {
+                                // 停止
+                                if (ModeCtrl.TmpCnt > 20)
+                                {
+                                    ModeCtrl.SetActionMode(ModeControl.ActionMode.EmergencyStop);
+                                }
+                            }
                         }
                     }
 
@@ -294,24 +363,41 @@ namespace Navigation
                 }
                 else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.StackStop)
                 {
-                    // バック動作
+                    // 完全停止
+                    if (ModeCtrl.GetModePassSeconds() > 8)
+                    {
+                        ModeCtrl.SetActionMode(ModeControl.ActionMode.EmergencyStop);
+                    }
                 }
                 else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.MoveBack)
                 {
-                    // バック動作
+                    // モード：バック動作
+                    if (ModeCtrl.GetActionCount() == 0)
+                    {
+                        // 逆ハンドル設定
+                        if (Math.Abs(CarCtrl.nowTargetHandle) > 0.1)
+                        {
+                            backHandle = -CarCtrl.nowTargetHandle;
+                        }
+                        else
+                        {
+                            backHandle = -LocSys.RTS.GetHandleValue();
+                        }
+                    }
+
                     if (ModeCtrl.GetActionCount() < 5)
                     {
                         // スピコンブレーキ解除
-                        CarCtrl.SetCommandAC(-CarCtrl.nowHandleValue, 0.0);
+                        CarCtrl.SetCommandAC(0.0, 0.0);
                     }
                     else
                     {
-                        // 500cm バック
+                        // 400mm バック
                         //if (ModeCtrl.GetModePassSeconds() > 3)
-                        if (ModeCtrl.PassDistanceMm() > 500.0)
+                        if (ModeCtrl.PassDistanceMm() > 400.0)
                         {
+                            // 復旧
                             ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
-                            BackStartCnt = 0;
                             CarCtrl.nowAccValue = 0.0;
 
                             // チェックポイント再送
@@ -323,15 +409,16 @@ namespace Navigation
                         else
                         {
                             // ハンドル維持して、バック
-                            CarCtrl.CalcHandleAccelControl(CarCtrl.nowHandleValue, CarCtrl.CalcAccelFromSpeed(SpeedKmh * 0.5, false));
+                            CarCtrl.CalcHandleAccelControl(backHandle, CarCtrl.CalcAccelFromSpeed(SpeedKmh * 0.5, false));
                         }
 
                         // ACコマンド送信
-                        CarCtrl.SetCommandAC(-CarCtrl.nowHandleValue, CarCtrl.nowAccValue);
+                        CarCtrl.SetCommandAC(CarCtrl.nowHandleValue, CarCtrl.nowAccValue);
                     }
                 }
                 else
                 {
+                    // モード：未設定
                     ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
                 }
             }
@@ -340,6 +427,8 @@ namespace Navigation
                 // 走行指示出力しない
                 CarCtrl.nowAccValue = 0.0;
                 CarCtrl.nowHandleValue = 0.0f;
+
+                ModeCtrl.SetActionMode(ModeControl.ActionMode.CheckPoint);
             }
 
             // 接続トリガ取得
@@ -350,7 +439,9 @@ namespace Navigation
 
             bRunAutonomousOld = bRunAutonomous;
 
+            // ゴール状態取得
             goalFlg = LocSys.RTS.GetGoalStatus();
+
             return goalFlg;
         }
 
@@ -378,29 +469,37 @@ namespace Navigation
         /// <param name="LocSys"></param>
         /// <returns>true...バック中(緊急動作しない)</returns>
         /// 
-        public bool ModeUpdate( bool bRunAutonomous )
+        public bool LedUpdate( bool bRunAutonomous )
         {
-            ModeCtrl.Update( LocSys.GetResultDistance_mm() );
-
             if (bRunAutonomous)
             {
+                // 自律走行時
                 if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.CheckPoint)
                 {
-                    // LED Normal
-                    CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Normal);
-
-                    // 通常時
-                    // チェックポイント通過をLEDで伝える
                     if (LocSys.RTS.TrgCheckPoint())
                     {
-                        //CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.WHITE_FLASH, true);
+                        // チェックポイント通過
+                        CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.CheckPointFlash, true);
                     }
-                }
-                else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.EmergencyStop)
-                {
-                    // 緊急停止状態
-                    // 赤
-                    CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Warning, true);
+                    else
+                    {
+                        // 通常時
+                        if (CarCtrl.nowHandleValue >= 0.8)
+                        {
+                            // Right Turn
+                            CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.RightTurn, false);
+                        }
+                        else if (CarCtrl.nowHandleValue <= -0.8)
+                        {
+                            // Left Turn
+                            CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.LeftTurn, false);
+                        }
+                        else
+                        {
+                            // LED Normal
+                            CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Normal, false);
+                        }
+                    }
                 }
                 else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.EmergencyStop)
                 {
@@ -410,10 +509,15 @@ namespace Navigation
                 }
                 else if (ModeCtrl.GetActionMode() == ModeControl.ActionMode.MoveBack)
                 {
-                    // ＬＥＤパターン
                     // バック中
-                    //CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Warning);
+                    // 黄色ハザード
+                    CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Warning, true);
                 }
+            }
+            else
+            {
+                // 待機状態
+                CarCtrl.SetHeadMarkLED(LEDControl.LED_PATTERN.Smile, true);
             }
 
             return true;

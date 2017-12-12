@@ -30,16 +30,18 @@ namespace CersioIO
         パターン４：青色で光がグルグル			        想定：平常運転時
         パターン５：黄色で全点滅			            想定：警告時
         パターン６：赤色で全点滅			            想定：異常時
+        パターン７：白フラッシュ			            想定：チェックポイント
         */
         public enum LED_PATTERN
         {
             None = 0,
-            SMILE,          // 1 青色でニコちゃんマーク
+            Smile,          // 1 青色でニコちゃんマーク
             RightTurn,      // 2 黄色で（正面から見て）左半分光る
             LeftTurn,       // 3 黄色で（正面から見て）右半分光る
             Normal,         // 4 通常表示
             Warning,        // 5 黄色で全点滅 ハザード
             RedAlart,       // 6 赤色で全点滅 異常時
+            CheckPointFlash,// 7 チェックポイント通過時
         };
         public int ptnHeadLED = -1;
         private int cntHeadLED = 0;
@@ -91,7 +93,8 @@ namespace CersioIO
             return false;
         }
 
-        public static string[] LEDMessage = { "Normal", "RED:緊急停止", "GREEN", "BLUE:壁回避", "WHITE_FLASH:チェックポイント通過", "UnKnown1", "UnKnown2", "SMILE:ルート完了", "HAZERD:徐行", "ROT_GREEN" };
+        //public static string[] LEDMessage = { "Normal", "RED:緊急停止", "GREEN", "BLUE:壁回避", "WHITE_FLASH:チェックポイント通過", "UnKnown1", "UnKnown2", "SMILE:ルート完了", "HAZERD:徐行", "ROT_GREEN" };
+        public static string[] LEDMessage = { "None", "ニコ", "左折", "右折", "青ぐる", "黄色フラ", "赤色フラ", "白フラ", "8", "9" };
 
     }
 }

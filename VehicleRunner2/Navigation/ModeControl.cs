@@ -67,7 +67,7 @@ namespace Navigation
         /// <summary>
         /// バック開始カウンタ
         /// </summary>
-        //public int BeckStartCnt = 0;
+        public int TmpCnt = 0;
 
 
         /// <summary>
@@ -120,6 +120,7 @@ namespace Navigation
             {
                 ActModeOld = ActMode;
                 ActModeCnt = 0;
+                TmpCnt = 0;
                 ActSetDistance = distanceMm;
             }
             // Actになってからの移動距離

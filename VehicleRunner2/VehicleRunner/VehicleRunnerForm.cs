@@ -56,6 +56,7 @@ namespace VehicleRunner
              MoveBase,
              CmdVel,
              ActionMode,
+             StackCnt
         };
 
         /// <summary>
@@ -172,6 +173,7 @@ namespace VehicleRunner
             dataGridViewReceiveData.Rows.Add("MoveBase", "", "", "");
             dataGridViewReceiveData.Rows.Add("CmdVel", "", "", "");
             dataGridViewReceiveData.Rows.Add("Action", "", "", "");
+            dataGridViewReceiveData.Rows.Add("Cnt P,S", "", "", "");
 
 
             // マップ名設定
@@ -514,6 +516,9 @@ namespace VehicleRunner
             dataGridViewReceiveData.Rows[(int)GeridRow.CmdVel].Cells[3].Value = CersioCt.nowHandleValue.ToString("f2");
 
             dataGridViewReceiveData.Rows[(int)GeridRow.ActionMode].Cells[1].Value = BrainCtrl.ModeCtrl.GetActionModeString();
+
+            dataGridViewReceiveData.Rows[(int)GeridRow.StackCnt].Cells[1].Value = BrainCtrl.noPowerTrainCnt.ToString();
+            dataGridViewReceiveData.Rows[(int)GeridRow.StackCnt].Cells[2].Value = BrainCtrl.noFowrdCnt.ToString();
 
             // 自律走行情報
             if (bRunAutonomous)

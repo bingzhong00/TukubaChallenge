@@ -281,12 +281,12 @@ namespace CersioIO
         /// <param name="targetAccelVal"></param>
         public void CalcHandleAccelControl(double targetHandleVal, double targetAccelVal)
         {
-            double handleTgt = targetHandleVal * HandleRate;
+            nowTargetHandle = targetHandleVal * HandleRate;
             double accTgt = targetAccelVal * AccRate;
             double diffAcc = (accTgt - nowAccValue);
 
             // ハンドル操作を徐々に目的値に変更する
-            nowHandleValue += (handleTgt - nowHandleValue) * HandleControlPow;
+            nowHandleValue += (nowTargetHandle - nowHandleValue) * HandleControlPow;
             // アクセル　加速時、減速時で係数を変更
             nowAccValue += ((diffAcc > 0.0) ? (diffAcc * AccControlPowUP) : (diffAcc * AccControlPowDOWN));
         }
@@ -453,6 +453,7 @@ namespace CersioIO
 
         public double emuGPSX = 134.0000;
         public double emuGPSY = 35.0000;
+        public double nowTargetHandle;
 
         /// <summary>
         /// 受信コマンド解析
@@ -516,7 +517,7 @@ namespace CersioIO
                                     if ((SpeedSec - oldSpeedSec) > 0.25)
                                     {
                                         // 速度計算(非動輪を基準)
-                                        double wheelPulse = ((hwRErotR - oldWheelR) + (hwRErotL - oldWheelL)) * 0.5;
+                                        double wheelPulse = (Math.Abs(hwRErotR - oldWheelR) + Math.Abs(hwRErotL - oldWheelL)) * 0.5;
                                         double moveLength = (wheelPulse / OnePuls * (Math.PI * tireSize));
 
                                         nowSpeedMmSec = (double)moveLength / (SpeedSec - oldSpeedSec);
