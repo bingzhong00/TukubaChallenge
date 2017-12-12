@@ -62,7 +62,9 @@
       ymin: -125.0
       xmax: 125.0
       ymax: 125.0
+      # map resolution
       delta: 0.05
+      #delta: 0.10
 
       # All default
       sigma: 0.05

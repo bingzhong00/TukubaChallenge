@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<launch>
+  <param name="usb_cam/pixel_format" value="yuyv"/> 
+  <param name="usb_cam/video_device" value="/dev/video0"/> 
+
+<!--
+   <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/scan">
+    <param name="ip_address" value="192.168.1.10"/>
+  </node>
+-->
+
+  <!-- RotaryEncorder to odom -->
+	<node pkg="usb_cam" type="usb_cam_node" name="usb_cam_node"/>
+
+</launch>

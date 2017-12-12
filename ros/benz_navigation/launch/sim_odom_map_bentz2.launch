@@ -8,22 +8,32 @@
 
   <param name="/use_sim_time" value="true"/>
 
-  <!-- LRF(urg) for default frameid -->
-  <node pkg="rosif" type="urg_scanframe.py" name="urg_scanframe"/>
-
   <!-- tf -->
-<!--
   <node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="0 0 0 0 0 0 /map /odom 100"/>
+<!--
   <node pkg="tf" type="static_transform_publisher" name="base_footprint_2_base_link" args="0 0 0 0 0 0 /odom /base_link 100"/> 
 -->
   <node pkg="tf" type="static_transform_publisher" name="base_link_2_base_stabilized_link" args="0 0 0 0 0 0 /base_link /base_stabilized 100"/> 
   <node pkg="tf" type="static_transform_publisher" name="base_stablized_2_base_frame" args="0 0 0 0 0 0 /base_stabilized /base_frame 100"/> 
-  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 0 /base_frame /laser 100"/> 
-  <!-- <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 3.1415 /base_frame /laser 100"/>  -->
-  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_rear_link" args="-1.05 0 0 3.1415 0 0 /base_frame /laser_rear 100"/> 
-  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_marged_link" args="-0.5 0 0 0 0 0 /laser /merged_lrf 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 3.1415 /base_frame /laser 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_rear_link" args="-1.05 0 0 3.1415 0 0 /base_frame /laser_rear 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_marged_link" args="0 0 0 0 0 0 /base_frame /merged_lrf 100"/>
   <node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 /base_frame /nav 100"/>
 
+  <!-- map file -->
+<!--
+  <arg name="map_file" default="$(find amcl_example)/maps/tkch20161104_1142.yaml"/>
+  <arg name="map_file" default="$(find amcl_example)/maps/mymap7.yaml"/>
+-->
+  <arg name="map_file" default="$(find benz_navigation)/maps/tsukuba201711031600.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!-- ekf_localization -->
+<!--
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+    <rosparam command="load" file="$(find amcl_example)/launch/localization.yaml" />
+  </node>
+-->
   <!-- ScanMarger -->
   <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
     <param name="destination_frame" value="/merged_lrf"/>
@@ -35,17 +45,6 @@
     <param name="range_max" type="double" value="60.0" />
     <param name="range_min" type="double" value="0.13" />
   </node>
-
-  <!-- map file -->
-  <arg name="map_file" default="$(find benz_navigation)/maps/utubo20170929BCourse3.yaml"/>
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
-
-  <!-- ekf_localization -->
-<!--
-  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
-    <rosparam command="load" file="$(find amcl_example)/launch/localization.yaml" />
-  </node>
--->
 
   <!-- RotaryEncorder to odom -->
   <node pkg="benz_navigation" type="wheel_odometry_benz.py" name="wheel_odometry_benz"/>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- LRF(urg) -->
+  <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/base_scan">
+    <param name="ip_address" value="192.168.1.10"/>
+  </node>
+
+  <!-- LRF rear (urg) -->
+  <node pkg="urg_node" type="urg_node" name="urg_node_rear" args="/last:=/base_scan2">
+    <param name="ip_address" value="192.168.1.11"/>
+    <param name="frame_id" value="laser_rear"/>
+  </node>
+
+
+  <!-- tf -->
+  <node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="0 0 0 0 0 0 /map /odom 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_footprint_2_base_link" args="0 0 0 0 0 0 /odom /base_link 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_link_2_base_stabilized_link" args="0 0 0 0 0 0 /base_link /base_stabilized 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_stablized_2_base_frame" args="0 0 0 0 0 0 /base_stabilized /base_frame 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 3.1415 /base_frame /laser 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_rear_link" args="-1.05 0 0 3.1415 0 0 /base_frame /laser_rear 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 /base_frame /nav 100"/>
+
+</launch>

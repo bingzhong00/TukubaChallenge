@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- map file -->
+<!--
+  <arg name="map_file" default="$(find amcl_example)/maps/tkch20161104_1142.yaml"/>
+  <arg name="map_file" default="$(find amcl_example)/maps/mymap7.yaml"/>
+-->
+  <arg name="map_file" default="$(find rooting)/maps/syaoku20170218_3rd.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+</launch>

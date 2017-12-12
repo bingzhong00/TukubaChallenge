@@ -11,13 +11,14 @@
    <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/scan">
     <param name="ip_address" value="192.168.1.10"/>
   </node>
- -->
+-->
 
   <!-- reverse LRF(urg) -->
   <node pkg="urg_node" type="urg_node" name="urg_node" args="/last:=/reverse/scan">
     <param name="ip_address" value="192.168.1.10"/>
   </node>
   <node pkg="rosif" type="urg_reverse.py" name="urg_reverse"/>
+
 
   <!-- tf -->
 <!--
@@ -27,10 +28,11 @@
   <node pkg="tf" type="static_transform_publisher" name="base_link_2_base_stabilized_link" args="0 0 0 0 0 0 /base_link /base_stabilized 100"/> 
   <node pkg="tf" type="static_transform_publisher" name="base_stablized_2_base_frame" args="0 0 0 0 0 0 /base_stabilized /base_frame 100"/> 
   <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 0 /base_frame /laser 100"/> 
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_rear_link" args="-1.05 0 0 3.1415 0 0 /base_frame /laser_rear 100"/> 
   <node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 /base_frame /nav 100"/>
 
   <!-- map file -->
-  <arg name="map_file" default="$(find benz_navigation)/maps/syaoku20170820.yaml"/>
+  <arg name="map_file" default="$(find benz_navigation)/maps/utubo201708201520bm.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <!-- ekf_localization -->
@@ -43,6 +45,8 @@
   <!-- RotaryEncorder to odom -->
   <node pkg="benz_navigation" type="wheel_odometry_benz.py" name="wheel_odometry_benz"/>
 
+  <!-- baselonk_publisher -->
+  <node pkg="rosif" type="baselink_pub.py" name="baselink_publisher"/>
 
   <!-- amcl (timed launch mapfile load wait) -->
 <!-- does not worked

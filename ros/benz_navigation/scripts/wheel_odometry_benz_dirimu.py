@@ -30,9 +30,11 @@ encLold = 0
 encRold = 0
 
 angularOld = 0.0
-handleYow = 0.0
-imuYow = 0.0
-imuYowOld = 0.0
+imuYawDiff = 0.0
+imuYawOld = 0.0
+imuYaw = 0.0
+imuPitch = 0.0
+imuRoll = 0.0
 
 # tfにも出力
 bc = tf.TransformBroadcaster()
@@ -41,37 +43,47 @@ listener = tf.TransformListener()
 #result=open('odo.txt','w')
 
 def imu_callback(data):
-	global imuYow
-	global imuYowOld
+	global imuYawDiff
+	global imuYawOld
+	global imuYaw
 	e = tf.transformations.euler_from_quaternion((data.orientation.x,data.orientation.y,data.orientation.z,data.orientation.w))
-	imuYow += (e[2] - imuYowOld)
-	imuYowOld = e[2]
+	imuYaw = e[2]
+	#imuYawDiff += (e[2] - imuYawOld)
+	#imuYawOld = e[2]
 
 def imuserial_callback(data):
-	global imuYow
-	global imuYowOld
+	global imuYawDiff
+	global imuYaw
+	global imuPitch
+	global imuRoll
+	global imuYawOld
 	rospy.loginfo(data)
 	words = string.split(data.data,",")    # Fields split
 	yaw = -float(words[9]) - 180.0
 	yaw = PItoPI(yaw*pi/180.0)
-	imuYow += PItoPI(yaw - imuYowOld)
-	imuYowOld = yaw
+	imuYaw = yaw
+	imuYawDiff += PItoPI(yaw - imuYawOld)
+	imuYawOld = yaw
+	pitch = float(words[7])
+	pitch = PItoPI(pitch*pi/180.0)
+	imuPitch = pitch
+	roll = float(words[8])
+	roll = PItoPI(roll*pi/180.0)
+	imuRoll = roll
 
 
 
-def cmdvel_callback(data):
-	global angularOld
-	global handleYow
-	#handleYow += ((data.angular.z - angularOld)*15.0)/180.0*pi
-	angularOld = data.angular.z
+#def cmdvel_callback(data):
+#	global angularOld
+#	angularOld = data.angular.z
 
 def talker():
 	rospy.init_node('infant_odometry', anonymous=True)
-	rospy.Subscriber("/cmd_vel", Twist, cmdvel_callback)
+	#rospy.Subscriber("/cmd_vel", Twist, cmdvel_callback)
 	rospy.Subscriber("/benz/raspi/encR", Int64, odom_callbackR)
 	rospy.Subscriber("/benz/raspi/encL", Int64, odom_callbackL)
-	#rospy.Subscriber("/imu", Imu, imu_callback)
-	rospy.Subscriber("/imu/serial", String, imuserial_callback)
+	rospy.Subscriber("/imu", Imu, imu_callback)
+	#rospy.Subscriber("/imu/serial", String, imuserial_callback)
 	pub = rospy.Publisher('/odom', Odometry, queue_size=10 )
 
 	odo=Odometry()
@@ -108,7 +120,8 @@ def talker():
 	global dt
 	global x
 	global count
-	global handleYow
+	global imuYaw
+	global imuPitch
 	x=array([0,0,toRadian(0.0)]);
 	dt=0.1
 	t=0;
@@ -125,16 +138,14 @@ def talker():
 		odo.pose.pose.position.x=x[0]
 		odo.pose.pose.position.y=x[1]
 		
-		roll=0.0
-		pitch=0.0
-		yaw = x[2] + handleYow
-		handleYow = 0.0
+		roll=imuRoll
+		pitch=imuPitch
+		yaw = x[2]
 		q = quaternion_from_euler(roll,pitch,yaw)
 		odo.pose.pose.orientation.x = q[0]
 		odo.pose.pose.orientation.y = q[1]
 		odo.pose.pose.orientation.z = q[2]
 		odo.pose.pose.orientation.w = q[3]
-		#odo.pose.pose.orientation.w=x[2]
 		odo.twist.twist.linear.x=u[0]
 		odo.twist.twist.angular.z=u[1]
 
@@ -160,29 +171,34 @@ def talker():
 # u[0] move vec
 # u[1] dir 
 def calc_input(rs):
-	global imuYow
+	global imuYawDiff
+	global imuYaw
 	u=array([0,0]);
 	vr=rs[0]/(GR*PR)*pi*D_RIGHT
 	vl=rs[1]/(GR*PR)*pi*D_LEFT
 	v=(vr+vl)/2.0
 	#yawrate=(vr-vl)/(TREAD/2.0)
 	#u=array([v,yawrate])
-	u=array([v,imuYow*9.50])
-	imuYow = 0.0
+	#u=array([v,imuYawDiff*9.50])
+	#u=array([v,imuYaw])
+	u=array([v,0.0])
+	imuYawDiff = 0.0
 	return u
 
 # x[0] x
 # x[1] y
 # x[2] dir
 def MotionModel(x,u,dt):
-	global imuYowOld
 	F=eye(3)
-	B=array([[dt*cos(x[2]),0],
-			[dt*sin(x[2]),0],
+	#B=array([[dt*cos(x[2]),0],
+	#		[dt*sin(x[2]),0],
+	#		[0,dt]])
+	B=array([[dt*cos(imuYaw),0],
+			[dt*sin(imuYaw),0],
 			[0,dt]])
 		
 	x=dot(F,x)+dot(B,u)
-	x[2]=PItoPI(x[2])
+	x[2]=imuYaw #PItoPI(x[2])
 	return x
 
 # Pi Limit

@@ -26,9 +26,11 @@ def cmdvel_callback(data):
 
 	cmdvel_move = data.linear.x
 	cmdvel_ang = data.angular.z
+	#if cmdvel_move == 0.0 and abs(data.angular.z) > 0.0:
+	#	cmdvel_move += 0.1
 
 
-rospy.init_node('odomemu')
+rospy.init_node('odomsim')
 
 #rospy.wait_for_service('spawn')
 #spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
